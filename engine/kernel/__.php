@@ -2,48 +2,54 @@
 
 class __ {
 
-    public static $_ = array();
-    public static $_x = array();
+    public $_ = [];
+    public $_x = [];
 
     // Show the added method(s)
-    public static function kin($kin = null, $fallback = false, $origin = false) {
+    public function kin($kin = null, $fail = false, $origin = false) {
         $c = get_called_class();
-        if( ! is_null($kin)) {
-            if( ! isset(self::$_x[$c][$kin])) {
-                $output = isset(self::$_[$c][$kin]) ? self::$_[$c][$kin] : $fallback;
+        if ($kin !== null) {
+            if (!isset($this->_x[$c][$kin])) {
+                $output = $this->_[$c][$kin] ?? $fail;
                 return $origin && is_callable($c . '::' . $kin) ? 1 : $output;
             }
-            return $fallback;
+            return $fail;
         }
-        if($kin === true) {
-            return ! empty(self::$_) ? self::$_ : $fallback;
+        if ($kin === true) {
+            return !empty($this->_) ? $this->_ : $fail;
         }
-        return ! empty(self::$_[$c]) ? self::$_[$c] : $fallback;
+        return !empty($this->_[$c]) ? $this->_[$c] : $fail;
     }
 
     // Add new method with `__::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$_[get_called_class()][$kin] = $action;
+    public function plug($kin, $fn) {
+        $this->_[get_called_class()][$kin] = $fn;
     }
 
     // Remove the added method with `__::unplug('foo')`
-    public static function unplug($kin) {
-        if($kin === true) {
-            self::$_ = self::$_x = array();
+    public function unplug($kin) {
+        if ($kin === true) {
+            $this->_ = $this->_x = [];
         } else {
             $c = get_called_class();
-            self::$_x[$c][$kin] = 1;
-            unset(self::$_[$c][$kin]);
+            $this->_x[$c][$kin] = 1;
+            unset($this->_[$c][$kin]);
         }
     }
 
     // Call the added method with `__::foo()`
-    public static function __callStatic($kin, $arguments = array()) {
+    public static function __callStatic($kin, $lot = []) {
+        $self = new self;
+        return $self->__call($kin, $lot);
+    }
+
+    // @ditto
+    public function __call($kin, $lot = []) {
         $c = get_called_class();
-        if( ! isset(self::$_[$c][$kin])) {
-            Guardian::abort('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
+        if (!isset($this->_[$c][$kin])) {
+            exit('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
         }
-        return call_user_func_array(self::$_[$c][$kin], $arguments);
+        return call_user_func_array($this->_[$c][$kin], $lot);
     }
 
 }
