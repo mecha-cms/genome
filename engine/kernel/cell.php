@@ -2,7 +2,7 @@
 
 class Cell extends __ {
 
-    protected $_data = [
+    protected static $_data = [
         'src' => null,
         'alt' => null,
         'width' => null,
@@ -29,16 +29,16 @@ class Cell extends __ {
         'style' => null
     ];
 
-    protected $_unit = [];
+    protected static $_unit = [];
     protected $_dent = [];
 
     // Indent ...
-    public function dent($i) {
+    public static function dent($i) {
         return !is_numeric($i) ? $i : str_repeat(I, (int) $i);
     }
 
     // Encode all HTML entit(y|ies)
-    public function protect($v) {
+    public static function protect($v) {
         if (!is_string($v)) return $v;
         return Text::parse($v)->to('html.encode');
     }
@@ -50,9 +50,9 @@ class Cell extends __ {
             return strlen($data) ? ' ' . $data : ""; // no filter(s) applied ...
         }
         $output = "";
-        $c = strtolower(get_called_class());
+        $c = strtolower(static::class);
         $unit = $unit ? '.' . $unit : "";
-        $array = Filter::apply($c . '.bond' . $unit, array_replace($this->_data, $a), [$unit]);
+        $array = Filter::NS($c . ':bond' . $unit, array_replace(self::$_data, $a), [$unit]);
         // HTML5 `data-*` attribute
         if (isset($a['data']) && is_array($a['data'])) {
             foreach ($a['data'] as $k => $v) {
@@ -73,9 +73,7 @@ class Cell extends __ {
                     }
                     $v = substr($css, 1);
                 } else {
-                    $v = array_unique($v);
-                    sort($v);
-                    $v = implode(' ', $v);
+                    $v = implode(' ', array_unique($v));
                 }
             }
             $q = is_string($v) && strpos($v, '"') !== false ? "'" : '"';
@@ -85,21 +83,21 @@ class Cell extends __ {
     }
 
     // Base HTML tag constructor
-    public function unit($unit = 'html', $content = "", $data = [], $dent = 0) {
-        $dent = $this->dent($dent);
-        $c = strtolower(get_called_class());
-        $s  = $dent . '<' . $unit . $this->bond($data, $unit);
+    public static function unit($unit = 'html', $content = "", $data = [], $dent = 0) {
+        $dent = self::dent($dent);
+        $c = strtolower(static::class);
+        $s  = $dent . '<' . $unit . self::bond($data, $unit);
         $s .= $content === false ? ES : '>' . ($content ?? "") . '</' . $unit . '>';
-        return Filter::apply($c . ':unit.' . $unit, $s, [$data]);
+        return Filter::NS($c . ':unit.' . $unit, $s, [$data]);
     }
 
     // Alias for `Cell::unit()`
-    public function unite() {
-        return call_user_func_array([$this, 'unit'], func_get_args());
+    public static function unite() {
+        return call_user_func_array('self::unit', func_get_args());
     }
 
     // Inverse version of `Cell::unit()`
-    public function apart($input, $unit = [], $data = [], $eval = true) {
+    public static function apart($input, $unit = [], $data = [], $eval = true) {
         $E = ['<', '>', '/', '[\w:.-]+'];
         $A = ['=', '"', '"', ' ', '[\w:.-]+'];
         $E0 = preg_quote($E[0], '/');
@@ -119,7 +117,7 @@ class Cell extends __ {
         $results['content'] = $m[4] ?? null;
         if (!empty($m[2]) && preg_match_all('/' . $A3 . '+(' . $A[4] . ')(?:' . $A0 . $A1 . '([\s\S]*?)' . $A2 . ')?/s', $m[2], $mm)) {
             foreach ($mm[1] as $k => $v) {
-                $s = $eval ? Converter::strEval($mm[2][$k]) : $mm[2][$k];
+                $s = $eval ? e($mm[2][$k]) : $mm[2][$k];
                 if ($s === "" && strpos($mm[0][$k], $A[0] . $A[1] . $A[2]) === false) {
                     $s = $v;
                 }
@@ -130,47 +128,43 @@ class Cell extends __ {
     }
 
     // HTML comment
-    public function __($content = "", $dent = 0, $block = N) {
-        $dent = $this->dent($dent);
+    public static function __($content = "", $dent = 0, $block = N) {
+        $dent = self::dent($dent);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
             $end = $block . $dent;
         }
-        $c = strtolower(get_called_class());
-        return Filter::apply($c . '.unit.__', $dent . '<!--' . $begin . $content . $end . '-->');
+        $c = strtolower(static::class);
+        return Filter::NS($c . ':unit.__', $dent . '<!--' . $begin . $content . $end . '-->');
     }
 
     // Base HTML tag open
-    public function begin($unit = 'html', $data = [], $dent = 0) {
-        $dent = $this->dent($dent);
-        $this->_unit[] = $unit;
-        $this->_dent[] = $dent;
-        $c = strtolower(get_called_class());
-        return Filter::apply($c . '.begin.' . $unit, $dent . '<' . $unit . $this->bond($data, $unit) . '>', $data);
+    public static function begin($unit = 'html', $data = [], $dent = 0) {
+        $dent = self::dent($dent);
+        self::$_unit[] = $unit;
+        self::$_dent[] = $dent;
+        $c = strtolower(static::class);
+        return Filter::NS($c . ':begin.' . $unit, $dent . '<' . $unit . self::bond($data, $unit) . '>', [$data]);
     }
 
     // Base HTML tag close
-    public function end($unit = null, $dent = null) {
-        $unit = $unit ?? array_pop($this->_unit);
-        $dent = $dent ?? array_pop($this->_dent) ?? "";
-        $c = strtolower(get_called_class());
-        return Filter::apply($c . '.end.' . $unit, $unit ? $dent . '</' . $unit . '>' : "");
+    public static function end($unit = null, $dent = null) {
+        $unit = $unit ?? array_pop(self::$_unit);
+        $dent = $dent ?? array_pop(self::$_dent) ?? "";
+        $c = strtolower(static::class);
+        return Filter::NS($c . ':end.' . $unit, $unit ? $dent . '</' . $unit . '>' : "");
     }
 
-    // Add new method with `Cell::add('foo')`
-    public function add($kin, $fn) {
-        $this->plug($kin, $fn);
-    }
-
-    // Call the added method with `Cell::foo()`
+    // Calling `Cell::div($x)` is the same as calling `Cell::unit('div', $x)`
+    // if custom method called `Cell::div()` does not defined yet by `Cell::plug()`
     public function __call($kin, $lot = []) {
-        $c = get_called_class();
+        $c = static::class;
         if (!isset($this->_[$c][$kin])) {
             $lot = array_merge([$kin], $lot);
             return call_user_func_array([$this, 'unit'], $lot);
         }
         $s = parent::__call($kin, $lot);
-        return Filter::apply(strtolower($c) . '.gen.' . $kin, $s, $lot);
+        return Filter::NS(strtolower($c) . ':gen.' . $kin, $s, [$lot]);
     }
 
 }
