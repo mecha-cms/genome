@@ -1,50 +1,50 @@
 <?php
 
-class Vault extends __ {
+class Vault extends DNA {
 
     protected static $bucket = [];
 
-    public static function set($a, $b = null) {
+    public function set($a, $b = null) {
         if (is_object($b) || is_array($b)) $b = a($b);
         $cargo = [];
         if (!is_array($a)) {
-            Group::set($cargo, $a, $b);
+            Anemon::set($cargo, $a, $b);
         } else {
             foreach (a($a) as $k => $v) {
-                Group::set($cargo, $k, $v);
+                Anemon::set($cargo, $k, $v);
             }
         }
-        Group::extend(self::$bucket, $cargo);
+        Anemon::extend($this->bucket, $cargo);
     }
 
-    public static function get($a = null, $fail = false) {
-        if ($a === null) return o(self::$bucket);
+    public function get($a = null, $fail = false) {
+        if ($a === null) return o($this->bucket);
         if (is_array($a)) {
             $output = [];
             foreach ($a as $k => $v) {
                 $f = is_array($fail) && array_key_exists($k, $fail) ? $fail[$k] : $fail;
-                $output[$v] = self::get($v, $f);
+                $output[$v] = $this->get($v, $f);
             }
             return (object) $output;
         }
         if (is_string($a) && strpos($a, '.') !== false) {
-            $output = Group::get(self::$bucket, $a, $fail);
+            $output = Anemon::get($this->bucket, $a, $fail);
             return is_array($output) ? o($output) : $output;
         }
-        return array_key_exists($a, self::$bucket) ? o(self::$bucket[$a]) : $fail;
+        return array_key_exists($a, $this->bucket) ? o($this->bucket[$a]) : $fail;
     }
 
-    public static function reset($k = null) {
+    public function reset($k = null) {
         if ($k !== null) {
-            Group::R(self::$bucket, $k);
+            Anemon::reset($this->bucket, $k);
         } else {
-            self::$bucket = [];
+            $this->bucket = [];
         }
-        return new static;
+        return $this;
     }
 
-    public static function merge() {
-        call_user_func_array('self::set', func_get_args());
+    public function merge() {
+        call_user_func_array([$this, 'set'], func_get_args());
     }
 
     // Call the added method or use them as a shortcut for the default `get` method.
@@ -53,13 +53,13 @@ class Vault extends __ {
     // NOTE: `Cargo::plug()` and `Cargo::kin()` method(s) are inherit of `__`
     public function __call($kin, $lot = []) {
         $c = static::class;
-        if (!isset($this->_[$c][$kin])) {
+        if (!isset($this->_[1][$c][$kin])) {
             $fail = false;
             if (count($lot)) {
                 $kin .= '.' . array_shift($lot);
                 $fail = array_shift($lot);
             }
-            return self::get($kin, $fail);
+            return $this->get($kin, $fail);
         }
         return parent::__call($kin, $lot);
     }

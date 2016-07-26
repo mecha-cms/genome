@@ -59,9 +59,9 @@
  *
  */
 
-class Session extends __ {
+class Session extends DNA {
 
-    public static function set($session, $value = "", $expire = 1, $path = '/', $domain = "", $secure = false, $http_only = false) {
+    public function set($session, $value = "", $expire = 1, $path = '/', $domain = "", $secure = false, $http_only = false) {
         if (strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
             $expire = time() + 60 * 60 * 24 * $expire;
@@ -80,7 +80,7 @@ class Session extends __ {
         }
     }
 
-    public static function get($session = null, $fail = "") {
+    public function get($session = null, $fail = "") {
         if (is_null($session)) return $_SESSION;
         if ($session === 'cookies') {
             return Converter::strEval($_COOKIE);
@@ -88,16 +88,16 @@ class Session extends __ {
         if (strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
             $cookie = isset($_COOKIE) ? Converter::strEval($_COOKIE) : $fail;
-            $value = Mecha::GVR($cookie, $name, $fail);
+            $value = Anemon::get($cookie, $name, $fail);
             return !is_array($value) && !is_null(json_decode(base64_decode($value), true)) ? json_decode(base64_decode($value), true) : $value;
         }
-        return Mecha::GVR($_SESSION, $session, $fail);
+        return Anemon::get($_SESSION, $session, $fail);
     }
 
-    public static function kill($session = null) {
+    public function kill($session = null) {
         if (is_null($session)) {
             session_destroy();
-        } else if ($session === 'cookies') {
+        } elseif ($session === 'cookies') {
             $_COOKIE = [];
             if (isset($_SERVER['HTTP_COOKIE'])) {
                 $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
@@ -108,7 +108,7 @@ class Session extends __ {
                     setcookie($name, null, -1, '/');
                 }
             }
-        } else if (strpos($session, 'cookie:') === 0) {
+        } elseif (strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
             if (strpos($session, '.') !== false) {
                 $name_a = explode('.', $name);
@@ -130,7 +130,7 @@ class Session extends __ {
         }
     }
 
-    public static function start($path = SESSION) {
+    public function start($path = SESSION) {
         if ( !is_null($path)) {
             if ( !file_exists($path)) {
                 mkdir($path, 0600, true);

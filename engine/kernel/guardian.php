@@ -1,5 +1,5 @@
 <?php
 
-class Guardian extends __ {
+class Guardian extends DNA {
 
 }

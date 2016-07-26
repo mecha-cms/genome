@@ -1,8 +1,8 @@
 <?php
 
-class Folder extends __ {
+class Folder extends DNA {
 
-    public static function create($input, $consent = 0777) {
+    public function create($input, $consent = 0777) {
         foreach((array) $input as $k => $v) {
             if(!file_exists($v)) {
                 if (is_array($consent)) {
@@ -15,7 +15,7 @@ class Folder extends __ {
         }
     }
 
-    public static function exist($input, $fail = false) {
+    public function exist($input, $fail = false) {
         return is_dir($input) ? $input : $fail;
     }
 

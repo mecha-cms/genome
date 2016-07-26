@@ -1,8 +1,8 @@
 <?php
 
-class Time extends __ {
+class Time extends DNA {
 
-    public static function format($input, $format = 'Y-m-d H:i:s') {
+    public function format($input, $format = 'Y-m-d H:i:s') {
         if (is_numeric($input)) return date($format, $input);
         if (substr_count($input, '-') === 5) {
             $s = explode('-', $input);
@@ -12,28 +12,28 @@ class Time extends __ {
     }
 
     // Convert time to slug
-    public static function slug($input) {
+    public function slug($input) {
         if (is_string($input) && substr_count($input, '-') === 5) {
             return $input;
         }
         return self::format($input, 'Y-m-d-H-i-s');
     }
 
-    public static function ago($input, $output = null, $compact = true) {
+    public function ago($input, $output = null, $compact = true) {
         $speak = new Gram();
         $date = new DateTime();
         $date->setTimestamp((int) self::format($input, 'U'));
         $interval = $date->diff(new DateTime('now'));
         $time = $interval->format('%y.%m.%d.%h.%i.%s');
         $time = e(explode('.', $time));
-        $data = array(
+        $data = [
             'year' => $time[0],
             'month' => $time[1],
             'day' => $time[2],
             'hour' => $time[3],
             'minute' => $time[4],
             'second' => $time[5]
-        );
+        ];
         if ($compact) {
             foreach ($data as $k => $v) {
                 if ($v === 0) {
@@ -52,13 +52,13 @@ class Time extends __ {
         return $output ? $results[$output] : $results;
     }
 
-    public static function GMT($input, $format = 'Y-m-d H:i:s') {
+    public function GMT($input, $format = 'Y-m-d H:i:s') {
         $time = new DateTime(self::format($input, 'c'));
         $time->setTimeZone(new DateTimeZone('UTC'));
         return $time->format($format);
     }
 
-    public static function zone($zone = 'Asia/Jakarta') {
+    public function zone($zone = 'Asia/Jakarta') {
         date_default_timezone_set($zone);
     }
 

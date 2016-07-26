@@ -1,8 +1,8 @@
 <?php
 
-class Cell extends __ {
+class Cell extends DNA {
 
-    protected static $_data = [
+    protected $_data = [
         'src' => null,
         'alt' => null,
         'width' => null,
@@ -29,22 +29,22 @@ class Cell extends __ {
         'style' => null
     ];
 
-    protected static $_unit = [];
+    protected $_unit = [];
     protected $_dent = [];
 
     // Indent ...
-    public static function dent($i) {
-        return !is_numeric($i) ? $i : str_repeat(I, (int) $i);
+    public function dent($i) {
+        return is_numeric($i) ? str_repeat(I, (int) $i) : $i;
     }
 
     // Encode all HTML entit(y|ies)
-    public static function protect($v) {
+    public function protect($v) {
         if (!is_string($v)) return $v;
-        return Text::parse($v)->to('html.encode');
+        return Parse::from($v)->to('html.encode');
     }
 
     // Setup HTML attribute(s) ...
-    public static function bond($a, $unit = "") {
+    public function bond($a, $unit = "") {
         if (!is_array($a)) {
             $data = trim((string) $a);
             return strlen($data) ? ' ' . $data : ""; // no filter(s) applied ...
@@ -52,7 +52,7 @@ class Cell extends __ {
         $output = "";
         $c = strtolower(static::class);
         $unit = $unit ? '.' . $unit : "";
-        $array = Filter::NS($c . ':bond' . $unit, array_replace(self::$_data, $a), [$unit]);
+        $array = Filter::NS($c . ':bond' . $unit, array_replace($this->_data, $a), [$unit]);
         // HTML5 `data-*` attribute
         if (isset($a['data']) && is_array($a['data'])) {
             foreach ($a['data'] as $k => $v) {
@@ -83,21 +83,21 @@ class Cell extends __ {
     }
 
     // Base HTML tag constructor
-    public static function unit($unit = 'html', $content = "", $data = [], $dent = 0) {
-        $dent = self::dent($dent);
+    public function unit($unit = 'html', $content = "", $data = [], $dent = 0) {
+        $dent = $this->dent($dent);
         $c = strtolower(static::class);
-        $s  = $dent . '<' . $unit . self::bond($data, $unit);
+        $s  = $dent . '<' . $unit . $this->bond($data, $unit);
         $s .= $content === false ? ES : '>' . ($content ?? "") . '</' . $unit . '>';
         return Filter::NS($c . ':unit.' . $unit, $s, [$data]);
     }
 
     // Alias for `Cell::unit()`
-    public static function unite() {
-        return call_user_func_array('self::unit', func_get_args());
+    public function unite() {
+        return call_user_func_array([$this, 'unit'], func_get_args());
     }
 
-    // Inverse version of `Cell::unit()`
-    public static function apart($input, $unit = [], $data = [], $eval = true) {
+    // Inverse version of `Cell::unite()`
+    public function apart($input, $unit = [], $data = [], $eval = true) {
         $E = ['<', '>', '/', '[\w:.-]+'];
         $A = ['=', '"', '"', ' ', '[\w:.-]+'];
         $E0 = preg_quote($E[0], '/');
@@ -128,8 +128,8 @@ class Cell extends __ {
     }
 
     // HTML comment
-    public static function __($content = "", $dent = 0, $block = N) {
-        $dent = self::dent($dent);
+    public function __($content = "", $dent = 0, $block = N) {
+        $dent = $this->dent($dent);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
             $end = $block . $dent;
@@ -139,27 +139,27 @@ class Cell extends __ {
     }
 
     // Base HTML tag open
-    public static function begin($unit = 'html', $data = [], $dent = 0) {
-        $dent = self::dent($dent);
-        self::$_unit[] = $unit;
-        self::$_dent[] = $dent;
+    public function begin($unit = 'html', $data = [], $dent = 0) {
+        $dent = $this->dent($dent);
+        $this->_unit[] = $unit;
+        $this->_dent[] = $dent;
         $c = strtolower(static::class);
-        return Filter::NS($c . ':begin.' . $unit, $dent . '<' . $unit . self::bond($data, $unit) . '>', [$data]);
+        return Filter::NS($c . ':begin.' . $unit, $dent . '<' . $unit . $this->bond($data, $unit) . '>', [$data]);
     }
 
     // Base HTML tag close
-    public static function end($unit = null, $dent = null) {
-        $unit = $unit ?? array_pop(self::$_unit);
-        $dent = $dent ?? array_pop(self::$_dent) ?? "";
+    public function end($unit = null, $dent = null) {
+        $unit = $unit ?? array_pop($this->_unit);
+        $dent = $dent ?? array_pop($this->_dent) ?? "";
         $c = strtolower(static::class);
         return Filter::NS($c . ':end.' . $unit, $unit ? $dent . '</' . $unit . '>' : "");
     }
 
-    // Calling `Cell::div($x)` is the same as calling `Cell::unit('div', $x)`
-    // if custom method called `Cell::div()` does not defined yet by `Cell::plug()`
+    // Calling `Cell::div($x)` will be the same as calling `Cell::unit('div', $x)`
+    // if custom method called `Cell::div()` is not defined yet by the `Cell::plug()`
     public function __call($kin, $lot = []) {
         $c = static::class;
-        if (!isset($this->_[$c][$kin])) {
+        if (!isset($this->_[1][$c][$kin])) {
             $lot = array_merge([$kin], $lot);
             return call_user_func_array([$this, 'unit'], $lot);
         }

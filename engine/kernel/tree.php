@@ -41,9 +41,9 @@
  *
  */
 
-class Tree extends __ {
+class Tree extends DNA {
 
-    public static $config = array(
+    public $config = array(
         'trunk' => 'ul',
         'branch' => 'ul',
         'twig' => 'li',
@@ -59,7 +59,7 @@ class Tree extends __ {
     protected static function _create($array, $indent = "", $FP = "", $i = 0) {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
-        $c_element = self::$config;
+        $c_element = $this->config;
         $c_class = $c_element['classes'];
         $html = $indent . str_repeat(I, $i) . '<' . $c_element[$i === 0 ? 'trunk' : 'branch'] . ($i === 0 ? ($c_class['trunk'] !== false ? ' class="' . $c_class['trunk'] . '"' : "") : ($c_class['branch'] !== false ? ' class="' . sprintf($c_class['branch'], $i / 2) . '"' : "")) . '>' . NL;
         foreach ($array as $key => $value) {
@@ -74,7 +74,7 @@ class Tree extends __ {
                     if (is_int($key)) {
                         $twig .= Filter::colon($FP . 'anchor', '<span class="a" tabindex="0">' . $value . '</span>');
                     // List item without link: `array('foo' => null)`
-                    } else if (is_null($value)) {
+                    } elseif (is_null($value)) {
                         $twig .= Filter::colon($FP . 'anchor', '<span class="a" tabindex="0">' . $key . '</span>');
                     // List item with link: `array('foo' => '/')`
                     } else {
@@ -114,7 +114,7 @@ class Tree extends __ {
         return Filter::colon($FP . 'branch', rtrim($html, NL) . ( !empty($array) ? NL . $indent . str_repeat(I, $i) : "") . '</' . $s . '>', $i) . NL;
     }
 
-    public static function grow($array = null, $indent = "", $FP = 'tree:') {
+    public function grow($array = null, $indent = "", $FP = 'tree:') {
         return O_BEGIN . Filter::colon($FP . 'trunk', rtrim(self::_create($array, $indent, $FP, 0), NL)) . O_END;
     }
 

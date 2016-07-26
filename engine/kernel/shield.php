@@ -1,11 +1,11 @@
 <?php
 
-class Shield extends __ {
+class Shield extends DNA {
 
     protected static $lot = [];
 
     // Compare with current version
-    public static function version($info, $v = null) {
+    public function version($info, $v = null) {
         if (is_string($info)) {
             $info = self::info($info)->version;
         } else {
@@ -20,7 +20,7 @@ class Shield extends __ {
      * ----------------------------
      */
 
-    public static function cargo() {
+    public function cargo() {
         $config = Config::get();
         $token = Guardian::token();
         $results = array(
@@ -33,14 +33,14 @@ class Shield extends __ {
             'message' => Notify::read(false)
         );
         foreach (glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
-            $v = File::B($v);
+            $v = Path::B($v);
             $results[$v . 's'] = isset($config->{$v . 's'}) ? $config->{$v . 's'} : false;
             $results[$v] = isset($config->{$v}) ? $config->{$v} : false;
         }
         Session::set(Guardian::$token, $token);
         unset($config, $token);
-        self::$lot = array_merge(self::$lot, $results);
-        return self::$lot;
+        $this->lot = array_merge($this->lot, $results);
+        return $this->lot;
     }
 
     /**
@@ -56,18 +56,18 @@ class Shield extends __ {
      *
      */
 
-    public static function path($name, $fail = false) {
+    public function path($name, $fail = false) {
         $e = File::E($name, "") !== 'php' ? '.php' : "";
-        $name = File::path($name) . $e;
+        $name = URL::path($name) . $e;
         // Full path, be quick!
         if (strpos($name, ROOT) === 0) {
             return File::exist($name, $fail);
         }
         if ($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, DS))) {
             return $path;
-        } else if ($path = File::exist(CHUNK . DS . ltrim($name, DS))) {
+        } elseif ($path = File::exist(CHUNK . DS . ltrim($name, DS))) {
             return $path;
-        } else if ($path = File::exist(ROOT . DS . ltrim($name, DS))) {
+        } elseif ($path = File::exist(ROOT . DS . ltrim($name, DS))) {
             return $path;
         }
         return $fail;
@@ -93,13 +93,13 @@ class Shield extends __ {
      *
      */
 
-    public static function lot($key = null, $fail = false) {
-        if (is_null($key)) return self::$lot;
+    public function lot($key = null, $fail = false) {
+        if (is_null($key)) return $this->lot;
         if ( !is_array($key)) {
-            return isset(self::$lot[$key]) ? self::$lot[$key] : $fail;
+            return isset($this->lot[$key]) ? $this->lot[$key] : $fail;
         }
-        self::$lot = array_merge(self::$lot, $key);
-        return new static;
+        $this->lot = array_merge($this->lot, $key);
+        return $this;
     }
 
     /**
@@ -121,12 +121,12 @@ class Shield extends __ {
      *
      */
 
-    public static function apart($data) {
+    public function apart($data) {
         $data = (array) $data;
         foreach ($data as $d) {
-            unset(self::$lot[$d]);
+            unset($this->lot[$d]);
         }
-        return new static;
+        return $this;
     }
 
     /**
@@ -142,7 +142,7 @@ class Shield extends __ {
      *
      */
 
-    public static function info($folder = null, $array = false) {
+    public function info($folder = null, $array = false) {
         $config = Config::get();
         $speak = Config::speak();
         if (is_null($folder)) {
@@ -176,16 +176,16 @@ class Shield extends __ {
      *
      */
 
-    public static function attach($name, $fail = false, $buffer = true) {
-        $path__ = File::path($name);
-        $s = explode('-', File::N($name), 2);
+    public function attach($name, $fail = false, $buffer = true) {
+        $path__ = URL::path($name);
+        $s = explode('-', Path::N($name), 2);
         $G = array('data' => array('name' => $name, 'name_base' => $s[0]));
         if (strpos($path__, ROOT) === 0 && file_exists($path__) && is_file($path__)) {
             // do nothing ...
         } else {
             if ($_path = File::exist(self::path($path__, $fail))) {
                 $path__ = $_path;
-            } else if ($_path = File::exist(self::path($s[0], $fail))) {
+            } elseif ($_path = File::exist(self::path($s[0], $fail))) {
                 $path__ = $_path;
             } else {
                 Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . $path__ . '</code>'));
@@ -215,7 +215,7 @@ class Shield extends __ {
         }
         $G['data']['content'] = $out;
         // Reset shield lot
-        self::$lot = [];
+        $this->lot = [];
         // End shield
         Weapon::fire('shield_after', array($G, $G));
         exit;
@@ -238,7 +238,7 @@ class Shield extends __ {
      *
      */
 
-    public static function abort($name = '404', $fail = false, $buffer = true) {
+    public function abort($name = '404', $fail = false, $buffer = true) {
         $s = explode('-', $name, 2);
         $s = is_numeric($s[0]) ? $s[0] : '404';
         Config::set('page_type', $s);
@@ -263,21 +263,21 @@ class Shield extends __ {
      *
      */
 
-    public static function chunk($name, $fail = false, $buffer = true) {
-        $path__ = File::path($name);
+    public function chunk($name, $fail = false, $buffer = true) {
+        $path__ = URL::path($name);
         $G = array('data' => array('name' => $name));
         if (is_array($fail)) {
-            self::$lot = array_merge(self::$lot, $fail);
+            $this->lot = array_merge($this->lot, $fail);
             $fail = false;
         }
         $path__ = Filter::apply('chunk:path', self::path($path__, $fail));
-        $G['data']['lot'] = self::$lot;
+        $G['data']['lot'] = $this->lot;
         $G['data']['path'] = $path__;
         $out = "";
         if ($path__) {
             // Begin chunk
             Weapon::fire('chunk_lot_before', array($G, $G));
-            extract(Filter::apply('chunk:lot', self::$lot));
+            extract(Filter::apply('chunk:lot', $this->lot));
             Weapon::fire('chunk_lot_after', array($G, $G));
             Weapon::fire('chunk_before', array($G, $G));
             if ($buffer) {
@@ -310,7 +310,7 @@ class Shield extends __ {
      *
      */
 
-    public static function exist($name, $fail = false) {
+    public function exist($name, $fail = false) {
         $name = SHIELD . DS . $name;
         return file_exists($name) && is_dir($name) ? $name : $fail;
     }

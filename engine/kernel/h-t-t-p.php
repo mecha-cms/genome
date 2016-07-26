@@ -1,8 +1,8 @@
 <?php
 
-class HTTP extends __ {
+class HTTP extends DNA {
 
-    public static $message = array(
+    public $message = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing', // RFC2518
@@ -63,53 +63,53 @@ class HTTP extends __ {
         508 => 'Loop Detected', // RFC5842
         510 => 'Not Extended', // RFC2774
         511 => 'Network Authentication Required' // RFC6585
-    );
+    ];
 
-    public static function status($code = 200, $value = null) {
-        if (is_int($code) && isset(self::$message[$code])) {
+    public function status($code = 200, $value = null) {
+        if (is_int($code) && isset($this->message[$code])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
-                header('Status: ' . $code . ' ' . self::$message[$code]);
+                header('Status: ' . $code . ' ' . $this->message[$code]);
             } else {
-                header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . self::$message[$code]);
+                header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . $this->message[$code]);
             }
         }
-        return new static;
+        return $this;
     }
 
-    public static function query($query = null, $value = 1) {
+    public function query($query = null, $value = 1) {
         if ($query === null) {
             return URL::query();
         }
         if (func_num_args() === 2) {
-            $query = array($query => $value);
+            $query = [$query => $value];
         }
-        $query = !empty($query) ? Group::extend($_GET, $query) : $_GET;
-        $results = [];
-        foreach (self::_query($query, "") as $k => $v) {
+        $query = !empty($query) ? Anemon::extend($_GET, $query) : $_GET;
+        $output = [];
+        foreach ($this->_query($query, "") as $k => $v) {
             if ($v === false) continue;
             $value = $v !== true ? '=' . urlencode(s($v)) : "";
-            $results[] = $k . $value;
+            $output[] = $k . $value;
         }
-        return !empty($results) ? '?' . implode('&', $results) : "";
+        return !empty($output) ? '?' . implode('&', $output) : "";
     }
 
-    protected static function _query($array, $key) {
-        $results = [];
+    protected function _query($array, $key) {
+        $output = [];
         $s = $key ? '%5D' : "";
         foreach ($array as $k => $v) {
             if (is_array($v)) {
-                $results = array_merge($results, self::_query($v, $key . $k . $s . '%5B'));
+                $output = array_merge($output, $this->_query($v, $key . $k . $s . '%5B'));
             } else {
-                $results[$key . $k . $s] = $v;
+                $output[$key . $k . $s] = $v;
             }
         }
-        return $results;
+        return $output;
     }
 
-    public static function header($key, $value = null) {
+    public function header($key, $value = null) {
         if (!is_array($key)) {
             if (is_int($key)) {
-                self::status($key);
+                $this->status($key);
             } else {
                 if ($value !== null) {
                     header($key . ': ' . $value);
@@ -122,15 +122,15 @@ class HTTP extends __ {
                 header($k . ': ' . $v);
             }
         }
-        return new static;
+        return $this;
     }
 
-    public static function mime($mime, $charset = null) {
+    public function mime($mime, $charset = null) {
         header('Content-Type: ' . $mime . ($charset !== null ? '; charset=' . $charset : ""));
-        return new static;
+        return $this;
     }
 
-    public static function post($url, $fields = []) {
+    public function post($url, $fields = []) {
         if (!function_exists('curl_init')) {
             exit('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
         }
@@ -145,7 +145,7 @@ class HTTP extends __ {
         return $output;
     }
 
-    public static function get($url, $fields = []) {
+    public function get($url, $fields = []) {
         if (is_string($fields)) {
             $url .= '?' . str_replace([X . '?', X], "", X . $fields);
         } else {

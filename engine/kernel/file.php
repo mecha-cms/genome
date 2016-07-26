@@ -1,6 +1,6 @@
 <?php
 
-class File extends __ {
+class File extends DNA {
 
     protected $open = "";
     protected $cache = "";
@@ -13,13 +13,13 @@ class File extends __ {
     ];
 
     // Inspect file path
-    public static function inspect($path, $output = null, $fail = false) {
+    public function inspect($path, $key = null, $fail = false) {
         $path = URL::path($path);
         $n = Path::N($path);
         $x = Path::X($path);
         $update = self::T($path);
         $update_date = $update !== null ? date('Y-m-d H:i:s', $update) : null;
-        $results = array(
+        $output = [
             'path' => $path,
             'name' => $n,
             'url' => Path::url($path),
@@ -27,51 +27,51 @@ class File extends __ {
             'update_raw' => $update,
             'update' => $update_date,
             'size_raw' => file_exists($path) ? filesize($path) : null,
-            'size' => file_exists($path) ? self::size($path) : null,
-            'is' => array(
+            'size' => file_exists($path) ? $this->size($path) : null,
+            'is' => [
                 // hidden file/folder only
                 'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
                 'file' => is_file($path),
                 'folder' => is_dir($path)
-            )
-        );
-        return $output !== null ? Group::G($results, $output, $fail) : $results;
+            ]
+        ];
+        return $key !== null ? Anemon::get($output, $key, $fail) : $output;
     }
 
     // List all file(s) from a folder
-    public static function explore($folder = ROOT, $recursive = false, $flat = false, $fail = false) {
+    public function explore($folder = ROOT, $deep = false, $flat = false, $fail = false) {
         $folder = rtrim(URL::path($folder), DS);
         $files = array_merge(
             glob($folder . DS . '*', GLOB_NOSORT),
             glob($folder . DS . '.*', GLOB_NOSORT)
         );
-        $results = [];
+        $output = [];
         foreach ($files as $file) {
             $b = Path::B($file);
             if ($b && $b !== '.' && $b !== '..') {
                 if (is_dir($file)) {
                     if (!$flat) {
-                        $results[$file] = $recursive ? self::explore($file, true, false, []) : 0;
+                        $output[$file] = $deep ? $this->explore($file, true, false, []) : 0;
                     } else {
-                        $results[$file] = 0;
-                        $results = $recursive ? array_merge($results, self::explore($file, true, true, [])) : $results;
+                        $output[$file] = 0;
+                        $output = $deep ? array_merge($output, $this->explore($file, true, true, [])) : $output;
                     }
                 } else {
-                    $results[$file] = 1;
+                    $output[$file] = 1;
                 }
             }
         }
-        return !empty($results) ? $results : $fail;
+        return !empty($output) ? $output : $fail;
     }
 
-    // Check if file does exist
-    public static function exist($input, $fail = false) {
+    // Check if file/folder does exist
+    public function exist($input, $fail = false) {
         $input = URL::path($input);
         return file_exists($input) ? $input : $fail;
     }
 
     // Open a file
-    public static function open($input) {
+    public function open($input) {
         $input = URL::path($input);
         $this->open = $input;
         return $this;
@@ -124,7 +124,7 @@ class File extends __ {
     }
 
     // Unserialize the serialized `$data` to output
-    public static function unserialize($fail = []) {
+    public function unserialize($fail = []) {
         if (file_exists($this->open)) {
             $data = file_get_contents($this->open);
             return Is::serialize($data) ? unserialize($data) : $fail;
@@ -184,7 +184,7 @@ class File extends __ {
     }
 
     // Copy the file/folder to ...
-    public function copyTo($target = ROOT, $s = '.') {
+    public function copyTo($target = ROOT, $s = '.%s') {
         $i = 1;
         if (file_exists($this->open)) {
             foreach ((array) $target as $v) {
@@ -199,11 +199,11 @@ class File extends __ {
                         mkdir(Path::D($v), 0777, true);
                     }
                 }
-                if (!file_exists($v) && !file_exists(preg_replace('#\.([\da-z]+)$#i', $s . $i . '.$1', $v))) {
+                if (!file_exists($v)) {
                     copy($this->open, $v);
                     $i = 1;
                 } else {
-                    $v = preg_replace('#\.([\da-z]+)$#', $s . $i . '.$1', $v);
+                    $v = preg_replace('#\.([a-z\d]+)$#', sprintf($s, $i) . '.$1', $v);
                     copy($this->open, $v);
                     $i++;
                 }
@@ -217,7 +217,9 @@ class File extends __ {
     public function delete() {
         if (file_exists($this->open)) {
             if (is_dir($this->open)) {
-               foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->open, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $o) {
+                $a = new RecursiveDirectoryIterator($this->open, FilesystemIterator::SKIP_DOTS);
+                $b = new RecursiveIteratorIterator($a, RecursiveIteratorIterator::CHILD_FIRST);
+                foreach ($b as $o) {
                     if ($o->isFile()) {
                         unlink($o->getPathname());
                     } else {
@@ -232,18 +234,18 @@ class File extends __ {
     }
 
     // Get file modify time
-    public static function T($input, $fail = null) {
+    public function T($input, $fail = null) {
         return file_exists($input) ? filemtime($input) : $fail;
     }
 
     // Set file permission
-    public static function consent($consent) {
+    public function consent($consent) {
         chmod($this->open, $consent);
         return $this;
     }
 
     // Upload the file
-    public static function upload($file, $target = ROOT, $fn = null) {
+    public function upload($file, $target = ROOT, $fn = null, $fail = false) {
         $target = URL::path($target);
         $errors = [
             'There is no error, the file uploaded with success.',
@@ -257,7 +259,7 @@ class File extends __ {
             'A <abbr>PHP</abbr> extension stopped the file upload.'
         ];
         // Create a safe file name
-        $file['name'] = Text::parse($file['name'])->to('safe.file_name');
+        $file['name'] = Parse::from($file['name'])->to('safe.file_name');
         $x = Path::X($file['name']);
         // Something goes wrong
         if ($file['error'] > 0 && isset($errors[$file['error']])) {
@@ -296,13 +298,13 @@ class File extends __ {
                 return $target . DS . $file['name'];
             }
             Notify::error('File already exist.');
-            return false;
+            return $fail;
         }
-        return false;
+        return $fail;
     }
 
     // Convert file size to ...
-    public static function size($file, $unit = null, $prec = 2) {
+    public function size($file, $unit = null, $prec = 2) {
         $size = is_numeric($file) ? $file : filesize($file);
         $size_base = log($size, 1024);
         $x = ['B', 'KB', 'MB', 'GB', 'TB'];

@@ -1,8 +1,8 @@
 <?php
 
-class Path extends __ {
+class Path extends DNA {
 
-    public static function url($path) {
+    public function url($path) {
         $url = str_replace([ROOT, DS, '\\'], [URL::url(), '/', '/'], $path);
         // Fix broken external URL `http://://example.com`, `http:////example.com`
         $url = str_replace(['://://', ':////'], '://', $url);
@@ -13,7 +13,7 @@ class Path extends __ {
         return $path;
     }
 
-    public static function B($path, $step = 1, $s = DS) {
+    public function B($path, $step = 1, $s = DS) {
         if (($s !== DS && $s !== '/') || $step > 1) {
             $p = explode($s, $path);
             return implode($s, array_slice($p, $step * -1));
@@ -21,7 +21,7 @@ class Path extends __ {
         return basename($path);
     }
 
-    public static function D($path, $step = 1, $s = DS) {
+    public function D($path, $step = 1, $s = DS) {
         if (($s !== DS && $s !== '/') || $step > 1) {
             $p = explode($s, $path);
             for ($i = 0; $i < $step; ++$i) {
@@ -32,7 +32,7 @@ class Path extends __ {
         return dirname($path) === '.' ? "" : dirname($path);
     }
 
-    public static function N($path, $x = false) {
+    public function N($path, $x = false) {
         return pathinfo($path, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
     }
 

@@ -1,92 +1,72 @@
 <?php
 
-/**
- * ====================================================================
- *  CONVERT ARRAY INTO MENU LIST
- * ====================================================================
- *
- * -- CODE: -----------------------------------------------------------
- *
- *    // Add
- *    Menu::add('my_menu', array(
- *        'Home' => '/',
- *        'About' => '/about',
- *        'Contact' => '/contact'
- *    ));
- *
- *    // Render
- *    echo Menu::my_menu();
- *
- * --------------------------------------------------------------------
- *
- */
+class Menu extends DNA {
 
-class Menu extends __ {
+    protected $lot = [];
 
-    protected static $menus = [];
-    protected static $menus_x = [];
-
-    public static $config = array(
-        'classes' => array(
+    public $config = [
+        'classes' => [
             'parent' => 'parent',
             'child' => 'child child-%d',
             'current' => 'current',
             'separator' => 'separator'
-        )
-    );
+        ]
+    ];
 
     // Add
-    public static function add($id, $array = []) {
+    public function add($id, $menus = []) {
         $c = static::class;
-        if ( !isset(self::$menus_x[$c][$id])) {
-            self::$menus[$c][$id] = $array;
+        if (!isset($this->lot[0][$c][$id])) {
+            $this->lot[1][$c][$id] = $menus;
         }
     }
 
     // Remove
-    public static function remove($id = null) {
+    public function remove($id = null) {
         $c = static::class;
-        self::$menus_x[$c][$id] = isset(self::$menus[$c][$id]) ? self::$menus[$c][$id] : 1;
-        if ( !is_null($id)) {
-            unset(self::$menus[$c][$id]);
+        $this->lot[0][$c][$id] = $this->lot[1][$c][$id] ?? 1;
+        if ($id !== null) {
+            unset($this->lot[1][$c][$id]);
         } else {
-            self::$menus[$c] = [];
+            $this->lot[1][$c] = [];
         }
     }
 
     // Check
-    public static function exist($id = null, $fail = false) {
+    public function exist($id = null, $fail = false) {
         $c = static::class;
-        if ( !is_null($id)) {
-            return isset(self::$menus[$c][$id]) ? self::$menus[$c][$id] : $fail;
+        if ($id !== null) {
+            return $this->lot[1][$c][$id] ?? $fail;
         }
-        return !empty(self::$menus[$c]) ? self::$menus[$c] : $fail;
+        return !empty($this->lot[1][$c]) ? $this->lot[1][$c] : $fail;
     }
 
     // Render as HTML
-    public static function __callStatic($id, $arguments = []) {
+    public function __callStatic($id, $lot = []) {
         $c = static::class;
-        $d = Tree::$config;
-        $dd = self::$config['classes'];
-        if ( !isset(self::$menus[$c][$id])) {
+        $tree = new Tree();
+        $s = $this->config['classes'];
+        $tree->config = [
+            'trunk' => $type,
+            'branch' => $type,
+            'twig' => 'li',
+            'classes' => [
+                'trunk' => $s['parent'],
+                'branch' => $s['child'],
+                'twig' => false,
+                'current' => $s['current'],
+                'chink' => $s['separator']
+            ]
+        ];
+        if (!isset($this->lot[1][$c][$id])) {
             return false;
         }
-        $AD = array('ul', "", $id . ':');
-        $arguments = Group::extend($AD, $arguments);
-        $type = $arguments[0];
-        $arguments[0] = Filter::apply('menu:input', self::$menus[$c][$id], $id);
-        if ( !is_array($arguments[0])) return "";
-        Tree::$config['trunk'] = $type;
-        Tree::$config['branch'] = $type;
-        Tree::$config['twig'] = 'li';
-        Tree::$config['classes']['trunk'] = $dd['parent'];
-        Tree::$config['classes']['branch'] = $dd['child'];
-        Tree::$config['classes']['twig'] = false;
-        Tree::$config['classes']['current'] = $dd['current'];
-        Tree::$config['classes']['chink'] = $dd['separator'];
-        $output = call_user_func_array('Tree::grow', $arguments);
-        Tree::$config = $d; // reset to the previous state
-        return Filter::apply('menu:output', $output, $id);
+        $AD = ['ul', "", $id . ':'];
+        $lot = Anemon::extend($AD, $lot);
+        $type = $lot[0];
+        $lot[0] = Filter::NS('menu:input', $this->lot[1][$c][$id], [$id]);
+        if (!is_array($lot[0])) return "";
+        return Filter::NS('menu:output', $tree->grow($lot), [$id]);
     }
 
 }

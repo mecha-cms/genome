@@ -1,13 +1,15 @@
 <?php
 
-class Filter extends DNA {
+// Many types of neuron possess an axon, a protoplasmic protrusion that can extend to distant parts of the body and make thousands of synaptic contacts.
+
+class Axon extends DNA {
 
     protected $lot = [];
 
-    public function add($id, $fn, $stack = null) {
+    public function send($id, $fn, $stack = null) {
         $c = static::class;
         $stack = $stack ?? 10;
-        if (is_string($id)) {
+        if (!is_array($id)) {
             if (!isset($this->lot[0][$c][$id][$stack])) {
                 if (!isset($this->lot[1][$c][$id])) {
                     $this->lot[1][$c][$id] = [];
@@ -19,35 +21,33 @@ class Filter extends DNA {
             }
         } else {
             foreach ($id as $v) {
-                $this->add($v, $fn, $stack);
+                $this->send($v, $fn, $stack);
             }
         }
     }
 
-    public function apply($id, $target, $lot = []) {
-        if (is_string($id)) {
+    public function react($id, $lot = []) {
+        if (!is_array($id)) {
             $c = static::class;
-            if (!isset($this->lot[1][$c][$id])) {
+            if (isset($this->lot[1][$c][$id])) {
+                $signal = Anemon::eat($this->lot[1][$c][$id])->sort('ASC', 'stack')->vomit();
+                foreach ($signal as $v) {
+                    call_user_func_array($v['fn'], $lot);
+                }
+            } else {
                 $this->lot[1][$c][$id] = [];
-                return $target;
-            }
-            $s = Anemon::eat($this->lot[1][$c][$id])->sort('ASC', 'stack')->vomit();
-            foreach ($s as $k => $v) {
-                $lot[0] = $target;
-                $target = call_user_func_array($v['fn'], $lot);
             }
         } else {
-            foreach (array_reverse($id) as $v) {
+            $lot = func_get_args();
+            foreach ($id as $v) {
                 $lot[0] = $v;
-                $lot[1] = $target;
-                $target = call_user_func_array([$this, __METHOD__], $lot);
+                call_user_func_array([$this, 'react'], $lot);
             }
         }
-        return $target;
     }
 
-    public function remove($id = null, $stack = null) {
-        if (is_string($id)) {
+    public function block($id = null, $stack = null) {
+        if (!is_array($id)) {
             $c = static::class;
             if ($id !== null) {
                 $this->lot[0][$c][$id][$stack ?? 10] = $this->lot[1][$c][$id] ?? 1;
@@ -55,9 +55,9 @@ class Filter extends DNA {
                     if ($stack !== null) {
                         foreach ($this->lot[1][$c][$id] as $k => $v) {
                             if (
-                                // remove filter by function name
+                                // eject weapon by function name
                                 $v['fn'] === $stack ||
-                                // remove filter by function stack
+                                // eject weapon by function stack
                                 is_numeric($stack) && $v['stack'] === (float) $stack
                             ) {
                                 unset($this->lot[1][$c][$id][$k]);
@@ -72,20 +72,20 @@ class Filter extends DNA {
             }
         } else {
             foreach ($id as $v) {
-                $this->remove($v, $stack);
+                $this->block($v, $stack);
             }
         }
     }
 
-    public function exist($id = null, $fail = false) {
+    public function sent($id = null, $fail = false) {
         $c = static::class;
-        if ($id === null) {
-            return !empty($this->lot[1][$c]) ? $this->lot[1][$c] : $fail;
+        if ($id !== null) {
+            return $this->lot[1][$c][$id] ?? $fail;
         }
-        return $this->lot[1][$c][$id] ?? $fail;
+        return !empty($this->lot[1][$c]) ? $this->lot[1][$c] : $fail;
     }
 
-    public function removed($id = null, $stack = null, $fail = false) {
+    public function blocked($id = null, $stack = null, $fail = false) {
         $c = static::class;
         $stack = $stack ?? 10;
         if ($id === null) {
@@ -94,15 +94,6 @@ class Filter extends DNA {
             return !empty($this->lot[0][$c][$id]) ? $this->lot[0][$c][$id] : $fail;
         }
         return $this->lot[0][$c][$id][$stack] ?? $fail;
-    }
-
-    public function NS($id, $target) {
-        $lot = func_get_args();
-        if(strpos($id, ':') !== false) {
-            $s = explode(':', $id, 2);
-            $lot[0] = [$id, $s[1]];
-        }
-        return call_user_func_array([$this, 'apply'], $lot);
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-class Image extends __ {
+class Image extends DNA {
 
     public $open = null;
     public $origin = null;
@@ -8,9 +8,9 @@ class Image extends __ {
 
     public $GD = false;
 
-    public static $config = array(
+    public $config = [
         'placeholder' => 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-    );
+    ];
 
     public function gen($file = null) {
         if ($file === null) {
@@ -30,11 +30,11 @@ class Image extends __ {
 
     public function twin($resource = null, $x = null) {
         $file = $this->placeholder;
-        if ($resource === null) $resource = $this->GD;
+        $resource = $resource ?? $this->GD;
         $o_x = Path::X($this->origin);
         $n_x = Path::X($file);
         if ($x !== null) {
-            $file = preg_replace('#\.([\da-z]+)$#i', '.' . $x, $file);
+            $file = preg_replace('#\.([a-z\d]+)$#i', '.' . $x, $file);
             File::open($this->placeholder)->delete();
             $this->placeholder = $file;
             $n_x = $x;
@@ -69,16 +69,16 @@ class Image extends __ {
         return $this;
     }
 
-    public static function take($files) {
+    public function take($files) {
         return new Image($files);
     }
 
     // Generate a 1 x 1 pixel transparent image or a random image URL output from array
-    public static function placeholder($url = null) {
+    public function placeholder($url = null) {
         if (is_array($url)) {
-            return Group::take($url)->shake()->give(0);
+            return Anemon::shake($url)->get(0);
         }
-        return self::$config['placeholder'];
+        return $this->config['placeholder'];
     }
 
     public function saveTo($target) {
@@ -119,10 +119,10 @@ class Image extends __ {
 
     public function inspect($key = null, $fail = false) {
         if (is_array($this->open)) {
-            $results = [];
+            $output = [];
             foreach ($this->open as $file) {
                 $data = getimagesize($file);
-                $results[] = array_merge(File::inspect($file), [
+                $output[] = array_merge(File::inspect($file), [
                     'width' => $data[0],
                     'height' => $data[1],
                     'bits' => $data['bits'],
@@ -130,23 +130,23 @@ class Image extends __ {
                 ]);
             }
             if (!is_null($key)) {
-                return $results[$key] ?? $fail;
+                return $output[$key] ?? $fail;
             }
-            return $results;
+            return $output;
         } else {
             $data = getimagesize($this->open);
-            $results = array_merge(File::inspect($this->open), [
+            $output = array_merge(File::inspect($this->open), [
                 'width' => $data[0],
                 'height' => $data[1],
                 'bits' => $data['bits'],
                 'mime' => $data['mime']
             ]);
             if (!is_null($key)) {
-                return $results[$key] ?? $fail;
+                return $output[$key] ?? $fail;
             }
-            return $results;
+            return $output;
         }
-        return false;
+        return $fail;
     }
 
     public function resize($max_width = 100, $max_height = null, $proportional = true, $crop = false) {
@@ -243,7 +243,7 @@ class Image extends __ {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];
-            } else if ($color = Converter::RGB($r)) {
+            } elseif ($color = Converter::RGB($r)) {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];
@@ -290,11 +290,11 @@ class Image extends __ {
 
     public function sharpen($level = 1) {
         $level = round($level);
-        $matrix = array(
-            array(-1, -1, -1),
-            array(-1, 16, -1),
-            array(-1, -1, -1),
-        );
+        $matrix = [
+            [-1, -1, -1],
+            [-1, 16, -1],
+            [-1, -1, -1]
+        ];
         $divisor = array_sum(array_map('array_sum', $matrix));
         for ($i = 0; $i < $level; ++$i) {
             $this->gen();
@@ -313,7 +313,7 @@ class Image extends __ {
     public function rotate($angle = 0, $bg = false, $alpha_for_hex = 1) {
         $this->gen();
         if (!$bg) {
-            $bg = array(0, 0, 0, 0); // transparent
+            $bg = [0, 0, 0, 0]; // transparent
         }
         if (is_array($bg)) {
             if (count($bg) === 3) {
@@ -327,7 +327,7 @@ class Image extends __ {
                 $g = $color['g'];
                 $b = $color['b'];
                 $a = $alpha_for_hex;
-            } else if ($color = Converter::RGB($bg)) {
+            } elseif ($color = Converter::RGB($bg)) {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];
@@ -349,7 +349,7 @@ class Image extends __ {
 
     public function flip($dir = 'horizontal') {
         $this->gen();
-        $type = Group::alter(strtolower($dir[0]), [
+        $type = Anemon::alter(strtolower($dir[0]), [
             'h' => IMG_FLIP_HORIZONTAL,
             'v' => IMG_FLIP_VERTICAL,
             'b' => IMG_FLIP_BOTH
@@ -375,7 +375,7 @@ class Image extends __ {
             $height += $info['height'] + $gap;
         }
         if (!$bg) {
-            $bg = array(0, 0, 0, 0); // transparent
+            $bg = [0, 0, 0, 0]; // transparent
         }
         if (is_array($bg)) {
             if (count($bg) === 3) {
@@ -389,7 +389,7 @@ class Image extends __ {
                 $g = $color['g'];
                 $b = $color['b'];
                 $a = $alpha_for_hex;
-            } else if ($color = Converter::RGB($bg)) {
+            } elseif ($color = Converter::RGB($bg)) {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];

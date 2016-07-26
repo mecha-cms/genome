@@ -1,19 +1,19 @@
 <?php
 
-class Group extends __ {
+class Anemon extends DNA {
 
     protected $bucket = [];
     protected $i = 0;
 
     // Prevent `$x` exceeds the value of `$min` and `$max`
-    public static function edge($x, $min = 0, $max = 9999) {
+    public function edge($x, $min = 0, $max = 9999) {
         if ($x < $min) return $min;
         if ($x > $max) return $max;
         return $x;
     }
 
     // Set array value recursively
-    public static function set(&$input, $k, $v = null) {
+    public function set(&$input, $k, $v = null) {
         $k = explode('.', $k);
         while (count($k) > 1) {
             $k = array_shift($k);
@@ -22,11 +22,12 @@ class Group extends __ {
             }
             $input =& $input[$k];
         }
-        $input[array_shift($k)] = $v;
+        $k = array_shift($k);
+        $input[$k] = is_array($v) ? array_replace($input[$k], $v) : $v;
     }
 
     // Get array value recursively
-    public static function get(&$input, $k = null, $fail = false) {
+    public function get(&$input, $k = null, $fail = false) {
         if ($k === null) return $input;
         $k = explode('.', $k);
         foreach ($k as $v) {
@@ -38,7 +39,7 @@ class Group extends __ {
         return $input;
     }
 
-    public static function reset(&$input, $k) {
+    public function reset(&$input, $k) {
         $k = explode('.', $k);
         while (count($k) > 1) {
             $k = array_shift($k);
@@ -51,27 +52,28 @@ class Group extends __ {
         }
     }
 
-    public static function extend(&$a, $b) {
+    public function extend(&$a, $b) {
         $a = array_replace_recursive($a, $b);
         return $a;
     }
 
-    public static function concat(&$a, $b) {
+    public function concat(&$a, $b) {
         $a = array_merge_recursive($a, $b);
         return $a;
     }
 
-    public function take($group) {
+    public function eat($group) {
         $this->bucket = $group;
         return $this;
     }
 
-    public function give($k = null, $fail = false) {
+    public function vomit($k = null, $fail = false) {
         return $this->get($this->bucket, $k, $fail);
     }
 
-    public function shake() {
-        shuffle($this->bucket);
+    public function shake($group) {
+        shuffle($group);
+        $this->bucket = $group;
         return $this;
     }
 
@@ -83,7 +85,7 @@ class Group extends __ {
                     $v = (array) $v;
                     if (array_key_exists($key, $v)) {
                         $before[$k] = $v[$key];
-                    } else if ($null !== X) {
+                    } elseif ($null !== X) {
                         $before[$k] = $null;
                         $this->bucket[$k][$key] = $null;
                     }
@@ -116,11 +118,30 @@ class Group extends __ {
         return $this->take($group);
     }
 
-    public function has($s, $x = X) {
-        return strpos(X . implode(X . $this->bucket . X, X . $s . X) !== false;
+    public function has($s, $all = false, $x = X) {
+        $input = $x . implode($x . $this->bucket . $x;
+        if (is_array($s)) {
+            if (!$all) {
+                foreach ($s as $v) {
+                    if (strpos($input, $x . $v . $x) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                $pass = 0;
+                foreach ($s as $v) {
+                    if (strpos($input, $x . $v . $x) !== false) {
+                        $pass++;
+                    }
+                }
+                return $pass === count($s);
+            }
+        }
+        return strpos($input, $x . $s . $x) !== false;
     }
 
-    public static function alter($group, $replace = [], $fail = null) {
+    public function alter($group, $replace = [], $fail = null) {
         // return the `$replace[$group]` value if exist
         // or the `$fail` value if `$replace[$group]` does not exist
         // or the `$group` value if `$fail` is `null`
@@ -139,7 +160,7 @@ class Group extends __ {
         return $this;
     }
 
-    // Alias for `Group::prev()`
+    // Alias for `Anemon::prev()`
     public function previous() {
         return call_user_func_array([$this, 'prev'], func_get_args());
     }
@@ -209,7 +230,6 @@ class Group extends __ {
     }
 
     // Get selected array value
-    /*
     public function get($index = null, $fail = false) {
         if ($index !== null) {
             if (is_int($index)) {
@@ -225,7 +245,6 @@ class Group extends __ {
             $i++;
         }
     }
-    */
 
     // Get array length
     public function count($deep = false) {
@@ -247,6 +266,10 @@ class Group extends __ {
     public function chunk($chunk = 25, $output = null, $fail = []) {
         $chunk = array_chunk($this->bucket, $chunk, true);
         return $output === null ? $chunk : $chunk[$output] ?? $fail;
+    }
+
+    public function swap($a, $b = null) {
+        return array_column($this->bucket, $a, $b);
     }
 
 }

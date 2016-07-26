@@ -16,11 +16,11 @@
  *
  */
 
-class Page extends __ {
+class Page extends DNA {
 
-    public static $open = null;
-    public static $header = [];
-    public static $content = [];
+    public $open = null;
+    public $header = [];
+    public $content = [];
 
     protected static $i = 0;
 
@@ -31,25 +31,25 @@ class Page extends __ {
 
     // Reset the cached data
     protected static function _reset() {
-        self::$open = null;
-        self::$header = [];
-        self::$content = [];
-        self::$i = 0;
+        $this->open = null;
+        $this->header = [];
+        $this->content = [];
+        $this->i = 0;
     }
 
     // Create the page
     protected static function _create() {
         $header = "";
         $_ = "\n\n" . SEPARATOR . "\n\n";
-        foreach (self::$header as $k => $v) {
+        foreach ($this->header as $k => $v) {
             $header .= $k . S . ' ' . $v . "\n";
         }
-        $content = implode($_, self::$content);
+        $content = implode($_, $this->content);
         return trim(substr($header, 0, -1) . $_ . $content);
     }
 
     // Create from text
-    public static function text($text, $content = 'content', $FP = 'page:', $results = [], $data = []) {
+    public function text($text, $content = 'content', $FP = 'page:', $results = [], $data = []) {
         $c = $content !== false ? $content : 'content';
         $_ = SEPARATOR;
         foreach ($results as $k => $v) {
@@ -60,13 +60,13 @@ class Page extends __ {
             // By file path
             if (strpos($text, ROOT) === 0 && ($text = File::open($text)->get($_)) !== false) {
                 $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-                Group::extend($results, self::_header($text, $FP, $data));
+                Anemon::extend($results, self::_header($text, $FP, $data));
             // By file content
             } else {
                 $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
                 if (strpos($text, $_) !== false) {
                     $s = explode($_, $text, 2);
-                    Group::extend($results, self::_header(trim($s[0]), $FP, $data));
+                    Anemon::extend($results, self::_header(trim($s[0]), $FP, $data));
                     if (isset($s[1]) && $s[1] !== "") {
                         $results[$c . '_raw'] = trim($s[1]);
                     }
@@ -83,14 +83,14 @@ class Page extends __ {
                 $results[$c . '_raw'] = Converter::DS(trim($text));
             } else {
                 $s = explode($_, $text, 2);
-                Group::extend($results, self::_header(trim($s[0]), $FP, $data));
+                Anemon::extend($results, self::_header(trim($s[0]), $FP, $data));
                 if (isset($s[1]) && $s[1] !== "") {
                     $results[$c . '_raw'] = trim($s[1]);
                 }
             }
         }
         unset($results['__'], $results['___raw']);
-        Group::extend($data, $results);
+        Anemon::extend($data, $results);
         if (isset($results[$c . '_raw'])) {
             $content_x = explode($_, $results[$c . '_raw']);
             if (count($content_x) > 1) {
@@ -134,9 +134,9 @@ class Page extends __ {
     }
 
     // Open the page file
-    public static function open($path) {
+    public function open($path) {
         self::_reset();
-        self::$open = $path;
+        $this->open = $path;
         $i = 0;
         $results = [];
         $lines = file($path, FILE_IGNORE_NEW_LINES);
@@ -155,62 +155,62 @@ class Page extends __ {
         if (isset($results[0])) {
             foreach ($results[0] as $v) {
                 $field = explode(S, $v, 2);
-                self::$header[trim($field[0])] = isset($field[1]) ? trim($field[1]) : "";
+                $this->header[trim($field[0])] = isset($field[1]) ? trim($field[1]) : "";
             }
             unset($results[0]);
         }
         foreach (array_values($results) as $k => $v) {
-            self::$content[$k] = trim(implode("\n", $v));
+            $this->content[$k] = trim(implode("\n", $v));
         }
-        return new static;
+        return $this;
     }
 
     // Add page header or update the existing page header data
-    public static function header($data = [], $value = "") {
+    public function header($data = [], $value = "") {
         if ( !is_array($data)) {
             $data = array(self::_x($data) => $value);
         }
         foreach ($data as $k => $v) {
             $kk = self::_x($k);
             if ($v === false) {
-                unset($data[$kk], self::$header[$kk]);
+                unset($data[$kk], $this->header[$kk]);
             } else {
                 // Restrict user(s) from inputting the `SEPARATOR` constant
                 // to prevent mistake(s) in parsing the file content
                 $data[$kk] = Converter::ES(trim($v));
             }
         }
-        Group::extend(self::$header, $data);
-        return new static;
+        Anemon::extend($this->header, $data);
+        return $this;
     }
 
     // Add page content or update the existing page content
-    public static function content($data = "", $i = null) {
+    public function content($data = "", $i = null) {
         if ($data === false) {
             if ( !is_null($i)) {
-                unset(self::$content[$i]);
+                unset($this->content[$i]);
             } else {
-                self::$content = [];
+                $this->content = [];
             }
         }
         // Restrict user(s) from inputting the `SEPARATOR` constant
         // to prevent mistake(s) in parsing the file content
-        self::$content[is_null($i) ? self::$i : $i] = Converter::ES(trim($data));
-        self::$i++;
-        return new static;
+        $this->content[is_null($i) ? $this->i : $i] = Converter::ES(trim($data));
+        $this->i++;
+        return $this;
     }
 
     // Show page data as plain text
-    public static function put() {
+    public function put() {
         $output = self::_create();
         self::_reset();
         return $output;
     }
 
     // Show page data as array
-    public static function read($content = 'content', $FP = 'page:') {
+    public function read($content = 'content', $FP = 'page:') {
         if ($content === false) {
-            self::$content = [];
+            $this->content = [];
         }
         $results = self::text(self::_create(), $content, $FP);
         self::_reset();
@@ -218,14 +218,14 @@ class Page extends __ {
     }
 
     // Save the opened page
-    public static function save($permission = 0600) {
-        File::write(self::_create())->saveTo(self::$open, $permission);
+    public function save($permission = 0600) {
+        File::write(self::_create())->saveTo($this->open, $permission);
         self::_reset();
     }
 
     // Save the generated page to ...
-    public static function saveTo($path, $permission = 0600) {
-        self::$open = $path;
+    public function saveTo($path, $permission = 0600) {
+        $this->open = $path;
         return self::save($permission);
     }
 

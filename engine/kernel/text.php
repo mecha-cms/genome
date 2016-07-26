@@ -1,6 +1,6 @@
 <?php
 
-class Text extends __ {
+class Text extends DNA {
 
     protected static $text = [];
     protected static $parser = [];
@@ -20,10 +20,10 @@ class Text extends __ {
      *
      */
 
-    public static function parser($name, $action) {
+    public function parser($name, $action) {
         $name = strtolower($name);
         if (strpos($name, 'to_') !== 0) $name = 'to_' . $name;
-        self::$parser[static::class][$name] = $action;
+        $this->parser[static::class][$name] = $action;
     }
 
     /**
@@ -41,14 +41,14 @@ class Text extends __ {
      *
      */
 
-    public static function parserExist($name = null, $fail = false) {
+    public function parserExist($name = null, $fail = false) {
         $c = static::class;
         if (is_null($name)) {
-            return isset(self::$parser[$c]) && !empty(self::$parser[$c]) ? self::$parser[$c] : $fail;
+            return isset($this->parser[$c]) && !empty($this->parser[$c]) ? $this->parser[$c] : $fail;
         }
         $name = strtolower($name);
         if (strpos($name, 'to_') !== 0) $name = 'to_' . $name;
-        return isset(self::$parser[$c][$name]) ? self::$parser[$c][$name] : $fail;
+        return isset($this->parser[$c][$name]) ? $this->parser[$c][$name] : $fail;
     }
 
     /**
@@ -72,21 +72,21 @@ class Text extends __ {
      *
      */
 
-    public static function parse() {
+    public function parse() {
         $arguments = func_get_args();
         $c = static::class;
         // Alternate function for faster parsing process => `Text::parse('foo', '->html')`
         if (count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
             $parser = str_replace('->', 'to_', strtolower($arguments[1]));
             unset($arguments[1]);
-            return isset(self::$parser[$c][$parser]) ? call_user_func_array(self::$parser[$c][$parser], $arguments) : $arguments[0];
+            return isset($this->parser[$c][$parser]) ? call_user_func_array($this->parser[$c][$parser], $arguments) : $arguments[0];
         }
         // Default function for complete parsing process => `Text::parse('foo')->to_html`
         $results = [];
-        if ( !isset(self::$parser[$c])) {
-            self::$parser[$c] = [];
+        if ( !isset($this->parser[$c])) {
+            $this->parser[$c] = [];
         }
-        foreach (self::$parser[$c] as $name => $action) {
+        foreach ($this->parser[$c] as $name => $action) {
             $results[$name] = call_user_func_array($action, $arguments);
         }
         return (object) $results;
@@ -105,9 +105,9 @@ class Text extends __ {
      *
      */
 
-    public static function check($text) {
-        self::$text = is_array($text) ? $text : func_get_args();
-        return new static;
+    public function check($text) {
+        $this->text = is_array($text) ? $text : func_get_args();
+        return $this;
     }
 
     /**
@@ -123,14 +123,14 @@ class Text extends __ {
      *
      */
 
-    public static function has($text) {
+    public function has($text) {
         $arguments = is_array($text) ? $text : func_get_args();
         if (count($arguments) === 1) {
-            return strpos(self::$text[0], $arguments[0]) !== false;
+            return strpos($this->text[0], $arguments[0]) !== false;
         }
         $text_v = 0;
         foreach ($arguments as $v) {
-            if (strpos(self::$text[0], $v) !== false) {
+            if (strpos($this->text[0], $v) !== false) {
                 $text_v++;
             }
         }
@@ -150,19 +150,19 @@ class Text extends __ {
      *
      */
 
-    public static function in($text) {
+    public function in($text) {
         $arguments = is_array($text) ? $text : func_get_args();
-        if (count(self::$text) === 1) {
+        if (count($this->text) === 1) {
             if (count($arguments) === 1) {
-                if ($arguments[0] === "") return self::$text[0] === "";
-                if (self::$text[0] === "") return $arguments[0] === "";
-                return strpos($arguments[0], self::$text[0]) !== false;
+                if ($arguments[0] === "") return $this->text[0] === "";
+                if ($this->text[0] === "") return $arguments[0] === "";
+                return strpos($arguments[0], $this->text[0]) !== false;
             }
             foreach ($arguments as $v) {
-                if (strpos(self::$text[0], $v) !== false) return true;
+                if (strpos($this->text[0], $v) !== false) return true;
             }
         }
-        foreach (self::$text as $v) {
+        foreach ($this->text as $v) {
             if (strpos($arguments[0], $v) !== false) return true;
         }
         return false;
@@ -181,9 +181,9 @@ class Text extends __ {
      *
      */
 
-    public static function offset($text) {
+    public function offset($text) {
         $output = array('start' => -1, 'end' => -1);
-        if (($offset = strpos(self::$text[0], $text)) !== false) {
+        if (($offset = strpos($this->text[0], $text)) !== false) {
             $output['start'] = $offset;
             $output['end'] = $offset + strlen($text) - 1;
         }
