@@ -40,7 +40,7 @@ class Cell extends DNA {
     // Encode all HTML entit(y|ies)
     public function protect($v) {
         if (!is_string($v)) return $v;
-        return Parse::from($v)->to('html.encode');
+        return To::html_x($v);
     }
 
     // Setup HTML attribute(s) ...

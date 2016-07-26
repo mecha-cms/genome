@@ -259,7 +259,7 @@ class File extends DNA {
             'A <abbr>PHP</abbr> extension stopped the file upload.'
         ];
         // Create a safe file name
-        $file['name'] = Parse::from($file['name'])->to('safe.file_name');
+        $file['name'] = To::safe('name.file', $file['name']);
         $x = Path::X($file['name']);
         // Something goes wrong
         if ($file['error'] > 0 && isset($errors[$file['error']])) {
