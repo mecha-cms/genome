@@ -1,3 +1,3 @@
 <?php
 
-class Config extends Cargo {}
+class Config extends Vault {}

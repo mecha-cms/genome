@@ -97,4 +97,13 @@ class Filter extends __ {
         return self::$lot_x[$c][$name][$stack] ?? $fail;
     }
 
+    public static function NS($name, $target) {
+        $lot = func_get_args();
+        if(strpos($name, ':') !== false) {
+            $s = explode(':', $name, 2);
+            $lot[0] = [$name, $s[1]];
+        }
+        return call_user_func_array('self::apply', $lot);
+    }
+
 }

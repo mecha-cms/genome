@@ -1,6 +1,6 @@
 <?php
 
-class Cargo extends __ {
+class Vault extends __ {
 
     protected static $bucket = [];
 
@@ -8,10 +8,10 @@ class Cargo extends __ {
         if (is_object($b) || is_array($b)) $b = a($b);
         $cargo = [];
         if (!is_array($a)) {
-            Group::S($cargo, $a, $b);
+            Group::set($cargo, $a, $b);
         } else {
             foreach (a($a) as $k => $v) {
-                Group::S($cargo, $k, $v);
+                Group::set($cargo, $k, $v);
             }
         }
         Group::extend(self::$bucket, $cargo);
@@ -28,7 +28,7 @@ class Cargo extends __ {
             return (object) $output;
         }
         if (is_string($a) && strpos($a, '.') !== false) {
-            $output = Group::G(self::$bucket, $a, $fail);
+            $output = Group::get(self::$bucket, $a, $fail);
             return is_array($output) ? o($output) : $output;
         }
         return array_key_exists($a, self::$bucket) ? o(self::$bucket[$a]) : $fail;

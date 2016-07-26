@@ -3,9 +3,17 @@
 class Group extends __ {
 
     protected $bucket = [];
+    protected $i = 0;
+
+    // Prevent `$x` exceeds the value of `$min` and `$max`
+    public static function edge($x, $min = 0, $max = 9999) {
+        if ($x < $min) return $min;
+        if ($x > $max) return $max;
+        return $x;
+    }
 
     // Set array value recursively
-    public static function S(&$input, $k, $v = null) {
+    public static function set(&$input, $k, $v = null) {
         $k = explode('.', $k);
         while (count($k) > 1) {
             $k = array_shift($k);
@@ -18,7 +26,7 @@ class Group extends __ {
     }
 
     // Get array value recursively
-    public static function G(&$input, $k = null, $fail = false) {
+    public static function get(&$input, $k = null, $fail = false) {
         if ($k === null) return $input;
         $k = explode('.', $k);
         foreach ($k as $v) {
@@ -30,7 +38,7 @@ class Group extends __ {
         return $input;
     }
 
-    public static function R(&$input, $k) {
+    public static function reset(&$input, $k) {
         $k = explode('.', $k);
         while (count($k) > 1) {
             $k = array_shift($k);
@@ -59,7 +67,7 @@ class Group extends __ {
     }
 
     public function give($k = null, $fail = false) {
-        return $this->bucket;
+        return $this->get($this->bucket, $k, $fail);
     }
 
     public function shake() {
@@ -117,6 +125,128 @@ class Group extends __ {
         // or the `$fail` value if `$replace[$group]` does not exist
         // or the `$group` value if `$fail` is `null`
         return $replace[$group] ?? $fail ?? $group;
+    }
+
+    // Move to next array index
+    public function next($skip = 0) {
+        $this->i = self::edge($this->i + 1 + $skip, 0, $this->count() - 1);
+        return $this;
+    }
+
+    // Move to previous array index
+    public function prev($skip = 0) {
+        $this->i = self::edge($this->i - 1 - $skip, 0, $this->count() - 1);
+        return $this;
+    }
+
+    // Alias for `Group::prev()`
+    public function previous() {
+        return call_user_func_array([$this, 'prev'], func_get_args());
+    }
+
+    // Move to `$index` array index
+    public function to($index) {
+        $this->i = is_int($index) ? $index : self::index($index, $index);
+        return $this;
+    }
+
+    // Insert `$food` before current array index
+    public function before($food, $key = null) {
+        $key = $key ?? $this->i;
+        $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $food] + array_slice($this->bucket, $this->i, null, true);
+        $this->i = self::edge($this->i - 1, 0, $this->count() - 1);
+        return $this;
+    }
+
+    // Insert `$food` after current array index
+    public function after($food, $key = null) {
+        $key = $key ?? $this->i + 1;
+        $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $food] + array_slice($this->bucket, $this->i + 1, null, true);
+        $this->i = self::edge($this->i + 1, 0, $this->count() - 1);
+        return $this;
+    }
+
+    // Replace current array index value with `$food`
+    public function replace($food) {
+        $i = 0;
+        foreach ($this->bucket as $k => $v) {
+            if ($i === $this->i) {
+                $this->bucket[$k] = $food;
+                break;
+            }
+            $i++;
+        }
+        return $this;
+    }
+
+    // Append `$food` to array
+    public function append($food, $key = null) {
+        $this->i = $this->count() - 1;
+        return $this->after($food, $key);
+    }
+
+    // Prepend `$food` to array
+    public function prepend($food, $key = null) {
+        $this->i = 0;
+        return $this->before($food, $key);
+    }
+
+    // Get first array value
+    public function first() {
+        $this->i = 0;
+        return reset($this->bucket);
+    }
+
+    // Get last array value
+    public function last() {
+        $this->i = $this->count() - 1;
+        return end($this->bucket);
+    }
+
+    // Get current array index
+    public function current() {
+        return $this->i;
+    }
+
+    // Get selected array value
+    /*
+    public function get($index = null, $fail = false) {
+        if ($index !== null) {
+            if (is_int($index)) {
+                $index = $this->key($index, $index);
+            }
+            return array_key_exists($index, $this->bucket) ? $this->bucket[$index] : $fail;
+        }
+        $i = 0;
+        foreach ($this->bucket as $k => $v) {
+            if ($i === $this->i) {
+                return $this->bucket[$k];
+            }
+            $i++;
+        }
+    }
+    */
+
+    // Get array length
+    public function count($deep = false) {
+        return count($this->bucket, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+    }
+
+    // Get array key by position
+    public function key($index, $fail = false) {
+        $array = array_keys($this->bucket);
+        return $array[$index] ?? $fail;
+    }
+
+    // Get position by array key
+    public function index($key, $fail = false) {
+        return array_search($key, array_keys($this->bucket)) ?? $fail;
+    }
+
+    // Generate chunk(s) of array
+    public function chunk($chunk = 25, $output = null, $fail = []) {
+        $chunk = array_chunk($this->bucket, $chunk, true);
+        return $output === null ? $chunk : $chunk[$output] ?? $fail;
     }
 
 }

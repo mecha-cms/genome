@@ -5,6 +5,9 @@ abstract class __ {
     public $_ = [];
     public $_x = [];
 
+    // Instantiate a class once!
+    protected static $instance = false;
+
     // Show the added method(s)
     public function kin($kin = null, $fail = false, $origin = false) {
         $c = static::class;
@@ -36,8 +39,10 @@ abstract class __ {
 
     // Call the added method with `__::foo()`
     public static function __callStatic($kin, $lot = []) {
-        $self = new static;
-        return $self->__call($kin, $lot);
+        if (!self::$instance) {
+            self::$instance = new static;
+        }
+        return self::$instance->__call($kin, $lot);
     }
 
     // @ditto
