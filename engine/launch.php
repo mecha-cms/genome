@@ -23,6 +23,70 @@ function __such_serialize__($x) {
     return $x === 'N;' || strpos($x, 'a:') === 0 || strpos($x, 'b:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0 || strpos($x, 'O:') === 0;
 }
 
+// From dasherize to camelize
+function __from_hyphen_to_camel__($x) {
+    $x = X . '-' . trim($x, '-');
+    return str_replace([
+        '-a',
+        '-b',
+        '-c',
+        '-d',
+        '-e',
+        '-f',
+        '-g',
+        '-h',
+        '-i',
+        '-j',
+        '-k',
+        '-l',
+        '-m',
+        '-n',
+        '-o',
+        '-p',
+        '-q',
+        '-r',
+        '-s',
+        '-t',
+        '-u',
+        '-v',
+        '-w',
+        '-x',
+        '-y',
+        '-z',
+        X . '-',
+        X
+    ], [
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'I',
+        'J',
+        'K',
+        'L',
+        'M',
+        'N',
+        'O',
+        'P',
+        'Q',
+        'R',
+        'S',
+        'T',
+        'U',
+        'V',
+        'W',
+        'X',
+        'Y',
+        'Z',
+        "",
+        ""
+    ], $x);
+}
+
 // Convert array to object
 function a($o) {
     if (is_object($o) || is_array($o)) {
