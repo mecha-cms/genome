@@ -36,15 +36,15 @@ class Notify extends DNA {
 
     public function send($from, $to, $subject, $message, $NS = "") {
         if (Is::void($to) || Is::email($to)) return false;
-        $header  = "MIME-Version: 1.0\n";
-        $header .= "Content-Type: text/html; charset=ISO-8859-1\n";
-        $header .= "From: " . $from . "\n";
-        $header .= "Reply-To: " . $from . "\n";
-        $header .= "Return-Path: " . $from . "\n";
-        $header .= "X-Mailer: PHP/" . phpversion();
-        $header = Filter::apply($FP . 'notify.email.header', $header);
-        $message = Filter::apply($FP . 'notify.email.message', $message);
-        return mail($to, $subject, $message, $header);
+        $head  = 'MIME-Version: 1.0' . N;
+        $head .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
+        $head .= 'From: ' . $from . N;
+        $head .= 'Reply-To: ' . $from . N;
+        $head .= 'Return-Path: ' . $from . N;
+        $head .= 'X-Mailer: PHP/' . phpversion();
+        $head = Filter::NS($NS . 'notify.email.head', $head);
+        $body = Filter::NS($NS . 'notify.email.body', $message);
+        return mail($to, $subject, $body, $head);
     }
 
 }

@@ -2,7 +2,7 @@
 
 class Vault extends DNA {
 
-    protected static $bucket = [];
+    protected $bucket = [];
 
     public function set($a, $b = null) {
         if (is_object($b) || is_array($b)) $b = a($b);

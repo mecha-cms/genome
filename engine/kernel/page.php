@@ -22,53 +22,54 @@ class Page extends DNA {
     public $header = [];
     public $content = [];
 
-    protected static $i = 0;
+    protected $i = 0;
 
-    // Remove `:` in field key
-    protected static function _x($key) {
-        return trim(str_replace(S, '_', $key));
+    // Encode page separator
+    public function x($x) {
+        $a = trim(S_I);
+        $b = trim(S_B);
+        return str_replace([$a, $b], [To::html_dec($a), To::html_dec($b)], $x);
     }
 
-    // Reset the cached data
-    protected static function _reset() {
-        $this->open = null;
-        $this->header = [];
-        $this->content = [];
-        $this->i = 0;
+    // Decode page separator
+    public function v($x) {
+        $a = trim(S_I);
+        $b = trim(S_B);
+        return str_replace([To::html_dec($a), To::html_dec($b)], [$a, $b], $x);
     }
 
     // Create the page
-    protected static function _create() {
+    protected function _create() {
         $header = "";
-        $_ = "\n\n" . SEPARATOR . "\n\n";
+        $S = N . S_B . N;
         foreach ($this->header as $k => $v) {
-            $header .= $k . S . ' ' . $v . "\n";
+            $header .= $k . S_I . $v . N;
         }
-        $content = implode($_, $this->content);
-        return trim(substr($header, 0, -1) . $_ . $content);
+        $content = implode($S, $this->content);
+        return trim(substr($header, 0, -1) . $S . $content);
     }
 
     // Create from text
-    public function text($text, $content = 'content', $FP = 'page:', $results = [], $data = []) {
+    public function text($text, $content = 'content', $NS = 'page:', $origin = [], $lot = []) {
         $c = $content !== false ? $content : 'content';
-        $_ = SEPARATOR;
-        foreach ($results as $k => $v) {
-            $results[$k . '_raw'] = Filter::colon($FP . $k . '_raw', $v, $data);
-            $results[$k] = Filter::colon($FP . $k, $v, $data);
+        $S = S_B;
+        foreach ($origin as $k => $v) {
+            $origin[$k . '_raw'] = Filter::NS($NS . $k . '_raw', $v, $lot);
+            $origin[$k] = Filter::NS($NS . $k, $v, $lot);
         }
-        if ( !$content) {
+        if (!$content) {
             // By file path
-            if (strpos($text, ROOT) === 0 && ($text = File::open($text)->get($_)) !== false) {
-                $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-                Anemon::extend($results, self::_header($text, $FP, $data));
+            if (strpos($text, ROOT) === 0 && ($text = File::open($text)->get(trim($S))) !== false) {
+                $text = Filter::NS($NS . 'input', n($text), $NS, $lot);
+                Anemon::extend($origin, $this->_header($text, $NS, $lot));
             // By file content
             } else {
-                $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
+                $text = Filter::NS($NS . 'input', n($text), $NS, $lot);
                 if (strpos($text, $_) !== false) {
-                    $s = explode($_, $text, 2);
-                    Anemon::extend($results, self::_header(trim($s[0]), $FP, $data));
-                    if (isset($s[1]) && $s[1] !== "") {
-                        $results[$c . '_raw'] = trim($s[1]);
+                    $s = explode($S, $text, 2);
+                    Anemon::extend($origin, $this->_header(trim($s[0]), $NS, $lot));
+                    if (isset($s[1]) && !Is::void($s[1])) {
+                        $origin[$c . '_raw'] = trim($s[1]);
                     }
                 }
             }
@@ -77,156 +78,151 @@ class Page extends DNA {
             if (strpos($text, ROOT) === 0 && file_exists($text)) {
                 $text = file_get_contents($text);
             }
-            $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
+            $text = Filter::NS($NS . 'input', n($text), $NS, $lot);
             // By file content
-            if ($text === $_ || strpos($text, $_) === false) {
-                $results[$c . '_raw'] = Converter::DS(trim($text));
+            if ($text === $S || strpos($text, $S) === false) {
+                $origin[$c . '_raw'] = $this->x(trim($text));
             } else {
-                $s = explode($_, $text, 2);
-                Anemon::extend($results, self::_header(trim($s[0]), $FP, $data));
-                if (isset($s[1]) && $s[1] !== "") {
-                    $results[$c . '_raw'] = trim($s[1]);
+                $s = explode($S, $text, 2);
+                Anemon::extend($origin, $this->_header(trim($s[0]), $NS, $lot));
+                if (isset($s[1]) && !Is::void($s[1])) {
+                    $origin[$c . '_raw'] = trim($s[1]);
                 }
             }
         }
-        unset($results['__'], $results['___raw']);
-        Anemon::extend($data, $results);
-        if (isset($results[$c . '_raw'])) {
-            $content_x = explode($_, $results[$c . '_raw']);
-            if (count($content_x) > 1) {
-                $results[$c . '_raw'] = $results[$c] = [];
+        unset($origin['__'], $origin['___raw']);
+        Anemon::extend($lot, $origin);
+        if (isset($origin[$c . '_raw'])) {
+            $content_x = explode($S, $origin[$c . '_raw']);
+            if (count($content_x)) {
+                $origin[$c . '_raw'] = $origin[$c] = [];
                 $i = 0;
                 foreach ($content_x as $v) {
-                    $v = Converter::DS(trim($v));
-                    $v = Filter::colon($FP . $c . '_raw', $v, $data, $i + 1);
-                    $results[$c . '_raw'][$i] = $v;
-                    $v = Filter::colon($FP . 'shortcode', $v, $data, $i + 1);
-                    $v = Filter::colon($FP . $c, $v, $data, $i + 1);
-                    $results[$c][$i] = $v;
+                    $v = $this->v(trim($v));
+                    $v = Filter::NS($NS . $c . '_raw', $v, $lot, $i + 1);
+                    $origin[$c . '_raw'][$i] = $v;
+                    $v = Filter::NS($NS . 'iota.input', $v, $lot, $i + 1);
+                    $v = Filter::NS($NS . $c, $v, $lot, $i + 1);
+                    $v = Filter::NS($NS . 'iota.output', $v, $lot, $i + 1);
+                    $origin[$c][$i] = $v;
                     $i++;
                 }
             } else {
-                $v = Converter::DS($results[$c . '_raw']);
-                $v = Filter::colon($FP . $c . '_raw', $v, $data, 1);
-                $results[$c . '_raw'] = $v;
-                $v = Filter::colon($FP . 'shortcode', $v, $data, 1);
-                $v = Filter::colon($FP . $c, $v, $data, 1);
-                $results[$c] = $v;
+                $v = $this->v($origin[$c . '_raw']);
+                $v = Filter::NS($NS . $c . '_raw', $v, $lot, 1);
+                $origin[$c . '_raw'] = $v;
+                $v = Filter::NS($NS . 'iota.input', $v, $lot, 1);
+                $v = Filter::NS($NS . $c, $v, $lot, 1);
+                $v = Filter::NS($NS . 'iota.output', $v, $lot, 1);
+                $origin[$c] = $v;
             }
         }
-        return Filter::apply($FP . 'output', $results, $FP, $data);
+        return Filter::NS($NS . 'output', $origin, $NS, $lot);
     }
 
-    protected static function _header($text, $FP, $data) {
-        $results = [];
-        $headers = explode("\n", trim($text));
-        foreach ($headers as $header) {
-            $field = explode(S, $header, 2);
-            if ( !isset($field[1])) $field[1] = 'false';
-            $key = Text::parse(trim($field[0]), '->array_key', true);
-            $value = Converter::DS(trim($field[1]));
-            $value = Filter::colon($FP . $key . '_raw', Converter::strEval($value), $data);
-            $results[$key . '_raw'] = $value;
-            $value = Filter::colon($FP . $key, $value, $data);
-            $results[$key] = $value;
+    protected static function _header($text, $NS, $lot) {
+        $output = [];
+        $s = explode(N, trim($text));
+        foreach ($s as $v) {
+            $f = explode(S_I, $v, 2);
+            if (!isset($f[1])) $f[1] = false;
+            $kk = To::safe('key', trim($f[0]), true);
+            $vv = $this->v(trim($f[1]));
+            $vv = Filter::NS($NS . $kk . '_raw', e($vv), $lot);
+            $output[$kk . '_raw'] = $vv;
+            $vv = Filter::NS($NS . 'iota.input', $vv, $lot);
+            $vv = Filter::NS($NS . $kk, $vv, $lot);
+            $vv = Filter::NS($NS . 'iota.output', $vv, $lot);
+            $output[$kk] = $vv;
         }
-        return $results;
+        return $output;
     }
 
     // Open the page file
-    public function open($path) {
-        self::_reset();
-        $this->open = $path;
+    public function open($input) {
+        $page = new Page;
+        $page->open = $input;
         $i = 0;
-        $results = [];
-        $lines = file($path, FILE_IGNORE_NEW_LINES);
-        foreach ($lines as $k => $v) {
+        $output = [];
+        $s = file($input, FILE_IGNORE_NEW_LINES);
+        foreach ($s as $k => $v) {
             if ($i === 0 && $v === "") {
                 continue;
             }
-            if ($v === SEPARATOR) {
-                unset($lines[$k]);
+            if ($v === trim(S_B)) {
+                unset($s[$k]);
                 $i++;
                 continue;
             }
-            $results[$i][] = $v;
+            $output[$i][] = $v;
         }
         // has header data ...
-        if (isset($results[0])) {
-            foreach ($results[0] as $v) {
-                $field = explode(S, $v, 2);
-                $this->header[trim($field[0])] = isset($field[1]) ? trim($field[1]) : "";
+        if (isset($output[0])) {
+            foreach ($output[0] as $v) {
+                $f = explode(S_I, $v, 2);
+                $page->header[trim($f[0])] = trim($f[1] ?? "");
             }
-            unset($results[0]);
+            unset($output[0]);
         }
-        foreach (array_values($results) as $k => $v) {
-            $this->content[$k] = trim(implode("\n", $v));
+        foreach (array_values($output) as $k => $v) {
+            $page->content[$k] = trim(implode(N, $v));
         }
-        return $this;
+        return $page;
     }
 
     // Add page header or update the existing page header data
-    public function header($data = [], $value = "") {
-        if ( !is_array($data)) {
-            $data = array(self::_x($data) => $value);
+    public function header($lot = [], $v = "") {
+        if (!is_array($lot)) {
+            $lot = [$this->x($lot) => $v];
         }
-        foreach ($data as $k => $v) {
-            $kk = self::_x($k);
+        foreach ($lot as $k => $v) {
+            $kk = $this->x($k);
             if ($v === false) {
-                unset($data[$kk], $this->header[$kk]);
+                unset($lot[$kk], $this->header[$kk]);
             } else {
-                // Restrict user(s) from inputting the `SEPARATOR` constant
-                // to prevent mistake(s) in parsing the file content
-                $data[$kk] = Converter::ES(trim($v));
+                $lot[$kk] = $this->x(trim($v));
             }
         }
-        Anemon::extend($this->header, $data);
+        Anemon::extend($this->header, $lot);
         return $this;
     }
 
     // Add page content or update the existing page content
-    public function content($data = "", $i = null) {
-        if ($data === false) {
-            if ( !is_null($i)) {
+    public function content($lot = "", $i = null) {
+        if ($lot === false) {
+            if ($i !== null) {
                 unset($this->content[$i]);
             } else {
                 $this->content = [];
             }
         }
-        // Restrict user(s) from inputting the `SEPARATOR` constant
-        // to prevent mistake(s) in parsing the file content
-        $this->content[is_null($i) ? $this->i : $i] = Converter::ES(trim($data));
+        $this->content[$i === null ? $this->i : $i] = $this->x(trim($lot));
         $this->i++;
         return $this;
     }
 
     // Show page data as plain text
     public function put() {
-        $output = self::_create();
-        self::_reset();
-        return $output;
+        return $this->_create();
     }
 
     // Show page data as array
-    public function read($content = 'content', $FP = 'page:') {
+    public function read($content = 'content', $NS = 'page:') {
         if ($content === false) {
             $this->content = [];
         }
-        $results = self::text(self::_create(), $content, $FP);
-        self::_reset();
-        return $results;
+        return $this->text($this->_create(), $content, $NS);
     }
 
     // Save the opened page
-    public function save($permission = 0600) {
-        File::write(self::_create())->saveTo($this->open, $permission);
-        self::_reset();
+    public function save($consent = 0600) {
+        File::write($this->_create())->saveTo($this->open, $consent);
     }
 
     // Save the generated page to ...
-    public function saveTo($path, $permission = 0600) {
+    public function saveTo($path, $consent = 0600) {
         $this->open = $path;
-        return self::save($permission);
+        return $this->save($consent);
     }
 
 }

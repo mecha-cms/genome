@@ -6,15 +6,15 @@ class Route extends DNA {
     public $lot_o = [];
 
     // Pattern as regular expression
-    protected static function _x($s) {
+    protected function _x($s) {
         return str_replace(
-            ['\(', '\)', '\|', '\:any', '\:num', '\:all', '#'],
-            ['(', ')', '|', '[^/]+', '\d+', '.*?', '\#'],
+            ['\(', '\)', '\|', '%s', '%i', '%\*', '#'],
+            ['(', ')', '|', '([^/]+)', '(\d+)', '(.*?)', '\#'],
         preg_quote($s, '/'));
     }
 
     // Remove the root URL
-    protected static function _path($pattern) {
+    protected function _path($pattern) {
         return trim(str_replace(URL::url() . '/', "", $pattern), '/');
     }
 

@@ -119,7 +119,7 @@ class Anemon extends DNA {
     }
 
     public function has($s, $all = false, $x = X) {
-        $input = $x . implode($x . $this->bucket . $x;
+        $input = $x . implode($x . $this->bucket) . $x;
         if (is_array($s)) {
             if (!$all) {
                 foreach ($s as $v) {
