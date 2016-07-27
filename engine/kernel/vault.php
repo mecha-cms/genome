@@ -5,12 +5,13 @@ class Vault extends DNA {
     protected $bucket = [];
 
     public function set($a, $b = null) {
+        if (is_object($a) || is_array($a)) $a = a($a);
         if (is_object($b) || is_array($b)) $b = a($b);
         $cargo = [];
         if (!is_array($a)) {
             Anemon::set($cargo, $a, $b);
         } else {
-            foreach (a($a) as $k => $v) {
+            foreach ($a as $k => $v) {
                 Anemon::set($cargo, $k, $v);
             }
         }
@@ -35,7 +36,7 @@ class Vault extends DNA {
     }
 
     public function reset($k = null) {
-        if ($k !== null) {
+        if ($k === null) {
             Anemon::reset($this->bucket, $k);
         } else {
             $this->bucket = [];
@@ -43,14 +44,10 @@ class Vault extends DNA {
         return $this;
     }
 
-    public function merge() {
-        call_user_func_array([$this, 'set'], func_get_args());
+    public function merge(...$lot) {
+        call_user_func_array([$this, 'set'], $lot);
     }
 
-    // Call the added method or use them as a shortcut for the default `get` method.
-    // Example: You can use `Cargo::foo()` as a shortcut for `Cargo::get('foo')` as
-    // long as `foo` is not defined yet by `Cargo::plug()`
-    // NOTE: `Cargo::plug()` and `Cargo::kin()` method(s) are inherit of `__`
     public function __call($kin, $lot = []) {
         $c = static::class;
         if (!isset($this->_[1][$c][$kin])) {

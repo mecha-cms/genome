@@ -15,16 +15,14 @@ class Anemon extends DNA {
     // Set array value recursively
     public function set(&$input, $k, $v = null) {
         $kk = explode('.', $k);
-        while (count($k) > 1) {
+        while (count($kk) > 1) {
             $k = array_shift($kk);
             if (!array_key_exists($k, $input)) {
                 $input[$k] = [];
             }
             $input =& $input[$k];
         }
-        $k = array_shift($kk);
-        $kkk = array_shift($kk);
-        $input[$k] = is_array($input[$k]) && $kkk !== null ? array_replace($input[$k], [$kkk => $v]) : $v;
+        $input[array_shift($kk)] = $v;
     }
 
     // Get array value recursively
@@ -162,8 +160,8 @@ class Anemon extends DNA {
     }
 
     // Alias for `Anemon::prev()`
-    public function previous() {
-        return call_user_func_array([$this, 'prev'], func_get_args());
+    public function previous(...$lot) {
+        return call_user_func_array([$this, 'prev'], $lot);
     }
 
     // Move to `$index` array index

@@ -4,9 +4,8 @@ class To extends DNA {
 
     protected $fn = [];
 
-    public function safe() {
+    public function safe(...$lot) {
         $c = static::class;
-        $lot = func_get_args();
         if (count($lot) === 2 && is_callable($lot[1])) {
             $this->fn[$c][$lot[0]] = $lot[1];
             return true;

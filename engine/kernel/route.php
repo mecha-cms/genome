@@ -51,19 +51,19 @@ class Route extends DNA {
     }
 
     // alias for `Route::accepted()`
-    public function exist() {
-        return call_user_func_array([$this, 'accepted'], func_get_args());
+    public function exist(...$lot) {
+        return call_user_func_array([$this, 'accepted'], $lot);
     }
 
-    public function get() {
+    public function get(...$lot) {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            call_user_func_array([$this, 'accept'], func_get_args());
+            call_user_func_array([$this, 'accept'], $lot);
         }
     }
 
-    public function post() {
+    public function post(...$lot) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            call_user_func_array([$this, 'accept'], func_get_args());
+            call_user_func_array([$this, 'accept'], $lot);
         }
     }
 

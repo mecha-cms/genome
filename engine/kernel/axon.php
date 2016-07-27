@@ -26,9 +26,11 @@ class Axon extends DNA {
         }
     }
 
-    public function react($id, $lot = []) {
-        if (!is_array($id)) {
+    public function react(...$lot) {
+        if (!is_array($lot[0])) {
             $c = static::class;
+            $id = $lot[0];
+            $lot = $lot[1];
             if (isset($this->lot[1][$c][$id])) {
                 $signal = Anemon::eat($this->lot[1][$c][$id])->sort('ASC', 'stack')->vomit();
                 foreach ($signal as $v) {
@@ -38,7 +40,6 @@ class Axon extends DNA {
                 $this->lot[1][$c][$id] = [];
             }
         } else {
-            $lot = func_get_args();
             foreach ($id as $v) {
                 $lot[0] = $v;
                 call_user_func_array([$this, 'react'], $lot);

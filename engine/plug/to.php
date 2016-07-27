@@ -1,79 +1,36 @@
 <?php
 
 // To case: `to case`
-To::plug('case', function($input, $cell = "", $no_break = true) {
-    // Should be a HTML input
-    if(strpos($input, '<') !== false || strpos($input, ' ') !== false) {
-        return preg_replace($no_break ? '#\s+#' : '# +#', ' ', trim(strip_tags($input, $cell)));
-    }
-    // 1. Replace `+` to ` `
-    // 2. Replace `-` to ` `
-    // 3. Replace `-----` to ` - `
-    // 3. Replace `---` to `-`
-    return preg_replace(
-        [
-            '#^(\.|_{2})#', // remove `.` and `__` prefix from a file name
-            '#-{5}#',
-            '#-{3}#',
-            '#-#',
-            '#\s+#',
-            '#' . X . '#'
-        ],
-        [
-            "",
-            ' ' . X . ' ',
-            X,
-            ' ',
-            ' ',
-            '-'
-        ],
-    urldecode($input));
-});
+To::plug('case', 't');
 
 // To lower case: `to lower case`
-To::plug('case_l', function($input) {
-    return function_exists('mb_strtolower') ? mb_strtolower($input) : strtolower($input);
-});
+To::plug('case_l', 'l');
 
 // To upper case: `TO UPPER CASE`
-To::plug('case_u', function($input) {
-    return function_exists('mb_strtoupper') ? mb_strtoupper($input) : strtoupper($input);
-});
+To::plug('case_u', 'u');
 
 // To title case: `To Title Case`
 To::plug('case_tt', function($input) {
     if (function_exists('mb_strtoupper')) {
-        return preg_replace_callback('#(^|[-\s])(\p{Ll})#u', function($m) {
+        return preg_replace_callback('#(^|[^a-z\d])(\p{Ll})#u', function($m) {
             return $m[1] . mb_strtoupper($m[2]);
-        }, To::case($input));
+        }, t($input));
     }
-    return ucwords(To::case($input));
+    return ucwords(t($input));
 });
 
 // To pascal case: `ToPascalCase`
-To::plug('case_pl', function($input) {
-    return preg_replace_callback('#(^|[^\p{L}])(\p{Ll})#u', function($m) {
-        return To::case_u($m[2]);
-    }, $input);
-});
+To::plug('case_pl', 'p');
 
 // To camel case: `toCamelCase`
-To::plug('case_cl', function($input) {
-    return preg_replace_callback('#([^\p{L}])(\p{Ll})#u', function($m) {
-        return To::case_u($m[2]);
-    }, $input);
-});
+To::plug('case_cl', 'c');
 
 // To slug case: `to-slug-case`
-To::plug('case_sg', function($input, $s = '-') {
-    return __sanitize__(preg_replace_callback('#(.)(\p{Lu})#u', function($m) use($s) {
-        return $m[1] . $s . To::case_l($m[2]);
-    }, $input), $s, true);
-});
+To::plug('case_sg', 'd');
 
 // To snake case: `to_snake_case`
 To::plug('case_sk', function($input) {
-    return To::case_sg($input, '_');
+    return d($input, '_');
 });
 
 // To HTML
@@ -119,6 +76,16 @@ To::plug('url_v', function($input) {
     return urldecode($input);
 });
 
+// To encoded Base64
+To::plug('base64_x', function($input) {
+    return base64_encode($input);
+});
+
+// To decoded Base64
+To::plug('base64_v', function($input) {
+    return base64_decode($input);
+});
+
 // Array/object to JSON
 To::plug('json', function($input) {
     return json_encode($input);
@@ -126,6 +93,9 @@ To::plug('json', function($input) {
 
 // JSON to array
 To::plug('anemon', function($input) {
+    if (__such_anemon__($input)) {
+        return a($input);
+    }
     return (array) json_decode($input, true);
 });
 
@@ -133,7 +103,10 @@ To::plug('anemon', function($input) {
 To::plug('json_x', 'To::json');
 
 // JSON to object
-To::plug('json_v', , function($input) {
+To::plug('json_v', function($input) {
+    if (__such_anemon__($input)) {
+        return o($input);
+    }
     return (object) json_decode($input, false);
 });
 
@@ -144,24 +117,24 @@ To::plug('json_v', , function($input) {
  */
 
 // To safe file name
-To::safe('name.file', function($input) {
-    return __sanitize__($input, '-', true, '\w.');
+To::safe('file.name', function($input) {
+    return f($input, '-', true, '\w.');
 });
 
 // To safe folder name
-To::safe('name.folder', function($input) {
-    return __sanitize__($input, '-', true, '\w');
+To::safe('folder.name', function($input) {
+    return f($input, '-', true, '\w');
 });
 
 // To safe path name
-To::safe('name.path', function($input) {
+To::safe('path.name', function($input) {
     $x = '-' . DS;
     $s = str_replace(['\\', '/', '\\\\', '//'], [DS, DS, $x, $x], $input);
-    return __sanitize__($s, '-', true, '\w.\\\/');
+    return f($s, '-', true, '\w.\\\/');
 });
 
 // To safe array key
 To::safe('key', function($input, $low = true) {
-    $s = __sanitize__($input, '_', $low);
+    $s = f($input, '_', $low);
     return is_numeric($s[0]) ? preg_replace('#^\d+#', '_', $s) : $s;
 });

@@ -38,7 +38,7 @@ class Cell extends DNA {
     }
 
     // Encode all HTML entit(y|ies)
-    public function protect($v) {
+    public function x($v) {
         if (!is_string($v)) return $v;
         return To::html_x($v);
     }
@@ -92,8 +92,8 @@ class Cell extends DNA {
     }
 
     // Alias for `Cell::unit()`
-    public function unite() {
-        return call_user_func_array([$this, 'unit'], func_get_args());
+    public function unite(...$lot) {
+        return call_user_func_array([$this, 'unit'], $lot);
     }
 
     // Inverse version of `Cell::unite()`

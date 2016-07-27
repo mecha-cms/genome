@@ -96,11 +96,10 @@ class Filter extends DNA {
         return $this->lot[0][$c][$id][$stack] ?? $fail;
     }
 
-    public function NS($id, $target) {
-        $lot = func_get_args();
-        if(strpos($id, ':') !== false) {
-            $s = explode(':', $id, 2);
-            $lot[0] = [$id, $s[1]];
+    public function NS(...$lot) {
+        if(strpos($lot[0], ':') !== false) {
+            $s = explode(':', $lot[0], 2);
+            $lot[0] = [$lot[0], $s[1]];
         }
         return call_user_func_array([$this, 'apply'], $lot);
     }
