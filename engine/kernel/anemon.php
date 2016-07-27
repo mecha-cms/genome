@@ -14,23 +14,24 @@ class Anemon extends DNA {
 
     // Set array value recursively
     public function set(&$input, $k, $v = null) {
-        $k = explode('.', $k);
+        $kk = explode('.', $k);
         while (count($k) > 1) {
-            $k = array_shift($k);
+            $k = array_shift($kk);
             if (!array_key_exists($k, $input)) {
                 $input[$k] = [];
             }
             $input =& $input[$k];
         }
-        $k = array_shift($k);
-        $input[$k] = is_array($v) ? array_replace($input[$k], $v) : $v;
+        $k = array_shift($kk);
+        $kkk = array_shift($kk);
+        $input[$k] = is_array($input[$k]) && $kkk !== null ? array_replace($input[$k], [$kkk => $v]) : $v;
     }
 
     // Get array value recursively
     public function get(&$input, $k = null, $fail = false) {
         if ($k === null) return $input;
-        $k = explode('.', $k);
-        foreach ($k as $v) {
+        $kk = explode('.', $k);
+        foreach ($kk as $v) {
             if (!is_array($input) || !array_key_exists($v, $input)) {
                 return $fail;
             }
@@ -40,14 +41,14 @@ class Anemon extends DNA {
     }
 
     public function reset(&$input, $k) {
-        $k = explode('.', $k);
+        $kk = explode('.', $k);
         while (count($k) > 1) {
-            $k = array_shift($k);
+            $k = array_shift($kk);
             if (array_key_exists($k, $input)) {
                 $input =& $input[$k];
             }
         }
-        if (is_array($input) && array_key_exists($v = array_shift($k), $input)) {
+        if (is_array($input) && array_key_exists($v = array_shift($kk), $input)) {
             unset($input[$v]);
         }
     }
