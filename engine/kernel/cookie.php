@@ -11,18 +11,24 @@ class Cookie extends DNA {
             'http_only' => false
         ];
         Anemon::extend($cc, $c);
-        $cc['expire'] = time() + 60 * 60 * 24 * $cc['expire']; // 1 day
+        $cc = array_values($cc);
+        $cc[0] = time() + 60 * 60 * 24 * $cc[0]; // 1 day
         if (strpos($id, '.') !== false) {
             $a = explode('.', $id);
             $n = array_shift($a);
             $o = e($_COOKIE[$n] ?? []);
-            if (__such_anemon__($lot)) $lot = a($lot);
+            if (Is::anemon($lot)) $lot = a($lot);
             Anemon::extend($o, implode('.', $a), $lot);
             $lot = $o;
         }
         array_unshift($cc, [$id, To::base64_x(To::json($lot))]);
-        call_user_func_array('setcookie', array_values($cc));
-        // TODO: store expiration time in cookie
+        call_user_func_array('setcookie', $cc);
+        $cc[0] = '__' . $cc[0];
+        $cc[1] = [$cc[2], $cc[3], $cc[4], $cc[5], $cc[6]];
+        $cc[3] = '/';
+        $cc[4] = "";
+        $cc[5] = $cc[6] = false;
+        call_user_func_array('setcookie', $cc);
     }
 
     public function get($id = null, $fail = "") {

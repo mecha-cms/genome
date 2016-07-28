@@ -14,7 +14,7 @@
 
 class Asset extends DNA {
 
-    public $log = [];
+    public $jot = [];
 
     // Get full version of private asset path
     public function path($input, $fail = false) {
@@ -61,7 +61,7 @@ class Asset extends DNA {
         for ($i = 0, $count = count($input); $i < $count; ++$i) {
             $url = $this->url($input[$i]);
             if ($url !== false) {
-                $this->log[1][$input[$i]] = $input[$i];
+                $this->jot[1][$input[$i]] = $input[$i];
                 if (is_array($addon)) {
                     if (!isset($addon[0])) {
                         $attr = Cell::bond($addon);
@@ -125,7 +125,7 @@ class Asset extends DNA {
         $content = "";
         $x = Path::X($as);
         if (!$ok) {
-            if (Anemon::walk(['gif', 'jpeg', 'jpg', 'png'])->has($x)) {
+            if (Is::these(['gif', 'jpeg', 'jpg', 'png'])->has($x)) {
                 $tropes = [];
                 foreach ($input as $i) {
                     $i = Filter::NS('asset:input', $i);
@@ -145,8 +145,8 @@ class Asset extends DNA {
                     if (!$this->blocked($i) && $i = Filter::NS('asset:path', $this->path($i), [$i])) {
                         if (!file_exists($i)) continue;
                         $unix .= filemtime($i) . N;
-                        $c = Filter::NS('asset:source.input', file_get_contents($i) . N, [$i]);
-                        $content .= Filter::NS(['asset:source.output', 'asset:source'], $c, [$i]);
+                        $c = Filter::NS('asset:source.i', file_get_contents($i) . N, [$i]);
+                        $content .= Filter::NS(['asset:source.o', 'asset:source'], $c, [$i]);
                     }
                 }
                 if ($content = trim($content)) {
@@ -171,9 +171,9 @@ class Asset extends DNA {
     // Check for loaded asset(s)
     public function loaded($input = null, $fail = false) {
         if ($input !== null) {
-            return $this->log[1][$input] ?? $fail;
+            return $this->jot[1][$input] ?? $fail;
         }
-        return !empty($this->log[1]) ? $this->log[1] : $fail;
+        return !empty($this->jot[1]) ? $this->jot[1] : $fail;
     }
 
     // Check if asset does exist
@@ -184,16 +184,16 @@ class Asset extends DNA {
     // Do not let the `Asset` loads these file(s) ...
     public function block($input) {
         foreach ((array) $input as $i) {
-            $this->log[0][$i] = $this->log[1][$i] ?? 1;
+            $this->jot[0][$i] = $this->jot[1][$i] ?? 1;
         }
     }
 
     // Check for blocked asset(s)
     public function blocked($input, $fail = false) {
         if ($input !== null) {
-            return $this->log[0][$input] ?? $fail;
+            return $this->jot[0][$input] ?? $fail;
         }
-        return !empty($this->log[0]) ? $this->log[0] : $fail;
+        return !empty($this->jot[0]) ? $this->jot[0] : $fail;
     }
 
 }

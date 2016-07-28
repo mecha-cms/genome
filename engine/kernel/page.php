@@ -101,9 +101,9 @@ class Page extends DNA {
                     $v = $this->v(trim($v));
                     $v = Filter::NS($NS . $c . '_raw', $v, $lot, $i + 1);
                     $origin[$c . '_raw'][$i] = $v;
-                    $v = Filter::NS($NS . 'iota.input', $v, $lot, $i + 1);
+                    $v = Filter::NS($NS . 'iota.i', $v, $lot, $i + 1);
                     $v = Filter::NS($NS . $c, $v, $lot, $i + 1);
-                    $v = Filter::NS($NS . 'iota.output', $v, $lot, $i + 1);
+                    $v = Filter::NS($NS . 'iota.o', $v, $lot, $i + 1);
                     $origin[$c][$i] = $v;
                     $i++;
                 }
@@ -111,9 +111,9 @@ class Page extends DNA {
                 $v = $this->v($origin[$c . '_raw']);
                 $v = Filter::NS($NS . $c . '_raw', $v, $lot, 1);
                 $origin[$c . '_raw'] = $v;
-                $v = Filter::NS($NS . 'iota.input', $v, $lot, 1);
+                $v = Filter::NS($NS . 'iota.i', $v, $lot, 1);
                 $v = Filter::NS($NS . $c, $v, $lot, 1);
-                $v = Filter::NS($NS . 'iota.output', $v, $lot, 1);
+                $v = Filter::NS($NS . 'iota.o', $v, $lot, 1);
                 $origin[$c] = $v;
             }
         }
@@ -130,9 +130,9 @@ class Page extends DNA {
             $vv = $this->v(trim($f[1]));
             $vv = Filter::NS($NS . $kk . '_raw', e($vv), $lot);
             $output[$kk . '_raw'] = $vv;
-            $vv = Filter::NS($NS . 'iota.input', $vv, $lot);
+            $vv = Filter::NS($NS . 'iota.i', $vv, $lot);
             $vv = Filter::NS($NS . $kk, $vv, $lot);
-            $vv = Filter::NS($NS . 'iota.output', $vv, $lot);
+            $vv = Filter::NS($NS . 'iota.o', $vv, $lot);
             $output[$kk] = $vv;
         }
         return $output;

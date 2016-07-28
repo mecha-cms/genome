@@ -117,29 +117,6 @@ class Anemon extends DNA {
         return $this->take($group);
     }
 
-    public function has($s, $all = false, $x = X) {
-        $input = $x . implode($x . $this->bucket) . $x;
-        if (is_array($s)) {
-            if (!$all) {
-                foreach ($s as $v) {
-                    if (strpos($input, $x . $v . $x) !== false) {
-                        return true;
-                    }
-                }
-                return false;
-            } else {
-                $pass = 0;
-                foreach ($s as $v) {
-                    if (strpos($input, $x . $v . $x) !== false) {
-                        $pass++;
-                    }
-                }
-                return $pass === count($s);
-            }
-        }
-        return strpos($input, $x . $s . $x) !== false;
-    }
-
     public function alter($group, $replace = [], $fail = null) {
         // return the `$replace[$group]` value if exist
         // or the `$fail` value if `$replace[$group]` does not exist

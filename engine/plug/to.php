@@ -1,7 +1,7 @@
 <?php
 
 // To case: `to case`
-To::plug('case', 't');
+To::plug('case', 'w');
 
 // To lower case: `to lower case`
 To::plug('case_l', 'l');
@@ -14,9 +14,9 @@ To::plug('case_tt', function($input) {
     if (function_exists('mb_strtoupper')) {
         return preg_replace_callback('#(^|[^a-z\d])(\p{Ll})#u', function($m) {
             return $m[1] . mb_strtoupper($m[2]);
-        }, t($input));
+        }, w($input));
     }
-    return ucwords(t($input));
+    return ucwords(w($input));
 });
 
 // To pascal case: `ToPascalCase`
@@ -26,11 +26,11 @@ To::plug('case_pl', 'p');
 To::plug('case_cl', 'c');
 
 // To slug case: `to-slug-case`
-To::plug('case_sg', 'd');
+To::plug('case_sg', 'h');
 
 // To snake case: `to_snake_case`
 To::plug('case_sk', function($input) {
-    return d($input, '_');
+    return h($input, '_');
 });
 
 // To HTML
@@ -49,19 +49,34 @@ To::plug('html_v', function($input) {
 });
 
 // To HTML dec string
-To::plug('html_dec', function($input) {
+To::plug('html_dec', function($input, $z = false) {
     $output = "";
     for($i = 0, $count = strlen($input); $i < $count; ++$i) {
-        $output .= '&#' . ord($input[$i]) . ';';
+        $s = ord($input[$i]);
+        if ($z) $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+        $output .= '&#' . $s . ';';
     }
     return $output;
 });
 
 // To HTML hex string
-To::plug('html_hex', function($input) {
+To::plug('html_hex', function($input, $z = false) {
     $output = "";
     for($i = 0, $count = strlen($input); $i < $count; ++$i) {
-        $output .= '&#x' . dechex(ord($input[$i])) . ';';
+        $s = dechex(ord($input[$i]));
+        if ($z) $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+        $output .= '&#x' . $s . ';';
+    }
+    return $output;
+});
+
+// To JS hex string
+To::plug('js_hex', function($input, $z = true) {
+    $output = "";
+    for($i = 0, $count = strlen($input); $i < $count; ++$i) {
+        $s = dechex(ord($input[$i]));
+        if ($z) $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+        $output .= '\\u' . $s;
     }
     return $output;
 });

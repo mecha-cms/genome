@@ -31,11 +31,11 @@ function __such_serialize__($x) {
 // a: convert object to array
 // b:
 // c: convert text to camel case
-// d: convert text to snake case (with `-` as separator by default)
+// d:
 // e: evaluate string to their proper data type
 // f: filter/sanitize string
 // g:
-// h:
+// h: convert text to snake case with `-` (hyphen) as separator by default
 // i:
 // j:
 // k:
@@ -44,16 +44,16 @@ function __such_serialize__($x) {
 // n: normalize white-space in string
 // o: convert object to array
 // p: convert text to pascal case
-// q:
+// q: quantity (length of string, number or anemon)
 // r:
 // s: convert data type to their string format
-// t: convert any data to plain text
+// t: convert N to a tab
 // u: convert text to upper case
 // v: un-escape
-// w:
+// w: convert any data to plain word(s)
 // x: escape
-// y:
-// z:
+// y: output/yield an echo-based function as normal return value
+// z: inspect data in a dump
 
 function a($o) {
     if (__such_anemon__($o)) {
@@ -74,11 +74,7 @@ function c($x) {
     }, $x);
 }
 
-function d($x, $s = '-') {
-    return f(preg_replace_callback('#(.)(\p{Lu})#u', function($m) use($s) {
-        return $m[1] . $s . l($m[2]);
-    }, $x), $s, true);
-}
+function d() {}
 
 function e($x) {
     if (is_string($x)) {
@@ -128,7 +124,13 @@ function f($x, $s = '-', $low = false, $X = 'a-zA-Z\d', $mod = 1) {
 }
 
 function g() {}
-function h() {}
+
+function h($x, $s = '-') {
+    return f(preg_replace_callback('#(.)(\p{Lu})#u', function($m) use($s) {
+        return $m[1] . $s . l($m[2]);
+    }, $x), $s, true);
+}
+
 function i() {}
 function j() {}
 function k() {}
@@ -139,9 +141,9 @@ function l($x) {
 
 function m() {}
 
-function n($x) {
+function n($x, $t = '    ') {
     // Tab to 4 space(s), line-break to `\n`
-    return str_replace(["\t", "\r\n", "\r"], ['    ', "\n", "\n"], $x);
+    return str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
 }
 
 function o($a, $safe = true) {
@@ -162,7 +164,17 @@ function p($x) {
     }, $x);
 }
 
-function q() {}
+function q($x, $deep = false) {
+    if (is_int($x) || is_float($x)) {
+        return $x;
+    } else if (is_string($x)) {
+        return function_exists('mb_strlen') ? mb_strlen($x) : strlen($x);
+    } else if (__such_anemon__($x)) {
+        return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+    }
+    return count($x);
+}
+
 function r() {}
 
 function s($x) {
@@ -182,12 +194,25 @@ function s($x) {
     return (string) $x;
 }
 
-// t.h: list of HTML tag(s) for `strip_tags()`
-// t.n: keep line-break in the output or replace them with a space?
-function t($x, $h = "", $n = true) {
+function t($x, $t = '    ') {
+    return str_replace($t, "\t", $x);
+}
+
+function u($x) {
+    return function_exists('mb_strtoupper') ? mb_strtoupper($x) : strtoupper($x);
+}
+
+function v($x) {
+    return stripslashes($x);
+}
+
+// w.h: list of tag name in HTML separated by comma to be excluded from `strip_tags()`
+// w.n: @keep line-break in the output or replace them with a space? (default is !@keep)
+function w($x, $c = "", $n = true) {
     // Should be a HTML input
     if(strpos($x, '<') !== false || strpos($x, ' ') !== false) {
-        return preg_replace($n ? '#\s+#' : '# +#', ' ', trim(strip_tags($x, $h)));
+        $c = '<' . str_replace(',', '><', $c) . '>';
+        return preg_replace($n ? '#\s+#' : '# +#', ' ', trim(strip_tags($x, $c)));
     }
     // 1. Replace `+` to ` `
     // 2. Replace `-` to ` `
@@ -213,12 +238,32 @@ function t($x, $h = "", $n = true) {
     urldecode($x));
 }
 
-function u($x) {
-    return function_exists('mb_strtoupper') ? mb_strtoupper($x) : strtoupper($x);
+function x($x, $c = "'", $d = '-+*/()[]{}^$.?|\\') {
+    return addcslashes($x, $d . $c);
 }
 
-function v() {}
-function w() {}
-function x() {}
-function y() {}
-function z() {}
+function y($x, $a = []) {
+    if (is_callable($x)) {
+        ob_start();
+        call_user_func_array($x, $a);
+        return ob_get_clean();
+    }
+    return $x;
+}
+
+ini_set('highlight.comment', '#FF8000');
+ini_set('highlight.default', '#0000BB');
+ini_set('highlight.html', '#000000');
+ini_set('highlight.keyword', '#007700');
+ini_set('highlight.string', '#DD0000');
+
+function z(...$a) {
+    foreach ($a as $b) {
+        $s = var_export($b, true);
+        $s = str_ireplace(['array (', 'TRUE', 'FALSE', 'NULL'], ['array(', 'true', 'false', 'null'], $s);
+        $s = preg_replace('#[,;](\s*[\)\}])#', '$1', $s);
+        echo '<pre style="word-wrap:break-word;white-space:pre-wrap;">';
+        highlight_string("<?php\n\n" . $s . "\n\n?>");
+        echo '</pre>';
+    }
+}
