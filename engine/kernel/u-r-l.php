@@ -5,7 +5,7 @@ class URL extends DNA {
     // `http://user:pass@host:9090/path?key=value#hash`
     public function extract($key = null, $input = null) {
         if (!$input) {
-            $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https' : 'http';
+            $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
             $protocol = $scheme . '://';
             $host = $_SERVER['HTTP_HOST'];
             $sub = trim(Path::url(Path::D($_SERVER['SCRIPT_NAME'])), '/');
@@ -55,15 +55,15 @@ class URL extends DNA {
         if ($url === X) {
             return $this->extract('path');
         }
-        return str_replace([X . URL::url(), '\\', '/', X], [ROOT, DS, DS, ""], X . $url);
+        return str_replace([X . self::url(), '\\', '/', X], [ROOT, DS, DS, ""], X . $url);
     }
 
     public function get($key = null, $fail = false) {
-        return $this->extract($key) ?? $fail;
+        return self::extract($key) ?? $fail;
     }
 
-    public function __call($kin, $lot = []) {
-        return $this->get($kin, array_shift($lot)) ?? parent::__call($kin, $lot);
+    public static function __callStatic($kin, $lot = []) {
+        return self::get($kin, array_shift($lot)) ?? parent::__callStatic($kin, $lot);
     }
 
 }

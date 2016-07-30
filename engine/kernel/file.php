@@ -2,18 +2,17 @@
 
 class File extends DNA {
 
-    protected $open = "";
-    protected $cache = "";
-    protected $i = 0;
+    protected static $open = "";
+    protected static $cache = "";
 
-    public $config = [
+    public static $config = [
         'file_size_min_allow' => 0, // Minimum allowed file size
         'file_size_max_allow' => 2097152, // Maximum allowed file size
         'file_extension_allow' => [] // List of allowed file extension(s)
     ];
 
     // Inspect file path
-    public function inspect($path, $key = null, $fail = false) {
+    public static function inspect($path, $key = null, $fail = false) {
         $path = URL::path($path);
         $n = Path::N($path);
         $x = Path::X($path);
@@ -27,7 +26,7 @@ class File extends DNA {
             'update_raw' => $update,
             'update' => $update_date,
             'size_raw' => file_exists($path) ? filesize($path) : null,
-            'size' => file_exists($path) ? $this->size($path) : null,
+            'size' => file_exists($path) ? self::size($path) : null,
             'is' => [
                 // hidden file/folder only
                 'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
@@ -39,7 +38,7 @@ class File extends DNA {
     }
 
     // List all file(s) from a folder
-    public function explore($folder = ROOT, $deep = false, $flat = false, $fail = false) {
+    public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = false) {
         $folder = rtrim(URL::path($folder), DS);
         $files = array_merge(
             glob($folder . DS . '*', GLOB_NOSORT),
@@ -51,10 +50,10 @@ class File extends DNA {
             if ($b && $b !== '.' && $b !== '..') {
                 if (is_dir($file)) {
                     if (!$flat) {
-                        $output[$file] = $deep ? $this->explore($file, true, false, []) : 0;
+                        $output[$file] = $deep ? self::explore($file, true, false, []) : 0;
                     } else {
                         $output[$file] = 0;
-                        $output = $deep ? array_merge($output, $this->explore($file, true, true, [])) : $output;
+                        $output = $deep ? array_merge($output, self::explore($file, true, true, [])) : $output;
                     }
                 } else {
                     $output[$file] = 1;
@@ -65,40 +64,39 @@ class File extends DNA {
     }
 
     // Check if file/folder does exist
-    public function exist($input, $fail = false) {
+    public static function exist($input, $fail = false) {
         $input = URL::path($input);
         return file_exists($input) ? $input : $fail;
     }
 
     // Open a file
-    public function open($input) {
-        $input = URL::path($input);
-        $this->open = $input;
-        return $this;
+    public static function open($input) {
+        self::$open = URL::path($input);
+        return new static;
     }
 
     // Append `$data` to the file content
-    public function append($data) {
-        $this->cache = file_get_contents($this->open) . $data;
-        return $this;
+    public static function append($data) {
+        self::$cache = file_get_contents(self::$open) . $data;
+        return new static;
     }
 
     // Prepend `$data` to the file content
-    public function prepend($data) {
-        $this->cache = $data . file_get_contents($this->open);
-        return $this;
+    public static function prepend($data) {
+        self::$cache = $data . file_get_contents(self::$open);
+        return new static;
     }
 
     // Print the file content
-    public function read($fail = "") {
-        return file_exists($this->open) ? file_get_contents($this->open) : $fail;
+    public static function read($fail = "") {
+        return file_exists(self::$open) ? file_get_contents(self::$open) : $fail;
     }
 
     // Print the file content line by line
-    public function get($stop = null, $fail = false, $ch = 1024) {
+    public static function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
         $output = "";
-        if ($hand = fopen($this->open, 'r')) {
+        if ($hand = fopen(self::$open, 'r')) {
             while (($chunk = fgets($hand, $ch)) !== false) {
                 if (is_int($stop) && $stop === $i) break;
                 $output .= $chunk;
@@ -112,112 +110,112 @@ class File extends DNA {
     }
 
     // Write `$data` before save
-    public function write($data) {
-        $this->cache = $data;
-        return $this;
+    public static function write($data) {
+        self::$cache = $data;
+        return new static;
     }
 
     // Serialize `$data` before save
-    public function serialize($data) {
-        $this->cache = serialize($data);
-        return $this;
+    public static function serialize($data) {
+        self::$cache = serialize($data);
+        return new static;
     }
 
     // Unserialize the serialized `$data` to output
-    public function unserialize($fail = []) {
-        if (file_exists($this->open)) {
-            $data = file_get_contents($this->open);
+    public static function unserialize($fail = []) {
+        if (file_exists(self::$open)) {
+            $data = file_get_contents(self::$open);
             return Is::serialize($data) ? unserialize($data) : $fail;
         }
         return $fail;
     }
 
     // Save the `$data`
-    public function save($consent = null) {
-        $this->saveTo($this->open, $consent);
-        return $this;
+    public static function save($consent = null) {
+        self::saveTo(self::$open, $consent);
+        return new static;
     }
 
     // Save the `$data` to ...
-    public function saveTo($input, $consent = null) {
+    public static function saveTo($input, $consent = null) {
         $input = URL::path($input);
         if (!file_exists(Path::D($input))) {
             mkdir(Path::D($input), 0777, true);
         }
         $hand = fopen($input, 'w') or die('Cannot open file: ' . $input);
-        fwrite($hand, $this->cache);
+        fwrite($hand, self::$cache);
         fclose($hand);
         if ($consent !== null) {
             chmod($input, $consent);
         }
-        $this->open = $input;
-        return $this;
+        self::$open = $input;
+        return new static;
     }
 
     // Rename the file/folder
-    public function renameTo($name) {
-        if (file_exists($this->open)) {
-            $a = Path::B($this->open);
-            $b = Path::D($this->open) . DS;
+    public static function renameTo($name) {
+        if (file_exists(self::$open)) {
+            $a = Path::B(self::$open);
+            $b = Path::D(self::$open) . DS;
             if ($name !== $a) {
                 rename($b . $a, $b . $name);
             }
-            $this->open = $b . $name;
+            self::$open = $b . $name;
         }
-        return $this;
+        return new static;
     }
 
     // Move the file/folder to ...
-    public function moveTo($target = ROOT) {
-        if (file_exists($this->open)) {
+    public static function moveTo($target = ROOT) {
+        if (file_exists(self::$open)) {
             $target = URL::path($target);
-            if (is_dir($target) && is_file($this->open)) {
-                $target .= DS . Path::B($this->open);
+            if (is_dir($target) && is_file(self::$open)) {
+                $target .= DS . Path::B(self::$open);
             }
             if (!file_exists(Path::D($target))) {
                 mkdir(Path::D($target), 0777, true);
             }
-            rename($this->open, $target);
-            $this->open = $target;
+            rename(self::$open, $target);
+            self::$open = $target;
         }
-        return $this;
+        return new static;
     }
 
     // Copy the file/folder to ...
-    public function copyTo($target = ROOT, $s = '.%s') {
+    public static function copyTo($target = ROOT, $s = '.%s') {
         $i = 1;
-        if (file_exists($this->open)) {
+        if (file_exists(self::$open)) {
             foreach ((array) $target as $v) {
                 $v = URL::path($v);
                 if (is_dir($v)) {
                     if (!file_exists($v)) {
                         mkdir($v, 0777, true);
                     }
-                    $v .= DS . Path::B($this->open);
+                    $v .= DS . Path::B(self::$open);
                 } else {
                     if (!file_exists(Path::D($v))) {
                         mkdir(Path::D($v), 0777, true);
                     }
                 }
                 if (!file_exists($v)) {
-                    copy($this->open, $v);
+                    copy(self::$open, $v);
                     $i = 1;
                 } else {
                     $v = preg_replace('#\.([a-z\d]+)$#', sprintf($s, $i) . '.$1', $v);
-                    copy($this->open, $v);
+                    copy(self::$open, $v);
                     $i++;
                 }
-                $this->open = $v;
+                self::$open = $v;
             }
         }
-        return $this;
+        return new static;
     }
 
     // Delete the file
-    public function delete() {
-        if (file_exists($this->open)) {
-            if (is_dir($this->open)) {
-                $a = new RecursiveDirectoryIterator($this->open, FilesystemIterator::SKIP_DOTS);
+    public static function delete() {
+        if (file_exists(self::$open)) {
+            if (is_dir(self::$open)) {
+                $a = new RecursiveDirectoryIterator(self::$open, FilesystemIterator::SKIP_DOTS);
                 $b = new RecursiveIteratorIterator($a, RecursiveIteratorIterator::CHILD_FIRST);
                 foreach ($b as $o) {
                     if ($o->isFile()) {
@@ -226,26 +224,26 @@ class File extends DNA {
                         rmdir($o->getPathname());
                     }
                 }
-                rmdir($this->open);
+                rmdir(self::$open);
             } else {
-                unlink($this->open);
+                unlink(self::$open);
             }
         }
     }
 
     // Get file modify time
-    public function T($input, $fail = null) {
+    public static function T($input, $fail = null) {
         return file_exists($input) ? filemtime($input) : $fail;
     }
 
     // Set file permission
-    public function consent($consent) {
-        chmod($this->open, $consent);
-        return $this;
+    public static function consent($consent) {
+        chmod(self::$open, $consent);
+        return new static;
     }
 
     // Upload the file
-    public function upload($file, $target = ROOT, $fn = null, $fail = false) {
+    public static function upload($file, $target = ROOT, $fn = null, $fail = false) {
         $target = URL::path($target);
         $errors = [
             'There is no error, the file uploaded with success.',
@@ -270,16 +268,16 @@ class File extends DNA {
                 Notify::error('Unknown file type.');
             }
             // Bad file extension
-            $x_ok = X . implode(X, $this->config['file_extension_allow']) . X;
+            $x_ok = X . implode(X, self::$config['file_extension_allow']) . X;
             if (strpos($x_ok, X . $x . X) === false) {
                 Notify::error('Extension ' . $x . ' is not allowed.');
             }
             // Too small
-            if ($file['size'] < $this->config['file_size_min_allow']) {
+            if ($file['size'] < self::$config['file_size_min_allow']) {
                 Notify::error('File too small.');
             }
             // Too large
-            if ($file['size'] > $this->config['file_size_max_allow']) {
+            if ($file['size'] > self::$config['file_size_max_allow']) {
                 Notify::error('File too large.');
             }
         }
@@ -304,7 +302,7 @@ class File extends DNA {
     }
 
     // Convert file size to ...
-    public function size($file, $unit = null, $prec = 2) {
+    public static function size($file, $unit = null, $prec = 2) {
         $size = is_numeric($file) ? $file : filesize($file);
         $size_base = log($size, 1024);
         $x = ['B', 'KB', 'MB', 'GB', 'TB'];

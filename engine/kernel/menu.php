@@ -42,7 +42,7 @@ class Menu extends DNA {
     }
 
     // Render as HTML
-    public function __callStatic($id, $lot = []) {
+    public static function __callStatic($id, $lot = []) {
         $c = static::class;
         $tree = new Tree();
         $s = $this->config['classes'];
