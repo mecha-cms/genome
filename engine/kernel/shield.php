@@ -2,12 +2,12 @@
 
 class Shield extends DNA {
 
-    protected static $lot = [];
+    protected $lot = [];
 
     // Compare with current version
     public function version($info, $v = null) {
         if (is_string($info)) {
-            $info = self::info($info)->version;
+            $info = $this->info($info)->version;
         } else {
             $info = (object) $info;
             $info = isset($info->version) ? $info->version : '0.0.0';
@@ -153,7 +153,7 @@ class Shield extends DNA {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
         $info = Page::text(File::open($info)->read(), 'content', 'shield:', array(
-            'id' => self::exist($folder) ? $folder : false,
+            'id' => $this->exist($folder) ? $folder : false,
             'title' => Text::parse($folder, '->title'),
             'author' => $speak->anon,
             'url' => '#',
@@ -183,15 +183,15 @@ class Shield extends DNA {
         if (strpos($path__, ROOT) === 0 && file_exists($path__) && is_file($path__)) {
             // do nothing ...
         } else {
-            if ($_path = File::exist(self::path($path__, $fail))) {
+            if ($_path = File::exist($this->path($path__, $fail))) {
                 $path__ = $_path;
-            } elseif ($_path = File::exist(self::path($s[0], $fail))) {
+            } elseif ($_path = File::exist($this->path($s[0], $fail))) {
                 $path__ = $_path;
             } else {
                 Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . $path__ . '</code>'));
             }
         }
-        $lot__ = self::cargo();
+        $lot__ = $this->cargo();
         $path__ = Filter::apply('shield:path', $path__);
         $G['data']['lot'] = $lot__;
         $G['data']['path'] = $path__;
@@ -243,7 +243,7 @@ class Shield extends DNA {
         $s = is_numeric($s[0]) ? $s[0] : '404';
         Config::set('page_type', $s);
         HTTP::status((int) $s);
-        self::attach($name, $fail, $buffer);
+        $this->attach($name, $fail, $buffer);
     }
 
     /**
@@ -270,7 +270,7 @@ class Shield extends DNA {
             $this->lot = array_merge($this->lot, $fail);
             $fail = false;
         }
-        $path__ = Filter::apply('chunk:path', self::path($path__, $fail));
+        $path__ = Filter::apply('chunk:path', $this->path($path__, $fail));
         $G['data']['lot'] = $this->lot;
         $G['data']['path'] = $path__;
         $out = "";

@@ -16,13 +16,13 @@ class Time extends DNA {
         if (is_string($input) && substr_count($input, '-') === 5) {
             return $input;
         }
-        return self::format($input, 'Y-m-d-H-i-s');
+        return $this->format($input, 'Y-m-d-H-i-s');
     }
 
     public function ago($input, $output = null, $compact = true) {
         $speak = new Gram();
         $date = new DateTime();
-        $date->setTimestamp((int) self::format($input, 'U'));
+        $date->setTimestamp((int) $this->format($input, 'U'));
         $interval = $date->diff(new DateTime('now'));
         $time = $interval->format('%y.%m.%d.%h.%i.%s');
         $time = e(explode('.', $time));
@@ -53,7 +53,7 @@ class Time extends DNA {
     }
 
     public function GMT($input, $format = 'Y-m-d H:i:s') {
-        $time = new DateTime(self::format($input, 'c'));
+        $time = new DateTime($this->format($input, 'c'));
         $time->setTimeZone(new DateTimeZone('UTC'));
         return $time->format($format);
     }

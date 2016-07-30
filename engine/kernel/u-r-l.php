@@ -55,15 +55,15 @@ class URL extends DNA {
         if ($url === X) {
             return $this->extract('path');
         }
-        return str_replace([X . self::url(), '\\', '/', X], [ROOT, DS, DS, ""], X . $url);
+        return str_replace([X . $this->url(), '\\', '/', X], [ROOT, DS, DS, ""], X . $url);
     }
 
     public function get($key = null, $fail = false) {
-        return self::extract($key) ?? $fail;
+        return $this->extract($key) ?? $fail;
     }
 
-    public static function __callStatic($kin, $lot = []) {
-        return self::get($kin, array_shift($lot)) ?? parent::__callStatic($kin, $lot);
+    public function __call($kin, $lot = []) {
+        return $this->get($kin, array_shift($lot)) ?? parent::__call($kin, $lot);
     }
 
 }

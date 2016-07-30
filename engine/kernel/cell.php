@@ -157,13 +157,13 @@ class Cell extends DNA {
 
     // Calling `Cell::div($x)` will be the same as calling `Cell::unit('div', $x)`
     // if custom method called `Cell::div()` is not defined yet by the `Cell::plug()`
-    public static function __callStatic($kin, $lot = []) {
+    public function __call($kin, $lot = []) {
         $c = static::class;
-        if (!isset(self::$_[1][$c][$kin])) {
+        if (!isset($this->_[1][$c][$kin])) {
             array_unshift($lot, $kin);
-            return call_user_func_array('self::unit', $lot);
+            return call_user_func_array([$this, 'unit'], $lot);
         }
-        $s = parent::__callStatic($kin, $lot);
+        $s = parent::__call($kin, $lot);
         return Filter::NS(strtolower($c) . ':gen.' . $kin, $s, [$lot]);
     }
 

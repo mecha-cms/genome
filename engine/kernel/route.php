@@ -69,12 +69,12 @@ class Route extends DNA {
 
     public function reject($pattern) {
         if (!is_array($pattern)) {
-            $pattern = self::$_path($pattern);
+            $pattern = $this->_path($pattern);
             $this->lot[0][$pattern] = $this->lot[1][$pattern] ?? 1;
             unset($this->lot[1][$pattern]);
         } else {
             foreach ($pattern as $v) {
-                $v = self::$_path($v);
+                $v = $this->_path($v);
                 $this->lot[0][$v] = $this->lot[1][$v] ?? 1;
                 unset($this->lot[1][$v]);
             }
@@ -89,7 +89,7 @@ class Route extends DNA {
     }
 
     public function over($pattern, $fn = null, $stack = null) {
-        $pattern = self::$_path($pattern);
+        $pattern = $this->_path($pattern);
         $stack = !is_null($stack) ? $stack : 10;
         if (!isset($this->lot_o[1][$pattern])) {
             $this->lot_o[1][$pattern] = [];
@@ -121,7 +121,7 @@ class Route extends DNA {
     }
 
     public function is($pattern, $fail = false) {
-        $pattern = self::$_path($pattern);
+        $pattern = $this->_path($pattern);
         $path = URL::path();
         if (strpos($pattern, '(') === false) {
             return $path === $pattern ? [
@@ -130,7 +130,7 @@ class Route extends DNA {
                 'lot' => []
             ] : $fail;
         }
-        if (preg_match('#^' . self::$_x($pattern) . '$#', $path, $m)) {
+        if (preg_match('#^' . $this->_x($pattern) . '$#', $path, $m)) {
             array_shift($m);
             return [
                 'pattern' => $pattern,
@@ -143,7 +143,7 @@ class Route extends DNA {
 
     public function execute($pattern = null, $lot = []) {
         if ($pattern !== null) {
-            $pattern = self::$_path($pattern);
+            $pattern = $this->_path($pattern);
             if (isset($this->lot[1][$pattern])) {
                 call_user_func_array($this->lot[1][$pattern]['fn'], $lot);
             }

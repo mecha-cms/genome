@@ -126,13 +126,13 @@ class Anemon extends DNA {
 
     // Move to next array index
     public function next($skip = 0) {
-        $this->i = self::edge($this->i + 1 + $skip, 0, $this->count() - 1);
+        $this->i = $this->edge($this->i + 1 + $skip, 0, $this->count() - 1);
         return $this;
     }
 
     // Move to previous array index
     public function prev($skip = 0) {
-        $this->i = self::edge($this->i - 1 - $skip, 0, $this->count() - 1);
+        $this->i = $this->edge($this->i - 1 - $skip, 0, $this->count() - 1);
         return $this;
     }
 
@@ -143,7 +143,7 @@ class Anemon extends DNA {
 
     // Move to `$index` array index
     public function to($index) {
-        $this->i = is_int($index) ? $index : self::index($index, $index);
+        $this->i = is_int($index) ? $index : $this->index($index, $index);
         return $this;
     }
 
@@ -151,7 +151,7 @@ class Anemon extends DNA {
     public function before($food, $key = null) {
         $key = $key ?? $this->i;
         $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $food] + array_slice($this->bucket, $this->i, null, true);
-        $this->i = self::edge($this->i - 1, 0, $this->count() - 1);
+        $this->i = $this->edge($this->i - 1, 0, $this->count() - 1);
         return $this;
     }
 
@@ -159,7 +159,7 @@ class Anemon extends DNA {
     public function after($food, $key = null) {
         $key = $key ?? $this->i + 1;
         $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $food] + array_slice($this->bucket, $this->i + 1, null, true);
-        $this->i = self::edge($this->i + 1, 0, $this->count() - 1);
+        $this->i = $this->edge($this->i + 1, 0, $this->count() - 1);
         return $this;
     }
 

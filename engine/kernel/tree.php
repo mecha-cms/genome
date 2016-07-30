@@ -56,7 +56,7 @@ class Tree extends DNA {
         )
     );
 
-    protected static function _create($array, $indent = "", $NS = "", $i = 0) {
+    protected function _create($array, $indent = "", $NS = "", $i = 0) {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
         $c_element = $this->config;
@@ -102,7 +102,7 @@ class Tree extends DNA {
                 $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
                 $twig .= NL . $indent . str_repeat(I, $i + 2);
                 $twig .= Filter::NS($NS . 'anchor', $_value !== null ? '<a href="' . $url . '">' . $_key . '</a>' : '<span class="a" tabindex="0">' . $_key . '</span>');
-                $twig .= NL . self::_create($value, $indent, $NS, $i + 2);
+                $twig .= NL . $this->_create($value, $indent, $NS, $i + 2);
                 $twig .= $indent . str_repeat(I, $i + 1);
                 $s = explode(' ', $c_element['twig']);
                 $s = $s[0];
@@ -115,7 +115,7 @@ class Tree extends DNA {
     }
 
     public function grow($array = null, $indent = "", $NS = 'tree:') {
-        return O_BEGIN . Filter::NS($NS . 'trunk', rtrim(self::_create($array, $indent, $NS, 0), NL)) . O_END;
+        return O_BEGIN . Filter::NS($NS . 'trunk', rtrim($this->_create($array, $indent, $NS, 0), NL)) . O_END;
     }
 
 }

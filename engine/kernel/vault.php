@@ -48,17 +48,17 @@ class Vault extends DNA {
         call_user_func_array([$this, 'set'], $lot);
     }
 
-    public static function __callStatic($kin, $lot = []) {
+    public function __call($kin, $lot = []) {
         $c = static::class;
-        if (!isset(self::$_[1][$c][$kin])) {
+        if (!isset($this->_[1][$c][$kin])) {
             $fail = false;
             if (count($lot)) {
                 $kin .= '.' . array_shift($lot);
                 $fail = array_shift($lot);
             }
-            return self::get($kin, $fail);
+            return $this->get($kin, $fail);
         }
-        return parent::__callStatic($kin, $lot);
+        return parent::__call($kin, $lot);
     }
 
 }

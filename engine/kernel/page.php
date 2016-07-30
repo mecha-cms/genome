@@ -45,13 +45,13 @@ class Page extends DNA {
             // By file path
             if (strpos($text, ROOT) === 0 && ($text = File::open($text)->get(trim($S))) !== false) {
                 $text = Filter::NS($NS . 'input', n($text), $NS, $lot);
-                Anemon::extend($origin, self::$_header($text, $NS, $lot));
+                Anemon::extend($origin, $this->_header($text, $NS, $lot));
             // By file content
             } else {
                 $text = Filter::NS($NS . 'input', n($text), $NS, $lot);
                 if (strpos($text, $_) !== false) {
                     $s = explode($S, $text, 2);
-                    Anemon::extend($origin, self::$_header(trim($s[0]), $NS, $lot));
+                    Anemon::extend($origin, $this->_header(trim($s[0]), $NS, $lot));
                     if (isset($s[1]) && !Is::void($s[1])) {
                         $origin[$c . '_raw'] = trim($s[1]);
                     }
@@ -68,7 +68,7 @@ class Page extends DNA {
                 $origin[$c . '_raw'] = $this->x(trim($text));
             } else {
                 $s = explode($S, $text, 2);
-                Anemon::extend($origin, self::$_header(trim($s[0]), $NS, $lot));
+                Anemon::extend($origin, $this->_header(trim($s[0]), $NS, $lot));
                 if (isset($s[1]) && !Is::void($s[1])) {
                     $origin[$c . '_raw'] = trim($s[1]);
                 }
@@ -104,7 +104,7 @@ class Page extends DNA {
         return Filter::NS($NS . 'output', $origin, $NS, $lot);
     }
 
-    protected static function _header($text, $NS, $lot) {
+    protected function _header($text, $NS, $lot) {
         $output = [];
         $s = explode(N, trim($text));
         foreach ($s as $v) {
@@ -187,7 +187,7 @@ class Page extends DNA {
 
     // Show page data as plain text
     public function put() {
-        return self::$_create();
+        return $this->_create();
     }
 
     // Show page data as array
@@ -195,12 +195,12 @@ class Page extends DNA {
         if ($content === false) {
             $this->content = [];
         }
-        return $this->text(self::$_create(), $content, $NS);
+        return $this->text($this->_create(), $content, $NS);
     }
 
     // Save the opened page
     public function save($consent = 0600) {
-        File::write(self::$_create())->saveTo($this->open, $consent);
+        File::write($this->_create())->saveTo($this->open, $consent);
     }
 
     // Save the generated page to ...
