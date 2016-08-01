@@ -1,6 +1,6 @@
 <?php
 
-class Request extends DNA {
+class Request extends __ {
 
     public function post($var = null, $fail = false, $eval = true) {
         if ($var === null) {

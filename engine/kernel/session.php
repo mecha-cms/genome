@@ -1,26 +1,26 @@
 <?php
 
-class Session extends DNA {
+class Session extends __ {
 
-    public function set($id, $lot = "") {
+    public static function set($id, $lot = "") {
         Anemon::set($_SESSION, $id, $lot);
     }
 
-    public function get($id = null, $fail = "") {
+    public static function get($id = null, $fail = "") {
         if ($id === null) return $_SESSION;
         return Anemon::get($_SESSION, $id, $fail);
     }
 
-    public function reset($id = null) {
-        if ($id === null) {
+    public static function reset($id = null) {
+        if ($id === null || $id === true) {
             $_SESSION = [];
-            session_destroy();
+            if ($id === true) session_destroy();
         } else {
             Anemon::reset($_SESSION, $id);
         }
     }
 
-    public function start($path = SESSION) {
+    public static function start($path = SESSION) {
         if ($path !== null) {
             Folder::create($path, 0600);
             session_save_path($path);

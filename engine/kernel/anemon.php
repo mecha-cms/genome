@@ -1,19 +1,19 @@
 <?php
 
-class Anemon extends DNA {
+class Anemon extends __ {
 
-    protected $bucket = [];
-    protected $i = 0;
+    protected static $bucket = [];
+    protected static $i = 0;
 
     // Prevent `$x` exceeds the value of `$min` and `$max`
-    public function edge($x, $min = 0, $max = 9999) {
+    public static function edge($x, $min = 0, $max = 9999) {
         if ($x < $min) return $min;
         if ($x > $max) return $max;
         return $x;
     }
 
     // Set array value recursively
-    public function set(&$input, $k, $v = null) {
+    public static function set(&$input, $k, $v = null) {
         $kk = explode('.', $k);
         while (count($kk) > 1) {
             $k = array_shift($kk);
@@ -26,7 +26,7 @@ class Anemon extends DNA {
     }
 
     // Get array value recursively
-    public function get(&$input, $k = null, $fail = false) {
+    public static function get(&$input, $k = null, $fail = false) {
         if ($k === null) return $input;
         $kk = explode('.', $k);
         foreach ($kk as $v) {
@@ -38,7 +38,7 @@ class Anemon extends DNA {
         return $input;
     }
 
-    public function reset(&$input, $k) {
+    public static function reset(&$input, $k) {
         $kk = explode('.', $k);
         while (count($k) > 1) {
             $k = array_shift($kk);
@@ -51,19 +51,20 @@ class Anemon extends DNA {
         }
     }
 
-    public function extend(&$a, $b) {
+    public static function extend(&$a, $b) {
         $a = array_replace_recursive($a, $b);
         return $a;
     }
 
-    public function concat(&$a, $b) {
+    public static function concat(&$a, $b) {
         $a = array_merge_recursive($a, $b);
         return $a;
     }
 
-    public function eat($group) {
-        $this->bucket = $group;
-        return $this;
+    public static function eat($group) {
+		$anemon = new Anemon;
+        $anemon->bucket = $group;
+        return $anemon;
     }
 
     public function vomit($k = null, $fail = false) {
@@ -106,18 +107,18 @@ class Anemon extends DNA {
         return $this;
     }
 
-    public function walk($group, $fn = null) {
+    public static function walk($group, $fn = null) {
         if (is_callable($fn)) {
             foreach (a($group) as $k => &$v) {
-                $v = is_array($v) ? array_merge($v, $this->walk($v, $fn)) : call_user_func($fn, $v, $k);
+                $v = is_array($v) ? array_merge($v, self::walk($v, $fn)) : call_user_func($fn, $v, $k);
             }
             unset($v);
             return $group;
         }
-        return $this->take($group);
+        return self::take($group);
     }
 
-    public function alter($group, $replace = [], $fail = null) {
+    public static function alter($group, $replace = [], $fail = null) {
         // return the `$replace[$group]` value if exist
         // or the `$fail` value if `$replace[$group]` does not exist
         // or the `$group` value if `$fail` is `null`
@@ -132,7 +133,7 @@ class Anemon extends DNA {
 
     // Move to previous array index
     public function prev($skip = 0) {
-        $this->i = $this->edge($this->i - 1 - $skip, 0, $this->count() - 1);
+        $this->i = self::edge($this->i - 1 - $skip, 0, $this->count() - 1);
         return $this;
     }
 
@@ -151,7 +152,7 @@ class Anemon extends DNA {
     public function before($food, $key = null) {
         $key = $key ?? $this->i;
         $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $food] + array_slice($this->bucket, $this->i, null, true);
-        $this->i = $this->edge($this->i - 1, 0, $this->count() - 1);
+        $this->i = self::edge($this->i - 1, 0, $this->count() - 1);
         return $this;
     }
 
@@ -159,7 +160,7 @@ class Anemon extends DNA {
     public function after($food, $key = null) {
         $key = $key ?? $this->i + 1;
         $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $food] + array_slice($this->bucket, $this->i + 1, null, true);
-        $this->i = $this->edge($this->i + 1, 0, $this->count() - 1);
+        $this->i = self::edge($this->i + 1, 0, $this->count() - 1);
         return $this;
     }
 

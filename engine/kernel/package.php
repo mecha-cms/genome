@@ -1,9 +1,9 @@
 <?php
 
-class Package extends DNA {
+class Package extends __ {
 
     protected $open = null;
-    protected $opens = null;
+    protected $bucket = null;
     protected $zip = null;
 
     public function __construct($files, $fail = false) {
@@ -13,27 +13,27 @@ class Package extends DNA {
             }
             return $fail;
         }
-        $this->open = $this->opens = null;
+        $this->open = $this->bucket = null;
         $this->zip = new ZipArchive();
         if (is_array($files)) {
-            $this->opens = [];
+            $this->bucket = [];
             $taken = false;
             foreach ($files as $key => $value) {
-                $key = URL::path($key);
-                $value = URL::path($value);
-                $this->opens[$key] = $value;
+                $key = To::path($key);
+                $value = To::path($value);
+                $this->bucket[$key] = $value;
                 if (!$taken) {
                     $this->open = $key;
                     $taken = true;
                 }
             }
         } else {
-            $this->open = URL::path($files);
+            $this->open = To::path($files);
         }
         return $this;
     }
 
-    public function take($files) {
+    public static function take($files) {
         return new Package($files);
     }
 
@@ -49,10 +49,10 @@ class Package extends DNA {
         if ($target === null) {
             $target = Path::D($root) . DS . $package . '.zip';
         } else {
-            $target = URL::path($target);
+            $target = To::path($target);
             // Handling for `Package::take('foo/bar')->pack('package.zip')`
             if (strpos($target, DS) === false) {
-                $root = !is_array($this->opens) ? Path::D($root) : $root;
+                $root = !is_array($this->bucket) ? Path::D($root) : $root;
                 $target = $root . DS . $target;
             }
             // Handling for `Package::take('foo/bar')->pack('bar/baz')`
@@ -74,8 +74,8 @@ class Package extends DNA {
         } else {
             $dir = "";
         }
-        if (is_array($this->opens)) {
-            foreach ($this->opens as $key => $value) {
+        if (is_array($this->bucket)) {
+            foreach ($this->bucket as $key => $value) {
                 if (File::exist($key)) {
                     $this->zip->addFile($key, $dir . $value);
                 }
@@ -105,14 +105,14 @@ class Package extends DNA {
         if ($target === null) {
             $target = Path::D($this->open);
         } else {
-            $target = URL::path($target);
+            $target = To::path($target);
         }
         // Handling for `Package::take('file.zip')->extractTo('foo/bar', true)`
         if ($bucket === true) {
             $bucket = Path::N($this->open);
         }
         if ($bucket !== false && !File::exist($target . DS . $bucket)) {
-            $bucket = URL::path($bucket);
+            $bucket = To::path($bucket);
             Folder::create($target . DS . $bucket);
         }
         if ($this->zip->open($this->open) === true) {
@@ -173,11 +173,11 @@ class Package extends DNA {
     }
 
     public function deleteFolder($folder) {
-        $folder = URL::path($folder);
+        $folder = To::path($folder);
         if ($this->zip->open($this->open) === true) {
             for ($i = 0; $i < $this->zip->numFiles; ++$i) {
                 $info = $this->zip->statIndex($i);
-                $b = rtrim(substr(URL::path($info['name']), 0, strlen($folder)), DS);
+                $b = rtrim(substr(To::path($info['name']), 0, strlen($folder)), DS);
                 if ($b === $folder) {
                     $this->zip->deleteIndex($i);
                 }
@@ -196,7 +196,7 @@ class Package extends DNA {
 
     public function renameFile($old, $new = "") {
         if ($this->zip->open($this->open) === true) {
-            $old = URL::path($old);
+            $old = To::path($old);
             $root = Path::D($old) !== "" ? Path::D($old) . DS : "";
             $this->zip->renameName($old, $root . Path::B($new));
             $this->zip->close();
@@ -230,7 +230,7 @@ class Package extends DNA {
             ]);
             for ($i = 0; $i < $output['total']; ++$i) {
                 $data = $this->zip->statIndex($i);
-                $data['name'] = str_replace(DS . DS, DS, URL::path($data['name']));
+                $data['name'] = str_replace(DS . DS, DS, To::path($data['name']));
                 $output['files'][$i] = $data;
             }
             $this->zip->close();

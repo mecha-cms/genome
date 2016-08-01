@@ -1,8 +1,8 @@
 <?php
 
-class HTTP extends DNA {
+class HTTP extends __ {
 
-    public $message = [
+    public static $message = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing', // RFC2518
@@ -65,18 +65,18 @@ class HTTP extends DNA {
         511 => 'Network Authentication Required' // RFC6585
     ];
 
-    public function status($code = 200, $value = null) {
-        if (is_int($code) && isset($this->message[$code])) {
+    public static function status($code = 200, $value = null) {
+        if (is_int($code) && isset(self::$message[$code])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
-                header('Status: ' . $code . ' ' . $this->message[$code]);
+                header('Status: ' . $code . ' ' . self::$message[$code]);
             } else {
-                header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . $this->message[$code]);
+                header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . self::$message[$code]);
             }
         }
-        return $this;
+        return new static;
     }
 
-    public function query($query = null, $value = 1) {
+    public static function query($query = null, $value = 1) {
         if ($query === null) {
             return URL::query();
         }
@@ -85,7 +85,7 @@ class HTTP extends DNA {
         }
         $query = !empty($query) ? Anemon::extend($_GET, $query) : $_GET;
         $output = [];
-        foreach ($this->_query($query, "") as $k => $v) {
+        foreach (self::_query($query, "") as $k => $v) {
             if ($v === false) continue;
             $value = $v !== true ? '=' . urlencode(s($v)) : "";
             $output[] = $k . $value;
@@ -93,12 +93,12 @@ class HTTP extends DNA {
         return !empty($output) ? '?' . implode('&', $output) : "";
     }
 
-    protected function _query($array, $key) {
+    protected static function _query($array, $key) {
         $output = [];
         $s = $key ? '%5D' : "";
         foreach ($array as $k => $v) {
             if (is_array($v)) {
-                $output = array_merge($output, $this->_query($v, $key . $k . $s . '%5B'));
+                $output = array_merge($output, self::_query($v, $key . $k . $s . '%5B'));
             } else {
                 $output[$key . $k . $s] = $v;
             }
@@ -106,10 +106,10 @@ class HTTP extends DNA {
         return $output;
     }
 
-    public function header($key, $value = null) {
+    public static function header($key, $value = null) {
         if (!is_array($key)) {
             if (is_int($key)) {
-                $this->status($key);
+                self::status($key);
             } else {
                 if ($value !== null) {
                     header($key . ': ' . $value);
@@ -122,15 +122,15 @@ class HTTP extends DNA {
                 header($k . ': ' . $v);
             }
         }
-        return $this;
+        return new static;
     }
 
-    public function mime($mime, $charset = null) {
+    public static function mime($mime, $charset = null) {
         header('Content-Type: ' . $mime . ($charset !== null ? '; charset=' . $charset : ""));
-        return $this;
+        return new static;
     }
 
-    public function post($url, $fields = []) {
+    public static function post($url, $fields = []) {
         if (!function_exists('curl_init')) {
             exit('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
         }
@@ -145,7 +145,7 @@ class HTTP extends DNA {
         return $output;
     }
 
-    public function get($url, $fields = []) {
+    public static function get($url, $fields = []) {
         if (is_string($fields)) {
             $url .= '?' . str_replace([X . '?', X], "", X . $fields);
         } else {

@@ -12,21 +12,21 @@
  *
  */
 
-class Asset extends DNA {
+class Asset extends __ {
 
-    public $jot = [];
+    public static $log = [];
 
     // Get full version of private asset path
-    public function path($input, $fail = false) {
+    public static function path($input, $fail = false) {
         // External URL, nothing to check!
         if (strpos($input, '://') !== false || strpos($input, '//') === 0 || strpos($input, ':') !== false) {
             // Fix broken external URL
-            $input = Path::url($input);
+            $input = To::url($input);
             // Check if URL very external ...
             if (strpos($input, URL::url()) !== 0) return $input;
         }
         // ... else, try parse it into private asset path
-        $input = URL::path($input);
+        $input = To::path($input);
         // Full path, be quick!
         if (strpos($input, ROOT) === 0) {
             return File::exist($input, $fail);
@@ -39,29 +39,29 @@ class Asset extends DNA {
     }
 
     // Get public asset URL
-    public function url($input, $fail = false) {
-        $input = Filter::NS('asset:input', $input);
-        $path = Filter::NS('asset:path', $this->path($input), [$input]);
-        $url = Path::url($path);
+    public static function url($input, $fail = false) {
+        $input = Hook::NS('asset:input', [], $input);
+        $path = Hook::NS('asset:path', [$input], self::path($input));
+        $url = To::url($path);
         if (!$path) return $fail;
         if (strpos($path, ROOT) === false) {
-            return strpos($url, '://') !== false || strpos($url, '//') === 0 ? Filter::NS('asset:url', $url, [$input]) : $fail;
+            return strpos($url, '://') !== false || strpos($url, '//') === 0 ? Hook::NS('asset:url', [$input], $url) : $fail;
         }
-        return file_exists($path) ? Filter::NS('asset:url', $url, [$input]) : $fail;
+        return file_exists($path) ? Hook::NS('asset:url', [$input], $url) : $fail;
     }
 
     // Generate skeleton ...
-    public function genome($input, $addon, $unite, $C, $F, $T) {
+    public static function genome($input, $addon, $unite, $C, $F, $T) {
         if ($unite !== false && strlen($unite)) {
-            return $this->unite($input, $unite, $addon, $F);
+            return self::unite($input, $unite, $addon, $F);
         }
         $I = I . I;
         $cell = "";
         $input = is_string($input) ? explode(' ', $input) : (array) $input;
         for ($i = 0, $count = count($input); $i < $count; ++$i) {
-            $url = $this->url($input[$i]);
+            $url = self::url($input[$i]);
             if ($url !== false) {
-                $this->jot[1][$input[$i]] = $input[$i];
+                self::$log[1][$input[$i]] = $input[$i];
                 if (is_array($addon)) {
                     if (!isset($addon[0])) {
                         $attr = Cell::bond($addon);
@@ -76,7 +76,7 @@ class Asset extends DNA {
                 }
                 $s = sprintf($C, $url, $attr) . N;
                 $s = $T ? $I . $s : $s;
-                $cell .= !$this->blocked($input[$i]) ? Filter::NS('asset:' . $F, $s, [$input[$i], $url]) : "";
+                $cell .= !self::blocked($input[$i]) ? Hook::NS('asset:' . $F, [$input[$i], $url], $s) : "";
             } else {
                 // File does not exist
                 $s = '<!-- ' . $input[$i] . ' -->' . N;
@@ -87,31 +87,31 @@ class Asset extends DNA {
     }
 
     // Return the HTML stylesheet of asset
-    public function shell($input, $addon = "", $unite = false) {
-        return $this->genome($input, $addon, '<link href="%s" rel="stylesheet"%s' . ES, $unite, __METHOD__, true);
+    public static function shell($input, $addon = "", $unite = false) {
+        return self::genome($input, $addon, '<link href="%s" rel="stylesheet"%s' . ES, $unite, __METHOD__, true);
     }
 
     // Return the HTML javascript of asset
-    public function sword($input, $addon = "", $unite = false) {
-        return $this->genome($input, $addon, '<script src="%s"%s></script>', $unite, __METHOD__, true);
+    public static function sword($input, $addon = "", $unite = false) {
+        return self::genome($input, $addon, '<script src="%s"%s></script>', $unite, __METHOD__, true);
     }
 
     // Return the HTML image of asset
-    public function trope($input, $addon = "", $unite = false) {
-        return $this->genome($input, $addon, '<img src="%s"%s' . ES, $unite, __METHOD__, false);
+    public static function trope($input, $addon = "", $unite = false) {
+        return self::genome($input, $addon, '<img src="%s"%s' . ES, $unite, __METHOD__, false);
     }
 
     // Group multiple asset file(s) into a single file
-    public function unite($input, $as = null, $addon = "", $fn = null) {
+    public static function unite($input, $as = null, $addon = "", $fn = null) {
         $input = is_string($input) ? explode(' ', $input) : (array) $input;
-        $as = URL::path($as);
+        $as = To::path($as);
         $cache = strpos($as, ROOT) === 0 ? $as : ASSET . DS . $as;
         $cache_log = SCRAP . DS . 'asset.' . md5($cache) . '.log';
         $ok = file_exists($cache) && file_exists($cache_log);
         $logs = $ok ? file($cache_log, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
         if (count($logs) === count($input)) {
             foreach ($logs as $k => $v) {
-                if ($i = Filter::NS('asset:path', $this->path($input[$k]))) {
+                if ($i = Hook::NS('asset:path', [], self::path($input[$k]))) {
                     if (!file_exists($i) || (int) filemtime($i) !== (int) $v) {
                         $ok = false;
                         break;
@@ -128,8 +128,8 @@ class Asset extends DNA {
             if (Is::these(['gif', 'jpeg', 'jpg', 'png'])->has($x)) {
                 $tropes = [];
                 foreach ($input as $i) {
-                    $i = Filter::NS('asset:input', $i);
-                    if (!$this->blocked($i) && $i = Filter::NS('asset:path', $this->path($i), [$i])) {
+                    $i = Hook::NS('asset:input', [], $i);
+                    if (!self::blocked($i) && $i = Hook::NS('asset:path', [$i], self::path($i))) {
                         if (!file_exists($i)) continue;
                         $unix .= filemtime($i) . N;
                         $tropes[] = $i;
@@ -141,12 +141,12 @@ class Asset extends DNA {
                 }
             } else {
                 foreach ($input as $i) {
-                    $i = Filter::NS('asset:input', $i);
-                    if (!$this->blocked($i) && $i = Filter::NS('asset:path', $this->path($i), [$i])) {
+                    $i = Hook::NS('asset:input', [], $i);
+                    if (!self::blocked($i) && $i = Hook::NS('asset:path', [$i], self::path($i))) {
                         if (!file_exists($i)) continue;
                         $unix .= filemtime($i) . N;
-                        $c = Filter::NS('asset:source.i', file_get_contents($i) . N, [$i]);
-                        $content .= Filter::NS(['asset:source.o', 'asset:source'], $c, [$i]);
+                        $c = Hook::NS('asset:source.input', [$i], trim(file_get_contents($i)) . N);
+                        $content .= Hook::NS(['asset:source.output', 'asset:source'], [$i], $c);
                     }
                 }
                 if ($content = trim($content)) {
@@ -169,31 +169,31 @@ class Asset extends DNA {
     }
 
     // Check for loaded asset(s)
-    public function loaded($input = null, $fail = false) {
+    public static function loaded($input = null, $fail = false) {
         if ($input !== null) {
-            return $this->jot[1][$input] ?? $fail;
+            return self::$log[1][$input] ?? $fail;
         }
-        return !empty($this->jot[1]) ? $this->jot[1] : $fail;
+        return !empty(self::$log[1]) ? self::$log[1] : $fail;
     }
 
     // Check if asset does exist
-    public function exist($input, $fail = false) {
-        return $this->url($input, null) ?? $fail;
+    public static function exist($input, $fail = false) {
+        return self::url($input, null) ?? $fail;
     }
 
     // Do not let the `Asset` loads these file(s) ...
-    public function block($input) {
+    public static function block($input) {
         foreach ((array) $input as $i) {
-            $this->jot[0][$i] = $this->jot[1][$i] ?? 1;
+            self::$log[0][$i] = self::$log[1][$i] ?? 1;
         }
     }
 
     // Check for blocked asset(s)
-    public function blocked($input, $fail = false) {
+    public static function blocked($input, $fail = false) {
         if ($input !== null) {
-            return $this->jot[0][$input] ?? $fail;
+            return self::$log[0][$input] ?? $fail;
         }
-        return !empty($this->jot[0]) ? $this->jot[0] : $fail;
+        return !empty(self::$log[0]) ? self::$log[0] : $fail;
     }
 
 }

@@ -1,8 +1,8 @@
 <?php
 
-class Cookie extends DNA {
+class Cookie extends __ {
 
-    public function set($id, $lot = "", $c = []) {
+    public static function set($id, $lot = "", $c = []) {
         $cc = [
             'expire' => 1,
             'path' => '/',
@@ -31,14 +31,14 @@ class Cookie extends DNA {
         call_user_func_array('setcookie', $cc);
     }
 
-    public function get($id = null, $fail = "") {
+    public static function get($id = null, $fail = "") {
         if ($id === null) return $_COOKIE ?? $fail;
         $c = isset($_COOKIE) ? e($_COOKIE) : $fail;
         $v = Anemon::get($c, $id, $fail);
         return !is_array($v) && To::anemon(To::base64_v($v)) !== null ? To::anemon(To::base64_v($v)) : $v;
     }
 
-    public function reset($id = null) {
+    public static function reset($id = null) {
         if ($id === null) {
             $_COOKIE = [];
             foreach (explode(';', $_SERVER['HTTP_COOKIE'] ?? "") as $v) {

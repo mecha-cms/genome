@@ -1,14 +1,14 @@
 <?php
 
-class URL extends DNA {
+class URL extends __ {
 
     // `http://user:pass@host:9090/path?key=value#hash`
-    public function extract($key = null, $input = null) {
+    public static function extract($key = null, $input = null, $fail = false) {
         if (!$input) {
             $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
             $protocol = $scheme . '://';
             $host = $_SERVER['HTTP_HOST'];
-            $sub = trim(Path::url(Path::D($_SERVER['SCRIPT_NAME'])), '/');
+            $sub = trim(To::url(Path::D($_SERVER['SCRIPT_NAME'])), '/');
             $url = rtrim($protocol . $host  . '/' . $sub, '/');
             $s = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
             $path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $sub . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $s;
@@ -28,7 +28,7 @@ class URL extends DNA {
                 'origin' => null,
                 'hash' => null
             ];
-            return $key ? $output[$key] ?? null : $output;
+            return $key ? $output[$key] ?? $fail : $output;
         }
         $s = parse_url($input);
         $q = trim(str_replace('&amp;', '&', $s['query']));
@@ -42,28 +42,54 @@ class URL extends DNA {
             'pass' => $s['pass'],
             'sub' => null,
             'url' => $s['scheme'] . '://' . $s['host'],
-            'path' => ltrim($s['path'], '/'),
+            'path' => trim($s['path'], '/'),
             'query' => $q ? '?' . $q : "",
             'current' => trim(preg_replace('#[?&\#].*$#', "", $input), '/'),
             'origin' => null,
             'hash' => $h ? '#' . $h : ""
         ];
-        return $key ? $output[$key] ?? null : $output;
+        return $key ? $output[$key] ?? $fail : $output;
     }
 
-    public function path($url = X) {
-        if ($url === X) {
-            return $this->extract('path');
+    public static function long($url, $root = true) {
+        if(!is_string($url)) return $url;
+        // Relative to the root domain
+        if($root && strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
+            return trim(self::protocol() . self::host() . '/' . ltrim($url, '/'), '/');
         }
-        return str_replace([X . $this->url(), '\\', '/', X], [ROOT, DS, DS, ""], X . $url);
+        if(
+            strpos($url, '://') === false &&
+            strpos($url, '//') !== 0 &&
+            strpos($url, '?') !== 0 &&
+            strpos($url, '&') !== 0 &&
+            strpos($url, '#') !== 0 &&
+            strpos($url, 'javascript:') !== 0
+        ) {
+            return str_replace([
+                '\\',
+                '/?',
+                '/&',
+                '/#'
+            ], [
+                '/',
+                '?',
+                '&',
+                '#'
+            ], trim(self::url() . '/' . $url, '/'));
+        }
+        return $url;
     }
 
-    public function get($key = null, $fail = false) {
-        return $this->extract($key) ?? $fail;
+    public static function short($url, $root = true) {
+        $url = str_replace([X . self::protocol() . self::host(), X], "", X . $url);
+        return $root ? $url : ltrim($url, '/');
     }
 
-    public function __call($kin, $lot = []) {
-        return $this->get($kin, array_shift($lot)) ?? parent::__call($kin, $lot);
+    public static function __callStatic($kin, $lot = []) {
+        if (!self::kin($kin)) {
+            return self::extract($kin, null, array_shift($lot));
+        }
+        return parent::__callStatic($kin, $lot);
     }
 
 }

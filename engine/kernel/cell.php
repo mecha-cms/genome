@@ -1,8 +1,8 @@
 <?php
 
-class Cell extends DNA {
+class Cell extends __ {
 
-    protected $_data = [
+    protected static $data = [
         'src' => null,
         'alt' => null,
         'width' => null,
@@ -29,22 +29,22 @@ class Cell extends DNA {
         'style' => null
     ];
 
-    protected $_unit = [];
-    protected $_dent = [];
+    protected static $unit = [];
+    protected static $dent = [];
 
     // Indent ...
-    public function dent($i) {
+    public static function dent($i) {
         return is_numeric($i) ? str_repeat(I, (int) $i) : $i;
     }
 
     // Encode all HTML entit(y|ies)
-    public function x($v) {
+    public static function x($v) {
         if (!is_string($v)) return $v;
         return To::html_x($v);
     }
 
     // Setup HTML attribute(s) ...
-    public function bond($a, $unit = "") {
+    public static function bond($a, $unit = "") {
         if (!is_array($a)) {
             $data = trim((string) $a);
             return strlen($data) ? ' ' . $data : ""; // no filter(s) applied ...
@@ -52,7 +52,7 @@ class Cell extends DNA {
         $output = "";
         $c = strtolower(static::class);
         $unit = $unit ? '.' . $unit : "";
-        $array = Filter::NS($c . ':bond' . $unit, array_replace($this->_data, $a), [$unit]);
+        $array = Hook::NS($c . ':bond' . $unit, [$unit], array_replace(self::$data, $a));
         // HTML5 `data-*` attribute
         if (isset($a['data']) && is_array($a['data'])) {
             foreach ($a['data'] as $k => $v) {
@@ -83,21 +83,21 @@ class Cell extends DNA {
     }
 
     // Base HTML tag constructor
-    public function unit($unit = 'html', $content = "", $data = [], $dent = 0) {
-        $dent = $this->dent($dent);
+    public static static function unit($unit = 'html', $content = "", $data = [], $dent = 0) {
+        $dent = self::dent($dent);
         $c = strtolower(static::class);
-        $s  = $dent . '<' . $unit . $this->bond($data, $unit);
+        $s  = $dent . '<' . $unit . self::bond($data, $unit);
         $s .= $content === false ? ES : '>' . ($content ?? "") . '</' . $unit . '>';
-        return Filter::NS($c . ':unit.' . $unit, $s, [$data]);
+        return Hook::NS($c . ':unit.' . $unit, [$data], $s);
     }
 
     // Alias for `Cell::unit()`
-    public function unite(...$lot) {
-        return call_user_func_array([$this, 'unit'], $lot);
+    public static function unite(...$lot) {
+        return call_user_func_array('self::unit', $lot);
     }
 
     // Inverse version of `Cell::unite()`
-    public function apart($input, $unit = [], $data = [], $eval = true) {
+    public static function apart($input, $unit = [], $data = [], $eval = true) {
         $E = ['<', '>', '/', '[\w:.-]+'];
         $A = ['=', '"', '"', ' ', '[\w:.-]+'];
         $E0 = preg_quote($E[0], '/');
@@ -107,64 +107,64 @@ class Cell extends DNA {
         $A1 = preg_quote($A[1], '/');
         $A2 = preg_quote($A[2], '/');
         $A3 = preg_quote($A[3], '/');
-        $results = [
+        $output = [
             'unit' => null,
             'data' => [],
             'content' => null
         ];
         if(!preg_match('/^\s*' . $E0 . '(' . $E[3] . ')(?:' . $A3 . '*' . $E2 . '?' . $E1 . '|(' . $A3 . '+.*?)' . $A3 . '*' . $E2 . '?' . $E1 . ')(([\s\S]*?)' . $E0 . $E2 . '\1' . $E1 . ')?\s*$/s', $input, $m)) return false;
-        $results['unit'] = $m[1];
-        $results['content'] = $m[4] ?? null;
+        $output['unit'] = $m[1];
+        $output['content'] = $m[4] ?? null;
         if (!empty($m[2]) && preg_match_all('/' . $A3 . '+(' . $A[4] . ')(?:' . $A0 . $A1 . '([\s\S]*?)' . $A2 . ')?/s', $m[2], $mm)) {
             foreach ($mm[1] as $k => $v) {
                 $s = $eval ? e($mm[2][$k]) : $mm[2][$k];
                 if ($s === "" && strpos($mm[0][$k], $A[0] . $A[1] . $A[2]) === false) {
                     $s = $v;
                 }
-                $results['data'][$v] = $s;
+                $output['data'][$v] = $s;
             }
         }
-        return $results;
+        return $output;
     }
 
     // HTML comment
-    public function __($content = "", $dent = 0, $block = N) {
-        $dent = $this->dent($dent);
+    public static function __($content = "", $dent = 0, $block = N) {
+        $dent = self::dent($dent);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
             $end = $block . $dent;
         }
         $c = strtolower(static::class);
-        return Filter::NS($c . ':unit.__', $dent . '<!--' . $begin . $content . $end . '-->');
+        return Hook::NS($c . ':unit.__', [], $dent . '<!--' . $begin . $content . $end . '-->');
     }
 
     // Base HTML tag open
-    public function begin($unit = 'html', $data = [], $dent = 0) {
-        $dent = $this->dent($dent);
-        $this->_unit[] = $unit;
-        $this->_dent[] = $dent;
+    public static function begin($unit = 'html', $data = [], $dent = 0) {
+        $dent = self::dent($dent);
+        self::_unit[] = $unit;
+        self::$dent[] = $dent;
         $c = strtolower(static::class);
-        return Filter::NS($c . ':begin.' . $unit, $dent . '<' . $unit . $this->bond($data, $unit) . '>', [$data]);
+        return Hook::NS($c . ':begin.' . $unit, [$data], $dent . '<' . $unit . self::bond($data, $unit) . '>');
     }
 
     // Base HTML tag close
-    public function end($unit = null, $dent = null) {
-        $unit = $unit ?? array_pop($this->_unit);
-        $dent = $dent ?? array_pop($this->_dent) ?? "";
+    public static function end($unit = null, $dent = null) {
+        $unit = $unit ?? array_pop(self::_unit);
+        $dent = $dent ?? array_pop(self::$dent) ?? "";
         $c = strtolower(static::class);
-        return Filter::NS($c . ':end.' . $unit, $unit ? $dent . '</' . $unit . '>' : "");
+        return Hook::NS($c . ':end.' . $unit, [], $unit ? $dent . '</' . $unit . '>' : "");
     }
 
-    // Calling `Cell::div($x)` will be the same as calling `Cell::unit('div', $x)`
-    // if custom method called `Cell::div()` is not defined yet by the `Cell::plug()`
-    public function __call($kin, $lot = []) {
+    // Calling `Cell::div($x)` is the same as calling `Cell::unit('div', $x)` when
+    // custom method called `Cell::div()` is not defined yet by the `Cell::plug()`
+    public static function __callStatic($kin, $lot = []) {
         $c = static::class;
-        if (!isset($this->_[1][$c][$kin])) {
+        if (!self::kin($kin)) {
             array_unshift($lot, $kin);
-            return call_user_func_array([$this, 'unit'], $lot);
+            return call_user_func_array('self::unit', $lot);
         }
-        $s = parent::__call($kin, $lot);
-        return Filter::NS(strtolower($c) . ':gen.' . $kin, $s, [$lot]);
+        $s = parent::__callStatic($kin, $lot);
+        return Hook::NS(strtolower($c) . ':gen.' . $kin, [$lot], $s);
     }
 
 }

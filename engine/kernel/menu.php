@@ -1,10 +1,10 @@
 <?php
 
-class Menu extends DNA {
+class Menu extends __ {
 
-    protected $lot = [];
+    protected static $lot = [];
 
-    public $config = [
+    public static $config = [
         'classes' => [
             'parent' => 'parent',
             'child' => 'child child-%d',
@@ -13,40 +13,39 @@ class Menu extends DNA {
         ]
     ];
 
-    // Add
-    public function add($id, $menus = []) {
+    // Set
+    public static function set($id, $menus = []) {
         $c = static::class;
-        if (!isset($this->lot[0][$c][$id])) {
-            $this->lot[1][$c][$id] = $menus;
+        if (!isset(self::$lot[0][$c][$id])) {
+            self::$lot[1][$c][$id] = $menus;
         }
     }
 
-    // Remove
-    public function remove($id = null) {
+    // Get
+    public function get($id = null, $fail = false) {
         $c = static::class;
-        $this->lot[0][$c][$id] = $this->lot[1][$c][$id] ?? 1;
         if ($id !== null) {
-            unset($this->lot[1][$c][$id]);
+            return self::$lot[1][$c][$id] ?? $fail;
+        }
+        return !empty(self::$lot[1][$c]) ? self::$lot[1][$c] : $fail;
+    }
+
+    // Reset
+    public static function reset($id = null) {
+        $c = static::class;
+        self::$lot[0][$c][$id] = self::$lot[1][$c][$id] ?? 1;
+        if ($id !== null) {
+            unset(self::$lot[1][$c][$id]);
         } else {
-            $this->lot[1][$c] = [];
+            self::$lot[1][$c] = [];
         }
-    }
-
-    // Check
-    public function exist($id = null, $fail = false) {
-        $c = static::class;
-        if ($id !== null) {
-            return $this->lot[1][$c][$id] ?? $fail;
-        }
-        return !empty($this->lot[1][$c]) ? $this->lot[1][$c] : $fail;
     }
 
     // Render as HTML
     public static function __callStatic($id, $lot = []) {
         $c = static::class;
-        $tree = new Tree();
-        $s = $this->config['classes'];
-        $tree->config = [
+        $s = self::$config['classes'];
+        $tree = new Tree([
             'trunk' => $type,
             'branch' => $type,
             'twig' => 'li',
@@ -57,16 +56,16 @@ class Menu extends DNA {
                 'current' => $s['current'],
                 'chink' => $s['separator']
             ]
-        ];
-        if (!isset($this->lot[1][$c][$id])) {
+        ]);
+        if (!isset(self::$lot[1][$c][$id])) {
             return false;
         }
         $AD = ['ul', "", $id . ':'];
         $lot = Anemon::extend($AD, $lot);
         $type = $lot[0];
-        $lot[0] = Filter::NS('menu:input', $this->lot[1][$c][$id], [$id]);
+        $lot[0] = Hook::NS('menu:input', [$id], self::$lot[1][$c][$id]);
         if (!is_array($lot[0])) return "";
-        return Filter::NS('menu:output', $tree->grow($lot), [$id]);
+        return Hook::NS('menu:output', [$id], $tree->grow($lot));
     }
 
 }

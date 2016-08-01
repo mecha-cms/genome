@@ -1,121 +1,85 @@
 <?php
 
-/**
- * ====================================================================
- *  CONVERT ARRAY INTO HTML LIST WITH/WITHOUT LINK(S)
- * ====================================================================
- *
- * -- CODE: -----------------------------------------------------------
- *
- *    $seeds = array(
- *        'Example 1' => '/',
- *        'Example 2' => '#example',
- *        'Example 3' => '/example',
- *        'Example 4' => array(
- *            'Example 4.1' => '/example/example'
- *        ),
- *        'Example 5 (/parent)' => array(
- *            'Example 5.1' => '/parent/child-1',
- *            'Example 5.2' => '/parent/child-2'
- *        ),
- *        '|',
- *        'Text 1',
- *        'Text 2' => null,
- *        'Text 3' => false,
- *        'Text 3' => 'false'
- *    );
- *
- *    Tree::$config['trunk'] = 'ul';
- *    echo Tree::grow($seeds);
- *
- * --------------------------------------------------------------------
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *  Parameter | Type   | Description
- *  --------- | ------ | ----------------------------------------------
- *  $array    | array  | Array of tree item
- *  $indent   | string | Depth extra before each tree group/tree item
- *  $NS       | string | Filter prefix for the generated tree output
- *  --------- | ------ | ----------------------------------------------
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- */
+class Tree extends __ {
 
-class Tree extends DNA {
-
-    public $config = array(
+    public $config = [
         'trunk' => 'ul',
         'branch' => 'ul',
         'twig' => 'li',
-        'classes' => array(
+        'classes' => [
             'trunk' => 'trunk',
             'branch' => 'branch branch-%d',
             'twig' => 'twig',
             'current' => 'current',
             'chink' => 'chink'
-        )
-    );
+        ]
+    ];
 
-    protected function _create($array, $indent = "", $NS = "", $i = 0) {
-        $c_url = Config::get('url');
-        $c_url_current = Config::get('url_current');
-        $c_element = $this->config;
-        $c_class = $c_element['classes'];
-        $html = $indent . str_repeat(I, $i) . '<' . $c_element[$i === 0 ? 'trunk' : 'branch'] . ($i === 0 ? ($c_class['trunk'] !== false ? ' class="' . $c_class['trunk'] . '"' : "") : ($c_class['branch'] !== false ? ' class="' . sprintf($c_class['branch'], $i / 2) . '"' : "")) . '>' . NL;
-        foreach ($array as $key => $value) {
-            if ( !is_array($value)) {
-                $url = Converter::url($value);
-                $hole = $value === false ? ' ' . $c_class['chink'] : "";
-                $current = $url === $c_url_current || ($url !== $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' ' . $c_class['current'] : "";
-                $c = trim(($c_class['twig'] !== false ? $c_class['twig'] : "") . $hole . $current);
-                $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
-                if ($value !== false) {
-                    // List item without link: `array('foo')`
-                    if (is_int($key)) {
-                        $twig .= Filter::NS($NS . 'anchor', '<span class="a" tabindex="0">' . $value . '</span>');
-                    // List item without link: `array('foo' => null)`
-                    } elseif (is_null($value)) {
-                        $twig .= Filter::NS($NS . 'anchor', '<span class="a" tabindex="0">' . $key . '</span>');
-                    // List item with link: `array('foo' => '/')`
+	public function __construct($config = []) {
+		Anemon::extend($this->config, $config);
+		return $this;
+	}
+
+    protected function _grow($tree, $dent = "", $NS = "", $i = 0) {
+        $c_u = URL::long();
+        $c_u_c = URL::current();
+        $c_c = $this->config;
+        $c_c_c = $c_c['classes'];
+        $cell = $dent . str_repeat(I, $i) . '<' . $c_c[$i === 0 ? 'trunk' : 'branch'] . ($i === 0 ? ($c_c_c['trunk'] !== false ? ' class="' . $c_c_c['trunk'] . '"' : "") : ($c_c_c['branch'] !== false ? ' class="' . sprintf($c_c_c['branch'], $i / 2) . '"' : "")) . '>' . N;
+        foreach ($tree as $k => $v) {
+            if (!Is::anemon($v)) {
+                $url = URL::long($v);
+                $hole = $v === false ? ' ' . $c_c_c['chink'] : "";
+                $current = $url === $c_u_c || ($url !== $c_u && strpos($c_u_c . '/', $url . '/') === 0) ? ' ' . $c_c_c['current'] : "";
+                $c = trim(($c_c_c['twig'] !== false ? $c_c_c['twig'] : "") . $hole . $current);
+                $twig = '<' . $c_c['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
+                if ($v !== false) {
+                    // List item w/o anchor: `['foo']`
+                    if (is_int($k)) {
+                        $twig .= Hook::NS($NS . 'anchor', [], '<span class="a" tabindex="0">' . $v . '</span>');
+                    // List item w/o anchor: `['foo' => null]`
+                    } elseif ($v === null) {
+                        $twig .= Hook::NS($NS . 'anchor', [], '<span class="a" tabindex="0">' . $k . '</span>');
+                    // List item w/ anchor: `['foo' => '/']`
                     } else {
-                        $url = Filter::NS($NS . 'url', $url);
-                        $twig .= Filter::NS($NS . 'anchor', '<a href="' . $url . '">' . $key . '</a>');
+                        $url = Hook::NS($NS . 'url', [], $url);
+                        $twig .= Hook::NS($NS . 'anchor', [], '<a href="' . $url . '">' . $k . '</a>');
                     }
                 }
-                $s = explode(' ', $c_element['twig']);
+                $s = explode(' ', $c_c['twig']);
                 $s = $s[0];
-                $html .= $indent . str_repeat(I, $i + 1) . Filter::NS($NS . 'twig', $twig . '</' . $s . '>', $i + 1) . NL;
+                $cell .= $dent . str_repeat(I, $i + 1) . Hook::NS($NS . 'twig', [$i + 1], $twig . '</' . $s . '>') . N;
             } else {
-                // `text (path/to/url)`
-                if (preg_match('#^\s*(.*?)\s*\((.*?)\)\s*$#', $key, $match)) {
-                    $_key = $match[1];
-                    $_value = trim($match[2]) !== "" ? Converter::url($match[2]) : '#';
+                // `text: path/to/url`
+                if (preg_match('#^\s*(.*?)\s*\:\s*(.*?)\s*$#', $k, $m)) {
+                    $_k = $m[1];
+                    $_v = trim($m[2]) !== "" ? URL::long($m[2]) : '#';
                 } else {
-                    $_key = $key;
-                    $_value = null;
+                    $_k = $k;
+                    $_v = null;
                 }
-                $url = Filter::NS($NS . 'url', $_value);
-                $s = explode(' ', $c_element['branch']);
+                $url = Hook::NS($NS . 'url', $_v);
+                $s = explode(' ', $c_c['branch']);
                 $s = ' ' . $s[0];
-                $current = $url === $c_url_current || ($url !== $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' ' . $c_class['current'] : "";
-                $c = trim(($c_class['twig'] !== false ? $c_class['twig'] : "") . $current . $s);
-                $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
-                $twig .= NL . $indent . str_repeat(I, $i + 2);
-                $twig .= Filter::NS($NS . 'anchor', $_value !== null ? '<a href="' . $url . '">' . $_key . '</a>' : '<span class="a" tabindex="0">' . $_key . '</span>');
-                $twig .= NL . $this->_create($value, $indent, $NS, $i + 2);
-                $twig .= $indent . str_repeat(I, $i + 1);
-                $s = explode(' ', $c_element['twig']);
+                $current = $url === $c_u_c || ($url !== $c_u && strpos($c_u_c . '/', $url . '/') === 0) ? ' ' . $c_c_c['current'] : "";
+                $c = trim(($c_c_c['twig'] !== false ? $c_c_c['twig'] : "") . $current . $s);
+                $twig = '<' . $c_c['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
+                $twig .= N . $dent . str_repeat(I, $i + 2);
+                $twig .= Hook::NS($NS . 'anchor', [], $_v !== null ? '<a href="' . $url . '">' . $_k . '</a>' : '<span class="a" tabindex="0">' . $_k . '</span>');
+                $twig .= N . $this->_grow($v, $dent, $NS, $i + 2);
+                $twig .= $dent . str_repeat(I, $i + 1);
+                $s = explode(' ', $c_c['twig']);
                 $s = $s[0];
-                $html .= $indent . str_repeat(I, $i + 1) . Filter::NS($NS . 'twig', $twig . '</' . $s . '>', $i + 1) . NL;
+                $cell .= $dent . str_repeat(I, $i + 1) . Hook::NS($NS . 'twig', [$i + 1], $twig . '</' . $s . '>') . N;
             }
         }
-        $s = explode(' ', $c_element[$i === 0 ? 'trunk' : 'branch']);
+        $s = explode(' ', $c_c[$i === 0 ? 'trunk' : 'branch']);
         $s = $s[0];
-        return Filter::NS($NS . 'branch', rtrim($html, NL) . ( !empty($array) ? NL . $indent . str_repeat(I, $i) : "") . '</' . $s . '>', $i) . NL;
+        return Hook::NS($NS . 'branch', [$i], rtrim($cell, N) . (!empty($tree) ? N . $dent . str_repeat(I, $i) : "") . '</' . $s . '>') . N;
     }
 
-    public function grow($array = null, $indent = "", $NS = 'tree:') {
-        return O_BEGIN . Filter::NS($NS . 'trunk', rtrim($this->_create($array, $indent, $NS, 0), NL)) . O_END;
+    public function grow($tree = null, $dent = "", $NS = 'tree:') {
+        return CELL_BEGIN . Hook::NS($NS . 'trunk', [], rtrim($this->_grow($tree, $dent, $NS, 0), N)) . CELL_END;
     }
 
 }

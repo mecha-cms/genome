@@ -1,6 +1,6 @@
 <?php
 
-class Image extends DNA {
+class Image extends __ {
 
     public $open = null;
     public $origin = null;
@@ -58,10 +58,10 @@ class Image extends DNA {
         if (is_array($files)) {
             $this->open = [];
             foreach ($files as $file) {
-                $this->open[] = URL::path($file);
+                $this->open[] = To::path($file);
             }
         } else {
-            $this->open = URL::path($files);
+            $this->open = To::path($files);
         }
         $file = is_array($this->open) ? $this->open[0] : $this->open;
         $this->origin = $file;
@@ -107,7 +107,7 @@ class Image extends DNA {
         $this->gen();
         $image = file_get_contents($this->placeholder);
         if ($save !== false) {
-            $save = URL::path($save);
+            $save = To::path($save);
             File::write($image)->saveTo($save);
         }
         header('Content-Type: ' . $this->inspect('mime'));

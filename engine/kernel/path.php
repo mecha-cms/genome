@@ -1,17 +1,6 @@
 <?php
 
-class Path extends DNA {
-
-    public function url($path) {
-        $url = str_replace([ROOT, DS, '\\'], [URL::url(), '/', '/'], $path);
-        // Fix broken external URL `http://://example.com`, `http:////example.com`
-        $url = str_replace(['://://', ':////'], '://', $url);
-        // @ditto `http:example.com`
-        if (strpos($url, URL::scheme() . ':') === 0 && strpos($url, URL::protocol()) !== 0) {
-            $url = str_replace(X . URL::scheme() . ':', URL::protocol(), X . $url);
-        }
-        return $path;
-    }
+class Path extends __ {
 
     public function B($path, $step = 1, $s = DS) {
         if (($s !== DS && $s !== '/') || $step > 1) {

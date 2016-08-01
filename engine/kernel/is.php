@@ -1,24 +1,24 @@
 <?php
 
-class Is extends DNA {
+class Is extends __ {
 
-    protected $bucket = [];
+    protected static $bucket = [];
 
     // Initialize ...
-    public function this($input) {
-        $this->bucket = $input;
-        return $this;
+    public static function this($input) {
+        self::$bucket = $input;
+        return new static;
     }
 
     // @ditto
-    public function these(...$input) {
-        $this->bucket = count((array) $input) === 1 ? (array) a($input) : $input;
-        return $this;
+    public static function these(...$input) {
+        self::$bucket = count((array) $input) === 1 ? (array) a($input) : $input;
+        return new static;
     }
 
-    // Check if `$this->bucket` contains `$s`
-    public function has($s, $all = false, $x = X) {
-        $input = $x . implode($x . $this->bucket) . $x;
+    // Check if `self::$bucket` contains `$s`
+    public static function has($s, $all = false, $x = X) {
+        $input = $x . implode($x . self::$bucket) . $x;
         if (is_array($s)) {
             if (!$all) {
                 foreach ($s as $v) {
@@ -41,7 +41,7 @@ class Is extends DNA {
     }
 
     // Check for empty string, array or object
-    public function void($x) {
+    public static function void($x) {
         return (
             $x === "" ||
             is_string($x) && trim($x) === "" ||
@@ -51,48 +51,48 @@ class Is extends DNA {
     }
 
     // Check for IP address
-    public function ip($x) {
+    public static function ip($x) {
         return filter_var($x, FILTER_VALIDATE_IP);
     }
 
     // Check for URL address
-    public function url($x) {
+    public static function url($x) {
         return filter_var($x, FILTER_VALIDATE_URL);
     }
 
     // Check for email address
-    public function email($x) {
+    public static function email($x) {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
     }
 
     // Check for valid boolean value
-    public function toggle($x) {
+    public static function toggle($x) {
         return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
     // Is equal to `$x`
-    public function eq($x) {
-        return q($this->bucket) === $x;
+    public static function eq($x) {
+        return q(self::$bucket) === $x;
     }
 
     // Is less than `$x`
-    public function lt($x) {
-        return q($this->bucket) < $x;
+    public static function lt($x) {
+        return q(self::$bucket) < $x;
     }
 
     // Is greater than `$x`
-    public function gt($x) {
-        return q($this->bucket) > $x;
+    public static function gt($x) {
+        return q(self::$bucket) > $x;
     }
 
     // Is less than or equal to `$x`
-    public function lte($x) {
-        return q($this->bucket) <= $x;
+    public static function lte($x) {
+        return q(self::$bucket) <= $x;
     }
 
     // Is greater than or equal to `$x`
-    public function gte($x) {
-        return q($this->bucket) >= $x;
+    public static function gte($x) {
+        return q(self::$bucket) >= $x;
     }
 
 }

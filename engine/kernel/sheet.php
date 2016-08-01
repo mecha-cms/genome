@@ -1,22 +1,22 @@
 <?php
 
-class Sheet extends DNA {
+class Sheet extends __ {
 
-    public $sv = ['====', ': '];
-    public $sx = ['&#61;&#61;&#61;&#61;', '&#58; '];
+    public static $sv = ['====', ': ', "\n"];
+    public static $sx = ['&#61;&#61;&#61;&#61;', '&#58;&#32;', '&#10;'];
 
-    protected $open = null;
+    protected $open = "";
     protected $anemon = [];
     protected $anemon_body = 'content';
 
     // Escape ...
     public function x($s) {
-        return str_replace($this->sv, $this->sx, $s);
+        return str_replace(self::$sv, self::$sx, $s);
     }
 
     // Un-Escape ...
     public function v($s) {
-        return str_replace($this->sx, $this->sv, $s);
+        return str_replace(self::$sx, self::$sv, $s);
     }
 
     // Explode ...
@@ -24,11 +24,11 @@ class Sheet extends DNA {
         $input = $input ?? $this->open;
         // By file path or by file content?
         $input = X . n(strpos($input, ROOT) === 0 ? file_get_contents($input) : $input);
-        $sheet = str_replace([X . $this->sv[0] . N, X], "", $sheet);
-        $sheet = explode(N . $this->sv[0] . N, $sheet, 2);
+        $sheet = str_replace([X . self::$sv[0] . N, X], "", $sheet);
+        $sheet = explode(N . self::$sv[0] . N, $sheet, 2);
         // Do header ...
         foreach (explode(N, trim($sheet[0])) as $v) {
-            $s = explode($this->sv[1], $v, 2);
+            $s = explode(self::$sv[1], $v, 2);
             $this->anemon[0][$this->v(trim($s[0]))] = $this->v(trim($s[1] ?? 'false'));
         }
         // Do content ...
@@ -42,12 +42,12 @@ class Sheet extends DNA {
         $input[1] = $input[$this->anemon_body] ?? $input[1] ?? "";
         unset($input[$this->anemon_body]);
         $input[0] = $input[0] ?? $input;
-        $output = $this->sv[0];
+        $output = self::$sv[0];
         foreach ($input[0] as $k => $v) {
             $v = Is::anemon($v) ? To::json($v) : s($v);
-            $output .= N . '@' . $k . $this->sv[1] . $v;
+            $output .= N . '@' . $k . self::$sv[1] . $v;
         }
-        $output .= N . $this->sv[0] . N . N;
+        $output .= N . self::$sv[0] . N . N;
         $output .= $input[1];
         return $output;
     }
@@ -57,11 +57,11 @@ class Sheet extends DNA {
         // Pre-defined sheet data ...
         if ($output) {
             foreach ($output as $k => $v) {
-                $v = Filter::NS($NS . '__' . $k, $v, $lot);
+                $v = Hook::NS($NS . '__' . $k, [$lot], $v);
                 $output['__' . $k] = $v; // private item
-                $v = Filter::NS($NS . 'speck.i', $v, $lot); // before speck set-up
-                $v = Filter::NS($NS . $k, $v, $lot); // public item
-                $v = Filter::NS($NS . 'iota.o', $v, $lot); // after speck set-up
+                $v = Hook::NS($NS . 'speck.input', [$lot], $v); // before speck set-up
+                $v = Hook::NS($NS . $k, [$lot], $v); // public item
+                $v = Hook::NS($NS . 'speck.output', [$lot], $v); // after speck set-up
                 $output[$k] = $v;
             }
         }
@@ -69,18 +69,18 @@ class Sheet extends DNA {
         foreach ($lot[0] as $k => $v) {
             // Remove that `@` prefix
             $k = substr($k, 1);
-            $v = Filter::NS($NS . '__' . $k, $v, $lot);
+            $v = Hook::NS($NS . '__' . $k, [$lot], $v);
             $output['__' . $k] = $v;
-            $v = Filter::NS($NS . 'speck.i', $v, $lot); // before speck set-up
-            $v = Filter::NS($NS . $k, $v, $lot); // public item
-            $v = Filter::NS($NS . 'speck.o', $v, $lot); // after speck set-up
+            $v = Hook::NS($NS . 'speck.input', [$lot], $v); // before speck set-up
+            $v = Hook::NS($NS . $k, [$lot], $v); // public item
+            $v = Hook::NS($NS . 'speck.output', [$lot], $v); // after speck set-up
             $output[$k] = $v;
         }
         // Set sheet content ...
-        $v = Filter::NS($NS . '__' . $this->anemon_body, $lot[1] ?? "", $lot);
-        $v = Filter::NS($NS . 'speck.i', $v, $lot);
-        $v = Filter::NS($NS . $this->anemon_body, $v, $lot);
-        $v = Filter::NS($NS . 'speck.o', $v, $lot);
+        $v = Hook::NS($NS . '__' . $this->anemon_body, [$lot], $lot[1] ?? "");
+        $v = Hook::NS($NS . 'speck.input', [$lot], $v);
+        $v = Hook::NS($NS . $this->anemon_body, [$lot], $v);
+        $v = Hook::NS($NS . 'speck.output', [$lot], $v);
         $output[$this->anemon_body] = $v;
         return $output;
     }
@@ -94,9 +94,10 @@ class Sheet extends DNA {
         return $sheet;
     }
 
-    public function open($path) {
+    public function open($path, $body = 'content') {
         $sheet = new self;
         $sheet->open = $path;
+        $sheet->anemon_body = $body;
         return $sheet;
     }
 

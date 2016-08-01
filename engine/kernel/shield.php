@@ -1,289 +1,121 @@
 <?php
 
-class Shield extends DNA {
+class Shield extends __ {
 
-    protected $lot = [];
+    protected static $lot = [];
 
-    // Compare with current version
-    public function version($info, $v = null) {
+    public static function version($info, $v = null) {
         if (is_string($info)) {
-            $info = $this->info($info)->version;
+            $info = self::info($info)->version;
         } else {
             $info = (object) $info;
-            $info = isset($info->version) ? $info->version : '0.0.0';
+            $info = $info->version ?? '0.0.0';
         }
         return Mecha::version($v, $info);
     }
 
-    /**
-     * Default Shortcut Variable(s)
-     * ----------------------------
-     */
-
-    public function cargo() {
-        $config = Config::get();
+    public static function cargo() {
+        $vault = Vault::get();
         $token = Guardian::token();
-        $results = array(
-            'config' => $config,
-            'speak' => $config->speak,
-            'pager' => $config->pagination,
-            'manager' => Guardian::happy(),
-            'token' => $token,
-            'messages' => Notify::read(false),
-            'message' => Notify::read(false)
-        );
-        foreach (glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
+        $output = [
+            'vault' => $vault,
+            'config' => $vault->config,
+            'speak' => $vault->speak,
+            'token' => $tok,
+            'lot' => []
+        ];
+        foreach (glob(PAGE . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
             $v = Path::B($v);
-            $results[$v . 's'] = isset($config->{$v . 's'}) ? $config->{$v . 's'} : false;
-            $results[$v] = isset($config->{$v}) ? $config->{$v} : false;
+            $output['lot'][$v . 's'] = $vault->lot->{$v . 's'} ?? [];
+            $output['lot'][$v] = $vault->lot->{$v} ?? [];
         }
         Session::set(Guardian::$token, $token);
-        unset($config, $token);
-        $this->lot = array_merge($this->lot, $results);
-        return $this->lot;
+        unset($vault, $token);
+        self::$lot = array_merge(self::$lot, $output);
+        return self::$lot;
     }
 
-    /**
-     * ==========================================================
-     *  GET SHIELD PATH BY ITS NAME
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    echo Shield::path('article');
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function path($name, $fail = false) {
-        $e = File::E($name, "") !== 'php' ? '.php' : "";
-        $name = URL::path($name) . $e;
+    public static function path($input, $fail = false) {
+        $x = Path::X($input, "") !== 'php' ? '.php' : "";
+        $input = To::path($input) . $x;
         // Full path, be quick!
-        if (strpos($name, ROOT) === 0) {
-            return File::exist($name, $fail);
+        if (strpos($input, ROOT) === 0) {
+            return File::exist($input, $fail);
         }
-        if ($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, DS))) {
+        if ($path = File::exist(SHIELD . DS . Config::shield() . DS . ltrim($input, DS))) {
             return $path;
-        } elseif ($path = File::exist(CHUNK . DS . ltrim($name, DS))) {
-            return $path;
-        } elseif ($path = File::exist(ROOT . DS . ltrim($name, DS))) {
+        } elseif ($path = File::exist(ROOT . DS . ltrim($input, DS))) {
             return $path;
         }
         return $fail;
     }
 
-    /**
-     * ==========================================================
-     *  DEFINE/GET SHORTCUT VARIABLE(S)
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    Shield::lot(array(
-     *        'foo' => 'bar',
-     *        'baz' => 'qux'
-     *    ))->attach('page');
-     *
-     * ----------------------------------------------------------
-     *
-     *    $foo = Shield::lot('foo');
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function lot($key = null, $fail = false) {
-        if (is_null($key)) return $this->lot;
-        if ( !is_array($key)) {
-            return isset($this->lot[$key]) ? $this->lot[$key] : $fail;
+    public static function lot($key = null, $fail = false) {
+        if ($key === null) return self::$lot;
+        if (!Is::anemon($key)) {
+            return self::$lot[$key] ?? $fail;
         }
-        $this->lot = array_merge($this->lot, $key);
-        return $this;
+        self::$lot = array_merge(self::$lot, a($key));
+        return new static;
     }
 
-    /**
-     * ==========================================================
-     *  UNDEFINE SHORTCUT VARIABLE(S)
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    Shield::lot($data)->apart('foo')->attach('page');
-     *
-     * ----------------------------------------------------------
-     *
-     *    Shield::lot($data)
-     *          ->apart(array('foo', 'bar'))
-     *          ->attach('page');
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function apart($data) {
+    public static function apart($data) {
         $data = (array) $data;
         foreach ($data as $d) {
-            unset($this->lot[$d]);
+            unset(self::$lot[$d]);
         }
-        return $this;
+        return new static;
     }
 
-    /**
-     * ==========================================================
-     *  GET SHIELD INFO
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    var_dump(Shield::info('normal'));
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function info($folder = null, $array = false) {
-        $config = Config::get();
-        $speak = Config::speak();
-        if (is_null($folder)) {
-            $folder = $config->shield;
-        }
+    public static function info($folder = null, $a = false) {
+        $folder = $folder ?? Config::get('shield');
+        $speak = Speak::get();
         // Check whether the localized "about" file is available
-        if ( !$info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
+        if (!$info = File::exist(SHIELD . DS . $folder . DS . 'about.' . Config::get('language') . '.txt')) {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
-        $info = Page::text(File::open($info)->read(), 'content', 'shield:', array(
-            'id' => $this->exist($folder) ? $folder : false,
-            'title' => Text::parse($folder, '->title'),
-            'author' => $speak->anon,
+        $info = (new Sheet)->open($info, 'content')->read([
+            'id' => Folder::exist($folder),
+            'title' => To::case_tt($folder),
+            'author' => $speak->anonymous,
             'url' => '#',
             'version' => '0.0.0',
-            'content' => Config::speak('notify_not_available', $speak->description)
-        ));
-        return $array ? $info : Mecha::O($info);
+            'content' => Speak::get('notify_not_available', $speak->description)
+        ], 'shield:');
+        return $a ? $info : o($info);
     }
 
-    /**
-     * ==========================================================
-     *  RENDER A PAGE
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    Shield::attach('article');
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function attach($name, $fail = false, $buffer = true) {
-        $path__ = URL::path($name);
-        $s = explode('-', Path::N($name), 2);
-        $G = array('data' => array('name' => $name, 'name_base' => $s[0]));
-        if (strpos($path__, ROOT) === 0 && file_exists($path__) && is_file($path__)) {
+    public static function attach($input, $fail = false, $buffer = true) {
+        $path__ = To::path($input);
+        $s = explode('-', Path::N($input), 2);
+        $G = ['name' => $input, 'name.base' => $s[0]];
+        if (strpos($path__, ROOT) === 0 && is_file($path__)) {
             // do nothing ...
         } else {
-            if ($_path = File::exist($this->path($path__, $fail))) {
+            if ($_path = File::exist(self::path($path__, $fail))) {
                 $path__ = $_path;
-            } elseif ($_path = File::exist($this->path($s[0], $fail))) {
+            } elseif ($_path = File::exist(self::path($s[0], $fail))) {
                 $path__ = $_path;
             } else {
-                Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . $path__ . '</code>'));
+                exit(Speak::get('notify_file_not_exist', '<code>' . $path__ . '</code>'));
             }
         }
-        $lot__ = $this->cargo();
-        $path__ = Filter::apply('shield:path', $path__);
-        $G['data']['lot'] = $lot__;
-        $G['data']['path'] = $path__;
-        $G['data']['path_base'] = $s[0];
+        $lot__ = self::cargo();
+        $path__ = Hook::NS('shield:path', [], $path__);
+        $G['lot'] = $lot__;
+        $G['path'] = $path__;
+        $G['path.base'] = $s[0];
         $out = "";
         // Begin shield
-        Weapon::fire('shield_lot_before', array($G, $G));
-        extract(Filter::apply('shield:lot', $lot__));
-        Weapon::fire('shield_lot_after', array($G, $G));
-        Weapon::fire('shield_before', array($G, $G));
-        if ($buffer) {
-            ob_start(function($content) use($path__, &$out) {
-                $content = Filter::apply('shield:input', $content, $path__);
-                $out = Filter::apply('shield:output', $content, $path__);
-                return $out;
-            });
-            require $path__;
-            ob_end_flush();
-        } else {
-            require $path__;
-        }
-        $G['data']['content'] = $out;
-        // Reset shield lot
-        $this->lot = [];
-        // End shield
-        Weapon::fire('shield_after', array($G, $G));
-        exit;
-    }
-
-    /**
-     * ==========================================================
-     *  RENDER A 404 PAGE
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    Shield::abort();
-     *
-     * ----------------------------------------------------------
-     *
-     *    Shield::abort('404-custom');
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function abort($name = '404', $fail = false, $buffer = true) {
-        $s = explode('-', $name, 2);
-        $s = is_numeric($s[0]) ? $s[0] : '404';
-        Config::set('page_type', $s);
-        HTTP::status((int) $s);
-        $this->attach($name, $fail, $buffer);
-    }
-
-    /**
-     * ==========================================================
-     *  RENDER A SHIELD CHUNK
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    Shield::chunk('header');
-     *
-     * ----------------------------------------------------------
-     *
-     *    Shield::chunk('header', array('title' => 'Yo!'));
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function chunk($name, $fail = false, $buffer = true) {
-        $path__ = URL::path($name);
-        $G = array('data' => array('name' => $name));
-        if (is_array($fail)) {
-            $this->lot = array_merge($this->lot, $fail);
-            $fail = false;
-        }
-        $path__ = Filter::apply('chunk:path', $this->path($path__, $fail));
-        $G['data']['lot'] = $this->lot;
-        $G['data']['path'] = $path__;
-        $out = "";
+        Hook::fire('shield:lot.before', [$G, $G]);
+        extract(Hook::NS('shield:lot', [], $lot__));
+        Hook::fire('shield:lot.after', [$G, $G]);
+        Hook::fire('shield:before', [$G, $G]);
         if ($path__) {
-            // Begin chunk
-            Weapon::fire('chunk_lot_before', array($G, $G));
-            extract(Filter::apply('chunk:lot', $this->lot));
-            Weapon::fire('chunk_lot_after', array($G, $G));
-            Weapon::fire('chunk_before', array($G, $G));
             if ($buffer) {
                 ob_start(function($content) use($path__, &$out) {
-                    $content = Filter::apply('chunk:input', $content, $path__);
-                    $out = Filter::apply('chunk:output', $content, $path__);
+                    $content = Hook::NS('shield:input', [$path__], $content);
+                    $out = Hook::NS('shield:output', [$path__], $content);
                     return $out;
                 });
                 require $path__;
@@ -291,28 +123,59 @@ class Shield extends DNA {
             } else {
                 require $path__;
             }
-            $G['data']['content'] = $out;
+        }
+        $G['content'] = $out;
+        // Reset shield lot
+        self::$lot = [];
+        // End shield
+        Hook::fire('shield:after', [$G, $G]);
+        exit;
+    }
+
+    public static function abort($code = '404', $fail = false, $buffer = true) {
+        $s = explode('-', $code, 2);
+        $s = is_numeric($s[0]) ? $s[0] : '404';
+        Config::set('page_type', $s);
+        HTTP::status((int) $s);
+        self::attach($code, $fail, $buffer);
+    }
+
+    public static function chunk($input, $fail = false, $buffer = true) {
+        $path__ = To::path($input);
+        $G = ['name' => $input];
+        if (Is::anemon($fail)) {
+            self::$lot = array_merge(self::$lot, $fail);
+            $fail = false;
+        }
+        $path__ = Hook::NS('chunk:path', [], self::path($path__, $fail));
+        $G['lot'] = self::$lot;
+        $G['path'] = $path__;
+        $out = "";
+        if ($path__) {
+            // Begin chunk
+            Hook::fire('chunk:lot.before', [$G, $G]);
+            extract(Hook::fire('chunk:lot', [], self::$lot));
+            Hook::fire('chunk:lot.after', [$G, $G]);
+            Hook::fire('chunk:before', [$G, $G]);
+            if ($buffer) {
+                ob_start(function($content) use($path__, &$out) {
+                    $content = Hook::NS('chunk:input', [$path__], $content);
+                    $out = Hook::NS('chunk:output', [$path__], $content);
+                    return $out;
+                });
+                require $path__;
+                ob_end_flush();
+            } else {
+                require $path__;
+            }
+            $G['content'] = $out;
             // End chunk
-            Weapon::fire('chunk_after', array($G, $G));
+            Hook::fire('chunk:after', [$G, $G]);
         }
     }
 
-    /**
-     * ==========================================================
-     *  CHECK IF SHIELD ALREADY EXIST
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    if ($path = Shield::exist('normal')) { ... }
-     *
-     * ----------------------------------------------------------
-     *
-     */
-
-    public function exist($name, $fail = false) {
-        $name = SHIELD . DS . $name;
-        return file_exists($name) && is_dir($name) ? $name : $fail;
+    public static function exist($name, $fail = false) {
+        return Folder::exist(SHIELD . DS . $name, $fail);
     }
 
 }

@@ -3,22 +3,22 @@
 class Form extends Cell {
 
     // `<input>`
-    public function input($type = 'text', $name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) {
+    public static function input($type = 'text', $name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
-        $attr_o['value'] = $this->protect($value);
+        $attr_o['value'] = self::protect($value);
         $attr_o['placeholder'] = $placeholder;
         $attr_o['type'] = $type;
         Anemon::extend($attr_o, $attr); // allow over-write with `$attr`
-        return $this->unit('input', false, $attr_o, $dent);
+        return self::unit('input', false, $attr_o, $dent);
     }
 
     // `<button>`
-    public function button($text = "", $name = null, $type = null, $value = null, $attr = [], $dent = 0) {
+    public static function button($text = "", $name = null, $type = null, $value = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -28,11 +28,11 @@ class Form extends Cell {
         $attr_o['type'] = $type;
         $attr_o['value'] = $value;
         Anemon::extend($attr_o, $attr); // allow over-write with `$attr`
-        return $this->unit('button', $text, $attr_o, $dent);
+        return self::unit('button', $text, $attr_o, $dent);
     }
 
     // `<select>`
-    public function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
+    public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
         $attr_o = [];
         $select = (string) $select;
@@ -51,7 +51,7 @@ class Form extends Cell {
                     $key = substr($key, 1);
                 }
                 $s['label'] = $key;
-                $o .= N . $this->begin('optgroup', $s, $dent + 1);
+                $o .= N . self::begin('optgroup', $s, $dent + 1);
                 foreach ($value as $k => $v) {
                     $s = [];
                     if (strpos($k, '.') === 0) {
@@ -63,9 +63,9 @@ class Form extends Cell {
                         $s['selected'] = true;
                     }
                     $s['value'] = $k;
-                    $o .= N . $this->unit('option', $v, $s, $dent + 2);
+                    $o .= N . self::unit('option', $v, $s, $dent + 2);
                 }
-                $o .= N . $this->end();
+                $o .= N . self::end();
             // option list
             } else {
                 $s = [];
@@ -78,14 +78,14 @@ class Form extends Cell {
                     $s['selected'] = true;
                 }
                 $s['value'] = $key;
-                $o .= N . $this->unit('option', $value, $s, $dent + 1);
+                $o .= N . self::unit('option', $value, $s, $dent + 1);
             }
         }
-        return $this->unit('select', $o . N . ($dent ? str_repeat(I, $dent) : ""), $attr_o, $dent);
+        return self::unit('select', $o . N . ($dent ? str_repeat(I, $dent) : ""), $attr_o, $dent);
     }
 
     // `<textarea>`
-    public function textarea($name = null, $content = "", $placeholder = null, $attr = [], $dent = 0) {
+    public static function textarea($name = null, $content = "", $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -94,7 +94,7 @@ class Form extends Cell {
         $attr_o['name'] = $name;
         $attr_o['placeholder'] = $placeholder;
         Anemon::extend($attr_o, $attr); // allow over-write with `$attr`
-        return $this->unit('textarea', $this->protect($content), $attr_o, $dent);
+        return self::unit('textarea', self::protect($content), $attr_o, $dent);
     }
 
 }
