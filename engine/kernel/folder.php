@@ -1,6 +1,6 @@
 <?php
 
-class Folder extends __ {
+class Folder extends Socket {
 
     public static function create($input, $consent = 0777) {
         foreach((array) $input as $k => $v) {

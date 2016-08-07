@@ -1,55 +1,85 @@
 <?php
 
-class Sheet extends __ {
+class Sheet extends Socket {
 
-    public static $sv = ['====', ': ', "\n"];
-    public static $sx = ['&#61;&#61;&#61;&#61;', '&#58;&#32;', '&#10;'];
+    public static $v = [
+	    "---\n",
+		"\n...",
+		': ',
+		"\n"
+	];
 
+	public static $x = [
+	    '&#x2d;&#x2d;&#x2d;&#xa;',
+		'&#xa;&#x2e;&#x2e;&#x2e;',
+		'&#x3a;&#x20;',
+		'&#xa;'
+	];
+
+	protected $c = "";
+    protected $a = [];
     protected $open = "";
-    protected $anemon = [];
-    protected $anemon_body = 'content';
+
+	public function __construct($c = 'content') {
+		$this->c = $c;
+		return $this;
+	}
+
+	public static function _(...$lot) {
+		return new self($lot[0]);
+	}
+
+    public static function open($path, $c = 'content') {
+        $sheet = self::_($c);
+        $sheet->open = $path;
+        return $sheet;
+    }
 
     // Escape ...
-    public function x($s) {
-        return str_replace(self::$sv, self::$sx, $s);
+    public static function x($s) {
+        return str_replace(self::$v, self::$x, $s);
     }
 
     // Un-Escape ...
-    public function v($s) {
-        return str_replace(self::$sx, self::$sv, $s);
+    public static function v($s) {
+        return str_replace(self::$x, self::$v, $s);
     }
 
-    // Explode ...
-    public function apart($input = null) {
-        $input = $input ?? $this->open;
-        // By file path or by file content?
-        $input = X . n(strpos($input, ROOT) === 0 ? file_get_contents($input) : $input);
-        $sheet = str_replace([X . self::$sv[0] . N, X], "", $sheet);
-        $sheet = explode(N . self::$sv[0] . N, $sheet, 2);
-        // Do header ...
-        foreach (explode(N, trim($sheet[0])) as $v) {
-            $s = explode(self::$sv[1], $v, 2);
-            $this->anemon[0][$this->v(trim($s[0]))] = $this->v(trim($s[1] ?? 'false'));
-        }
-        // Do content ...
-        $this->anemon[1] = $this->v(trim($sheet[1] ?? ""));
-        return $this->anemon;
-    }
+	// Apart ...
+	public function apart() {
+		$input = strpos($input, ROOT) === 0 ? file_get_contents($input) : $input;
+		$input = str_replace([X . self::$v[0], X], "", $input . N . N);
+		$input = explode(self::$v[1] . N . N, $input, 2);
+		// Do header ...
+		foreach ($input[0] as $v) {
+			$v = explode(self::$v[2], $v, 2);
+			$this->a[self::v($v[0])] = self::v($v[1] ?? 'false');
+		}
+		// Do content ...
+		$this->a[$this->c] = trim($input[1] ?? "");
+		return $this->a;
+	}
 
-    // Implode ...
-    public function unite($input = null) {
-        $input = $input ?? $this->anemon;
-        $input[1] = $input[$this->anemon_body] ?? $input[1] ?? "";
-        unset($input[$this->anemon_body]);
-        $input[0] = $input[0] ?? $input;
-        $output = self::$sv[0];
-        foreach ($input[0] as $k => $v) {
-            $v = Is::anemon($v) ? To::json($v) : s($v);
-            $output .= N . '@' . $k . self::$sv[1] . $v;
+	// Unite ...
+	public function unite($input = null, $c = null) {
+		$input = $input ?? $this->a;
+		$c = $c ?? $this->c;
+		$cc = $input[$c] ?? "";
+		$ccc = [];
+		unset($input[$c]);
+		foreach ($input as $k => $v) {
+			$ccc[] = self::x($k) . self::$v[2] . self::x($v);
+		}
+		return self::$v[0] . implode(N, $ccc) . self::$v[1] . ($cc ? N . N . $cc : "");
+	}
+
+	// Create ...
+    public static function data($data, $c = 'content') {
+        $sheet = self::_($c);
+        foreach ($data as $k => $v) {
+            $sheet->a[self::x($k)] = self::x($v);
         }
-        $output .= N . self::$sv[0] . N . N;
-        $output .= $input[1];
-        return $output;
+        return $sheet;
     }
 
     public function read($output = [], $NS = 'sheet:', $lot = []) {
@@ -67,8 +97,6 @@ class Sheet extends __ {
         }
         // Load sheet data ...
         foreach ($lot[0] as $k => $v) {
-            // Remove that `@` prefix
-            $k = substr($k, 1);
             $v = Hook::NS($NS . '__' . $k, [$lot], $v);
             $output['__' . $k] = $v;
             $v = Hook::NS($NS . 'speck.input', [$lot], $v); // before speck set-up
@@ -77,32 +105,16 @@ class Sheet extends __ {
             $output[$k] = $v;
         }
         // Set sheet content ...
-        $v = Hook::NS($NS . '__' . $this->anemon_body, [$lot], $lot[1] ?? "");
+        $v = Hook::NS($NS . '__' . $this->a_body, [$lot], $lot[1] ?? "");
         $v = Hook::NS($NS . 'speck.input', [$lot], $v);
-        $v = Hook::NS($NS . $this->anemon_body, [$lot], $v);
+        $v = Hook::NS($NS . $this->a_body, [$lot], $v);
         $v = Hook::NS($NS . 'speck.output', [$lot], $v);
-        $output[$this->anemon_body] = $v;
+        $output[$this->a_body] = $v;
         return $output;
     }
 
-    public function data($data, $body = 'content') {
-        $sheet = new self;
-        $sheet->anemon_body = $body;
-        foreach ($data as $k => $v) {
-            $sheet->anemon[$sheet->x($k)] = $sheet->x($v);
-        }
-        return $sheet;
-    }
-
-    public function open($path, $body = 'content') {
-        $sheet = new self;
-        $sheet->open = $path;
-        $sheet->anemon_body = $body;
-        return $sheet;
-    }
-
     public function saveTo($path, $consent = 0600) {
-        File::open($path)->write($this->unite($this->anemon))->save($consent);
+        File::open($path)->write($this->unite())->save($consent);
     }
 
     public function save($consent = 0600) {

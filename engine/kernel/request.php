@@ -1,6 +1,6 @@
 <?php
 
-class Request extends __ {
+class Request extends Socket {
 
     public function post($var = null, $fail = false, $eval = true) {
         if ($var === null) {

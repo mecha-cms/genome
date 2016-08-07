@@ -11,3 +11,6 @@ spl_autoload_register(function($worker) {
 foreach (glob(ENGINE . DS . 'plug' . DS . '*.php') as $plug) {
     require $plug;
 }
+
+$config = Config::fire();
+$speak = Config::speak();

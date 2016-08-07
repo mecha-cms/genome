@@ -1,6 +1,6 @@
 <?php
 
-class Cookie extends __ {
+class Cookie extends Socket {
 
     public static function set($id, $lot = "", $c = []) {
         $cc = [
@@ -21,7 +21,7 @@ class Cookie extends __ {
             Anemon::extend($o, implode('.', $a), $lot);
             $lot = $o;
         }
-        array_unshift($cc, [$id, To::base64_x(To::json($lot))]);
+        array_unshift($cc, [$id, To::base64(To::json($lot))]);
         call_user_func_array('setcookie', $cc);
         $cc[0] = '__' . $cc[0];
         $cc[1] = [$cc[2], $cc[3], $cc[4], $cc[5], $cc[6]];
@@ -35,7 +35,7 @@ class Cookie extends __ {
         if ($id === null) return $_COOKIE ?? $fail;
         $c = isset($_COOKIE) ? e($_COOKIE) : $fail;
         $v = Anemon::get($c, $id, $fail);
-        return !is_array($v) && To::anemon(To::base64_v($v)) !== null ? To::anemon(To::base64_v($v)) : $v;
+        return !is_array($v) && To::anemon(From::base64($v)) !== null ? To::anemon(From::base64($v)) : $v;
     }
 
     public static function reset($id = null) {
@@ -54,10 +54,10 @@ class Cookie extends __ {
                     $o = e($_COOKIE[$a[0]]);
                     Anemon::reset($o, $id);
                     foreach($o as $k => $v) {
-                        $_COOKIE[$a[0]][$k] = is_array($v) ? To::base64_x(To::json($v)) : $v;
+                        $_COOKIE[$a[0]][$k] = is_array($v) ? To::base64(To::json($v)) : $v;
                     }
                     $cc = e($_COOKIE['__' . $a[0]]);
-                    array_unshift($cc, [$a[0], To::base64_x(To::json($o))]);
+                    array_unshift($cc, [$a[0], To::base64(To::json($o))]);
                     call_user_func_array('setcookie', $cc);
                 }
             } else {

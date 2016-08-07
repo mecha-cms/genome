@@ -1,6 +1,6 @@
 <?php
 
-class HTTP extends __ {
+class HTTP extends Socket {
 
     public static $message = [
         100 => 'Continue',

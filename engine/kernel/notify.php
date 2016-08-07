@@ -1,6 +1,6 @@
 <?php
 
-class Notify extends __ {
+class Notify extends Socket {
 
     public static $session = 'message';
     public static $x = 0;

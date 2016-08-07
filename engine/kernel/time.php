@@ -1,6 +1,6 @@
 <?php
 
-class Time extends __ {
+class Time extends Socket {
 
     public static function format($input, $f = 'Y-m-d H:i:s') {
         if (is_numeric($input)) return date($f, $input);
@@ -19,7 +19,7 @@ class Time extends __ {
     }
 
     public static function ago($input, $key = null, $compact = true) {
-        $speak = Speak::get();
+        $speak = Config::speak();
         $date = new DateTime();
         $date->setTimestamp((int) self::format($input, 'U'));
         $i = $date->diff(new DateTime('now'));

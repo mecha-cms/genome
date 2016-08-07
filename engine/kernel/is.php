@@ -1,6 +1,6 @@
 <?php
 
-class Is extends __ {
+class Is extends Socket {
 
     protected static $bucket = [];
 

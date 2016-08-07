@@ -1,6 +1,6 @@
 <?php
 
-class Anemon extends __ {
+class Anemon extends Socket {
 
     protected static $bucket = [];
     protected static $i = 0;
@@ -62,7 +62,7 @@ class Anemon extends __ {
     }
 
     public static function eat($group) {
-		$anemon = new Anemon;
+        $anemon = new Anemon;
         $anemon->bucket = $group;
         return $anemon;
     }
@@ -207,7 +207,7 @@ class Anemon extends __ {
     }
 
     // Get selected array value
-    public function get($index = null, $fail = false) {
+    public function _get($index = null, $fail = false) {
         if ($index !== null) {
             if (is_int($index)) {
                 $index = $this->key($index, $index);

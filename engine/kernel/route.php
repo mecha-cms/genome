@@ -1,6 +1,6 @@
 <?php
 
-class Route extends __ {
+class Route extends Socket {
 
     public static $lot = [];
     public static $lot_o = [];

@@ -1,6 +1,6 @@
 <?php
 
-class Shield extends __ {
+class Shield extends Socket {
 
     protected static $lot = [];
 
@@ -15,22 +15,21 @@ class Shield extends __ {
     }
 
     public static function cargo() {
-        $vault = Vault::get();
+        $config = Config::get();
         $token = Guardian::token();
         $output = [
-            'vault' => $vault,
-            'config' => $vault->config,
-            'speak' => $vault->speak,
+            'config' => $config,
+            'speak' => $config->__speak,
             'token' => $tok,
             'lot' => []
         ];
         foreach (glob(PAGE . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
             $v = Path::B($v);
-            $output['lot'][$v . 's'] = $vault->lot->{$v . 's'} ?? [];
-            $output['lot'][$v] = $vault->lot->{$v} ?? [];
+            $output['lot'][$v . 's'] = $config->__lot->{$v . 's'} ?? [];
+            $output['lot'][$v] = $config->__lot->{$v} ?? [];
         }
         Session::set(Guardian::$token, $token);
-        unset($vault, $token);
+        unset($config, $token);
         self::$lot = array_merge(self::$lot, $output);
         return self::$lot;
     }

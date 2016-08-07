@@ -1,14 +1,14 @@
 <?php
 
-// __such_anemon__: check for valid data collection (array or object)
-// __such_json__: check for valid JSON string format
-// __such_serialize__: check for valid serialized string format
+// __is_anemon__: check for valid data collection (array or object)
+// __is_json__: check for valid JSON string format
+// __is_serialize__: check for valid serialized string format
 
-function __such_anemon__($x) {
+function __is_anemon__($x) {
     return is_array($x) || is_object($x);
 }
 
-function __such_json__($x) {
+function __is_json__($x) {
     if (!is_string($x) || !trim($x)) return false;
     return (
         // Maybe an empty string, array or object
@@ -24,9 +24,10 @@ function __such_json__($x) {
     ) && json_decode($x) !== null && json_last_error() !== JSON_ERROR_NONE;
 }
 
-function __such_serialize__($x) {
-    if(!is_string($x) || !trim($x)) return false;
-    return $x === 'N;' || strpos($x, 'a:') === 0 || strpos($x, 'b:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0 || strpos($x, 'O:') === 0;
+function __is_serialize__($x) {
+    if (!is_string($x) || !trim($x)) return false;
+	if ($x === 'N;' || $x === 'b:1;' || $x === 'b:0;') return true;
+    return strpos($x, 'a:') === 0 || strpos($x, 'b:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0 || strpos($x, 'O:') === 0;
 }
 
 // a: convert object to array
@@ -43,7 +44,7 @@ function __such_serialize__($x) {
 // l: convert text to lower case
 // m:
 // n: normalize white-space in string
-// o: convert object to array
+// o: convert array to object
 // p: convert text to pascal case
 // q: quantity (length of string, number or anemon)
 // r:
@@ -57,7 +58,7 @@ function __such_serialize__($x) {
 // z: inspect data in a dump
 
 function a($o) {
-    if (__such_anemon__($o)) {
+    if (__is_anemon__($o)) {
         $o = (array) $o;
         foreach ($o as &$oo) {
             $oo = a($oo);
@@ -82,7 +83,7 @@ function e($x) {
         if ($x === "") return $x;
         if (is_numeric($x)) {
             return strpos($x, '.') !== false ? (float) $x : (int) $x;
-        } elseif (__such_json__($x) && $v = json_decode($input, true)) {
+        } elseif (__is_json__($x) && $v = json_decode($input, true)) {
             return is_array($v) ? e($v) : $v;
         } elseif ($x[0] === '"' && substr($x, -1) === '"' || $x[0] === "'" && substr($x, -1) === "'") {
             return substr(substr($x, 1), 0, -1);
@@ -100,7 +101,7 @@ function e($x) {
             'off' => false
         ];
         return $xx[$x] ?? $x;
-    } elseif (__such_anemon__($x)) {
+    } elseif (__is_anemon__($x)) {
         foreach ($x as &$v) {
             $v = e($v);
         }
@@ -633,7 +634,7 @@ function n($x, $t = I) {
 }
 
 function o($a, $safe = true) {
-    if (__such_anemon__($a)) {
+    if (__is_anemon__($a)) {
         $a = (array) $a;
         $a = $safe && count($a) && array_keys($a) !== range(0, count($a) - 1) ? (object) $a : $a;
         foreach ($a as &$aa) {
@@ -655,7 +656,7 @@ function q($x, $deep = false) {
         return $x;
     } else if (is_string($x)) {
         return function_exists('mb_strlen') ? mb_strlen($x) : strlen($x);
-    } else if (__such_anemon__($x)) {
+    } else if (__is_anemon__($x)) {
         return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
     return count($x);
@@ -664,7 +665,7 @@ function q($x, $deep = false) {
 function r() {}
 
 function s($x) {
-    if (__such_anemon__($x)) {
+    if (__is_anemon__($x)) {
         foreach ($x as &$v) {
             $v = s($v);
         }

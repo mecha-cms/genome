@@ -12,7 +12,7 @@
  *
  */
 
-class Asset extends __ {
+class Asset extends Socket {
 
     public static $log = [];
 

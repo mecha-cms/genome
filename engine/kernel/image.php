@@ -1,6 +1,6 @@
 <?php
 
-class Image extends __ {
+class Image extends Socket {
 
     public $open = null;
     public $origin = null;

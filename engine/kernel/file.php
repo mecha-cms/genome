@@ -1,6 +1,6 @@
 <?php
 
-class File extends __ {
+class File extends Socket {
 
     protected static $open = "";
     protected static $cache = "";

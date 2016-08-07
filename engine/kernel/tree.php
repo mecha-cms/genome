@@ -1,6 +1,6 @@
 <?php
 
-class Tree extends __ {
+class Tree extends Socket {
 
     public $config = [
         'trunk' => 'ul',
@@ -15,10 +15,10 @@ class Tree extends __ {
         ]
     ];
 
-	public function __construct($config = []) {
-		Anemon::extend($this->config, $config);
-		return $this;
-	}
+    public function __construct($config = []) {
+        Anemon::extend($this->config, $config);
+        return $this;
+    }
 
     protected function _grow($tree, $dent = "", $NS = "", $i = 0) {
         $c_u = URL::long();

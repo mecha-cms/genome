@@ -1,6 +1,6 @@
 <?php
 
-class Hook extends __ {
+class Hook extends Socket {
 
     protected static $lot = [];
 

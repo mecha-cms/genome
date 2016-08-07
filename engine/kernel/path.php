@@ -1,6 +1,6 @@
 <?php
 
-class Path extends __ {
+class Path extends Socket {
 
     public function B($path, $step = 1, $s = DS) {
         if (($s !== DS && $s !== '/') || $step > 1) {

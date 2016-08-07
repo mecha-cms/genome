@@ -1,6 +1,6 @@
 <?php
 
-class Session extends __ {
+class Session extends Socket {
 
     public static function set($id, $lot = "") {
         Anemon::set($_SESSION, $id, $lot);

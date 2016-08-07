@@ -1,6 +1,6 @@
 <?php
 
-class Menu extends __ {
+class Menu extends Socket {
 
     protected static $lot = [];
 

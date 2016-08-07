@@ -16,12 +16,12 @@ To::plug('path', function($input) {
 });
 
 function __to_yaml__($input, $c = [], $in = '  ', $dent = 0) {
-    $cc = array_slice(Sheet::$sv, 1);
+    $cc = array_slice(Sheet::$v, 1);
     Anemon::extend($cc, $c);
-    if (__such_anemon__($input)) {
+    if (__is_anemon__($input)) {
         $t = "";
         foreach ($input as $k => $v) {
-            if (!Is::anemon($v)) {
+            if (!__is_anemon__($v)) {
                 $v = s($v);
                 $v = $v !== $cc[1] && strpos($v, $cc[2]) !== false ? json_encode($v) : $v;
                 $T = str_repeat($in, $dent);
@@ -124,14 +124,14 @@ To::plug('json', function($input) {
 });
 
 To::plug('anemon', function($input) {
-    if (__such_anemon__($input)) {
+    if (__is_anemon__($input)) {
         return a($input);
     }
     return (array) json_decode($input, true);
 });
 
 To::plug('yaml', function($input) {
-    if (Is::anemon($input)) return a($input);
+    if (__is_anemon__($input)) return a($input);
     return $input;
 });
 

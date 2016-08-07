@@ -1,10 +1,10 @@
 <?php
 
-class URL extends __ {
+class URL extends Socket {
 
     // `http://user:pass@host:9090/path?key=value#hash`
     public static function extract($key = null, $input = null, $fail = false) {
-        if (!$input) {
+        if ($input === null) {
             $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
             $protocol = $scheme . '://';
             $host = $_SERVER['HTTP_HOST'];
@@ -25,10 +25,10 @@ class URL extends __ {
                 'path' => $path,
                 'query' => null,
                 'current' => $current,
-                'origin' => null,
+                'origin' => Session::get('url.origin', null),
                 'hash' => null
             ];
-            return $key ? $output[$key] ?? $fail : $output;
+            return $key !== null ? ($output[$key] ?? $fail) : $output;
         }
         $s = parse_url($input);
         $q = trim(str_replace('&amp;', '&', $s['query']));
@@ -45,10 +45,10 @@ class URL extends __ {
             'path' => trim($s['path'], '/'),
             'query' => $q ? '?' . $q : "",
             'current' => trim(preg_replace('#[?&\#].*$#', "", $input), '/'),
-            'origin' => null,
+            'origin' => Session::get('url.origin', null),
             'hash' => $h ? '#' . $h : ""
         ];
-        return $key ? $output[$key] ?? $fail : $output;
+        return $key ? ($output[$key] ?? $fail) : $output;
     }
 
     public static function long($url, $root = true) {

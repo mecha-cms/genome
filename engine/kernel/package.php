@@ -1,6 +1,6 @@
 <?php
 
-class Package extends __ {
+class Package extends Socket {
 
     protected $open = null;
     protected $bucket = null;

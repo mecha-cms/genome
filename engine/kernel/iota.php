@@ -1,5 +1,5 @@
 <?php
 
-class Iota extends __ {
+class Iota extends Socket {
 
 }

@@ -1,7 +1,7 @@
 <?php
 
 From::plug('json', function($input) {
-    if (__such_anemon__($input)) {
+    if (__is_anemon__($input)) {
         return a($input);
     }
     return json_decode($input);
@@ -12,7 +12,7 @@ From::plug('base64', function($input) {
 });
 
 function __from_yaml__($input, $c = [], $in = '  ') {
-    $cc = array_slice(Sheet::$sv, 1);
+    $cc = array_slice(Sheet::$v, 1);
     Anemon::extend($cc, $c);
     if (!is_string($input)) return a($input);
     if (!trim($input)) return [];

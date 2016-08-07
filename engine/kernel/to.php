@@ -1,6 +1,6 @@
 <?php
 
-class To extends __ {
+class To extends Socket {
 
     protected static $fn = [];
 

@@ -10,8 +10,9 @@ define('ENGINE', ROOT . DS . 'engine');
 define('LOG', ROOT . DS . 'log');
 define('PLUG', ROOT . DS . 'plug');
 define('LOT', ROOT . DS . 'lot');
-define('ASSET', LOT . DS . 'assets');
-define('SCRAP', LOT . DS . 'scraps');
+define('ASSET', LOT . DS . 'asset');
+define('CACHE', LOT . DS . 'cache');
+define('STATE', LOT . DS . 'state');
 
 define('I', '  '); // Default indent
 define('N', "\n"); // Line break
