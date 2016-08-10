@@ -45,7 +45,7 @@ abstract class Socket {
         $c = static::class;
         if (!isset(self::$_[1][$c][$kin])) {
             echo('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
-			return false;
+            return false;
         }
         return call_user_func_array(self::$_[1][$c][$kin], $lot);
     }

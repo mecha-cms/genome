@@ -18,12 +18,13 @@ class Asset extends Socket {
 
     // Get full version of private asset path
     public static function path($input, $fail = false) {
+        $url = Config::get('url');
         // External URL, nothing to check!
         if (strpos($input, '://') !== false || strpos($input, '//') === 0 || strpos($input, ':') !== false) {
             // Fix broken external URL
             $input = To::url($input);
             // Check if URL very external ...
-            if (strpos($input, URL::url()) !== 0) return $input;
+            if (strpos($input, $url) !== 0) return $input;
         }
         // ... else, try parse it into private asset path
         $input = To::path($input);

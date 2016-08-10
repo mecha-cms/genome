@@ -26,19 +26,21 @@ function __is_json__($x) {
 
 function __is_serialize__($x) {
     if (!is_string($x) || !trim($x)) return false;
-	if ($x === 'N;' || $x === 'b:1;' || $x === 'b:0;') return true;
-    return strpos($x, 'a:') === 0 || strpos($x, 'b:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0 || strpos($x, 'O:') === 0;
+    if ($x === 'N;' || $x === 'b:1;' || $x === 'b:0;') return true;
+    if (strpos($x, ':') === false) return false;
+    if ($x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}') return true;
+    return strpos($x, 'a:') === 0 || strpos($x, 'O:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0;
 }
 
 // a: convert object to array
 // b:
 // c: convert text to camel case
-// d:
+// d: declare class(es)
 // e: evaluate string to their proper data type
 // f: filter/sanitize string
 // g:
 // h: convert text to snake case with `-` (hyphen) as separator by default
-// i:
+// i: include file(s)
 // j:
 // k:
 // l: convert text to lower case
@@ -47,7 +49,7 @@ function __is_serialize__($x) {
 // o: convert array to object
 // p: convert text to pascal case
 // q: quantity (length of string, number or anemon)
-// r:
+// r: require file(s)
 // s: convert data type to their string format
 // t: convert N to a tab
 // u: convert text to upper case
@@ -76,7 +78,13 @@ function c($x) {
     }, $x);
 }
 
-function d() {}
+function d($f) {
+    spl_autoload_register(function($w) use($f) {
+        $w = h(str_replace('\\', '.', $w), '-', '.');
+        $f = $f . DS . $w . '.php';
+        if (file_exists($f)) require $f;
+    });
+}
 
 function e($x) {
     if (is_string($x)) {
@@ -618,7 +626,18 @@ function h($x, $s = '-', $X = "") {
     }, $x), $s, true, 'a-zA-Z\d' . $X);
 }
 
-function i() {}
+function i($a, $b = []) {
+    if (__is_anemon__($b)) {
+        foreach ($b as $v) {
+            include $a . DS . $b;
+        }
+    } else {
+        foreach (glob($a . DS . '*.php') as $v) {
+            include $v;
+        }
+    }
+}
+
 function j() {}
 function k() {}
 
@@ -662,7 +681,17 @@ function q($x, $deep = false) {
     return count($x);
 }
 
-function r() {}
+function r($a, $b = []) {
+    if (__is_anemon__($b)) {
+        foreach ($b as $v) {
+            require $a . DS . $b;
+        }
+    } else {
+        foreach (glob($a . DS . '*.php') as $v) {
+            require $v;
+        }
+    }
+}
 
 function s($x) {
     if (__is_anemon__($x)) {

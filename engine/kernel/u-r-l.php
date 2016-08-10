@@ -4,32 +4,7 @@ class URL extends Socket {
 
     // `http://user:pass@host:9090/path?key=value#hash`
     public static function extract($key = null, $input = null, $fail = false) {
-        if ($input === null) {
-            $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
-            $protocol = $scheme . '://';
-            $host = $_SERVER['HTTP_HOST'];
-            $sub = trim(To::url(Path::D($_SERVER['SCRIPT_NAME'])), '/');
-            $url = rtrim($protocol . $host  . '/' . $sub, '/');
-            $s = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
-            $path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $sub . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $s;
-            $current = rtrim($url . '/' . $path, '/');
-            $output = [
-                'scheme' => $scheme,
-                'protocol' => $protocol,
-                'host' => $host,
-                'port' => (int) $_SERVER['SERVER_PORT'],
-                'user' => null,
-                'pass' => null,
-                'sub' => $sub,
-                'url' => $url,
-                'path' => $path,
-                'query' => null,
-                'current' => $current,
-                'origin' => Session::get('url.origin', null),
-                'hash' => null
-            ];
-            return $key !== null ? ($output[$key] ?? $fail) : $output;
-        }
+        return Config::url($key, $fail);
         $s = parse_url($input);
         $q = trim(str_replace('&amp;', '&', $s['query']));
         $h = trim($s['fragment']);
@@ -48,7 +23,7 @@ class URL extends Socket {
             'origin' => Session::get('url.origin', null),
             'hash' => $h ? '#' . $h : ""
         ];
-        return $key ? ($output[$key] ?? $fail) : $output;
+        return $key ? ($output[$key] ?? $fail) : o($output);
     }
 
     public static function long($url, $root = true) {
@@ -75,7 +50,7 @@ class URL extends Socket {
                 '?',
                 '&',
                 '#'
-            ], trim(self::url() . '/' . $url, '/'));
+            ], trim(self::get() . '/' . $url, '/'));
         }
         return $url;
     }
@@ -85,11 +60,56 @@ class URL extends Socket {
         return $root ? $url : ltrim($url, '/');
     }
 
-    public static function __callStatic($kin, $lot = []) {
-        if (!self::kin($kin)) {
-            return self::extract($kin, null, array_shift($lot));
-        }
-        return parent::__callStatic($kin, $lot);
+    public static function scheme() {
+        return self::extract('scheme');
+    }
+
+    public static function protocol() {
+        return self::extract('protocol');
+    }
+    
+    public static function host() {
+        return self::extract('host');
+    }
+
+    public static function port() {
+        return self::extract('port');
+    }
+
+    public static function user() {
+        return self::extract('user');
+    }
+
+    public static function pass() {
+        return self::extract('pass');
+    }
+
+    public static function sub() {
+        return self::extract('sub');
+    }
+
+    public static function get() {
+        return self::extract('url');
+    }
+
+    public static function path() {
+        return self::extract('path');
+    }
+
+    public static function query() {
+        return self::extract('query');
+    }
+
+    public static function current() {
+        return self::extract('current');
+    }
+
+    public static function origin() {
+        return self::extract('origin');
+    }
+
+    public static function hash() {
+        return self::extract('hash');
     }
 
 }
