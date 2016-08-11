@@ -1,6 +1,6 @@
-<?php
+<?php namespace Gene;
 
-class Union extends Socket {
+class Union extends \Socket {
 
     protected $union = [
         'unit' => ['<', '>', '/', '[\w:.-]+'],
@@ -36,7 +36,7 @@ class Union extends Socket {
     ];
 
     public function __construct($unit = [], $data = []) {
-        Anemon::extend($this->union, [
+        \Anemon::extend($this->union, [
             'unit' => $unit,
             'data' => $data
         ]);
@@ -54,7 +54,7 @@ class Union extends Socket {
     // Encode all union special character(s)
     public function x($v) {
         if (!is_string($v)) return $v;
-        return To::html_x($v);
+        return \To::html_x($v);
     }
 
     // Build union attribute(s) ...
@@ -66,7 +66,7 @@ class Union extends Socket {
         $output = "";
         $c = strtolower(static::class);
         $unit = $unit ? '.' . $unit : "";
-        $array = Hook::NS($c . ':bond' . $unit, [$unit], array_replace(self::$data, $a));
+        $array = \Hook::NS($c . ':bond' . $unit, [$unit], array_replace($this->data, $a));
         // HTML5 `data-*` attribute
         if (isset($a['data']) && is_array($a['data'])) {
             foreach ($a['data'] as $k => $v) {
@@ -103,7 +103,7 @@ class Union extends Socket {
         $u = $this->union['unit'];
         $s  = $dent . $u[0] . $unit . $this->bond($data, $unit);
         $s .= $content === false ? $u[1] : $u[1] . ($content ?? "") . $u[0] . $u[2] . $unit . $u[1];
-        return Hook::NS($c . ':unit.' . $unit, [$data], $s);
+        return \Hook::NS($c . ':unit.' . $unit, [$data], $s);
     }
 
     // Alias for `Cell::unit()`
@@ -151,7 +151,7 @@ class Union extends Socket {
         }
         $c = strtolower(static::class);
         $u = $this->union['__'];
-        return Hook::NS($c . ':unit.__', [], $dent . $u[0] . $begin . $content . $end . $u[1]);
+        return \Hook::NS($c . ':unit.__', [], $dent . $u[0] . $begin . $content . $end . $u[1]);
     }
 
     // Base union tag open
@@ -161,7 +161,7 @@ class Union extends Socket {
         $this->dent[] = $dent;
         $u = $this->union['unit'];
         $c = strtolower(static::class);
-        return Hook::NS($c . ':open.' . $unit, [$data], $dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1]);
+        return \Hook::NS($c . ':open.' . $unit, [$data], $dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1]);
     }
 
     // Base union tag close
@@ -170,12 +170,12 @@ class Union extends Socket {
         $dent = $dent ?? array_pop($this->dent) ?? "";
         $c = strtolower(static::class);
         $u = $this->union['unit'];
-        return Hook::NS($c . ':close.' . $unit, [], $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "");
+        return \Hook::NS($c . ':close.' . $unit, [], $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "");
     }
 
     // Calling `Union::div($x)` is the same as calling `Union::unit('div', $x)` when
     // custom method called `Union::div()` is not defined yet by the `Union::plug()`
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic($kin, $lot) {
         $c = static::class;
         if (!self::kin($kin)) {
             array_unshift($lot, $kin);
@@ -183,7 +183,7 @@ class Union extends Socket {
             return call_user_func_array([$c, 'unit'], $lot);
         }
         $s = parent::__callStatic($kin, $lot);
-        return Hook::NS(strtolower($c) . ':gen.' . $kin, [$lot], $s);
+        return \Hook::NS(strtolower($c) . ':gen.' . $kin, [$lot], $s);
     }
 
 }

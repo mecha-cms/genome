@@ -1,0 +1,8 @@
+foo: Foo
+bar: bar
+baz: Baz
+qux:
+  0: a
+  1: b
+  2: c
+test: Foo bar %s qux.

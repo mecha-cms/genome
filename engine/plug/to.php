@@ -1,6 +1,6 @@
 <?php
 
-To::plug('url', function($input) {
+To::plug('url', function($input) {/*
     $url = URL::extract();
     $input = str_replace([ROOT, DS, '\\'], [$url->url, '/', '/'], $input);
     // Fix broken external URL `http://://example.com`, `http:////example.com`
@@ -8,13 +8,13 @@ To::plug('url', function($input) {
     // @ditto `http:example.com`
     if (strpos($input, $url->scheme . ':') === 0 && strpos($input, $url->protocol) !== 0) {
         $input = str_replace(X . $url->scheme . ':', $url->protocol, X . $input);
-    }
+    }*/
     return $input;
 });
 
-To::plug('path', function($input) {
+To::plug('path', function($input) {/*
     $url = Config::get('url');
-    return str_replace([X . $url, '\\', '/', X], [ROOT, DS, DS, ""], X . $input);
+    return str_replace([X . $url, '\\', '/', X], [ROOT, DS, DS, ""], X . $input);*/
 });
 
 function __to_yaml__($input, $c = [], $in = '  ', $dent = 0) {

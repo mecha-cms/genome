@@ -5,8 +5,8 @@ class Config extends Socket {
     protected static $bucket = [];
 
     public static function set($a, $b = null) {
-        if (Is::anemon($a)) $a = a($a);
-        if (Is::anemon($b)) $b = a($b);
+        if (__is_anemon__($a)) $a = a($a);
+        if (__is_anemon__($b)) $b = a($b);
         $cargo = [];
         if (!is_array($a)) {
             Anemon::set($cargo, $a, $b);
@@ -20,7 +20,7 @@ class Config extends Socket {
 
     public static function get($a = null, $fail = false) {
         if ($a === null) return o(self::$bucket);
-        if (Is::anemon($a)) {
+        if (__is_anemon__($a)) {
             $output = [];
             foreach ($a as $k => $v) {
                 $f = is_array($fail) && array_key_exists($k, $fail) ? $fail[$k] : $fail;
@@ -36,7 +36,7 @@ class Config extends Socket {
     }
 
     public static function reset($k = null) {
-        if ($k === null) {
+        if ($k !== null) {
             Anemon::reset(self::$bucket, $k);
         } else {
             self::$bucket = [];
@@ -48,7 +48,7 @@ class Config extends Socket {
         call_user_func_array('self::set', $lot);
     }
 
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic($kin, $lot) {
         if (!self::kin($kin)) {
             $fail = false;
             if (count($lot)) {

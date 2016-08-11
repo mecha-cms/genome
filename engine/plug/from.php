@@ -12,7 +12,7 @@ From::plug('base64', function($input) {
 });
 
 function __from_yaml__($input, $c = [], $in = '  ') {
-    $cc = array_slice(Sheet::$v, 1);
+    $cc = Gene\Sheet::$v;
     Anemon::extend($cc, $c);
     if (!is_string($input)) return a($input);
     if (!trim($input)) return [];
@@ -21,9 +21,9 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     // Normalize white-space(s)
     $input = n($input);
     // Save `\: ` as `\x1A`
-    $input = str_replace('\\' . $cc[0], X, $input);
+    $input = str_replace('\\' . $cc[2], X, $input);
     $len = strlen($in);
-    foreach (explode($cc[1], $input) as $li) {
+    foreach (explode($cc[3], $input) as $li) {
         $dent = 0;
         $li = rtrim($li);
         // Ignore comment and empty line-break
@@ -32,23 +32,23 @@ function __from_yaml__($input, $c = [], $in = '  ') {
             $dent += 1;
             $li = substr($li, $len);
         }
-        $li = ltrim($li);
+        $li = ltrim($li) . ' ';
         while ($dent < count($data)) {
             array_pop($data);
         }
         // No `: ` ... fix it!
-        if (strpos($li, $cc[0]) === false) {
-            $li = $li . $cc[0] . $li;
+        if (strpos($li, $cc[2]) === false) {
+            $li = $li . $cc[2] . $li;
         // Start with `: `
-        } elseif (strpos($li, $li[0]) === 0) {
+        } elseif (strpos($li, $cc[2]) === 0) {
             $li = $i . $li;
             $i++;
         // else ...
         } else {
             $i = 0;
         }
-        $part = explode($s, $li, 2);
-        $v = trim($part[1]);
+        $part = explode($cc[2], $li, 2);
+        $v = trim($part[1] ?? "");
         // Remove inline comment(s) ...
         if($v && strpos($v, '#') !== false) {
             if($v[0] === '"' || $v[0] === "'") {
@@ -60,7 +60,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
             }
         }
         // Restore `\x1A` as `: `
-        $data[$dent] = str_replace(X, $cc[0], trim($part[0]));
+        $data[$dent] = str_replace(X, $cc[2], trim($part[0]));
         $parent =& $output;
         foreach($data as $k) {
             if(!isset($parent[$k])) {

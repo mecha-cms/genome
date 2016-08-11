@@ -1,19 +1,7 @@
 <?php
 
-Config::plug('fire', function() {
+Config::plug('start', function() {
     $config = State::config();
-    if (!$lang = File::exist(LANGUAGE . DS . $config->language . DS . 'speak.txt')) {
-        $lang = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.txt');
-    }
-    Config::set('__speak', From::yaml(File::open($lang)->read("")));
-    return Config::get();
-});
-
-Config::plug('speak', function($key = null, $lot = []) {
-    if ($key === null) return Config::get('__speak', []);
-});
-
-Config::plug('url', function($key = 'url', $fail = false) {
     $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
     $protocol = $scheme . '://';
     $host = $_SERVER['HTTP_HOST'];
@@ -23,7 +11,7 @@ Config::plug('url', function($key = 'url', $fail = false) {
     $s = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
     $path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $sub . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $s;
     $current = rtrim($url . '/' . $path, '/');
-    $output = [
+    $config['url'] = [
         'scheme' => $scheme,
         'protocol' => $protocol,
         'host' => $host,
@@ -38,5 +26,13 @@ Config::plug('url', function($key = 'url', $fail = false) {
         'origin' => Session::get('url.origin', null),
         'hash' => null
     ];
-    return $key !== true ? ($output[$key] ?? $fail) : o($output);
+    if (!$lang = File::exist(LANGUAGE . DS . $config['language'] . DS . 'speak.txt')) {
+        $lang = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.txt');
+    }
+    $config['__i18n'] = From::yaml(File::open($lang)->read(""));
+    Config::set($config);
+});
+
+Config::plug('url', function($key = 'url', $fail = false) {
+    return Config::get($key !== true ? 'url.' . $key : 'url', $fail);
 });

@@ -1,16 +1,18 @@
 <?php
 
-require __DIR__ . DS . 'function.php';
+require __DIR__ . DS . 'kernel.php';
 
 d(ENGINE . DS . 'kernel');
 
-foreach (glob(ENGINE . DS . 'plug' . DS . '*.php') as $w) {
-    $c = h(str_replace('\\', '.', pathinfo($w, PATHINFO_FILENAME)), '-', '.');
-    if (!class_exists($c)) continue;
-    require $w;
+foreach (glob(ENGINE . DS . 'plug' . DS . '*.php') as $v) {
+    if (class_exists(c(h(str_replace('\\', '.', pathinfo($v, PATHINFO_FILENAME)), '-', '.')))) {
+        require $v;
+    }
 }
 
-$config = Config::fire();
-$speak = Config::speak();var_dump($config);
+File::$config['file_extension_allow'] = array_unique(array_merge(FONT_X, IMAGE_X, MEDIA_X, PACKAGE_X, SCRIPT_X));
 
-require SHIELD . DS . $config->shield . DS . 'function.php';
+Config::start();
+
+$config = Gene\Config::_();
+$i18n = Gene\I18N::_();

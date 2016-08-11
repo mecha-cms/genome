@@ -25,10 +25,15 @@ function __is_json__($x) {
 }
 
 function __is_serialize__($x) {
-    if (!is_string($x) || !trim($x)) return false;
-    if ($x === 'N;' || $x === 'b:1;' || $x === 'b:0;') return true;
-    if (strpos($x, ':') === false) return false;
-    if ($x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}') return true;
+    if (!is_string($x) || !trim($x)) {
+        return false;
+    } elseif ($x === 'N;') {
+        return true;
+    } elseif (strpos($x, ':') === false) {
+        return false;
+    } elseif ($x === 'b:1;' || $x === 'b:0;' || $x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}') {
+        return true;
+    }
     return strpos($x, 'a:') === 0 || strpos($x, 'O:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0;
 }
 
@@ -73,7 +78,7 @@ function a($o) {
 function b() {}
 
 function c($x) {
-    return preg_replace_callback('#([^\p{L}])(\p{Ll})#u', function($m) {
+    return preg_replace_callback('#(^|[^\p{L}])(\p{Ll})#u', function($m) {
         return u($m[2]);
     }, $x);
 }
@@ -81,7 +86,7 @@ function c($x) {
 function d($f) {
     spl_autoload_register(function($w) use($f) {
         $w = h(str_replace('\\', '.', $w), '-', '.');
-        $f = $f . DS . $w . '.php';
+        $f = $f . DS . str_replace('.-', '.', $w) . '.php';
         if (file_exists($f)) require $f;
     });
 }
@@ -621,7 +626,7 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
 function g() {}
 
 function h($x, $s = '-', $X = "") {
-    return f(preg_replace_callback('#(?<=.)(\p{Lu})#u', function($m) use($s) {
+    return f(preg_replace_callback('#(?<=[^\p{Lu}\d])(\p{Lu})#u', function($m) use($s) {
         return $s . l($m[1]);
     }, $x), $s, true, 'a-zA-Z\d' . $X);
 }
@@ -673,9 +678,9 @@ function p($x) {
 function q($x, $deep = false) {
     if (is_int($x) || is_float($x)) {
         return $x;
-    } else if (is_string($x)) {
+    } elseif (is_string($x)) {
         return function_exists('mb_strlen') ? mb_strlen($x) : strlen($x);
-    } else if (__is_anemon__($x)) {
+    } elseif (__is_anemon__($x)) {
         return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
     return count($x);
@@ -694,18 +699,18 @@ function r($a, $b = []) {
 }
 
 function s($x) {
-    if (__is_anemon__($x)) {
-        foreach ($x as &$v) {
-            $v = s($v);
-        }
-        unset($v);
-        return $x;
-    } elseif ($x === true) {
+    if ($x === true) {
         return 'true';
     } elseif ($x === false) {
         return 'false';
     } elseif ($x === null) {
         return 'null';
+    } elseif (__is_anemon__($x)) {
+        foreach ($x as &$v) {
+            $v = s($v);
+        }
+        unset($v);
+        return $x;
     }
     return (string) $x;
 }
@@ -722,36 +727,33 @@ function v($x) {
     return stripslashes($x);
 }
 
-// w.h: list of tag name in HTML separated by comma to be excluded from `strip_tags()`
+// w.c: list of HTML tag name(s) to be excluded from `strip_tags()`
 // w.n: @keep line-break in the output or replace them with a space? (default is !@keep)
-function w($x, $c = "", $n = true) {
+function w($x, $c = [], $n = true) {
     // Should be a HTML input
     if(strpos($x, '<') !== false || strpos($x, ' ') !== false) {
-        $c = '<' . str_replace(',', '><', $c) . '>';
+        $c = '<' . implode('><', $c) . '>';
         return preg_replace($n ? '#\s+#' : '# +#', ' ', trim(strip_tags($x, $c)));
     }
     // 1. Replace `+` to ` `
     // 2. Replace `-` to ` `
     // 3. Replace `-----` to ` - `
     // 4. Replace `---` to `-`
-    return preg_replace(
-        [
-            '#^(\.|_{2})|(\.|_{2})$#', // remove `.` and `__` prefix/suffix in a file name
-            '#-{5}#',
-            '#-{3}#',
-            '#-#',
-            '#\s+#',
-            '#' . X . '#'
-        ],
-        [
-            "",
-            ' ' . X . ' ',
-            X,
-            ' ',
-            ' ',
-            '-'
-        ],
-    urldecode($x));
+    return preg_replace([
+        '#^(\.|_{2})|(\.|_{2})$#', // remove `.` and `__` prefix/suffix in a file name
+        '#-{5}#',
+        '#-{3}#',
+        '#-#',
+        '#\s+#',
+        '#' . X . '#'
+    ], [
+        "",
+        ' ' . X . ' ',
+        X,
+        ' ',
+        ' ',
+        '-'
+    ], urldecode($x));
 }
 
 function x($x, $c = "'", $d = '-+*/=:()[]{}<>^$.?!|\\') {

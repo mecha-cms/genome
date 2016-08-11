@@ -7,8 +7,7 @@ abstract class Socket {
 
     // Get class instance ...
     public static function _(...$lot) {
-        $c = static::class;
-        return new $c($lot);
+        return new static($lot);
     }
 
     // Show the added method(s)
@@ -41,7 +40,7 @@ abstract class Socket {
     }
 
     // Call the added method with `Socket::foo()`
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic($kin, $lot) {
         $c = static::class;
         if (!isset(self::$_[1][$c][$kin])) {
             echo('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
