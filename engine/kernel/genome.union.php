@@ -1,11 +1,11 @@
-<?php namespace Gene;
+<?php namespace Genome;
 
 class Union extends \Socket {
 
     protected $union = [
         'unit' => ['<', '>', '/', '[\w:.-]+'],
         'data' => ['=', '"', '"', ' ', '[\w:.-]+'],
-        '__' => ['<!--', '-->']
+        '.' => ['<!--', '-->']
     ];
 
     protected $data = [
@@ -97,7 +97,7 @@ class Union extends \Socket {
     }
 
     // Base union constructor
-    public function unit($unit = 'html', $content = "", $data = [], $dent = 0) {
+    public function unite($unit = 'html', $content = "", $data = [], $dent = 0) {
         $dent = $this->dent($dent);
         $c = strtolower(static::class);
         $u = $this->union['unit'];
@@ -106,22 +106,17 @@ class Union extends \Socket {
         return \Hook::NS($c . ':unit.' . $unit, [$data], $s);
     }
 
-    // Alias for `Cell::unit()`
-    public function unite(...$lot) {
-        return call_user_func_array([$this, 'unit'], $lot);
-    }
-
-    // Inverse version of `Cell::unite()`
+    // Inverse version of `Union::unite()`
     public function apart($input, $eval = true) {
         $u = $this->union['unit'];
         $d = $this->union['data'];
-        $u0 = preg_quote($u[0], '/');
-        $u1 = preg_quote($u[1], '/');
-        $u2 = preg_quote($u[2], '/');
-        $d0 = preg_quote($d[0], '/');
-        $d1 = preg_quote($d[1], '/');
-        $d2 = preg_quote($d[2], '/');
-        $d3 = preg_quote($d[3], '/');
+        $u0 = x($u[0]);
+        $u1 = x($u[1]);
+        $u2 = x($u[2]);
+        $d0 = x($d[0]);
+        $d1 = x($d[1]);
+        $d2 = x($d[2]);
+        $d3 = x($d[3]);
         $output = [
             'unit' => null,
             'data' => [],
@@ -150,7 +145,7 @@ class Union extends \Socket {
             $end = $block . $dent;
         }
         $c = strtolower(static::class);
-        $u = $this->union['__'];
+        $u = $this->union['.'];
         return \Hook::NS($c . ':unit.__', [], $dent . $u[0] . $begin . $content . $end . $u[1]);
     }
 
@@ -180,7 +175,7 @@ class Union extends \Socket {
         if (!self::kin($kin)) {
             array_unshift($lot, $kin);
             $union = new $c;
-            return call_user_func_array([$c, 'unit'], $lot);
+            return call_user_func_array([$c, 'unite'], $lot);
         }
         $s = parent::__callStatic($kin, $lot);
         return \Hook::NS(strtolower($c) . ':gen.' . $kin, [$lot], $s);

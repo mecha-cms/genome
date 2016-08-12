@@ -1,4 +1,4 @@
-<?php namespace Gene;
+<?php namespace Genome;
 
 class Config extends \Socket {
 

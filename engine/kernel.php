@@ -8,6 +8,12 @@ function __is_anemon__($x) {
     return is_array($x) || is_object($x);
 }
 
+function __is_anemon_brace__($x) {
+    $a = (array) $x;
+    $count = count($a);
+    return $count && array_keys($a) !== range(0, $count - 1);
+}
+
 function __is_json__($x) {
     if (!is_string($x) || !trim($x)) return false;
     return (
@@ -20,8 +26,8 @@ function __is_json__($x) {
         // Maybe a flat array
         $x[0] === '[' ||
         // Maybe an associative array
-        strpos($x, '{"') === 0
-    ) && json_decode($x) !== null && json_last_error() !== JSON_ERROR_NONE;
+        $x[0] === '{'
+    ) && json_decode($x) !== null;
 }
 
 function __is_serialize__($x) {
@@ -78,16 +84,21 @@ function a($o) {
 function b() {}
 
 function c($x) {
-    return preg_replace_callback('#(^|[^\p{L}])(\p{Ll})#u', function($m) {
+    return preg_replace_callback('#([^\p{L}])(\p{Ll})#u', function($m) {
         return u($m[2]);
     }, $x);
 }
 
-function d($f) {
-    spl_autoload_register(function($w) use($f) {
-        $w = h(str_replace('\\', '.', $w), '-', '.');
-        $f = $f . DS . str_replace('.-', '.', $w) . '.php';
-        if (file_exists($f)) require $f;
+function d($f, $fn = null) {
+    spl_autoload_register(function($w) use($f, $fn) {
+        $w = str_replace('\\-', '.', h($w, '-', '\\'));
+        $f = $f . DS . $w . '.php';
+        if (file_exists($f)) {
+            require $f;
+            if (is_callable($fn)) {
+                call_user_func($fn, $w);
+            }
+        }
     });
 }
 
@@ -96,8 +107,8 @@ function e($x) {
         if ($x === "") return $x;
         if (is_numeric($x)) {
             return strpos($x, '.') !== false ? (float) $x : (int) $x;
-        } elseif (__is_json__($x) && $v = json_decode($input, true)) {
-            return is_array($v) ? e($v) : $v;
+        } elseif (__is_json__($x) && $v = json_decode($x, true)) {
+            return $v;
         } elseif ($x[0] === '"' && substr($x, -1) === '"' || $x[0] === "'" && substr($x, -1) === "'") {
             return substr(substr($x, 1), 0, -1);
         }
@@ -113,7 +124,7 @@ function e($x) {
             'on' => true,
             'off' => false
         ];
-        return $xx[$x] ?? $x;
+        return array_key_exists($x, $xx) ? $xx[$x] : $x;
     } elseif (__is_anemon__($x)) {
         foreach ($x as &$v) {
             $v = e($v);
@@ -659,8 +670,7 @@ function n($x, $t = I) {
 
 function o($a, $safe = true) {
     if (__is_anemon__($a)) {
-        $a = (array) $a;
-        $a = $safe && count($a) && array_keys($a) !== range(0, count($a) - 1) ? (object) $a : $a;
+        $a = $safe && __is_anemon_brace__($a) ? (object) $a : $a;
         foreach ($a as &$aa) {
             $aa = o($aa, $safe);
         }

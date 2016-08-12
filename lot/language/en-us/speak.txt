@@ -1,8 +1,41 @@
-foo: Foo
-bar: bar
-baz: Baz
-qux:
-  0: a
-  1: b
-  2: c
-test: Foo bar %s qux.
+a: aa
+b: bb
+c: ""
+d: ''
+e:
+f: ff
+g:
+  h: hh
+  i: ii
+j: jj
+k\: l: m
+"n: o": p
+"q\: r": s
+'t: u': v
+'w\: x': y
+: z
+
+# comment
+aa: #comment
+# bb: comment
+cc: "dd #comment ee" #comment
+ff: 'gg #comment hh' #comment
+
+fff:
+  - a
+  - b
+  - c
+
+ggg:
+  4: a
+  5: b
+  6: c
+
+hhh:
+  - [foo, true, false, null, 1]
+  - ["foo", "true", "false", "null", 1]
+  - { a: foo, b: true, c: false, d: null, e: 1 }
+  - { "a": "foo", "b": "true", "c": "false", "d": "null", "e": 1 }
+  - { 'a': 'foo', 'b': 'true', 'c': 'false', 'd': 'null', 'e': 1 }
+  - {a:foo,b:true,c:false,d:null,e:1}
+  - {"a":"foo","b":"true","c":"false","d":"null","e":1}

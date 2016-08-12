@@ -17,37 +17,43 @@ To::plug('path', function($input) {/*
     return str_replace([X . $url, '\\', '/', X], [ROOT, DS, DS, ""], X . $input);*/
 });
 
-function __to_yaml__($input, $c = [], $in = '  ', $dent = 0) {
-    $cc = array_slice(Sheet::$v, 1);
-    Anemon::extend($cc, $c);
+function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
+    $s = Genome\Sheet::$v;
+    Anemon::extend($s, $c);
     if (__is_anemon__($input)) {
         $t = "";
+        $T = str_repeat($in, $dent);
         foreach ($input as $k => $v) {
-            if (!__is_anemon__($v)) {
-                $v = s($v);
-                $v = $v !== $cc[1] && strpos($v, $cc[2]) !== false ? json_encode($v) : $v;
-                $T = str_repeat($in, $dent);
+            if (!__is_anemon__($v) || __is_anemon__($v) && empty($v)) {
+                if (is_array($v)) {
+                    $v = '[]';
+                } elseif (is_object($v)) {
+                    $v = '{}';
+                } elseif ($v === "") {
+                    $v = '""';
+                } else {
+                    $v = s($v);
+                }
+                $v = $v !== $s[4] && strpos($v, $s[2]) !== false ? json_encode($v) : $v;
                 // Line
-                if($v === $cc[1]) {
-                    $t .= $cc[1];
+                if ($v === $s[4]) {
+                    $t .= $s[4];
                 // Comment
                 } elseif (strpos($v, '#') === 0) {
-                    $t .= $T . trim($v) . $cc[1];
+                    $t .= $T . trim($v) . $s[4];
                 // ...
                 } else {
-                    $t .= $T . trim($k) . $cc[0] . $v . $n;
+                    $t .= $T . trim($k) . $s[2] . $v . $s[4];
                 }
             } else {
-                $s = __to_yaml__($v, $cc, $in, $dent + 1);
-                $t .= $T . $k . $cc[0] . $cc[1] . $s . $cc[1];
+                $o = __to_yaml__($v, $s, $in, $safe, $dent + 1);
+                $t .= $T . $k . $s[2] . $s[4] . $o . $s[4];
             }
         }
-        return str_replace($cc[0] . $cc[1], $cc[0] . '""' . $cc[1], rtrim($t));
+        return rtrim($t);
     }
-    return $input !== $cc[1] && strpos($input, $cc[1]) !== false ? json_encode($input) : $input;
+    return $input !== $s[4] && strpos($input, $s[2]) !== false ? json_encode($input) : $input;
 }
-
-To::plug('yaml', '__to_yaml__');
 
 To::plug('case', 'w');
 
@@ -81,11 +87,11 @@ To::plug('html', function($input) {
     return $input; // do nothing ...
 });
 
-To::plug('html_x', function($input) {
+To::plug('html_encode', function($input) {
     return htmlspecialchars($input);
 });
 
-To::plug('html_v', function($input) {
+To::plug('html_decode', function($input) {
     return htmlspecialchars_decode($input);
 });
 
@@ -109,11 +115,11 @@ To::plug('hex', function($input, $z = false) {
     return $output;
 });
 
-To::plug('url_x', function($input) {
+To::plug('url_encode', function($input) {
     return urlencode($input);
 });
 
-To::plug('url_v', function($input) {
+To::plug('url_decode', function($input) {
     return urldecode($input);
 });
 
@@ -132,9 +138,9 @@ To::plug('anemon', function($input) {
     return (array) json_decode($input, true);
 });
 
-To::plug('yaml', function($input) {
-    if (__is_anemon__($input)) return a($input);
-    return $input;
+To::plug('yaml', function($input, $c = [], $in = '  ', $safe = true) {
+    if (!__is_anemon__($input)) return s($input);
+    return __to_yaml__($input, $c, $in, 0, $safe);
 });
 
 To::safe('file.name', function($input) {

@@ -4,7 +4,7 @@ From::plug('json', function($input) {
     if (__is_anemon__($input)) {
         return a($input);
     }
-    return json_decode($input);
+    return o(json_decode($input, true));
 });
 
 From::plug('base64', function($input) {
@@ -12,8 +12,9 @@ From::plug('base64', function($input) {
 });
 
 function __from_yaml__($input, $c = [], $in = '  ') {
-    $cc = Gene\Sheet::$v;
-    Anemon::extend($cc, $c);
+    $s = Genome\Sheet::$v;
+    $q = ['"([^"\\\]++|\\\.)*+"', '\'([^\'\\\\]++|\\\.)*+\''];
+    Anemon::extend($s, $c);
     if (!is_string($input)) return a($input);
     if (!trim($input)) return [];
     $i = 0;
@@ -21,9 +22,9 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     // Normalize white-space(s)
     $input = n($input);
     // Save `\: ` as `\x1A`
-    $input = str_replace('\\' . $cc[2], X, $input);
+    $input = str_replace('\\' . $s[2], X, $input);
     $len = strlen($in);
-    foreach (explode($cc[3], $input) as $li) {
+    foreach (explode($s[4], $input) as $li) {
         $dent = 0;
         $li = rtrim($li);
         // Ignore comment and empty line-break
@@ -36,23 +37,29 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         while ($dent < count($data)) {
             array_pop($data);
         }
-        // No `: ` ... fix it!
-        if (strpos($li, $cc[2]) === false) {
-            $li = $li . $cc[2] . $li;
-        // Start with `: `
-        } elseif (strpos($li, $cc[2]) === 0) {
-            $li = $i . $li;
+        // Start with `- `
+        if (strpos($li, $s[3]) === 0) {
+            $li = $i . $s[2] . substr($li, strlen($s[3]));
             $i++;
-        // else ...
         } else {
             $i = 0;
         }
-        $part = explode($cc[2], $li, 2);
+        // No `: ` ... fix it!
+        if (strpos($li, $s[2]) === false) {
+            $li = $li . $s[2] . $li;
+        }
+        if ($li[0] === '"' && preg_match('/^' . $q[0] . '\s*' . x($s[2]) . '(.*?)$/', $li, $part)) {
+            array_shift($part);
+        } elseif ($li[0] === "'" && preg_match('/^' . $q[1] . '\s*' . x($s[2]) . '(.*?)$/', $li, $part)) {
+            array_shift($part);
+        } else {
+            $part = explode($s[2], $li, 2);
+        }
         $v = trim($part[1] ?? "");
         // Remove inline comment(s) ...
         if($v && strpos($v, '#') !== false) {
             if($v[0] === '"' || $v[0] === "'") {
-                $vv = '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*\#.*#';
+                $vv = '/(' . implode('|', $q) . ')|\s*#.*/';
                 $v = preg_replace($vv, '$1', $v);
             } else {
                 $v = explode('#', $v, 2);
@@ -60,11 +67,31 @@ function __from_yaml__($input, $c = [], $in = '  ') {
             }
         }
         // Restore `\x1A` as `: `
-        $data[$dent] = str_replace(X, $cc[2], trim($part[0]));
+        $data[$dent] = str_replace(X, $s[2], trim($part[0]));
         $parent =& $output;
         foreach($data as $k) {
+            if (
+                strpos($k, '"') === 0 && substr($k, -1) === '"' ||
+                strpos($k, "'") === 0 && substr($k, -1) === "'"
+            ) {
+                $k = substr(substr($k, 1), 0, -1);
+            }
             if(!isset($parent[$k])) {
-                $parent[$k] = e($v ? $v : []);
+                if (!$v) {
+                    $parent[$k] = [];
+                } else {
+                    $v = e($v);
+                    if (is_string($v)) {
+                        if (strpos($v, '[') === 0 && substr($v, -1) === ']') {
+                            $v = e(preg_split('/\s*,\s*/', trim(substr(substr($v, 1), 0, -1))));
+                        } elseif (strpos($v, '{') === 0 && substr($v, -1) === '}') {
+                            $v = trim(substr(substr($v, 1), 0, -1));
+                            $v = preg_replace('/\s*,\s*/', $s[4], $v);
+                            $v = __from_yaml__($v);
+                        }
+                    }
+                    $parent[$k] = $v;
+                }
                 break;
             }
             $parent =& $parent[$k];
@@ -73,7 +100,12 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     return $output;
 }
 
-From::plug('yaml', '__from_yaml__');
+From::plug('yaml', function(...$lot) {
+    if (__is_anemon__($lot[0])) return a($lot[0]);
+    $s = Genome\Sheet::$v;
+    $lot[0] = str_replace([X . $s[0], $s[1] . X, X], "", X . $lot[0] . X);
+    return call_user_func_array('__from_yaml__', $lot);
+});
 
 function __from_entity__($input) {
     return html_entity_decode($input);

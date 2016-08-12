@@ -1,4 +1,4 @@
-<?php namespace Gene;
+<?php namespace Genome;
 
 class I18N extends \Socket {
 
