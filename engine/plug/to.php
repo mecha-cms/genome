@@ -1,30 +1,29 @@
 <?php
 
-To::plug('url', function($input) {/*
-    $url = URL::extract();
-    $input = str_replace([ROOT, DS, '\\'], [$url->url, '/', '/'], $input);
+To::plug('url', function($input) {
+    $url = _url_();
+    $input = str_replace([ROOT, DS, '\\'], [$url['url'], '/', '/'], $input);
     // Fix broken external URL `http://://example.com`, `http:////example.com`
     $input = str_replace(['://://', ':////'], '://', $input);
     // @ditto `http:example.com`
-    if (strpos($input, $url->scheme . ':') === 0 && strpos($input, $url->protocol) !== 0) {
-        $input = str_replace(X . $url->scheme . ':', $url->protocol, X . $input);
-    }*/
+    if (strpos($input, $url['scheme'] . ':') === 0 && strpos($input, $url['protocol']) !== 0) {
+        $input = str_replace(X . $url['scheme'] . ':', $url['protocol'], X . $input);
+    }
     return $input;
 });
 
-To::plug('path', function($input) {/*
-    $url = Config::get('url');
-    return str_replace([X . $url, '\\', '/', X], [ROOT, DS, DS, ""], X . $input);*/
+To::plug('path', function($input) {
+    return str_replace([X . _url_('url'), '\\', '/', X], [ROOT, DS, DS, ""], X . $input);
 });
 
 function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
     $s = Genome\Sheet::$v;
     Anemon::extend($s, $c);
-    if (__is_anemon__($input)) {
+    if (_is_anemon_($input)) {
         $t = "";
         $T = str_repeat($in, $dent);
         foreach ($input as $k => $v) {
-            if (!__is_anemon__($v) || __is_anemon__($v) && empty($v)) {
+            if (!_is_anemon_($v) || empty($v)) {
                 if (is_array($v)) {
                     $v = '[]';
                 } elseif (is_object($v)) {
@@ -132,15 +131,15 @@ To::plug('json', function($input) {
 });
 
 To::plug('anemon', function($input) {
-    if (__is_anemon__($input)) {
+    if (_is_anemon_($input)) {
         return a($input);
     }
     return (array) json_decode($input, true);
 });
 
 To::plug('yaml', function($input, $c = [], $in = '  ', $safe = true) {
-    if (!__is_anemon__($input)) return s($input);
-    return __to_yaml__($input, $c, $in, 0, $safe);
+    if (!_is_anemon_($input)) return s($input);
+    return __to_yaml__($input, $c, $in, $safe, 0);
 });
 
 To::safe('file.name', function($input) {

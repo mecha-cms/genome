@@ -20,7 +20,8 @@ class Session extends Socket {
         }
     }
 
-    public static function start($path = SESSION) {
+    public static function start(...$lot) {
+        $path = array_shift($lot) ?? SESSION;
         if ($path !== null) {
             Folder::create($path, 0600);
             session_save_path($path);

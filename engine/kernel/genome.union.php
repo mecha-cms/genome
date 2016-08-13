@@ -35,10 +35,11 @@ class Union extends \Socket {
         'style' => null
     ];
 
-    public function __construct($unit = [], $data = []) {
+    public function __construct($unit = [], $data = [], $__ = []) {
         \Anemon::extend($this->union, [
             'unit' => $unit,
-            'data' => $data
+            'data' => $data,
+            '.' => $__
         ]);
         return $this;
     }
@@ -54,7 +55,7 @@ class Union extends \Socket {
     // Encode all union special character(s)
     public function x($v) {
         if (!is_string($v)) return $v;
-        return \To::html_x($v);
+        return \To::html_encode($v);
     }
 
     // Build union attribute(s) ...
@@ -161,24 +162,19 @@ class Union extends \Socket {
 
     // Base union tag close
     public function close($unit = null, $dent = null) {
+        if ($unit === true) {
+            // close all
+            $s = "";
+            foreach ($this->unit as $u) {
+                $s .= $this->close() . ($dent ?? N);
+            }
+            return $s;
+        }
         $unit = $unit ?? array_pop($this->unit);
         $dent = $dent ?? array_pop($this->dent) ?? "";
         $c = strtolower(static::class);
         $u = $this->union['unit'];
         return \Hook::NS($c . ':close.' . $unit, [], $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "");
-    }
-
-    // Calling `Union::div($x)` is the same as calling `Union::unit('div', $x)` when
-    // custom method called `Union::div()` is not defined yet by the `Union::plug()`
-    public static function __callStatic($kin, $lot) {
-        $c = static::class;
-        if (!self::kin($kin)) {
-            array_unshift($lot, $kin);
-            $union = new $c;
-            return call_user_func_array([$c, 'unite'], $lot);
-        }
-        $s = parent::__callStatic($kin, $lot);
-        return \Hook::NS(strtolower($c) . ':gen.' . $kin, [$lot], $s);
     }
 
 }

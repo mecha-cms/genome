@@ -1,7 +1,7 @@
 <?php
 
 From::plug('json', function($input) {
-    if (__is_anemon__($input)) {
+    if (_is_anemon_($input)) {
         return a($input);
     }
     return o(json_decode($input, true));
@@ -70,11 +70,8 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         $data[$dent] = str_replace(X, $s[2], trim($part[0]));
         $parent =& $output;
         foreach($data as $k) {
-            if (
-                strpos($k, '"') === 0 && substr($k, -1) === '"' ||
-                strpos($k, "'") === 0 && substr($k, -1) === "'"
-            ) {
-                $k = substr(substr($k, 1), 0, -1);
+            if (strpos($k, '"') === 0 && substr($k, -1) === '"' || strpos($k, "'") === 0 && substr($k, -1) === "'") {
+                $k = m($k, $k[0]);
             }
             if(!isset($parent[$k])) {
                 if (!$v) {
@@ -83,9 +80,9 @@ function __from_yaml__($input, $c = [], $in = '  ') {
                     $v = e($v);
                     if (is_string($v)) {
                         if (strpos($v, '[') === 0 && substr($v, -1) === ']') {
-                            $v = e(preg_split('/\s*,\s*/', trim(substr(substr($v, 1), 0, -1))));
+                            $v = e(preg_split('/\s*,\s*/', trim(m($v, '[', ']'))));
                         } elseif (strpos($v, '{') === 0 && substr($v, -1) === '}') {
-                            $v = trim(substr(substr($v, 1), 0, -1));
+                            $v = trim(m($v, '{', '}'));
                             $v = preg_replace('/\s*,\s*/', $s[4], $v);
                             $v = __from_yaml__($v);
                         }
@@ -101,7 +98,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
 }
 
 From::plug('yaml', function(...$lot) {
-    if (__is_anemon__($lot[0])) return a($lot[0]);
+    if (_is_anemon_($lot[0])) return a($lot[0]);
     $s = Genome\Sheet::$v;
     $lot[0] = str_replace([X . $s[0], $s[1] . X, X], "", X . $lot[0] . X);
     return call_user_func_array('__from_yaml__', $lot);

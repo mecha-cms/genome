@@ -2,8 +2,8 @@
 
 class Anemon extends Socket {
 
-    protected static $bucket = [];
-    protected static $i = 0;
+    protected $bucket = [];
+    protected $i = 0;
 
     // Prevent `$x` exceeds the value of `$min` and `$max`
     public static function edge($x, $min = 0, $max = 9999) {

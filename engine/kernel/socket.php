@@ -6,7 +6,7 @@ abstract class Socket {
     public static $_ = [];
 
     // Get class instance ...
-    public static function _(...$lot) {
+    public static function start(...$lot) {
         return new static($lot);
     }
 

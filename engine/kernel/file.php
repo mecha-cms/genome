@@ -13,7 +13,7 @@ class File extends Socket {
 
     // Inspect file path
     public static function inspect($path, $key = null, $fail = false) {
-        $path = str_replace('/', DS, $input);
+        $path = To::path($input);
         $n = Path::N($path);
         $x = Path::X($path);
         $update = self::T($path);
@@ -39,7 +39,7 @@ class File extends Socket {
 
     // List all file(s) from a folder
     public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = false) {
-        $folder = rtrim(str_replace('/', DS, $folder), DS);
+        $folder = rtrim(To::path($folder), DS);
         $files = array_merge(
             glob($folder . DS . '*', GLOB_NOSORT),
             glob($folder . DS . '.*', GLOB_NOSORT)
@@ -65,13 +65,13 @@ class File extends Socket {
 
     // Check if file/folder does exist
     public static function exist($input, $fail = false) {
-        $input = str_replace('/', DS, $input);
+        $input = To::path($input);
         return file_exists($input) ? $input : $fail;
     }
 
     // Open a file
     public static function open($input) {
-        self::$open = str_replace('/', DS, $input);
+        self::$open = To::path($input);
         self::$cache = "";
         return new static;
     }
@@ -139,7 +139,7 @@ class File extends Socket {
 
     // Save the `$data` to ...
     public static function saveTo($input, $consent = null) {
-        $input = str_replace('/', DS, $input);
+        $input = To::path($input);
         if (!file_exists(Path::D($input))) {
             mkdir(Path::D($input), 0777, true);
         }
@@ -169,7 +169,7 @@ class File extends Socket {
     // Move the file/folder to ...
     public static function moveTo($target = ROOT) {
         if (file_exists(self::$open)) {
-            $target = str_replace('/', DS, $input);
+            $target = To::path($input);
             if (is_dir($target) && is_file(self::$open)) {
                 $target .= DS . Path::B(self::$open);
             }
@@ -187,7 +187,7 @@ class File extends Socket {
         $i = 1;
         if (file_exists(self::$open)) {
             foreach ((array) $target as $v) {
-                $v = str_replace('/', DS, $input);
+                $v = To::path($input);
                 if (is_dir($v)) {
                     if (!file_exists($v)) {
                         mkdir($v, 0777, true);
@@ -245,7 +245,7 @@ class File extends Socket {
 
     // Upload the file
     public static function upload($file, $target = ROOT, $fn = null, $fail = false) {
-        $target = str_replace('/', DS, $input);
+        $target = To::path($input);
         $errors = [
             'There is no error, the file uploaded with success.',
             'The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.',

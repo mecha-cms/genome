@@ -4,9 +4,19 @@ class Config extends Socket {
 
     protected static $bucket = [];
 
+    public static function start(...$lot) {
+        $a = State::config();
+        if (!$lang = File::exist(LANGUAGE . DS . $a['language'] . DS . 'speak.txt')) {
+            $lang = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.txt');
+        }
+        $a['__i18n'] = From::yaml(File::open($lang)->read(""));
+        $a['url'] = _url_();
+        self::$bucket = $a;
+    }
+
     public static function set($a, $b = null) {
-        if (__is_anemon__($a)) $a = a($a);
-        if (__is_anemon__($b)) $b = a($b);
+        if (_is_anemon_($a)) $a = a($a);
+        if (_is_anemon_($b)) $b = a($b);
         $cargo = [];
         if (!is_array($a)) {
             Anemon::set($cargo, $a, $b);
@@ -20,7 +30,7 @@ class Config extends Socket {
 
     public static function get($a = null, $fail = false) {
         if ($a === null) return o(self::$bucket);
-        if (__is_anemon__($a)) {
+        if (_is_anemon_($a)) {
             $output = [];
             foreach ($a as $k => $v) {
                 $f = is_array($fail) && array_key_exists($k, $fail) ? $fail[$k] : $fail;
@@ -53,7 +63,7 @@ class Config extends Socket {
             $fail = false;
             if (count($lot)) {
                 $kin .= '.' . array_shift($lot);
-                $fail = array_shift($lot);
+                $fail = array_shift($lot) ?? false;
             }
             return self::get($kin, $fail);
         }
