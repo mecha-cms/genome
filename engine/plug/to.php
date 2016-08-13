@@ -16,7 +16,7 @@ To::plug('path', function($input) {
     return str_replace([X . _url_('url'), '\\', '/', X], [ROOT, DS, DS, ""], X . $input);
 });
 
-function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
+function _to_yaml_($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
     $s = Genome\Sheet::$v;
     Anemon::extend($s, $c);
     if (_is_anemon_($input)) {
@@ -45,7 +45,7 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
                     $t .= $T . trim($k) . $s[2] . $v . $s[4];
                 }
             } else {
-                $o = __to_yaml__($v, $s, $in, $safe, $dent + 1);
+                $o = _to_yaml_($v, $s, $in, $safe, $dent + 1);
                 $t .= $T . $k . $s[2] . $s[4] . $o . $s[4];
             }
         }
@@ -139,7 +139,7 @@ To::plug('anemon', function($input) {
 
 To::plug('yaml', function($input, $c = [], $in = '  ', $safe = true) {
     if (!_is_anemon_($input)) return s($input);
-    return __to_yaml__($input, $c, $in, $safe, 0);
+    return _to_yaml_($input, $c, $in, $safe, 0);
 });
 
 To::safe('file.name', function($input) {

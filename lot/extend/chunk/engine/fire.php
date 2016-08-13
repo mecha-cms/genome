@@ -1,0 +1,1 @@
+<?php r(__DIR__ . DS . 'plug', '*.php');

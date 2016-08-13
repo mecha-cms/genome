@@ -1,6 +1,6 @@
 <?php
 
-class Session extends Socket {
+class Session extends Genome {
 
     public static function set($id, $lot = "") {
         Anemon::set($_SESSION, $id, $lot);

@@ -1,6 +1,6 @@
 <?php namespace Genome;
 
-class I18N extends \Socket {
+class Language extends \Genome {
 
     public function __call($key, $lot) {
         return vsprintf(\Config::get('__i18n.' . $key, $key), $lot + [""]);
@@ -12,6 +12,10 @@ class I18N extends \Socket {
 
     public function __get($key) {
         return \Config::get('__i18n.' . $key, $key);
+    }
+
+    public function __toString() {
+        return json_encode(\Config::get('__i18n'));
     }
 
 }

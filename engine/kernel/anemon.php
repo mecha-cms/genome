@@ -1,6 +1,6 @@
 <?php
 
-class Anemon extends Socket {
+class Anemon extends Genome {
 
     protected $bucket = [];
     protected $i = 0;

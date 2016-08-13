@@ -1,6 +1,6 @@
 <?php
 
-class Is extends Socket {
+class Is extends Genome {
 
     protected static $bucket = [];
 

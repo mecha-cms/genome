@@ -2,7 +2,7 @@
 
 From::plug('json', function($input) {
     if (_is_anemon_($input)) {
-        return a($input);
+        return o($input);
     }
     return o(json_decode($input, true));
 });
@@ -11,7 +11,7 @@ From::plug('base64', function($input) {
     return base64_decode($input);
 });
 
-function __from_yaml__($input, $c = [], $in = '  ') {
+function _from_yaml_($input, $c = [], $in = '  ') {
     $s = Genome\Sheet::$v;
     $q = ['"([^"\\\]++|\\\.)*+"', '\'([^\'\\\\]++|\\\.)*+\''];
     Anemon::extend($s, $c);
@@ -84,7 +84,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
                         } elseif (strpos($v, '{') === 0 && substr($v, -1) === '}') {
                             $v = trim(m($v, '{', '}'));
                             $v = preg_replace('/\s*,\s*/', $s[4], $v);
-                            $v = __from_yaml__($v);
+                            $v = _from_yaml_($v);
                         }
                     }
                     $parent[$k] = $v;
@@ -101,12 +101,12 @@ From::plug('yaml', function(...$lot) {
     if (_is_anemon_($lot[0])) return a($lot[0]);
     $s = Genome\Sheet::$v;
     $lot[0] = str_replace([X . $s[0], $s[1] . X, X], "", X . $lot[0] . X);
-    return call_user_func_array('__from_yaml__', $lot);
+    return call_user_func_array('_from_yaml_', $lot);
 });
 
-function __from_entity__($input) {
+function _from_entity_($input) {
     return html_entity_decode($input);
 }
 
-From::plug('dec', '__from_entity__');
-From::plug('hex', '__from_entity__');
+From::plug('dec', '_from_entity_');
+From::plug('hex', '_from_entity_');

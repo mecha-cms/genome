@@ -1,6 +1,6 @@
 <?php
 
-class File extends Socket {
+class File extends Genome {
 
     protected static $open = "";
     protected static $cache = "";

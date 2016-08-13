@@ -1,6 +1,6 @@
 <?php
 
-class Cell extends Socket {
+class Cell extends Genome {
 
     protected static $union;
 

@@ -1,6 +1,6 @@
 <?php
 
-class URL extends Socket {
+class URL extends Genome {
 
     public static function long($url, $root = true) {
         if(!is_string($url)) return $url;

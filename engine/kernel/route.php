@@ -1,32 +1,26 @@
 <?php
 
-class Route extends Socket {
+class Route extends Genome {
 
     public static $lot = [];
     public static $lot_o = [];
 
     // Pattern as regular expression
-    protected function _x($s) {
+    protected function x($s) {
         return str_replace([
             '\(',
             '\)',
             '\|',
             '\:any',
             '\:num',
-            '\:all',
-            '%s',
-            '%i',
-            '%*'
+            '\:all'
         ], [
             '(',
             ')',
             '|',
-            '([^/]+)',
-            '(\d+)',
-            '(.*?)',
-            '([^/]+)',
-            '(\d+)',
-            '(.*?)'
+            '[^/]+',
+            '\d+',
+            '.*?'
         ], x($s, '#'));
     }
 
@@ -124,15 +118,15 @@ class Route extends Socket {
 
     public static function is($id, $fail = false) {
         $id = URL::short($id, false);
-        $path = Config::url('path');
-        if (strpos($id, ':') === false && strpos($id, '%') === false) {
+        $path = URL::path();
+        if (strpos($id, '(') === false) {
             return $path === $id ? [
                 'id' => $id,
                 'path' => $path,
                 'lot' => []
             ] : $fail;
         }
-        if (preg_match('#^' . self::_x($id) . '$#', $path, $m)) {
+        if (preg_match($id[0] === '#' ? $id : '#^' . self::x($id) . '$#', $path, $m)) {
             array_shift($m);
             return [
                 'id' => $id,
@@ -152,7 +146,7 @@ class Route extends Socket {
             }
             return false;
         } else {
-            $id = Config::url('path');
+            $id = URL::path();
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s) ...
                 if (isset(self::$lot_o[1][$id])) {

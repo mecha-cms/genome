@@ -1,6 +1,6 @@
 <?php
 
-class To extends Socket {
+class To extends Genome {
 
     protected static $fn = [];
 

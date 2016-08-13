@@ -24,7 +24,7 @@ define('ASSET', LOT . DS . 'asset');
 define('CACHE', LOT . DS . 'cache');
 define('SHIELD', LOT . DS . 'shield');
 define('STATE', LOT . DS . 'state');
-define('PAGE', LOT . DS . 'page');
+define('SHEET', LOT . DS . 'sheet');
 
 define('I', '  '); // Default indent
 define('N', "\n"); // Line break

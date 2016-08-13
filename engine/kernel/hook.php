@@ -1,6 +1,6 @@
 <?php
 
-class Hook extends Socket {
+class Hook extends Genome {
 
     protected static $lot = [];
 
@@ -22,6 +22,7 @@ class Hook extends Socket {
                 self::set($v, $fn, $stack);
             }
         }
+        return new static;
     }
 
     public static function fire($id, $lot = [], $r = null) {
@@ -74,6 +75,7 @@ class Hook extends Socket {
                 self::block($v, $stack);
             }
         }
+        return new static;
     }
 
     public static function get($id = null, $fail = false) {

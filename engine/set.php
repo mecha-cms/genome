@@ -43,7 +43,7 @@ function _is_serialize_($x) {
     return strpos($x, 'a:') === 0 || strpos($x, 'O:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0;
 }
 
-function _debug_(...$a) {
+function _dump_(...$a) {
     foreach ($a as $b) {
         $s = var_export($b, true);
         $s = str_ireplace(['array (', 'TRUE', 'FALSE', 'NULL'], ['array(', 'true', 'false', 'null'], $s);
@@ -54,7 +54,7 @@ function _debug_(...$a) {
     }
 }
 
-function _url_($key = null) {
+function _url_($key = null, $fail = false) {
     $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
     $protocol = $scheme . '://';
     $host = $_SERVER['HTTP_HOST'];
@@ -79,11 +79,12 @@ function _url_($key = null) {
         'url' => $url,
         'path' => $path,
         'query' => $query ? '?' . $query : "",
+        'previous' => $_SESSION['url']['previous'] ?? null,
         'current' => $current,
-        'origin' => $_SESSION['url']['origin'] ?? null,
+        'next' => null,
         'hash' => null
     ];
-    return $key !== null ? $a[$key] : $a;
+    return $key !== null ? ($a[$key] ?? $fail) : $a;
 }
 
 // a: convert object to array
@@ -720,7 +721,7 @@ function n($x, $t = I) {
 
 function o($a, $safe = true) {
     if (_is_anemon_($a)) {
-        $a = $safe && __is_anemon_a__($a) ? (object) $a : $a;
+        $a = $safe && _is_anemon_a_($a) ? (object) $a : $a;
         foreach ($a as &$aa) {
             $aa = o($aa, $safe);
         }

@@ -1,25 +1,22 @@
 <?php namespace Genome;
 
-class Sheet extends \Socket {
+class Sheet extends \Genome {
 
     public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
     public static $x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
 
-    protected $c = "";
-    protected $a = [];
+    protected $meta = [];
+    protected $data = "";
     protected $open = "";
 
-    public function __construct($c = 'content') {
-        $this->c = $c;
+    public function __construct($meta = [], $data = "") {
+        $this->meta = $meta;
+        $this->data = $data;
         return $this;
     }
 
-    public static function start(...$lot) {
-        return new self(...$lot);
-    }
-
-    public static function open($path, $c = 'content') {
-        $sheet = self::start($c);
+    public static function open($path) {
+        $sheet = self::proto();
         $sheet->open = $path;
         return $sheet;
     }
@@ -35,49 +32,47 @@ class Sheet extends \Socket {
     }
 
     // Apart ...
-    public function apart($input = null) {
-        if ($input !== null) {
-            $input = strpos($input, ROOT) === 0 ? file_get_contents($input) : $input;
-        } else {
-            $input = file_get_contents($this->open);
-        }
+    public function apart() {
+        $input = file_get_contents($this->open);
         $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
         $input = explode(self::$v[1] . N . N, $input, 2);
-        // Do header ...
+        // Do meta ...
         foreach (explode(self::$v[4], $input[0]) as $v) {
             $v = explode(self::$v[2], $v, 2);
-            $this->a[self::v($v[0])] = self::v($v[1] ?? 'false');
+            $this->meta[self::v($v[0])] = self::v($v[1] ?? 'false');
         }
-        // Do content ...
-        $this->a[$this->c] = trim($input[1] ?? "");
-        return $this->a;
+        // Do data ...
+        $this->data = trim($input[1] ?? "");
+        return $this;
     }
 
     // Unite ...
-    public function unite($input = null, $c = null) {
-        $input = $input ?? $this->a;
-        $c = $c ?? $this->c;
-        $cc = $input[$c] ?? "";
-        $ccc = [];
-        unset($input[$c]);
-        foreach ($input as $k => $v) {
-            $ccc[] = self::x($k) . self::$v[2] . self::x($v);
+    public function unite() {
+        $meta = [];
+        foreach ($this->meta as $k => $v) {
+            $meta[] = self::x($k) . self::$v[2] . self::x($v);
         }
-        return self::$v[0] . implode(N, $ccc) . self::$v[1] . ($cc ? N . N . $cc : "");
+        return self::$v[0] . implode(N, $meta) . self::$v[1] . ($this->data ? N . N . $this->data : "");
     }
 
-    // Create ...
-    public static function data($data, $c = 'content') {
-        $sheet = self::start($c);
-        foreach ($data as $k => $v) {
-            $sheet->a[self::x($k)] = self::x($v);
+    // Create meta ...
+    public function meta($a) {
+        Anemon::extend($this->meta, (array) $a);
+        foreach ($this->meta as $k => $v) {
+            if ($v === false) unset($this->meta[$k]);
         }
-        return $sheet;
+        return $this;
     }
 
-    public function read($output = [], $NS = 'sheet:', $lot = []) {
-        $lot = $this->apart($this->open);
-        // Pre-defined sheet data ...
+    // Create data ...
+    public function data($s) {
+        $this->data = $s;
+        return $this;
+    }
+
+    public function read($as = 'content', $output = [], $NS = 'sheet:', $lot = []) {
+        $lot = $this->apart();
+        // Pre-defined sheet meta ...
         if ($output) {
             foreach ($output as $k => $v) {
                 $v = \Hook::NS($NS . '__' . $k, [$lot], $v);
@@ -88,8 +83,8 @@ class Sheet extends \Socket {
                 $output[$k] = $v;
             }
         }
-        // Load sheet data ...
-        foreach ($lot as $k => $v) {
+        // Load sheet meta ...
+        foreach (array_merge($lot->meta, [$as => $lot->data]) as $k => $v) {
             $v = \Hook::NS($NS . '__' . $k, [$lot], $v);
             $output['__' . $k] = $v;
             $v = \Hook::NS($NS . 'var.input', [$lot], $v); // before var set-up

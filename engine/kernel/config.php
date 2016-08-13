@@ -1,16 +1,19 @@
 <?php
 
-class Config extends Socket {
+class Config extends Genome {
 
     protected static $bucket = [];
 
     public static function start(...$lot) {
         $a = State::config();
-        if (!$lang = File::exist(LANGUAGE . DS . $a['language'] . DS . 'speak.txt')) {
-            $lang = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.txt');
+        if (!$f = File::exist(LANGUAGE . DS . $a['language'] . DS . 'speak.log')) {
+            if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.log')) {
+                if (!$f = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.log')) {
+                    $f = LANGUAGE . DS . 'en-us.log';
+                }
+            }
         }
-        $a['__i18n'] = From::yaml(File::open($lang)->read(""));
-        $a['url'] = _url_();
+        $a['__i18n'] = From::yaml(File::open($f)->read(""));
         self::$bucket = $a;
     }
 

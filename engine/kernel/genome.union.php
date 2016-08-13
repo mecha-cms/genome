@@ -1,6 +1,6 @@
 <?php namespace Genome;
 
-class Union extends \Socket {
+class Union extends \Genome {
 
     protected $union = [
         'unit' => ['<', '>', '/', '[\w:.-]+'],

@@ -1,13 +1,13 @@
 <?php
 
-abstract class Socket {
+abstract class Genome {
 
     // Method(s) ...
     public static $_ = [];
 
     // Get class instance ...
-    public static function start(...$lot) {
-        return new static($lot);
+    public static function proto(...$lot) {
+        return new static(...$lot);
     }
 
     // Show the added method(s)

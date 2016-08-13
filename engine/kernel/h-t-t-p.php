@@ -1,6 +1,6 @@
 <?php
 
-class HTTP extends Socket {
+class HTTP extends Genome {
 
     public static $message = [
         100 => 'Continue',
