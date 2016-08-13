@@ -65,8 +65,8 @@ class Shield extends Genome {
         $folder = $folder ?? Config::get('shield');
         $i18n = new Genome\Language;
         // Check whether the localized "about" file is available
-        if (!$info = File::exist(SHIELD . DS . $folder . DS . 'about.' . Config::get('language') . '.log')) {
-            $info = SHIELD . DS . $folder . DS . 'about.log';
+        if (!$info = File::exist(SHIELD . DS . $folder . DS . 'about.' . Config::get('language') . '.txt')) {
+            $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
         $info = Genome\Sheet::open($info)->read('content', [
             'id' => Folder::exist($folder),

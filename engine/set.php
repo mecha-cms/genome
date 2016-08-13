@@ -689,7 +689,7 @@ function h($x, $s = '-', $X = "") {
 function i($a, $b = []) {
     if (_is_anemon_($b)) {
         foreach ($b as $v) {
-            include $a . DS . $b;
+            include $a . DS . $v;
         }
     } else {
         $f = strpos($b, '{') !== false ? GLOB_NOSORT | GLOB_BRACE : GLOB_NOSORT;
@@ -750,7 +750,7 @@ function q($x, $deep = false) {
 function r($a, $b = []) {
     if (_is_anemon_($b)) {
         foreach ($b as $v) {
-            require $a . DS . $b;
+            require $a . DS . $v;
         }
     } else {
         $f = strpos($b, '{') !== false ? GLOB_NOSORT | GLOB_BRACE : GLOB_NOSORT;

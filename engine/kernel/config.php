@@ -6,10 +6,10 @@ class Config extends Genome {
 
     public static function start(...$lot) {
         $a = State::config();
-        if (!$f = File::exist(LANGUAGE . DS . $a['language'] . DS . 'speak.log')) {
-            if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.log')) {
-                if (!$f = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.log')) {
-                    $f = LANGUAGE . DS . 'en-us.log';
+        if (!$f = File::exist(LANGUAGE . DS . $a['language'] . DS . 'speak.txt')) {
+            if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.txt')) {
+                if (!$f = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.txt')) {
+                    $f = LANGUAGE . DS . 'en-us.txt';
                 }
             }
         }

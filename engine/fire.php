@@ -17,6 +17,7 @@ $language = new Genome\Language;
 $url = new Genome\URL;
 
 r(EXTEND . DS . '*' . DS . 'engine', '{fire.php,fire__.php,__fire.php}');
+r(EXTEND . DS . 'plugin' . DS . '*' . DS . 'engine', '{fire.php,fire__.php,__fire.php}');
 
 $f = SHIELD . DS . $config->shield . DS . 'engine' . DS;
 
