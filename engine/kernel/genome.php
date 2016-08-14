@@ -6,7 +6,7 @@ abstract class Genome {
     public static $_ = [];
 
     // Get class instance ...
-    public static function proto(...$lot) {
+    public static function _(...$lot) {
         return new static(...$lot);
     }
 
@@ -42,6 +42,7 @@ abstract class Genome {
     // Call the added method with `Socket::foo()`
     public static function __callStatic($kin, $lot) {
         $c = static::class;
+        // $lot = array_merge($lot, [new static]);
         if (!isset(self::$_[1][$c][$kin])) {
             echo('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
             return false;

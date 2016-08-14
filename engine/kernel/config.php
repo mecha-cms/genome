@@ -6,12 +6,8 @@ class Config extends Genome {
 
     public static function start(...$lot) {
         $a = State::config();
-        if (!$f = File::exist(LANGUAGE . DS . $a['language'] . DS . 'speak.txt')) {
-            if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.txt')) {
-                if (!$f = File::exist(LANGUAGE . DS . 'en-us' . DS . 'speak.txt')) {
-                    $f = LANGUAGE . DS . 'en-us.txt';
-                }
-            }
+        if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.txt')) {
+            $f = LANGUAGE . DS . 'en-us.txt';
         }
         $a['__i18n'] = From::yaml(File::open($f)->read(""));
         self::$bucket = $a;
@@ -32,7 +28,9 @@ class Config extends Genome {
     }
 
     public static function get($a = null, $fail = false) {
-        if ($a === null) return o(self::$bucket);
+        if ($a === null) {
+            return !empty(self::$bucket) ? o(self::$bucket) : $fail;
+        }
         if (_is_anemon_($a)) {
             $output = [];
             foreach ($a as $k => $v) {

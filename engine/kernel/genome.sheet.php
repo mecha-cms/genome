@@ -12,11 +12,10 @@ class Sheet extends \Genome {
     public function __construct($meta = [], $data = "") {
         $this->meta = $meta;
         $this->data = $data;
-        return $this;
     }
 
     public static function open($path) {
-        $sheet = self::proto();
+        $sheet = self::_();
         $sheet->open = $path;
         return $sheet;
     }
@@ -72,26 +71,25 @@ class Sheet extends \Genome {
 
     public function read($as = 'content', $output = [], $NS = 'sheet:', $lot = []) {
         $a = $this->apart();
-		$lot_o = array_merge($a->meta, [$as => $a->data]);
-		$lot = array_merge($lot, $a->meta);
+        $lot = array_merge($lot, $a->meta);
         // Pre-defined sheet meta ...
         if ($output) {
             foreach ($output as $k => $v) {
-                $v = \Hook::NS($NS . '__' . $k, [$a->data, $lot], $v);
+                $v = \Hook::NS($NS . '__' . $k, [$v, $lot]);
                 $output['__' . $k] = $v; // private item
-                $v = \Hook::NS($NS . 'var.input', [$a->data, $lot], $v); // before var set-up
-                $v = \Hook::NS($NS . $k, [$lot_o], $v); // public item
-                $v = \Hook::NS($NS . 'var.output', [$a->data, $lot], $v); // after var set-up
+                $v = \Hook::NS($NS . 'var.i', [$v, $lot]); // before var set-up
+                $v = \Hook::NS($NS . $k, [$v, $lot]); // public item
+                $v = \Hook::NS($NS . 'var.o', [$v, $lot]); // after var set-up
                 $output[$k] = $v;
             }
         }
         // Load sheet meta ...
-        foreach ($lot_o as $k => $v) {
-            $v = \Hook::NS($NS . '__' . $k, [$a->data, $lot], $v);
+        foreach (array_merge($lot, [$as => $this->data]) as $k => $v) {
+            $v = \Hook::NS($NS . '__' . $k, [$v, $lot]);
             $output['__' . $k] = $v;
-            $v = \Hook::NS($NS . 'var.input', [$a->data, $lot], $v); // before var set-up
-            $v = \Hook::NS($NS . $k, [$a->data, $lot], $v); // public item
-            $v = \Hook::NS($NS . 'var.output', [$a->data, $lot], $v); // after var set-up
+            $v = \Hook::NS($NS . 'var.i', [$v, $lot]); // before var set-up
+            $v = \Hook::NS($NS . $k, [$v, $lot]); // public item
+            $v = \Hook::NS($NS . 'var.o', [$v, $lot]); // after var set-up
             $output[$k] = $v;
         }
         return $output;

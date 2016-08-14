@@ -1,0 +1,9 @@
+plugin: Plugin
+plugins: Plugins
+
+plug_in: Plug In
+plugs_in: Plugs In
+
+plug: Plug
+pluging: Plugging
+pluged: Plugged

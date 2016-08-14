@@ -1,4 +1,4 @@
-<?php namespace Genome\Sheet;
+<?php
 
 class Post {
 

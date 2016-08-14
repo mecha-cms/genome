@@ -41,7 +41,6 @@ class Union extends \Genome {
             'data' => $data,
             '.' => $__
         ]);
-        return $this;
     }
 
     protected $unit = [];
@@ -67,7 +66,7 @@ class Union extends \Genome {
         $output = "";
         $c = strtolower(static::class);
         $unit = $unit ? '.' . $unit : "";
-        $array = \Hook::NS($c . ':bond' . $unit, [$unit], array_replace($this->data, $a));
+        $array = \Hook::NS($c . ':bond' . $unit, [array_replace($this->data, $a), $unit]);
         // HTML5 `data-*` attribute
         if (isset($a['data']) && is_array($a['data'])) {
             foreach ($a['data'] as $k => $v) {
@@ -104,7 +103,7 @@ class Union extends \Genome {
         $u = $this->union['unit'];
         $s  = $dent . $u[0] . $unit . $this->bond($data, $unit);
         $s .= $content === false ? $u[1] : $u[1] . ($content ?? "") . $u[0] . $u[2] . $unit . $u[1];
-        return \Hook::NS($c . ':unit.' . $unit, [$data], $s);
+        return \Hook::NS($c . ':unit.' . $unit, [$s, $data]);
     }
 
     // Inverse version of `Union::unite()`
@@ -147,7 +146,7 @@ class Union extends \Genome {
         }
         $c = strtolower(static::class);
         $u = $this->union['.'];
-        return \Hook::NS($c . ':unit.__', [], $dent . $u[0] . $begin . $content . $end . $u[1]);
+        return \Hook::NS($c . ':unit.__', $dent . $u[0] . $begin . $content . $end . $u[1]);
     }
 
     // Base union tag open
@@ -157,7 +156,7 @@ class Union extends \Genome {
         $this->dent[] = $dent;
         $u = $this->union['unit'];
         $c = strtolower(static::class);
-        return \Hook::NS($c . ':open.' . $unit, [$data], $dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1]);
+        return \Hook::NS($c . ':open.' . $unit, [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], $data]);
     }
 
     // Base union tag close
@@ -174,7 +173,7 @@ class Union extends \Genome {
         $dent = $dent ?? array_pop($this->dent) ?? "";
         $c = strtolower(static::class);
         $u = $this->union['unit'];
-        return \Hook::NS($c . ':close.' . $unit, [], $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "");
+        return \Hook::NS($c . ':close.' . $unit, $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "");
     }
 
 }

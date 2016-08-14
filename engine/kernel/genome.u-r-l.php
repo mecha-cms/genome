@@ -6,7 +6,6 @@ class URL extends \URL {
         foreach (_url_() as $k => $v) {
             $this->{$k} = $v;
         }
-        return $this;
     }
 
     public function __set($key, $value = null) {
@@ -18,7 +17,7 @@ class URL extends \URL {
     }
 
     public function __toString() {
-        return _url_('url');
+        return $this->url;
     }
 
 }

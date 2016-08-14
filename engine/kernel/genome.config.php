@@ -25,4 +25,8 @@ class Config extends \Genome {
         return json_encode(\Config::get());
     }
 
+    public function __invoke($fail = []) {
+        return \Config::get(null, o($fail));
+    }
+
 }

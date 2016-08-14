@@ -18,8 +18,6 @@ define('ENGINE', ROOT . DS . 'engine');
 define('LOT', ROOT . DS . 'lot');
 define('EXTEND', LOT . DS . 'extend');
 define('LANGUAGE', LOT . DS . 'language');
-define('CHUNK', EXTEND . DS . 'chunk');
-define('PLUGIN', EXTEND . DS . 'plugin');
 define('ASSET', LOT . DS . 'asset');
 define('CACHE', LOT . DS . 'cache');
 define('SHIELD', LOT . DS . 'shield');
@@ -159,5 +157,4 @@ define('SCRIPT_X', [
     'xml'
 ]);
 
-require ENGINE . DS . 'set.php';
 require ENGINE . DS . 'fire.php';

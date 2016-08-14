@@ -15,9 +15,7 @@ class Shield extends Genome {
     }
 
     public static function cargo() {
-        self::$lot['config'] = new Genome\Config;
-        self::$lot['language'] = new Genome\Language;
-        self::$lot['url'] = new Genome\URL;
+        self::$lot = array_merge(self::$lot, Seed::get(null, []));
         foreach (glob(SHEET . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
             $v = Path::B($v);
             if (!isset(self::$lot['lot'][$v])) {
@@ -43,22 +41,6 @@ class Shield extends Genome {
             return $path;
         }
         return $fail;
-    }
-
-    public static function lot($key = null, $fail = false) {
-        if ($key === null) return self::$lot;
-        if (!_is_anemon_($key)) {
-            return self::$lot[$key] ?? $fail;
-        }
-        self::$lot = array_merge(self::$lot, (array) $key);
-        return new static;
-    }
-
-    public static function apart($data) {
-        foreach ((array) $data as $v) {
-            unset(self::$lot[$v]);
-        }
-        return new static;
     }
 
     public static function info($folder = null, $a = false) {
@@ -97,21 +79,21 @@ class Shield extends Genome {
             }
         }
         $lot__ = self::cargo();
-        $path__ = Hook::NS($NS . 'path', [], $path__);
+        $path__ = Hook::NS($NS . 'path', $path__);
         $G['lot'] = $lot__;
         $G['path'] = $path__;
         $G['path.base'] = $s[0];
         $out = "";
         // Begin shield
-        Hook::fire($NS . 'lot.before', [$G, $G]);
-        extract(Hook::NS($NS . 'lot', [], $lot__));
-        Hook::fire($NS . 'lot.after', [$G, $G]);
-        Hook::fire($NS . 'before', [$G, $G]);
+        Hook::fire($NS . 'lot.before', [null, $G, $G]);
+        extract(Hook::NS($NS . 'lot', $lot__));
+        Hook::fire($NS . 'lot.after', [null, $G, $G]);
+        Hook::fire($NS . 'before', [null, $G, $G]);
         if ($path__) {
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
-                    $content = Hook::NS($NS . 'input', [$path__], $content);
-                    $out = Hook::NS($NS . 'output', [$path__], $content);
+                    $content = Hook::NS($NS . 'input', [$content, $path__]);
+                    $out = Hook::NS($NS . 'output', [$content, $path__]);
                     return $out;
                 });
                 require $path__;
@@ -124,7 +106,7 @@ class Shield extends Genome {
         // Reset shield lot
         self::$lot = [];
         // End shield
-        Hook::fire($NS . 'after', [$G, $G]);
+        Hook::fire($NS . 'after', [null, $G, $G]);
         exit;
     }
 

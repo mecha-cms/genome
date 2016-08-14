@@ -10,20 +10,4 @@
 }); ?>
 </footer>
 <p><code><?php echo To::html_encode($post); ?></code></p>
-<div><?php _dump_(Language::get()); ?></div>
-
-<?php _dump_(o([
-    'a' => 'b',
-    'c' => 'd',
-    'e' => ['f', 'g', 'h', 'i'],
-    'j' => [
-        0 => 'k',
-        1 => 'l',
-        '2' => 'm'
-    ],
-    'n' => [
-        0 => 'o',
-        1 => 'p',
-        'q' => 'r'
-    ]
-])); ?>
+<div><?php _dump_($config()); ?></div>

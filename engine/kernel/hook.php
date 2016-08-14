@@ -25,25 +25,28 @@ class Hook extends Genome {
         return new static;
     }
 
-    public static function fire($id, $lot = [], $r = null) {
+    public static function fire($id, $lot = null) {
         $c = static::class;
+        if (!is_array($lot) || !isset($lot[0])) {
+            $lot = [$lot];
+        }
         if (!is_array($id)) {
             if (!isset(self::$lot[1][$c][$id])) {
                 self::$lot[1][$c][$id] = [];
-                return $r;
+                return $lot[0];
             }
             $signal = Anemon::eat(self::$lot[1][$c][$id])->sort('ASC', 'stack')->vomit();
             foreach ($signal as $v) {
-                $r = call_user_func_array($v['fn'], $lot);
+                $lot[0] = call_user_func_array($v['fn'], $lot);
             }
         } else {
-            $lot = func_get_args();
+            $a = func_get_args();
             foreach ($id as $v) {
-                $lot[0] = $v;
-                $r = call_user_func_array('self::fire', $lot);
+                $a[0] = $v;
+                $lot[0] = call_user_func_array('self::fire', $a);
             }
         }
-        return $r;
+        return $lot[0];
     }
 
     public static function block($id = null, $stack = null) {

@@ -18,4 +18,8 @@ class Language extends \Genome {
         return json_encode(\Config::get('__i18n'));
     }
 
+    public function __invoke($fail = []) {
+        return \Config::get('__i18n', o($fail));
+    }
+
 }

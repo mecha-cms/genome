@@ -1,8 +1,10 @@
 <?php
 
-To::plug('url', function($input) {
-    $url = _url_();
-    $input = str_replace([ROOT, DS, '\\'], [$url['url'], '/', '/'], $input);
+$url = _url_();
+
+To::plug('url', function($input) use($url) {
+    $s = str_replace(DS, '/', ROOT);
+    $input = str_replace([ROOT, DS, '\\', $s], [$url['url'], '/', '/', $url['url']], $input);
     // Fix broken external URL `http://://example.com`, `http:////example.com`
     $input = str_replace(['://://', ':////'], '://', $input);
     // @ditto `http:example.com`
@@ -12,8 +14,9 @@ To::plug('url', function($input) {
     return $input;
 });
 
-To::plug('path', function($input) {
-    return str_replace([X . _url_('url'), '\\', '/', X], [ROOT, DS, DS, ""], X . $input);
+To::plug('path', function($input) use($url) {
+    $s = str_replace('/', DS, $url['url']);
+    return str_replace([$url['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
 });
 
 function _to_yaml_($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
@@ -148,12 +151,6 @@ To::safe('file.name', function($input) {
 
 To::safe('folder.name', function($input) {
     return f($input, '-', true, '\w');
-});
-
-To::safe('path.name', function($input) {
-    $x = '-' . DS;
-    $s = str_replace(['\\', '/', '\\\\', '//'], [DS, DS, $x, $x], $input);
-    return f($s, '-', true, '\w.\\\/');
 });
 
 To::safe('key', function($input, $low = true) {

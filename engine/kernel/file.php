@@ -2,13 +2,12 @@
 
 class File extends Genome {
 
-    protected static $open = "";
-    protected static $cache = "";
+    protected static $path = "";
+    protected static $content = "";
 
     public static $config = [
-        'file_size_min_allow' => 0, // Minimum allowed file size
-        'file_size_max_allow' => 2097152, // Maximum allowed file size
-        'file_extension_allow' => [] // List of allowed file extension(s)
+        'sizes' => [0, 2097152], // Range of allowed file size(s)
+        'extensions' => [] // List of allowed file extension(s)
     ];
 
     // Inspect file path
@@ -23,9 +22,9 @@ class File extends Genome {
             'name' => $n,
             'url' => To::url($path),
             'extension' => is_file($path) ? $x : null,
-            'update_raw' => $update,
+            '__update' => $update,
             'update' => $update_date,
-            'size_raw' => file_exists($path) ? filesize($path) : null,
+            '__size' => file_exists($path) ? filesize($path) : null,
             'size' => file_exists($path) ? self::size($path) : null,
             'is' => [
                 // hidden file/folder only
@@ -39,7 +38,7 @@ class File extends Genome {
 
     // List all file(s) from a folder
     public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = false) {
-        $folder = rtrim(To::path($folder), DS);
+        $folder = To::path($folder);
         $files = array_merge(
             glob($folder . DS . '*', GLOB_NOSORT),
             glob($folder . DS . '.*', GLOB_NOSORT)
@@ -71,33 +70,41 @@ class File extends Genome {
 
     // Open a file
     public static function open($input) {
-        self::$open = To::path($input);
-        self::$cache = "";
+        self::$path = To::path($input);
+        self::$content = "";
         return new static;
     }
 
     // Append `$data` to the file content
     public static function append($data) {
-        self::$cache = file_get_contents(self::$open) . $data;
+        if (is_array(self::$content)) {
+            self::$content = array_merge(self::$content, $data);
+            return new static;
+        }
+        self::$content = file_get_contents(self::$path) . $data;
         return new static;
     }
 
     // Prepend `$data` to the file content
     public static function prepend($data) {
-        self::$cache = $data . file_get_contents(self::$open);
+        if (is_array(self::$content)) {
+            self::$content = array_merge($data, self::$content);
+            return new static;
+        }
+        self::$content = $data . file_get_contents(self::$path);
         return new static;
     }
 
     // Print the file content
     public static function read($fail = "") {
-        return file_exists(self::$open) ? file_get_contents(self::$open) : $fail;
+        return file_exists(self::$path) ? file_get_contents(self::$path) : $fail;
     }
 
     // Print the file content line by line
     public static function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
         $output = "";
-        if ($hand = fopen(self::$open, 'r')) {
+        if ($hand = fopen(self::$path, 'r')) {
             while (($chunk = fgets($hand, $ch)) !== false) {
                 if (is_int($stop) && $stop === $i) break;
                 $output .= $chunk;
@@ -112,28 +119,51 @@ class File extends Genome {
 
     // Write `$data` before save
     public static function write($data) {
-        self::$cache = $data;
+        self::$content = $data;
+        return new static;
+    }
+
+    // Import the exported PHP file
+    public static function import($fail = []) {
+        if (!file_exists(self::$path)) return $fail;
+        return include self::$path;
+    }
+
+    // Export value to a PHP file
+    public static function export($data, $format = '<?php return %s;') {
+        $data = json_encode($data);
+        $data = preg_split('#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')#', $data, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $output = "";
+        foreach ($data as $v) {
+            if (!$v) continue;
+            if ($v[0] === '"' || $v[0] === "'") {
+                $output .= $v;
+            } else {
+                $output .= str_replace(['{', '}', ':'], ['[', ']', '=>'], $v);
+            }
+        }
+        self::$content = sprintf($format, $output);
         return new static;
     }
 
     // Serialize `$data` before save
     public static function serialize($data) {
-        self::$cache = serialize($data);
+        self::$content = serialize($data);
         return new static;
     }
 
     // Unserialize the serialized `$data` to output
     public static function unserialize($fail = []) {
-        if (file_exists(self::$open)) {
-            $data = file_get_contents(self::$open);
-            return Is::serialize($data) ? unserialize($data) : $fail;
+        if (file_exists(self::$path)) {
+            $data = file_get_contents(self::$path);
+            return _is_serialize_($data) ? unserialize($data) : $fail;
         }
         return $fail;
     }
 
     // Save the `$data`
     public static function save($consent = null) {
-        self::saveTo(self::$open, $consent);
+        self::saveTo(self::$path, $consent);
         return new static;
     }
 
@@ -144,40 +174,40 @@ class File extends Genome {
             mkdir(Path::D($input), 0777, true);
         }
         $hand = fopen($input, 'w') or die('Cannot open file: ' . $input);
-        fwrite($hand, self::$cache);
+        fwrite($hand, self::$content);
         fclose($hand);
         if ($consent !== null) {
             chmod($input, $consent);
         }
-        self::$open = $input;
+        self::$path = $input;
         return new static;
     }
 
     // Rename the file/folder
     public static function renameTo($name) {
-        if (file_exists(self::$open)) {
-            $a = Path::B(self::$open);
-            $b = Path::D(self::$open) . DS;
+        if (file_exists(self::$path)) {
+            $a = Path::B(self::$path);
+            $b = Path::D(self::$path) . DS;
             if ($name !== $a) {
                 rename($b . $a, $b . $name);
             }
-            self::$open = $b . $name;
+            self::$path = $b . $name;
         }
         return new static;
     }
 
     // Move the file/folder to ...
     public static function moveTo($target = ROOT) {
-        if (file_exists(self::$open)) {
+        if (file_exists(self::$path)) {
             $target = To::path($input);
-            if (is_dir($target) && is_file(self::$open)) {
-                $target .= DS . Path::B(self::$open);
+            if (is_dir($target) && is_file(self::$path)) {
+                $target .= DS . Path::B(self::$path);
             }
             if (!file_exists(Path::D($target))) {
                 mkdir(Path::D($target), 0777, true);
             }
-            rename(self::$open, $target);
-            self::$open = $target;
+            rename(self::$path, $target);
+            self::$path = $target;
         }
         return new static;
     }
@@ -185,28 +215,28 @@ class File extends Genome {
     // Copy the file/folder to ...
     public static function copyTo($target = ROOT, $s = '.%s') {
         $i = 1;
-        if (file_exists(self::$open)) {
+        if (file_exists(self::$path)) {
             foreach ((array) $target as $v) {
                 $v = To::path($input);
                 if (is_dir($v)) {
                     if (!file_exists($v)) {
                         mkdir($v, 0777, true);
                     }
-                    $v .= DS . Path::B(self::$open);
+                    $v .= DS . Path::B(self::$path);
                 } else {
                     if (!file_exists(Path::D($v))) {
                         mkdir(Path::D($v), 0777, true);
                     }
                 }
                 if (!file_exists($v)) {
-                    copy(self::$open, $v);
+                    copy(self::$path, $v);
                     $i = 1;
                 } else {
                     $v = preg_replace('#\.([a-z\d]+)$#', sprintf($s, $i) . '.$1', $v);
-                    copy(self::$open, $v);
+                    copy(self::$path, $v);
                     $i++;
                 }
-                self::$open = $v;
+                self::$path = $v;
             }
         }
         return new static;
@@ -214,9 +244,9 @@ class File extends Genome {
 
     // Delete the file
     public static function delete() {
-        if (file_exists(self::$open)) {
-            if (is_dir(self::$open)) {
-                $a = new RecursiveDirectoryIterator(self::$open, FilesystemIterator::SKIP_DOTS);
+        if (file_exists(self::$path)) {
+            if (is_dir(self::$path)) {
+                $a = new RecursiveDirectoryIterator(self::$path, FilesystemIterator::SKIP_DOTS);
                 $b = new RecursiveIteratorIterator($a, RecursiveIteratorIterator::CHILD_FIRST);
                 foreach ($b as $o) {
                     if ($o->isFile()) {
@@ -225,40 +255,30 @@ class File extends Genome {
                         rmdir($o->getPathname());
                     }
                 }
-                rmdir(self::$open);
+                rmdir(self::$path);
             } else {
-                unlink(self::$open);
+                unlink(self::$path);
             }
         }
     }
 
-    // Get file modify time
+    // Get file modification time
     public static function T($input, $fail = null) {
         return file_exists($input) ? filemtime($input) : $fail;
     }
 
     // Set file permission
     public static function consent($consent) {
-        chmod(self::$open, $consent);
+        chmod(self::$path, $consent);
         return new static;
     }
 
     // Upload the file
     public static function upload($file, $target = ROOT, $fn = null, $fail = false) {
         $target = To::path($input);
-        $errors = [
-            'There is no error, the file uploaded with success.',
-            'The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.',
-            'The uploaded file exceeds the <code>MAX_FILE_SIZE</code> directive that was specified in the <abbr title="Hyper Text Markup Language">HTML</abbr> form.',
-            'The uploaded file was only partially uploaded.',
-            'No file was uploaded.',
-            '?',
-            'Missing a temporary folder.',
-            'Failed to write file to disk.',
-            'A <abbr>PHP</abbr> extension stopped the file upload.'
-        ];
+        $errors = Language::notify_file_upload();
         // Create a safe file name
-        $file['name'] = To::safe('name.file', $file['name']);
+        $file['name'] = To::safe('file.name', $file['name']);
         $x = Path::X($file['name']);
         // Something goes wrong
         if ($file['error'] > 0 && isset($errors[$file['error']])) {
@@ -266,37 +286,37 @@ class File extends Genome {
         } else {
             // Unknown file type
             if (empty($file['type'])) {
-                Notify::error('Unknown file type.');
+                Notify::error('file_type');
             }
             // Bad file extension
-            $x_ok = X . implode(X, self::$config['file_extension_allow']) . X;
+            $x_ok = X . implode(X, self::$config['extensions']) . X;
             if (strpos($x_ok, X . $x . X) === false) {
-                Notify::error('Extension ' . $x . ' is not allowed.');
+                Notify::error('file_extension', $x);
             }
             // Too small
-            if ($file['size'] < self::$config['file_size_min_allow']) {
-                Notify::error('File too small.');
+            if ($file['size'] < self::$config['sizes'][0]) {
+                Notify::error('file_size.0', self::size($file['size']));
             }
             // Too large
-            if ($file['size'] > self::$config['file_size_max_allow']) {
-                Notify::error('File too large.');
+            if ($file['size'] > self::$config['sizes'][1]) {
+                Notify::error('file_size.1', self::size($file['size']));
             }
         }
         if (!Notify::errors()) {
             // Destination not found
             if (!file_exists($target)) Folder::create($target);
-            // Move the uploaded file to the destination folder
+            // Move the upload(ed) file to the destination folder
             if (!file_exists($target . DS . $file['name'])) {
                 move_uploaded_file($file['tmp_name'], $target . DS . $file['name']);
                 // Create public asset URL to be hooked on file uploaded
-                $url = To::url($target) . '/' . $file['name'];
-                Notify::success('File uploaded.');
+                $file['url'] = To::url($target) . '/' . $file['name'];
+                Notify::success('file_upload', $file['name']);
                 if (is_callable($fn)) {
-                    return call_user_func($fn, $file['name'], $file['type'], $file['size'], $url);
+                    return call_user_func($fn, $file);
                 }
                 return $target . DS . $file['name'];
             }
-            Notify::error('File already exist.');
+            Notify::error('file_exist', $file['name']);
             return $fail;
         }
         return $fail;
@@ -311,7 +331,7 @@ class File extends Genome {
             $u = $size > 0 ? floor($size_base) : 0;
         }
         $output = round($size / pow(1024, $u), $prec);
-        return $output < 0 ? 'Unknown' : trim($output . ' ' . $x[$u]);
+        return $output < 0 ? Language::get('unknown') : trim($output . ' ' . $x[$u]);
     }
 
 }

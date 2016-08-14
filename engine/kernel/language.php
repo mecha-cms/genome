@@ -9,13 +9,19 @@ class Language extends Config {
             foreach ($a as $k => $v) {
                 $aa['__i18n.' . $k] = $v;
             }
-            parent::set($aa, $b);
+            parent::set($aa ?? [], $b);
         }
     }
 
-    public static function get($k = null, $a = []) {
-        if ($k === null) return parent::get('__i18n', []);
-        return vsprintf(parent::get('__i18n.' . $k, $k), $a + [""]);
+    public static function get($k = null, $a = [], $fail = null) {
+        $fail = $fail ?? $k;
+        if ($k === null) return parent::get('__i18n', $fail);
+        return vsprintf(parent::get('__i18n.' . $k, $fail), $a + [""]);
+    }
+
+    public static function __callStatic($kin, $lot) {
+        $kin = '__i18n.' . $kin;
+        return parent::__callStatic($kin, $lot);
     }
 
 }
