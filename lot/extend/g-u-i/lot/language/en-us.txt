@@ -30,3 +30,7 @@ notify_success_folder_create: Folder <code>%s</code> successfully created.
 notify_success_folder_delete: Folder <code>%s</code> successfully deleted.
 notify_success_folder_update: Folder <code>%s</code> successfully updated.
 notify_success_folder_upload: Folder <code>%s</code> successfully uploaded.
+
+# negation ...
+_notify_error_file_exist: File <code>%s</code> does not exist.
+_notify_error_folder_exist: Folder <code>%s</code> does not exist.

@@ -15,7 +15,7 @@ class Notify extends Genome {
         $kin = array_shift($lot);
         $text = array_shift($lot);
         $s = array_shift($lot) ?? "";
-        $c2f = _c2f_(static::class);
+        $c2f = __c2f__(static::class);
         $text = Language::get($c2f . '_' . $kin . '_' . $text, (array) $s);
         if ($count === 1) {
             self::set('default', $kin);
@@ -35,7 +35,7 @@ class Notify extends Genome {
     }
 
     public static function get($session_x = true) {
-        $output = Session::get(self::$id, "") !== "" ? CELL_O . sprintf(self::$config['messages'], Session::get(self::$id)) . CELL_C : "";
+        $output = Session::get(self::$id, "") !== "" ? HTML_BEGIN . sprintf(self::$config['messages'], Session::get(self::$id)) . HTML_END : "";
         if ($session_x) self::reset();
         return $output;
     }
@@ -48,7 +48,7 @@ class Notify extends Genome {
         $head .= 'Reply-To: ' . $from . N;
         $head .= 'Return-Path: ' . $from . N;
         $head .= 'X-Mailer: PHP/' . phpversion();
-        $s = _c2f_(static::class) . ':' . __METHOD__;
+        $s = __c2f__(static::class) . ':' . __METHOD__;
         $head = Hook::NS($s . '.meta', $head);
         $body = Hook::NS($s . '.data', $body);
         return mail($to, $subject, $body, $head);

@@ -14,8 +14,8 @@ class Config extends Genome {
     }
 
     public static function set($a, $b = null) {
-        if (_is_anemon_($a)) $a = a($a);
-        if (_is_anemon_($b)) $b = a($b);
+        if (__is_anemon__($a)) $a = a($a);
+        if (__is_anemon__($b)) $b = a($b);
         $cargo = [];
         if (!is_array($a)) {
             Anemon::set($cargo, $a, $b);
@@ -31,7 +31,7 @@ class Config extends Genome {
         if ($a === null) {
             return !empty(self::$bucket) ? o(self::$bucket) : $fail;
         }
-        if (_is_anemon_($a)) {
+        if (__is_anemon__($a)) {
             $output = [];
             foreach ($a as $k => $v) {
                 $f = is_array($fail) && array_key_exists($k, $fail) ? $fail[$k] : $fail;

@@ -47,16 +47,17 @@ class Shield extends Genome {
         $folder = $folder ?? Config::get('shield');
         $i18n = new Genome\Language;
         // Check whether the localized "about" file is available
-        if (!$info = File::exist(SHIELD . DS . $folder . DS . 'about.' . Config::get('language') . '.txt')) {
-            $info = SHIELD . DS . $folder . DS . 'about.txt';
+        $f = SHIELD . DS . $folder . DS;
+        if (!$info = File::exist($f . 'about.' . Config::get('language') . '.txt')) {
+            $info = $f . 'about.txt';
         }
         $info = Genome\Sheet::open($info)->read('content', [
-            'id' => Folder::exist($folder),
-            'title' => t($folder),
+            'id' => is_dir(SHIELD . DS . $folder) ? $folder : null,
+            'title' => To::title($folder),
             'author' => $i18n->anon,
             'link' => '#',
             'version' => '0.0.0',
-            'content' => $i18n->notify_not_avail($i18n->description)
+            'content' => $i18n->_notify_avail($i18n->description)
         ], strtolower(static::class) . ':');
         return $a ? $info : o($info);
     }
@@ -75,7 +76,7 @@ class Shield extends Genome {
             } elseif ($_path = File::exist(self::path($s[0], $fail))) {
                 $path__ = $_path;
             } else {
-                exit($i18n->notify_not_exist_file('<code>' . $path__ . '</code>'));
+                exit($i18n->_notify_error_file_exist('<code>' . $path__ . '</code>'));
             }
         }
         $lot__ = self::cargo();

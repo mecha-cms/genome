@@ -32,13 +32,13 @@ define('T', "\t"); // Tab
 define('V', "\v"); // Vertical space
 define('X', "\x1A"); // Placeholder text
 
-define('CELL_V', '>'); // Stand-alone HTML element
+define('HTML_VOID_END', '>'); // Stand-alone HTML element
 
-define('CELL_O', ""); // Begin HTML output
-define('CELL_C', N); // End HTML output
+define('HTML_BEGIN', ""); // Begin HTML output
+define('HTML_END', N); // End HTML output
 
 // Common HTML tag(s) allowed to be written in the form field
-define('WISE_CELL_I', [
+define('HTML_KIND_I', [
     'a',
     'abbr',
     'b',
@@ -62,7 +62,7 @@ define('WISE_CELL_I', [
     'var'
 ]);
 
-define('WISE_CELL_B', [
+define('HTML_KIND_B', [
     'address',
     'blockquote',
     'caption',
@@ -92,7 +92,7 @@ define('WISE_CELL_B', [
     'ul'
 ]);
 
-define('WISE_CELL', WISE_CELL_I + WISE_CELL_B);
+define('HTML_KIND', HTML_KIND_I + HTML_KIND_B);
 
 define('FONT_X', [
     'eot',

@@ -131,8 +131,7 @@ class File extends Genome {
 
     // Export value to a PHP file
     public static function export($data, $format = '<?php return %s;') {
-        $data = json_encode($data);
-        $data = preg_split('#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')#', $data, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $data = preg_split('#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')#', json_encode($data), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $output = "";
         foreach ($data as $v) {
             if (!$v) continue;
@@ -156,7 +155,7 @@ class File extends Genome {
     public static function unserialize($fail = []) {
         if (file_exists(self::$path)) {
             $data = file_get_contents(self::$path);
-            return _is_serialize_($data) ? unserialize($data) : $fail;
+            return __is_serialize__($data) ? unserialize($data) : $fail;
         }
         return $fail;
     }
@@ -276,13 +275,13 @@ class File extends Genome {
     // Upload the file
     public static function upload($file, $target = ROOT, $fn = null, $fail = false) {
         $target = To::path($input);
-        $errors = Language::notify_file_upload();
         // Create a safe file name
         $file['name'] = To::safe('file.name', $file['name']);
         $x = Path::X($file['name']);
+        $e = Language::notify_file_upload();
         // Something goes wrong
-        if ($file['error'] > 0 && isset($errors[$file['error']])) {
-            Notify::error($errors[$file['error']]);
+        if ($file['error'] > 0 && isset($e[$file['error']])) {
+            Notify::error($e[$file['error']]);
         } else {
             // Unknown file type
             if (empty($file['type'])) {

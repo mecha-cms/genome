@@ -1,6 +1,6 @@
 <?php
 
-$url = _url_();
+$url = __url__();
 
 To::plug('url', function($input) use($url) {
     $s = str_replace(DS, '/', ROOT);
@@ -19,14 +19,15 @@ To::plug('path', function($input) use($url) {
     return str_replace([$url['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
 });
 
-function _to_yaml_($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
+function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
     $s = Genome\Sheet::$v;
     Anemon::extend($s, $c);
-    if (_is_anemon_($input)) {
+    if (__is_anemon__($input)) {
         $t = "";
+        $line = $safe && __is_anemon_a__($input);
         $T = str_repeat($in, $dent);
         foreach ($input as $k => $v) {
-            if (!_is_anemon_($v) || empty($v)) {
+            if (!__is_anemon__($v) || empty($v)) {
                 if (is_array($v)) {
                     $v = '[]';
                 } elseif (is_object($v)) {
@@ -45,10 +46,10 @@ function _to_yaml_($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
                     $t .= $T . trim($v) . $s[4];
                 // ...
                 } else {
-                    $t .= $T . trim($k) . $s[2] . $v . $s[4];
+                    $t .= $T . ($line ? $s[3] : trim($k) . $s[2]) . $v . $s[4];
                 }
             } else {
-                $o = _to_yaml_($v, $s, $in, $safe, $dent + 1);
+                $o = __to_yaml__($v, $s, $in, $safe, $dent + 1);
                 $t .= $T . $k . $s[2] . $s[4] . $o . $s[4];
             }
         }
@@ -134,15 +135,18 @@ To::plug('json', function($input) {
 });
 
 To::plug('anemon', function($input) {
-    if (_is_anemon_($input)) {
+    if (__is_anemon__($input)) {
         return a($input);
     }
     return (array) json_decode($input, true);
 });
 
-To::plug('yaml', function($input, $c = [], $in = '  ', $safe = true) {
-    if (!_is_anemon_($input)) return s($input);
-    return _to_yaml_($input, $c, $in, $safe, 0);
+To::plug('yaml', function(...$lot) {
+    if (!__is_anemon__($lot[0])) return s($lot[0]);
+    if (Is::path($lot[0])) {
+        $lot[0] = include $lot[0];
+    }
+    return call_user_func_array('__to_yaml__', $lot);
 });
 
 To::safe('file.name', function($input) {

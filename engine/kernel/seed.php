@@ -5,7 +5,7 @@ class Seed extends Genome {
     public static $scope = 'var';
 
     public static function set($k, $v = null) {
-        if (_is_anemon_($k)) {
+        if (__is_anemon__($k)) {
             foreach ($k as $kk => $vv) {
                 $GLOBALS[self::$scope][$kk] = $vv;
             }

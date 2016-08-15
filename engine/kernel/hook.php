@@ -101,7 +101,7 @@ class Hook extends Genome {
     }
 
     public static function NS(...$lot) {
-        if(strpos($lot[0], ':') !== false) {
+        if (strpos($lot[0], ':') !== false) {
             $s = explode(':', $lot[0], 2);
             $lot[0] = [$lot[0], $s[1]];
         }

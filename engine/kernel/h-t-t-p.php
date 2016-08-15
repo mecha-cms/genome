@@ -79,7 +79,7 @@ class HTTP extends Genome {
     public static function query(...$lot) {
         $q = array_shift($lot);
         $v = array_shift($lot);
-        if ($q === null) return _url_('query');
+        if ($q === null) return __url__('query');
         if (count($lot) === 2) {
             $q = [$q => $v];
         }

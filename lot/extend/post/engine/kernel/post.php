@@ -6,7 +6,6 @@ class Post {
 
     public function __construct($a) {
         $this->a = $a;
-        return $this;
     }
 
     public function __call($key, $lot) {

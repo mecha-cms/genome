@@ -1,20 +1,20 @@
 <?php
 
-// _is_anemon_: check for valid data collection (array or object)
-// _is_json_: check for valid JSON string format
-// _is_serialize_: check for valid serialized string format
+// __is_anemon__: check for valid data collection (array or object)
+// __is_json__: check for valid JSON string format
+// __is_serialize__: check for valid serialized string format
 
-function _is_anemon_($x) {
+function __is_anemon__($x) {
     return is_array($x) || is_object($x);
 }
 
-function _is_anemon_a_($x) {
+function __is_anemon_a__($x) {
     $a = (array) $x;
     $count = count($a);
     return $count && array_keys($a) !== range(0, $count - 1);
 }
 
-function _is_json_($x) {
+function __is_json__($x) {
     if (!is_string($x) || !trim($x)) return false;
     return (
         // Maybe an empty string, array or object
@@ -30,7 +30,7 @@ function _is_json_($x) {
     ) && json_decode($x) !== null;
 }
 
-function _is_serialize_($x) {
+function __is_serialize__($x) {
     if (!is_string($x) || !trim($x)) {
         return false;
     } elseif ($x === 'N;') {
@@ -43,7 +43,7 @@ function _is_serialize_($x) {
     return strpos($x, 'a:') === 0 || strpos($x, 'O:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0;
 }
 
-function _dump_(...$a) {
+function __dump__(...$a) {
     foreach ($a as $b) {
         $s = var_export($b, true);
         $s = str_ireplace(['array (', 'TRUE', 'FALSE', 'NULL'], ['array(', 'true', 'false', 'null'], $s);
@@ -54,11 +54,11 @@ function _dump_(...$a) {
     }
 }
 
-function _c2f_($x) {
+function __c2f__($x) {
     return str_replace('\\-', '.', h($x, '-', '\\'));
 }
 
-function _url_($key = null, $fail = false) {
+function __url__($key = null, $fail = false) {
     $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
     $protocol = $scheme . '://';
     $host = $_SERVER['HTTP_HOST'];
@@ -85,8 +85,8 @@ function _url_($key = null, $fail = false) {
         'query' => $query ? '?' . $query : "",
         'previous' => $_SESSION['url']['previous'] ?? null,
         'current' => $current,
-        'next' => null,
-        'hash' => null
+        'next' => $_SESSION['url']['next'] ?? null,
+        'hash' => $_COOKIE['url']['hash'] ?? null
     ];
     return $key !== null ? ($a[$key] ?? $fail) : $a;
 }
@@ -94,23 +94,23 @@ function _url_($key = null, $fail = false) {
 // a: convert object to array
 // b:
 // c: convert text to camel case
-// d: declare class(es)
+// d: declare class(es) with callback
 // e: evaluate string to their proper data type
 // f: filter/sanitize string
 // g:
 // h: convert text to snake case with `-` (hyphen) as separator by default
-// i: include file(s)
+// i: include file(s) with callback
 // j:
 // k:
 // l: convert text to lower case
-// m: trim string from character(s)
+// m:
 // n: normalize white-space in string
 // o: convert array to object
 // p: convert text to pascal case
 // q: quantity (length of string, number or anemon)
-// r: require file(s)
+// r: require file(s) with callback
 // s: convert data type to their string format
-// t: convert N to a tab
+// t: trim string from specific prefix and suffix
 // u: convert text to upper case
 // v: un-escape
 // w: convert any data to plain word(s)
@@ -119,7 +119,7 @@ function _url_($key = null, $fail = false) {
 // z:
 
 function a($o) {
-    if (_is_anemon_($o)) {
+    if (__is_anemon__($o)) {
         $o = (array) $o;
         foreach ($o as &$oo) {
             $oo = a($oo);
@@ -139,7 +139,7 @@ function c($x) {
 
 function d($f, $fn = null) {
     spl_autoload_register(function($w) use($f, $fn) {
-        $n = _c2f_($w);
+        $n = __c2f__($w);
         $f = $f . DS . $n . '.php';
         if (file_exists($f)) {
             require $f;
@@ -155,10 +155,10 @@ function e($x) {
         if ($x === "") return $x;
         if (is_numeric($x)) {
             return strpos($x, '.') !== false ? (float) $x : (int) $x;
-        } elseif (_is_json_($x) && $v = json_decode($x, true)) {
+        } elseif (__is_json__($x) && $v = json_decode($x, true)) {
             return $v;
-        } elseif ($x[0] === '"' && substr($x, -1) === '"' || $x[0] === "'" && substr($x, -1) === "'") {
-            return m($x, $x[0]);
+        } elseif ($x[0] === '"' || $x[0] === "'") {
+            return t($x, $x[0]);
         }
         $xx = [
             'TRUE' => true,
@@ -173,7 +173,7 @@ function e($x) {
             'off' => false
         ];
         return array_key_exists($x, $xx) ? $xx[$x] : $x;
-    } elseif (_is_anemon_($x)) {
+    } elseif (__is_anemon__($x)) {
         foreach ($x as &$v) {
             $v = e($v);
         }
@@ -691,7 +691,7 @@ function h($x, $s = '-', $X = "") {
 }
 
 function i($a, $b = [], $fn = null) {
-    if (_is_anemon_($b)) {
+    if (__is_anemon__($b)) {
         foreach ($b as $v) {
             $v = $a . DS . $v;
             include $v;
@@ -717,13 +717,7 @@ function l($x) {
     return function_exists('mb_strtolower') ? mb_strtolower($x) : strtolower($x);
 }
 
-function m($x, $o = '"', $c = null) {
-    $c = $c ?? $o;
-    if ($x && strpos($x, $o) === 0 && substr($x, -strlen($c)) === $c) {
-        return substr(substr($x, strlen($o)), 0, -strlen($c));
-    }
-    return $x;
-}
+function m() {}
 
 function n($x, $t = I) {
     // Tab to 2 space(s), line-break to `\n`
@@ -731,8 +725,8 @@ function n($x, $t = I) {
 }
 
 function o($a, $safe = true) {
-    if (_is_anemon_($a)) {
-        $a = $safe && _is_anemon_a_($a) ? (object) $a : $a;
+    if (__is_anemon__($a)) {
+        $a = $safe && __is_anemon_a__($a) ? (object) $a : $a;
         foreach ($a as &$aa) {
             $aa = o($aa, $safe);
         }
@@ -752,14 +746,14 @@ function q($x, $deep = false) {
         return $x;
     } elseif (is_string($x)) {
         return function_exists('mb_strlen') ? mb_strlen($x) : strlen($x);
-    } elseif (_is_anemon_($x)) {
+    } elseif (__is_anemon__($x)) {
         return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
     return count($x);
 }
 
 function r($a, $b = [], $fn = null) {
-    if (_is_anemon_($b)) {
+    if (__is_anemon__($b)) {
         foreach ($b as $v) {
             $v = $a . DS . $v;
             require $v;
@@ -785,7 +779,7 @@ function s($x) {
         return 'false';
     } elseif ($x === null) {
         return 'null';
-    } elseif (_is_anemon_($x)) {
+    } elseif (__is_anemon__($x)) {
         foreach ($x as &$v) {
             $v = s($v);
         }
@@ -795,8 +789,12 @@ function s($x) {
     return (string) $x;
 }
 
-function t($x, $t = I) {
-    return str_replace($t, T, $x);
+function t($x, $o = '"', $c = null) {
+    $c = $c ?? $o;
+    if ($x && strpos($x, $o) === 0 && substr($x, -strlen($c)) === $c) {
+        return substr(substr($x, strlen($o)), 0, -strlen($c));
+    }
+    return $x;
 }
 
 function u($x) {
@@ -811,7 +809,7 @@ function v($x) {
 // w.n: @keep line-break in the output or replace them with a space? (default is !@keep)
 function w($x, $c = [], $n = true) {
     // Should be a HTML input
-    if(strpos($x, '<') !== false || strpos($x, ' ') !== false) {
+    if (strpos($x, '<') !== false || strpos($x, ' ') !== false) {
         $c = '<' . implode('><', $c) . '>';
         return preg_replace($n ? '#\s+#' : '# +#', ' ', trim(strip_tags($x, $c)));
     }
@@ -852,8 +850,10 @@ function y($x, $a = []) {
 function z() {}
 
 
-// ...
-
+/**
+ * Ignite ...
+ * ----------
+ */
 
 d(ENGINE . DS . 'kernel', function($w, $n) {
     $f = ENGINE . DS . 'plug' . DS . $n . '.php';
@@ -862,26 +862,24 @@ d(ENGINE . DS . 'kernel', function($w, $n) {
     }
 });
 
-File::$config['file_extension_allow'] = array_unique(array_merge(FONT_X, IMAGE_X, MEDIA_X, PACKAGE_X, SCRIPT_X));
+File::$config['extensions'] = array_unique(array_merge(FONT_X, IMAGE_X, MEDIA_X, PACKAGE_X, SCRIPT_X));
 
 Session::start();
 Config::start();
 
-$seed = [
+// plant and extract ...
+extract(Seed::set([
     'config' => new Genome\Config,
     'language' => new Genome\Language,
     'url' => new Genome\URL
-];
-
-// plant and extract ...
-extract(Seed::set($seed)->get(null, []));
+])->get(null, []));
 
 r(EXTEND . DS . '*', '{index.php,index__.php,__index.php}', function($f) use($config) {
     $i18n = Path::D($f) . DS . 'lot' . DS . 'language';
     if (!$l = File::exist($i18n . DS . $config->language . '.txt')) {
         $l = $i18n . DS . 'en-us.txt';
     }
-    Language::set(From::yaml(File::open($l)->read("")));
+    Language::set(From::yaml($l));
     $f = Path::D($f) . DS . 'engine';
     d($f . DS . 'kernel', function($w, $n) use($f) {
         $f .= DS . 'plug' . DS . $n . '.php';
@@ -903,9 +901,8 @@ r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function
     });
 });
 
-function do_hook_start() {
-    Route::fire();
-    Shield::abort();
+function do_start() {
+    Route::fire() ?? Shield::abort();
 }
 
-Hook::set('start', 'do_hook_start')->fire('start');
+Hook::set('start', 'do_start')->fire('start');

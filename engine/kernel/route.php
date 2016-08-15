@@ -144,7 +144,6 @@ class Route extends Genome {
                 call_user_func_array(self::$lot[1][$id]['fn'], $lot);
                 return true;
             }
-            return false;
         } else {
             $id = URL::path();
             if (isset(self::$lot[1][$id])) {
@@ -156,7 +155,8 @@ class Route extends Genome {
                     }
                 }
                 // Passed!
-                return call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                return true;
             } else {
                 $routes = Anemon::eat(self::$lot[1])->sort('ASC', 'stack', true)->vomit();
                 foreach ($routes as $k => $v) {
@@ -170,11 +170,13 @@ class Route extends Genome {
                             }
                         }
                         // Passed!
-                        return call_user_func_array($v['fn'], $route['lot']);
+                        call_user_func_array($v['fn'], $route['lot']);
+                        return true;
                     }
                 }
             }
         }
+        return null;
     }
 
 }

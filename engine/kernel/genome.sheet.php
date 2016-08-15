@@ -38,7 +38,7 @@ class Sheet extends \Genome {
         // Do meta ...
         foreach (explode(self::$v[4], $input[0]) as $v) {
             $v = explode(self::$v[2], $v, 2);
-            $this->meta[self::v($v[0])] = self::v($v[1] ?? 'false');
+            $this->meta[self::v($v[0])] = e(self::v($v[1] ?? false));
         }
         // Do data ...
         $this->data = trim($input[1] ?? "");
@@ -49,7 +49,7 @@ class Sheet extends \Genome {
     public function unite() {
         $meta = [];
         foreach ($this->meta as $k => $v) {
-            $meta[] = self::x($k) . self::$v[2] . self::x($v);
+            $meta[] = self::x($k) . self::$v[2] . self::x(s($v));
         }
         return self::$v[0] . implode(N, $meta) . self::$v[1] . ($this->data ? N . N . $this->data : "");
     }

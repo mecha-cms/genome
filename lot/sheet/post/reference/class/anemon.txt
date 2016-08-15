@@ -1,0 +1,27 @@
+---
+title: Class `Anemon`
+description: "Array handling."
+author: Taufik Nurrohman
+content_type: Markdown
+...
+
+### Edge
+
+~~~ .php
+$min = 0;
+$max = 100;
+
+var_dump(
+    Anemon::edge(4, $min, $max),
+    Anemon::edge(-4, $min, $max)
+    Anemon::edge(104, $min, $max)
+);
+~~~
+
+Result:
+
+~~~ .php
+4
+0
+100
+~~~

@@ -3,7 +3,7 @@
 class URL extends \URL {
 
     public function __construct() {
-        foreach (_url_() as $k => $v) {
+        foreach (__url__() as $k => $v) {
             $this->{$k} = $v;
         }
     }

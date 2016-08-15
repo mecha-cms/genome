@@ -11,6 +11,8 @@
 action: Action
 actions: Actions
 
+anon: Anonymous
+
 archive: Archive
 archives: Archives
 
@@ -675,6 +677,14 @@ _publish: Unpublish
 _publishing: Unpublishing
 _published: Unpublished
 
+
+#. Message
+#. -------
+
+notify_avail: %s is available.
+
+# negation ...
+_notify_avail: %s is not available.
 
 
 
