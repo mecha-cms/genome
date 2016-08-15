@@ -5,13 +5,15 @@ author: Taufik Nurrohman
 content_type: Markdown
 ...
 
-### Edge
+### Edge Value
+
+Prevent input value exceeds the minimum and maximum value.
 
 ~~~ .php
 $min = 0;
 $max = 100;
 
-var_dump(
+__dump__(
     Anemon::edge(4, $min, $max),
     Anemon::edge(-4, $min, $max)
     Anemon::edge(104, $min, $max)
@@ -22,6 +24,274 @@ Result:
 
 ~~~ .php
 4
+~~~
+
+~~~ .php
 0
+~~~
+
+~~~ .php
 100
+~~~
+
+### Set Array Value Recursively
+
+Set or replace array value recursively.
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+Anemon::set($array, 'bar.baz', '#');
+
+__dump__($array);
+~~~
+
+Result:
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#',
+        'qux' => 3
+    ]
+];
+~~~
+
+### Get Array Value Recursively
+
+Get array value recursively.
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+$test_1 = Anemon::get($array, 'bar.baz', 'fail!');
+$test_2 = Anemon::get($array, 'bar.foo', 'fail!');
+
+__dump__($test_1, $test_2);
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = 2;
+~~~
+
+~~~ .php
+$test_2 = 'fail!';
+~~~
+
+### Remove Array Value Recursively
+
+Remove array value recursively.
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+Anemon::reset($array, 'bar.baz');
+
+__dump__($array);
+~~~
+
+Result:
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'qux' => 3
+    ]
+];
+~~~
+
+### Extend and Concat
+
+Extend two arrays:
+
+~~~ .php
+$def = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+$alt = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#'
+    ],
+    'qux' => '#'
+];
+
+$test = Anemon::extend($def, $alt);
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#',
+        'qux' => 3
+    ],
+    'qux' => '#'
+];
+
+$def = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#',
+        'qux' => 3
+    ],
+    'qux' => '#'
+];
+~~~
+
+Concatenate two arrays:
+
+~~~ .php
+$def = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c'
+];
+
+$alt = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+
+$test = Anemon::contact($def, $alt);
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c',
+    3 => 'd',
+    4 => 'e',
+    5 => 'f'
+];
+
+$def = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c',
+    3 => 'd',
+    4 => 'e',
+    5 => 'f'
+];
+~~~
+
+Difference when using `Anemon::extend()`, to manipulate the previous example:
+
+~~~ .php
+$def = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c'
+];
+
+$alt = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+
+$test = Anemon::extend($def, $alt);
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+
+$def = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+~~~
+
+### Array Manipulation
+
+Starts with eating or walking…
+
+~~~ .php
+$array = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+
+Anemon::eat($array); // …
+~~~
+
+#### Output Specific Data
+
+~~~ .php
+$test_1 = Anemon::eat($array)->vomit();
+$test_2 = Anemon::eat($array)->vomit('bar', 'fail!');
+$test_3 = Anemon::eat($array)->vomit('wow', 'fail!');
+~~~
+
+Results:
+
+~~~ .php
+$test_1 = $array;
+~~~
+
+~~~ .php
+$test_2 = 1;
+~~~
+
+~~~ .php
+$test_3 = 'fail!';
+~~~
+
+#### Shuffle Array Value
+
+~~~ .php
+$test = Anemon::eat($array)->shake()->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'qux' => 3,
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2
+];
 ~~~

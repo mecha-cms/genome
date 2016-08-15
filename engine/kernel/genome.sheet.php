@@ -15,7 +15,7 @@ class Sheet extends \Genome {
     }
 
     public static function open($path) {
-        $sheet = self::_();
+        $sheet = new self;
         $sheet->open = $path;
         return $sheet;
     }

@@ -137,14 +137,15 @@ function c($x) {
     }, $x);
 }
 
-function d($f, $fn = null) {
-    spl_autoload_register(function($w) use($f, $fn) {
+function d($f, $fn = null, $s = []) {
+    spl_autoload_register(function($w) use($f, $fn, $s) {
         $n = __c2f__($w);
         $f = $f . DS . $n . '.php';
         if (file_exists($f)) {
+            if ($s) extract($s);
             require $f;
             if (is_callable($fn)) {
-                call_user_func($fn, $w, $n);
+                call_user_func($fn, $w, $n, $s);
             }
         }
     });
@@ -690,21 +691,23 @@ function h($x, $s = '-', $X = "") {
     }, $x), $s, true, 'a-zA-Z\d' . $X);
 }
 
-function i($a, $b = [], $fn = null) {
+function i($a, $b = [], $fn = null, $s = []) {
     if (__is_anemon__($b)) {
         foreach ($b as $v) {
+            if ($s) extract($s);
             $v = $a . DS . $v;
             include $v;
             if (is_callable($fn)) {
-                call_user_func($fn, $v);
+                call_user_func($fn, $v, $s);
             }
         }
     } else {
         $f = strpos($b, '{') !== false ? GLOB_NOSORT | GLOB_BRACE : GLOB_NOSORT;
         foreach (glob($a . DS . $b, $f) as $v) {
+            if ($s) extract($s);
             include $v;
             if (is_callable($fn)) {
-                call_user_func($fn, $v);
+                call_user_func($fn, $v, $s);
             }
         }
     }
@@ -752,21 +755,23 @@ function q($x, $deep = false) {
     return count($x);
 }
 
-function r($a, $b = [], $fn = null) {
+function r($a, $b = [], $fn = null, $s = []) {
     if (__is_anemon__($b)) {
         foreach ($b as $v) {
+            if ($s) extract($s);
             $v = $a . DS . $v;
             require $v;
             if (is_callable($fn)) {
-                call_user_func($fn, $v);
+                call_user_func($fn, $v, $s);
             }
         }
     } else {
         $f = strpos($b, '{') !== false ? GLOB_NOSORT | GLOB_BRACE : GLOB_NOSORT;
         foreach (glob($a . DS . $b, $f) as $v) {
+            if ($s) extract($s);
             require $v;
             if (is_callable($fn)) {
-                call_user_func($fn, $v);
+                call_user_func($fn, $v, $s);
             }
         }
     }
@@ -867,39 +872,42 @@ File::$config['extensions'] = array_unique(array_merge(FONT_X, IMAGE_X, MEDIA_X,
 Session::start();
 Config::start();
 
-// plant and extract ...
-extract(Seed::set([
+$seed = [
     'config' => new Genome\Config,
     'language' => new Genome\Language,
     'url' => new Genome\URL
-])->get(null, []));
+];
 
-r(EXTEND . DS . '*', '{index.php,index__.php,__index.php}', function($f) use($config) {
+// plant and extract ...
+extract(Seed::set($seed)->get(null, []));
+
+r(EXTEND . DS . '*', '{index.php,index__.php,__index.php}', function($f) use($seed) {
+    extract($seed);
     $i18n = Path::D($f) . DS . 'lot' . DS . 'language';
     if (!$l = File::exist($i18n . DS . $config->language . '.txt')) {
         $l = $i18n . DS . 'en-us.txt';
     }
     Language::set(From::yaml($l));
     $f = Path::D($f) . DS . 'engine';
-    d($f . DS . 'kernel', function($w, $n) use($f) {
+    d($f . DS . 'kernel', function($w, $n) use($f, $seed) {
         $f .= DS . 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
-            extract(Seed::get(null, []));
+            extract($seed);
             require $f;
         }
-    });
-});
+    }, $seed);
+}, $seed);
 
-r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function($f) {
+r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function($f) use($seed) {
     $f = Path::D($f) . DS . 'engine';
-    d($f . DS . 'kernel', function($w, $n) use($f) {
+    d($f . DS . 'kernel', function($w, $n) use($f, $seed) {
         $f .= DS . 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
-            extract(Seed::get(null, []));
+            extract($seed);
             require $f;
         }
-    });
-});
+    }, $seed);
+}, $seed);
 
 function do_start() {
     Route::fire() ?? Shield::abort();

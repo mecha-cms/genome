@@ -62,7 +62,7 @@ class Anemon extends Genome {
     }
 
     public static function eat($group) {
-        $anemon = new Anemon;
+        $anemon = new self;
         $anemon->bucket = $group;
         return $anemon;
     }

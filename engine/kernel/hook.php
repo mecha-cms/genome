@@ -35,8 +35,8 @@ class Hook extends Genome {
                 self::$lot[1][$c][$id] = [];
                 return $lot[0];
             }
-            $signal = Anemon::eat(self::$lot[1][$c][$id])->sort('ASC', 'stack')->vomit();
-            foreach ($signal as $v) {
+            $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort('ASC', 'stack')->vomit();
+            foreach ($hooks as $v) {
                 $lot[0] = call_user_func_array($v['fn'], $lot);
             }
         } else {
