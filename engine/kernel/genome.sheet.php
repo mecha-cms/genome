@@ -32,7 +32,7 @@ class Sheet extends \Genome {
 
     // Apart ...
     public function apart() {
-        $input = file_get_contents($this->open);
+        $input = n(file_get_contents($this->open));
         $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
         $input = explode(self::$v[1] . N . N, $input, 2);
         // Do meta ...

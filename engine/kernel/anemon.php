@@ -115,14 +115,14 @@ class Anemon extends Genome {
             unset($v);
             return $group;
         }
-        return self::take($group);
+        return self::eat($group);
     }
 
-    public static function alter($group, $replace = [], $fail = null) {
-        // return the `$replace[$group]` value if exist
-        // or the `$fail` value if `$replace[$group]` does not exist
-        // or the `$group` value if `$fail` is `null`
-        return $replace[$group] ?? $fail ?? $group;
+    public static function alter($input, $replace = [], $fail = null) {
+        // return the `$replace[$input]` value if exist
+        // or the `$fail` value if `$replace[$input]` does not exist
+        // or the `$input` value if `$fail` is `null`
+        return array_key_exists($input, $replace) ? $replace[$input] : ($fail ?? $input);
     }
 
     // Move to next array index
@@ -207,7 +207,7 @@ class Anemon extends Genome {
     }
 
     // Get selected array value
-    public function _get($index = null, $fail = false) {
+    public function take($index = null, $fail = false) {
         if ($index !== null) {
             if (is_int($index)) {
                 $index = $this->key($index, $index);

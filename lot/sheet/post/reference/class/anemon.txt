@@ -48,8 +48,6 @@ $array = [
 ];
 
 Anemon::set($array, 'bar.baz', '#');
-
-__dump__($array);
 ~~~
 
 Result:
@@ -77,10 +75,8 @@ $array = [
     ]
 ];
 
-$test_1 = Anemon::get($array, 'bar.baz', 'fail!');
-$test_2 = Anemon::get($array, 'bar.foo', 'fail!');
-
-__dump__($test_1, $test_2);
+$test_1 = Anemon::get($array, 'bar.baz', '#fail');
+$test_2 = Anemon::get($array, 'bar.foo', '#fail');
 ~~~
 
 Result:
@@ -90,7 +86,7 @@ $test_1 = 2;
 ~~~
 
 ~~~ .php
-$test_2 = 'fail!';
+$test_2 = '#fail';
 ~~~
 
 ### Remove Array Value Recursively
@@ -107,8 +103,6 @@ $array = [
 ];
 
 Anemon::reset($array, 'bar.baz');
-
-__dump__($array);
 ~~~
 
 Result:
@@ -183,7 +177,7 @@ $alt = [
     2 => 'f'
 ];
 
-$test = Anemon::contact($def, $alt);
+$test = Anemon::concat($def, $alt);
 ~~~
 
 Result:
@@ -208,7 +202,7 @@ $def = [
 ];
 ~~~
 
-Difference when using `Anemon::extend()`, to manipulate the previous example:
+The difference of `Anemon::extend()` to `Anemon::concat()`, when manipulating the previous example:
 
 ~~~ .php
 $def = [
@@ -261,8 +255,8 @@ Anemon::eat($array); // …
 
 ~~~ .php
 $test_1 = Anemon::eat($array)->vomit();
-$test_2 = Anemon::eat($array)->vomit('bar', 'fail!');
-$test_3 = Anemon::eat($array)->vomit('wow', 'fail!');
+$test_2 = Anemon::eat($array)->vomit('bar', '#fail');
+$test_3 = Anemon::eat($array)->vomit('wow', '#fail');
 ~~~
 
 Results:
@@ -276,7 +270,7 @@ $test_2 = 1;
 ~~~
 
 ~~~ .php
-$test_3 = 'fail!';
+$test_3 = '#fail';
 ~~~
 
 #### Shuffle Array Value
@@ -294,4 +288,144 @@ $test = [
     'bar' => 1,
     'baz' => 2
 ];
+~~~
+
+### Sort Array Value
+
+~~~ .php
+$array = [
+    'foo' => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    'bar' => [
+        'id' => 4
+    ],
+    'baz' => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    'qux' => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ]
+];
+
+// basic
+$test_1 = Anemon::eat($array)->sort('ASC')->vomit();
+
+// sort by value of the `color` property
+$test_2 = Anemon::eat($array)->sort('ASC', 'color')->vomit();
+
+// do not replace the original array key
+$test_3 = Anemon::eat($array)->sort('DESC', 'color', true)->vomit();
+
+// default value for array item with missing `color` property
+$test_4 = Anemon::eat($array)->sort('DESC', 'color', true, '#black')->vomit();
+~~~
+
+Results:
+
+~~~ .php
+$test_1 = [
+    0 => [
+        'id' => 4
+    ],
+    1 => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    2 => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    3 => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ]
+];
+
+$test_2 = [
+    0 => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    1 => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    2 => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ]
+];
+
+$test_3 = [
+    'qux' => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ],
+    'foo' => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    'baz' => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ]
+];
+
+$test_4 = [
+    'qux' => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ],
+    'foo' => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    'baz' => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    'bar' => [
+        'id' => 4,
+        'color' => '#black'
+    ]
+];
+~~~
+
+### Replace Value
+
+This is just a shortcut for `switch` and `case` statements:
+
+~~~ .php
+$input = 'bar';
+
+$test = Anemon::alter($input, [
+    'foo' => 1,
+    'bar' => 2,
+    'baz' => 3
+]);
+~~~
+
+Result:
+
+~~~ .php
+$test = 2;
 ~~~

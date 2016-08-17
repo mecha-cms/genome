@@ -9,4 +9,3 @@
     return '<mark>' . $s . '</mark>';
 }); ?>
 </footer>
-<p><code><?php echo To::html_encode($post); ?></code></p>
