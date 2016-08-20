@@ -910,7 +910,7 @@ r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function
 }, $seed);
 
 function do_start() {
-    Route::fire() ?? Shield::abort();
+    Route::fire() and Shield::abort();
 }
 
 Hook::set('start', 'do_start')->fire('start');

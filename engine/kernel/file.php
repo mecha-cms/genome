@@ -131,10 +131,10 @@ class File extends Genome {
 
     // Export value to a PHP file
     public static function export($data, $format = '<?php return %s;') {
-        $data = preg_split('#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')#', json_encode($data), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $r = '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')#';
+        $data = preg_split($r, json_encode($data), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $output = "";
         foreach ($data as $v) {
-            if (!$v) continue;
             if ($v[0] === '"' || $v[0] === "'") {
                 $output .= $v;
             } else {

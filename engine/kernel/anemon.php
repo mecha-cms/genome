@@ -52,12 +52,12 @@ class Anemon extends Genome {
     }
 
     public static function extend(&$a, $b) {
-        $a = array_replace_recursive($a, $b);
+        $a = array_replace_recursive((array) $a, (array) $b);
         return $a;
     }
 
     public static function concat(&$a, $b) {
-        $a = array_merge_recursive($a, $b);
+        $a = array_merge_recursive((array) $a, (array) $b);
         return $a;
     }
 

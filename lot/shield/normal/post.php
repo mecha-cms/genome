@@ -1,3 +1,4 @@
+<?php include 'header.php'; ?>
 <h1>
 <?php echo $post->title; ?>
 </h1>
@@ -9,3 +10,4 @@
     return '<mark>' . $s . '</mark>';
 }); ?>
 </footer>
+<?php include 'footer.php'; ?>

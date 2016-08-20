@@ -15,10 +15,10 @@ Results:
 
 ~~~ .php
 [
-    'time_zone' => 'Asia/Jakarta',
-    'encoding' => 'utf-8',
+    'timezone' => 'Asia/Jakarta',
+    'charset' => 'utf-8',
     'language' => 'en-us',
-    'language_direction' => 'ltr',
+    'language_dir' => 'ltr',
     'shield' => 'normal',
     'chunk' => 7,
     'html_parser' => [

@@ -176,4 +176,13 @@ class Union extends \Genome {
         return \Hook::NS($c . ':close.' . $unit, $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "");
     }
 
+    // ...
+    public function __call($kin, $lot) {
+        if (!self::kin($kin)) {
+            array_unshift($lot, $kin);
+            return call_user_func_array([$this, 'unite'], $lot);
+        }
+        return parent::__callStatic($kin, $lot);
+    }
+
 }

@@ -56,7 +56,7 @@ class Sheet extends \Genome {
 
     // Create meta ...
     public function meta($a) {
-        Anemon::extend($this->meta, (array) $a);
+        Anemon::extend($this->meta, $a);
         foreach ($this->meta as $k => $v) {
             if ($v === false) unset($this->meta[$k]);
         }
@@ -75,18 +75,20 @@ class Sheet extends \Genome {
         // Pre-defined sheet meta ...
         if ($output) {
             foreach ($output as $k => $v) {
-                $v = \Hook::NS($NS . '__' . $k, [$v, $lot]);
-                $output['__' . $k] = $v; // private item
-                $v = \Hook::NS($NS . 'var.i', [$v, $lot]); // before var set-up
-                $v = \Hook::NS($NS . $k, [$v, $lot]); // public item
-                $v = \Hook::NS($NS . 'var.o', [$v, $lot]); // after var set-up
-                $output[$k] = $v;
+                if (strpos($k, '__') !== 0 && !array_key_exists('__' . $k, $output)) {
+                    $output['__' . $k] = $v;
+                }
             }
         }
         // Load sheet meta ...
-        foreach (array_merge($lot, [$as => $this->data]) as $k => $v) {
+        return $this->_meta(array_merge($output, $lot, [$as => $this->data]), $NS, $lot);
+    }
+
+    protected function _meta($input, $NS, $lot) {
+        $output = [];
+        foreach ($input as $k => $v) {
             $v = \Hook::NS($NS . '__' . $k, [$v, $lot]);
-            $output['__' . $k] = $v;
+            $output['__' . $k] = $v; // private item
             $v = \Hook::NS($NS . 'var.i', [$v, $lot]); // before var set-up
             $v = \Hook::NS($NS . $k, [$v, $lot]); // public item
             $v = \Hook::NS($NS . 'var.o', [$v, $lot]); // after var set-up
