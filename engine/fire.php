@@ -61,7 +61,7 @@ function __c2f__($x) {
 function __url__($key = null, $fail = false) {
     $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
     $protocol = $scheme . '://';
-    $host = $_SERVER['HTTP_HOST'];
+    $host = $_SERVER['HTTP_HOST'] ?? "";
     $sub = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
     $sub = $sub === '.' ? "" : trim($sub, '/');
     $url = rtrim($protocol . $host  . '/' . $sub, '/');

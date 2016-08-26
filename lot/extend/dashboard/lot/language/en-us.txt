@@ -18,6 +18,7 @@ notify_error_file_size:
   0: File size too small.
   1: File size too large.
 notify_error_file_type: Unknown file type.
+notify_error_token: Invalid token.
 
 notify_success_file_create: File <code>%s</code> successfully created.
 notify_success_file_delete: File <code>%s</code> successfully deleted.

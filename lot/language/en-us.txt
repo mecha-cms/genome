@@ -460,7 +460,7 @@ decreaseing: Decreasing
 decreaseed: Decreased
 
 delete: Delete
-deleting: Deleting
+deleteing: Deleting
 deleted: Deleted
 
 disable: Disable
