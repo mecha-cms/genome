@@ -116,7 +116,7 @@ $array = [
 ];
 ~~~
 
-### Extend and Concat
+### Extend and Concatenate
 
 Extend two arrays:
 
@@ -202,7 +202,7 @@ $def = [
 ];
 ~~~
 
-The difference of `Anemon::extend()` to `Anemon::concat()`, when manipulating the previous example:
+With `Anemon::extend()`, result will be different:
 
 ~~~ .php
 $def = [
@@ -259,7 +259,7 @@ $test_2 = Anemon::eat($array)->vomit('bar', '#fail');
 $test_3 = Anemon::eat($array)->vomit('wow', '#fail');
 ~~~
 
-Results:
+Result:
 
 ~~~ .php
 $test_1 = $array;
@@ -320,14 +320,14 @@ $test_1 = Anemon::eat($array)->sort('ASC')->vomit();
 // sort by value of the `color` property
 $test_2 = Anemon::eat($array)->sort('ASC', 'color')->vomit();
 
-// do not replace the original array key
+// preserve original array key
 $test_3 = Anemon::eat($array)->sort('DESC', 'color', true)->vomit();
 
-// default value for array item with missing `color` property
+// set default value of array item with missing `color` property as `#black`
 $test_4 = Anemon::eat($array)->sort('DESC', 'color', true, '#black')->vomit();
 ~~~
 
-Results:
+Result:
 
 ~~~ .php
 $test_1 = [
@@ -428,4 +428,199 @@ Result:
 
 ~~~ .php
 $test = 2;
+~~~
+
+### Array Chunk
+
+~~~ .php
+$array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+$test_1 = Anemon::eat($array)->chunk(4);
+$test_2 = Anemon::eat($array)->chunk(4, 2);
+$test_3 = Anemon::eat($array)->chunk(4, 11, false);
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9]
+];
+
+$test_2 = [8, 9];
+
+$test_3 = false;
+~~~
+
+### Array Walk
+
+~~~ .php
+$array = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+
+Anemon::walk($array); // …
+~~~
+
+#### Move to Next Item
+
+~~~ .php
+Anemon::walk($array)->next()->current();
+Anemon::walk($array)->next(1)->current(); // skip 1 item
+~~~
+
+#### Move to Previous Item
+
+~~~ .php
+Anemon::walk($array)->prev()->current();
+Anemon::walk($array)->prev(1)->current(); // skip 1 item
+~~~
+
+#### Move to the 2<sup>nd</sup> Item
+
+~~~ .php
+Anemon::walk($array)->to(1)->current();
+~~~
+
+#### Insert Before
+
+~~~ .php
+$test_1 = Anemon::walk($array)->to(2)->before('#')->vomit();
+$test_2 = Anemon::walk($array)->to(2)->before('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    'foo' => 0,
+    'bar' => 1,
+    0 => '#',
+    'baz' => 2,
+    'qux' => 3
+];
+
+$test_2 = [
+    'foo' => 0,
+    'bar' => 1,
+    '#key' => '#',
+    'baz' => 2,
+    'qux' => 3
+];
+~~~
+
+#### Insert After
+
+~~~ .php
+$test_1 = Anemon::walk($array)->to(2)->after('#')->vomit();
+$test_2 = Anemon::walk($array)->to(2)->after('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    4 => '#',
+    'qux' => 3
+];
+
+$test_2 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    '#key' => '#',
+    'qux' => 3
+];
+~~~
+
+#### Append
+
+~~~ .php
+$test_1 = Anemon::walk($array)->append('#')->vomit();
+$test_2 = Anemon::walk($array)->append('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    0 => '#',
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+
+$test_2 = [
+    '#key' => '#',
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+~~~
+
+#### Prepend
+
+~~~ .php
+$test_1 = Anemon::walk($array)->prepend('#')->vomit();
+$test_2 = Anemon::walk($array)->prepend('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3,
+    4 => '#'
+];
+
+$test_2 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3,
+    '#key' => '#'
+];
+~~~
+
+#### Get the First Item
+
+~~~ .php
+$test = Anemon::walk($array)->first();
+~~~
+
+#### Get the Last Item
+
+~~~ .php
+$test = Anemon::walk($array)->last();
+~~~
+
+#### Count Items
+
+~~~ .php
+$test = Anemon::walk($array)->count();
+~~~
+
+#### Get Array Key by Index
+
+~~~ .php
+$test = Anemon::walk($array)->key(1);
+~~~
+
+#### Get Array Index by Key
+
+~~~ .php
+$test = Anemon::walk($array)->index('foo');
 ~~~

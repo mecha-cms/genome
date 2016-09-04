@@ -20,7 +20,7 @@ To::plug('path', function($input) use($url) {
 });
 
 function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
-    $s = Genome\Sheet::$v;
+    $s = Page::$v;
     Anemon::extend($s, $c);
     if (__is_anemon__($input)) {
         $t = "";

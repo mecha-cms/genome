@@ -18,7 +18,7 @@ class Guardian extends Genome {
             $ally = [];
             foreach (glob($folder . DS . '*.log', GLOB_NOSORT | GLOB_BRACE) as $file) {
                 $id = Path::N($file);
-                $ally[$id] = Genome\Sheet::open($file)->read('content', [
+                $ally[$id] = Page::open($file)->read('content', [
                     'id' => $id
                 ], 'author:');
             }

@@ -46,8 +46,6 @@ function __is_serialize__($x) {
 function __dump__(...$a) {
     foreach ($a as $b) {
         $s = var_export($b, true);
-        $s = str_ireplace(['array (', 'TRUE', 'FALSE', 'NULL'], ['array(', 'true', 'false', 'null'], $s);
-        $s = preg_replace('#[,;](\s*[\)\}])#', '$1', $s);
         echo '<pre style="word-wrap:break-word;white-space:pre-wrap;">';
         highlight_string("<?php\n\n" . $s . "\n\n?>");
         echo '</pre>';
@@ -55,7 +53,11 @@ function __dump__(...$a) {
 }
 
 function __c2f__($x) {
-    return str_replace('\\-', '.', h($x, '-', '\\'));
+    return str_replace(['\\-', '_-'], ['.', '_'], h($x, '-', '_\\'));
+}
+
+function __f2c__($x) {
+    return p(str_replace('.', '\\', $x), "", '_\\');
 }
 
 function __url__($key = null, $fail = false) {
@@ -131,10 +133,10 @@ function a($o) {
 
 function b() {}
 
-function c($x) {
-    return preg_replace_callback('#([^\p{L}])(\p{Ll})#u', function($m) {
-        return u($m[2]);
-    }, $x);
+function c($x, $s = "", $X = "") {
+    return f(preg_replace_callback('#(?<=[^\p{L}])([\p{Ll}\d])#u', function($m) use($s) {
+        return $s . u($m[1]);
+    }, $x), $s, false, 'a-zA-Z\d' . x($X));
 }
 
 function d($f, $fn = null, $s = []) {
@@ -188,9 +190,9 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
     $X .= $sx;
     $x = preg_replace([
         '#<.*?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);#i',
-        '#[^' . $X . ']#',
-        '#(' . $sx . ')+#',
-        '#^' . $sx . '|' . $sx . '$#'
+        '#[^' . $X . ']#u',
+        '#(' . $sx . ')+#u',
+        '#^' . $sx . '|' . $sx . '$#u'
     ], [
         $s,
         $s,
@@ -686,9 +688,9 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
 function g() {}
 
 function h($x, $s = '-', $X = "") {
-    return f(preg_replace_callback('#(?<=[\p{Ll}\D])(\p{Lu})#u', function($m) use($s) {
+    return f(preg_replace_callback('#(?<=[\p{Ll}\D])([\p{Lu}])#u', function($m) use($s) {
         return $s . l($m[1]);
-    }, $x), $s, true, 'a-zA-Z\d' . $X);
+    }, $x), $s, true, 'a-zA-Z\d' . x($X));
 }
 
 function i($a, $b = [], $fn = null, $s = []) {
@@ -738,10 +740,10 @@ function o($a, $safe = true) {
     return $a;
 }
 
-function p($x) {
-    return preg_replace_callback('#(^|[^\p{L}])(\p{Ll})#u', function($m) {
-        return u($m[2]);
-    }, $x);
+function p($x, $s = "", $X = "") {
+    return f(preg_replace_callback('#(?<=^|[^\p{L}])([\p{Ll}\d])#u', function($m) use($s) {
+        return $s . u($m[1]);
+    }, $x), $s, false, 'a-zA-Z\d' . x($X));
 }
 
 function q($x, $deep = false) {
@@ -872,42 +874,42 @@ File::$config['extensions'] = array_unique(array_merge(FONT_X, IMAGE_X, MEDIA_X,
 Session::start();
 Config::start();
 
-$seed = [
-    'config' => new Genome\Config,
-    'language' => new Genome\Language,
-    'url' => new Genome\URL
+$seeds = [
+    'config' => new Seed\Config,
+    'language' => new Seed\Language,
+    'url' => new Seed\URL
 ];
 
 // plant and extract ...
-extract(Seed::set($seed)->get(null, []));
+extract(Seed::set($seeds)->get(null, []));
 
-r(EXTEND . DS . '*', '{index.php,index__.php,__index.php}', function($f) use($seed) {
-    extract($seed);
+r(EXTEND . DS . '*', '{index.php,index__.php,__index.php}', function($f) use($seeds) {
+    extract($seeds);
     $i18n = Path::D($f) . DS . 'lot' . DS . 'language';
     if (!$l = File::exist($i18n . DS . $config->language . '.txt')) {
         $l = $i18n . DS . 'en-us.txt';
     }
     Language::set(From::yaml($l));
     $f = Path::D($f) . DS . 'engine';
-    d($f . DS . 'kernel', function($w, $n) use($f, $seed) {
+    d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
         $f .= DS . 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
-            extract($seed);
+            extract($seeds);
             require $f;
         }
-    }, $seed);
-}, $seed);
+    }, $seeds);
+}, $seeds);
 
-r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function($f) use($seed) {
+r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function($f) use($seeds) {
     $f = Path::D($f) . DS . 'engine';
-    d($f . DS . 'kernel', function($w, $n) use($f, $seed) {
+    d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
         $f .= DS . 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
-            extract($seed);
+            extract($seeds);
             require $f;
         }
-    }, $seed);
-}, $seed);
+    }, $seeds);
+}, $seeds);
 
 function do_start() {
     Route::fire() and Shield::abort();

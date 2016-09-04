@@ -2,6 +2,7 @@
 title: Test Page
 author: Taufik Nurrohman
 content_type: HTML
+time: 2016-21-04 00:00:00
 ...
 
 <p>Lorem ipsum dolor sit amet.</p>

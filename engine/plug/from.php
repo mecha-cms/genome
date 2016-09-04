@@ -12,7 +12,7 @@ From::plug('base64', function($input) {
 });
 
 function __from_yaml__($input, $c = [], $in = '  ') {
-    $s = Genome\Sheet::$v;
+    $s = Page::$v;
     $q = ['"([^"\\\]++|\\\.)*+"', '\'([^\'\\\\]++|\\\.)*+\''];
     Anemon::extend($s, $c);
     if (!is_string($input)) return a($input);
@@ -99,10 +99,10 @@ function __from_yaml__($input, $c = [], $in = '  ') {
 
 From::plug('yaml', function(...$lot) {
     if (__is_anemon__($lot[0])) return a($lot[0]);
-    if (Is::path($lot[0])) {
+    if (Is::path($lot[0], true)) {
         $lot[0] = file_get_contents($lot[0]);
     }
-    $s = Genome\Sheet::$v;
+    $s = Page::$v;
     $lot[0] = str_replace([X . $s[0], $s[1] . X, X], "", X . $lot[0] . X);
     return call_user_func_array('__from_yaml__', $lot);
 });

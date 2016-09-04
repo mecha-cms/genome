@@ -60,8 +60,8 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_URL);
     }
 
-    // Check for valid local path address
-    public static function path($x, $e = true) {
+    // Check for valid local path address (whether it is exists or not)
+    public static function path($x, $e = false) {
         if (!is_string($x)) return false;
         return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$e || file_exists($x));
     }

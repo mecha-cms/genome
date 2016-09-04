@@ -9,36 +9,29 @@
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', rtrim(__DIR__, DS));
-define('GROUND', rtrim($_SERVER['DOCUMENT_ROOT'], DS));
-
-define('SESSION', null);
-
-define('ENGINE', ROOT . DS . 'engine');
-
-define('LOT', ROOT . DS . 'lot');
-define('EXTEND', LOT . DS . 'extend');
-define('LANGUAGE', LOT . DS . 'language');
-define('ASSET', LOT . DS . 'asset');
-define('CACHE', LOT . DS . 'cache');
-define('SHIELD', LOT . DS . 'shield');
-define('STATE', LOT . DS . 'state');
-define('SHEET', LOT . DS . 'sheet');
 
 define('I', '  '); // Default indent
 define('N', "\n"); // Line break
 define('R', "\r"); // Return
-define('S', ' '); // Space
+define('S', "\x00a0"); // Non break space
 define('T', "\t"); // Tab
 define('V', "\v"); // Vertical space
 define('X', "\x1A"); // Placeholder text
 
-define('HTML_VOID_END', '>'); // Stand-alone HTML element
+define('SESSION', null);
+
+define('ENGINE', ROOT . DS . 'engine');
+define('LOT', ROOT . DS . 'lot');
+
+foreach (['asset', 'cache', 'extend', 'language', 'page', 'shield', 'state'] as $lot) {
+    define(strtoupper($lot), LOT . DS . $lot);
+}
 
 define('HTML_BEGIN', ""); // Begin HTML output
 define('HTML_END', N); // End HTML output
 
 // Common HTML tag(s) allowed to be written in the form field
-define('HTML_KIND_I', [
+define('HTML_WISE_I', [
     'a',
     'abbr',
     'b',
@@ -62,7 +55,7 @@ define('HTML_KIND_I', [
     'var'
 ]);
 
-define('HTML_KIND_B', [
+define('HTML_WISE_B', [
     'address',
     'blockquote',
     'caption',
@@ -92,7 +85,7 @@ define('HTML_KIND_B', [
     'ul'
 ]);
 
-define('HTML_KIND', HTML_KIND_I + HTML_KIND_B);
+define('HTML_WISE', HTML_WISE_I + HTML_WISE_B);
 
 define('FONT_X', [
     'eot',

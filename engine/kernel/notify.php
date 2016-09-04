@@ -35,23 +35,23 @@ class Notify extends Genome {
     }
 
     public static function get($session_x = true) {
-        $output = Session::get(self::$id, "") !== "" ? HTML_BEGIN . sprintf(self::$config['messages'], Session::get(self::$id)) . HTML_END : "";
+        $output = Session::get(self::$id, "") !== "" ? HTML::$begin . sprintf(self::$config['messages'], Session::get(self::$id)) . HTML::$end : "";
         if ($session_x) self::reset();
         return $output;
     }
 
     public static function send($from, $to, $subject, $message) {
         if (Is::void($to) || Is::email($to)) return false;
-        $head  = 'MIME-Version: 1.0' . N;
-        $head .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
-        $head .= 'From: ' . $from . N;
-        $head .= 'Reply-To: ' . $from . N;
-        $head .= 'Return-Path: ' . $from . N;
-        $head .= 'X-Mailer: PHP/' . phpversion();
+        $meta  = 'MIME-Version: 1.0' . N;
+        $meta .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
+        $meta .= 'From: ' . $from . N;
+        $meta .= 'Reply-To: ' . $from . N;
+        $meta .= 'Return-Path: ' . $from . N;
+        $meta .= 'X-Mailer: PHP/' . phpversion();
         $s = __c2f__(static::class) . ':' . __METHOD__;
-        $head = Hook::NS($s . '.meta', $head);
-        $body = Hook::NS($s . '.data', $body);
-        return mail($to, $subject, $body, $head);
+        $meta = Hook::NS($s . '.meta', $meta);
+        $data = Hook::NS($s . '.data', $data);
+        return mail($to, $subject, $data, $meta);
     }
 
     public static function __callStatic($kin, $lot) {

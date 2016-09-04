@@ -16,7 +16,7 @@ class Shield extends Genome {
 
     public static function cargo() {
         self::$lot = array_merge(self::$lot, Seed::get(null, []));
-        foreach (glob(SHEET . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
+        foreach (glob(PAGE . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
             $v = Path::B($v);
             if (!isset(self::$lot['lot'][$v])) {
                 self::$lot['lot'][$v] = [];
@@ -45,13 +45,13 @@ class Shield extends Genome {
 
     public static function info($folder = null, $a = false) {
         $folder = $folder ?? Config::get('shield');
-        $i18n = new Genome\Language;
+        $i18n = new Seed\Language;
         // Check whether the localized "about" file is available
         $f = SHIELD . DS . $folder . DS;
         if (!$info = File::exist($f . 'about.' . Config::get('language') . '.txt')) {
             $info = $f . 'about.txt';
         }
-        $info = Genome\Sheet::open($info)->read('content', [
+        $info = Page::open($info)->read('content', [
             'id' => is_dir(SHIELD . DS . $folder) ? $folder : null,
             'title' => To::title($folder),
             'author' => $i18n->anon,
@@ -67,7 +67,7 @@ class Shield extends Genome {
         $s = explode('-', Path::N($input), 2);
         $G = ['name' => $input, 'name.base' => $s[0]];
         $NS = strtolower(static::class) . ':';
-        $i18n = new Genome\Language;
+        $i18n = new Seed\Language;
         if (strpos($path__, ROOT) === 0 && is_file($path__)) {
             // do nothing ...
         } else {

@@ -5,8 +5,8 @@
   <article class="post" id="post-<?php echo $post->id; ?>">
     <header class="post-header">
       <h3 class="post-title"><?php echo $post->title; ?></h3>
-      <time datetime="<?php echo $post->date('c'); ?>">
-        <?php echo $post->date(1); ?>
+      <time datetime="<?php echo $post->date->W3C; ?>">
+        <?php echo $post->date->FORMAT_1; ?>
       </time>
     </header>
     <div class="post-content">

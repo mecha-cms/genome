@@ -8,7 +8,7 @@ class Variable extends Genome {
         if (!isset(self::$lot)) {
             $unit = ['{{', '}}', '/', '[\w:.-]+'];
             $data = ['=', '"', '"', ' ', '[\w:.-]+'];
-            self::$lot = new Genome\Union($unit, $data);
+            self::$lot = new Seed\Union($unit, $data);
         }
         if (method_exists(self::$lot, $kin)) {
             return call_user_func_array([self::$lot, $kin], $lot);

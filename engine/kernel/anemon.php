@@ -71,13 +71,16 @@ class Anemon extends Genome {
         return $this->get($this->bucket, $k, $fail);
     }
 
-    public function shake($group) {
-        shuffle($group);
-        $this->bucket = $group;
+    public function shake($fn = null) {
+        if (is_callable($fn)) {
+            $this->bucket = call_user_func($fn, $this->bucket);
+        } else {
+            shuffle($this->bucket);
+        }
         return $this;
     }
 
-    public function sort($order = 'ASC', $key = null, $presv_key = false, $null = X) {
+    public function sort($order = 'ASC', $key = null, $prsv_key = false, $null = X) {
         if (!is_null($key)) {
             $before = $after = [];
             if (!empty($this->bucket)) {
@@ -101,7 +104,7 @@ class Anemon extends Genome {
             $this->bucket = (array) $this->bucket;
             $order === 'ASC' ? asort($this->bucket) : arsort($this->bucket);
         }
-        if (!$presv_key) {
+        if (!$prsv_key) {
             $this->bucket = array_values($this->bucket);
         }
         return $this;
@@ -201,19 +204,8 @@ class Anemon extends Genome {
         return end($this->bucket);
     }
 
-    // Get current array index
-    public function current() {
-        return $this->i;
-    }
-
-    // Get selected array value
-    public function take($index = null, $fail = false) {
-        if ($index !== null) {
-            if (is_int($index)) {
-                $index = $this->key($index, $index);
-            }
-            return array_key_exists($index, $this->bucket) ? $this->bucket[$index] : $fail;
-        }
+    // Get current array value
+    public function current($fail = false) {
         $i = 0;
         foreach ($this->bucket as $k => $v) {
             if ($i === $this->i) {
@@ -221,6 +213,7 @@ class Anemon extends Genome {
             }
             $i++;
         }
+        return $fail;
     }
 
     // Get array length
