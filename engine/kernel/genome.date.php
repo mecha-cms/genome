@@ -1,20 +1,20 @@
-<?php namespace Seed;
+<?php namespace Genome;
 
 class Date extends \Genome {
 
     protected $date = "";
 
-    public function __construct($s) {
-        $this->date = $s;
+    public function __construct($s = null) {
+        $this->date = $s ?? $_SERVER['REQUEST_TIME'] ?? time();
     }
 
     public function format($format = 'Y-m-d H:i:s') {
-        if(is_numeric($this->date)) return date($format, $date);
-        if(substr_count($this->date, '-') === 5) {
-            $m = explode('-', $this->date);
-            $this->date = $m[0] . '-' . $m[1] . '-' . $m[2] . ' ' . $m[3] . ':' . $m[4] . ':' . $m[5];
+        $date = $this->date;
+        if (is_numeric($date)) return date($format, $date);
+        if (substr_count($date, '-') === 5) {
+            return \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format($format);
         }
-        return date($format, strtotime($this->date));
+        return date($format, strtotime($date));
     }
 
     public function extract($key = null) {

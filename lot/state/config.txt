@@ -1,1 +1,1 @@
-a:2:{s:6:"shield";s:6:"normal";s:8:"language";s:0:"";}
+a:8:{s:7:"charset";s:5:"utf-8";s:8:"language";s:5:"en-us";s:3:"dir";s:3:"ltr";s:6:"shield";s:6:"normal";s:5:"chunk";i:20;s:5:"title";s:9:"Mecha CMS";s:11:"description";s:80:"Mecha <abbr title="Content Management System">CMS</abbr> blog and documentation.";s:9:"separator";s:5:" – ";}

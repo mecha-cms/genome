@@ -97,9 +97,9 @@ function __url__($key = null, $fail = false) {
 // b:
 // c: convert text to camel case
 // d: declare class(es) with callback
-// e: evaluate string to their proper data type
+// e: evaluate string to their appropriate data type
 // f: filter/sanitize string
-// g:
+// g: check if object is a genome (class)
 // h: convert text to snake case with `-` (hyphen) as separator by default
 // i: include file(s) with callback
 // j:
@@ -120,11 +120,15 @@ function __url__($key = null, $fail = false) {
 // y: output/yield an echo-based function as normal return value
 // z:
 
-function a($o) {
+function a($o, $safe = true) {
     if (__is_anemon__($o)) {
-        $o = (array) $o;
+        if ($safe) {
+            $o = !g($o) ? (array) $o : $o;
+        } else {
+            $o = (array) $o;
+        }
         foreach ($o as &$oo) {
-            $oo = a($oo);
+            $oo = a($oo, $safe);
         }
         unset($oo);
     }
@@ -685,7 +689,30 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
     return $x ? ($l ? l($x) : $x) : $s . $s;
 }
 
-function g() {}
+function g($x) {
+    if (!is_object($x)) return false;
+    $m = [
+        'construct',
+        'destruct',
+        'call',
+        'callStatic',
+        'get',
+        'set',
+        'isset',
+        'unset',
+        'sleep',
+        'wakeup',
+        'toString',
+        'invoke',
+        'set_state',
+        'clone',
+        'debugInfo'
+    ];
+    foreach ($m as $v) {
+        if (method_exists($x, '__' . $v)) return $x;
+    }
+    return false;
+}
 
 function h($x, $s = '-', $X = "") {
     return f(preg_replace_callback('#(?<=[\p{Ll}\D])([\p{Lu}])#u', function($m) use($s) {
@@ -731,7 +758,11 @@ function n($x, $t = I) {
 
 function o($a, $safe = true) {
     if (__is_anemon__($a)) {
-        $a = $safe && __is_anemon_a__($a) ? (object) $a : $a;
+        if ($safe) {
+            $a = __is_anemon_a__($a) ? (object) $a : $a;
+        } else {
+            $a = (object) $a;
+        }
         foreach ($a as &$aa) {
             $aa = o($aa, $safe);
         }
@@ -814,11 +845,11 @@ function v($x) {
 
 // w.c: list of HTML tag name(s) to be excluded from `strip_tags()`
 // w.n: @keep line-break in the output or replace them with a space? (default is !@keep)
-function w($x, $c = [], $n = true) {
+function w($x, $c = [], $n = false) {
     // Should be a HTML input
     if (strpos($x, '<') !== false || strpos($x, ' ') !== false) {
         $c = '<' . implode('><', $c) . '>';
-        return preg_replace($n ? '#\s+#' : '# +#', ' ', trim(strip_tags($x, $c)));
+        return preg_replace($n ? '# +#' : '#\s+#', ' ', trim(strip_tags($x, $c)));
     }
     // 1. Replace `+` to ` `
     // 2. Replace `-` to ` `
@@ -875,9 +906,10 @@ Session::start();
 Config::start();
 
 $seeds = [
-    'config' => new Seed\Config,
-    'language' => new Seed\Language,
-    'url' => new Seed\URL
+    'config' => new Genome\Config,
+    'date' => new Genome\Date,
+    'language' => new Genome\Language,
+    'url' => new Genome\URL
 ];
 
 // plant and extract ...

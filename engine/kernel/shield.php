@@ -45,7 +45,7 @@ class Shield extends Genome {
 
     public static function info($folder = null, $a = false) {
         $folder = $folder ?? Config::get('shield');
-        $i18n = new Seed\Language;
+        $i18n = new Genome\Language;
         // Check whether the localized "about" file is available
         $f = SHIELD . DS . $folder . DS;
         if (!$info = File::exist($f . 'about.' . Config::get('language') . '.txt')) {
@@ -67,7 +67,7 @@ class Shield extends Genome {
         $s = explode('-', Path::N($input), 2);
         $G = ['name' => $input, 'name.base' => $s[0]];
         $NS = strtolower(static::class) . ':';
-        $i18n = new Seed\Language;
+        $i18n = new Genome\Language;
         if (strpos($path__, ROOT) === 0 && is_file($path__)) {
             // do nothing ...
         } else {

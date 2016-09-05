@@ -1,4 +1,4 @@
-<?php namespace Seed;
+<?php namespace Genome;
 
 class Union extends \Genome {
 

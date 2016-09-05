@@ -1,0 +1,7 @@
+---
+title: Test Blog Page
+author: Taufik Nurrohman
+content_type: HTML
+...
+
+<p>Lorem ipsum dolor sit amet.</p>

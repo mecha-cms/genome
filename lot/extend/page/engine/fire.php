@@ -1,6 +1,6 @@
 <?php
 
-Route::add('(:all)', function($path) {
+Route::add('(:all)', function($path) use($config) {
     if ($folder = Folder::exist(POST . DS . $path)) {
         $posts = [];
         foreach (glob($folder . DS . '*.txt') as $post) {
@@ -9,7 +9,9 @@ Route::add('(:all)', function($path) {
         Seed::set('posts', $posts);
         Shield::attach('posts');
     } elseif ($file = File::exist(POST . DS . $path . '.txt')) {
-        Seed::set('post', new Post($file));
+        $post = new Post($file);
+        $config->title = new Anemon([$config->title, $post->title], $config->separator);
+        Seed::set('post', $post);
         Shield::attach('post');
     }
 });

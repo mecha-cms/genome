@@ -1,4 +1,4 @@
-<?php namespace Seed;
+<?php namespace Genome;
 
 class URL extends \URL {
 

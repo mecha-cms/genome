@@ -9,7 +9,7 @@ class HTML extends Genome {
 
     public static function __callStatic($kin, $lot) {
         if (!isset(self::$lot)) {
-            self::$lot = new Seed\Union;
+            self::$lot = new Genome\Union;
         }
         if (!self::$lot->kin($kin)) {
             return self::$lot->__call($kin, $lot);

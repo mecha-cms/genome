@@ -22,16 +22,16 @@ class File extends Genome {
             'name' => $n,
             'url' => To::url($path),
             'extension' => is_file($path) ? $x : null,
-            '__update' => $update,
             'update' => $update_date,
-            '__size' => file_exists($path) ? filesize($path) : null,
             'size' => file_exists($path) ? self::size($path) : null,
             'is' => [
                 // hidden file/folder only
                 'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
                 'file' => is_file($path),
                 'folder' => is_dir($path)
-            ]
+            ],
+            '__update' => $update,
+            '__size' => file_exists($path) ? filesize($path) : null
         ];
         return $key !== null ? Anemon::get($output, $key, $fail) : $output;
     }

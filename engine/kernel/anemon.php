@@ -3,6 +3,7 @@
 class Anemon extends Genome {
 
     protected $bucket = [];
+    protected $separator = "";
     protected $i = 0;
 
     // Prevent `$x` exceeds the value of `$min` and `$max`
@@ -62,9 +63,7 @@ class Anemon extends Genome {
     }
 
     public static function eat($group) {
-        $anemon = new self;
-        $anemon->bucket = $group;
-        return $anemon;
+        return new self($group);
     }
 
     public function vomit($k = null, $fail = false) {
@@ -75,9 +74,21 @@ class Anemon extends Genome {
         if (is_callable($fn)) {
             $this->bucket = call_user_func($fn, $this->bucket);
         } else {
-            shuffle($this->bucket);
+            // <http://php.net/manual/en/function.shuffle.php#94697>
+            $k = array_keys($this->bucket);
+            $v = [];
+            shuffle($k);
+            foreach ($k as $kk) {
+                $v[$kk] = $this->bucket[$kk];
+            }
+            $this->bucket = $v;
+            unset($k, $v);
         }
         return $this;
+    }
+
+    public function filter($fn) {
+        return array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
     }
 
     public function sort($order = 'ASC', $key = null, $prsv_key = false, $null = X) {
@@ -240,6 +251,33 @@ class Anemon extends Genome {
 
     public function swap($a, $b = null) {
         return array_column($this->bucket, $a, $b);
+    }
+
+    public function join($s = ', ') {
+        return $this->__invoke($s);
+    }
+
+    public function __construct($group = [], $s = ', ') {
+        $this->bucket = $group;
+        $this->separator = $s;
+    }
+
+    public function __set($key, $value = null) {
+        $this->bucket[$key] = $value;
+    }
+
+    public function __get($key) {
+        return $this->bucket[$key] ?? false;
+    }
+
+    public function __toString() {
+        return $this->__invoke($this->separator);
+    }
+
+    public function __invoke($s = ', ') {
+        return implode($s, $this->filter(function($v, $k) {
+            return strpos($k, '__') !== 0;
+        }));
     }
 
 }

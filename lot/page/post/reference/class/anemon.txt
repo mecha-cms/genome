@@ -624,3 +624,41 @@ $test = Anemon::walk($array)->key(1);
 ~~~ .php
 $test = Anemon::walk($array)->index('foo');
 ~~~
+
+---
+
+### Create Flexible Array Variable
+
+An instance of `Anemon` class can be used to make the array becomes possible to be accessed as string, object or function:
+
+~~~ .php
+$test = new Anemon(['foo', 'bar', 'baz'], ', ');
+
+echo $test;
+echo $test(' + ');
+echo $test->join(' + ');
+echo $test->{1};
+echo $test->vomit(1);
+~~~
+
+Result:
+
+~~~ .php
+foo, bar, baz
+~~~
+
+~~~ .php
+foo + bar + baz
+~~~
+
+~~~ .php
+foo + bar + baz
+~~~
+
+~~~ .php
+bar
+~~~
+
+~~~ .php
+bar
+~~~
