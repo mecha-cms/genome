@@ -1,0 +1,736 @@
+---
+title: Class `Anemon`
+description: "Array handling."
+author: Taufik Nurrohman
+type: Markdown
+...
+
+### Edge
+
+Prevent input value exceeds the minimum and maximum value.
+
+~~~ .php
+$min = 0;
+$max = 100;
+
+__dump__(
+    Anemon::edge(4, $min, $max),
+    Anemon::edge(-4, $min, $max)
+    Anemon::edge(104, $min, $max)
+);
+~~~
+
+Result:
+
+~~~ .php
+4
+~~~
+
+~~~ .php
+0
+~~~
+
+~~~ .php
+100
+~~~
+
+### Set
+
+Set or replace array value recursively.
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+Anemon::set($array, 'bar.baz', '#');
+~~~
+
+Result:
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#',
+        'qux' => 3
+    ]
+];
+~~~
+
+### Get
+
+Get array value recursively.
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+$test_1 = Anemon::get($array, 'bar.baz', '#fail');
+$test_2 = Anemon::get($array, 'bar.foo', '#fail');
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = 2;
+~~~
+
+~~~ .php
+$test_2 = '#fail';
+~~~
+
+### Reset
+
+Remove array value recursively.
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+Anemon::reset($array, 'bar.baz');
+~~~
+
+Result:
+
+~~~ .php
+$array = [
+    'foo' => 1,
+    'bar' => [
+        'qux' => 3
+    ]
+];
+~~~
+
+### Extend and Concat
+
+Extend two arrays:
+
+~~~ .php
+$def = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => 2,
+        'qux' => 3
+    ]
+];
+
+$alt = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#'
+    ],
+    'qux' => '#'
+];
+
+$test = Anemon::extend($def, $alt);
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#',
+        'qux' => 3
+    ],
+    'qux' => '#'
+];
+
+$def = [
+    'foo' => 1,
+    'bar' => [
+        'baz' => '#',
+        'qux' => 3
+    ],
+    'qux' => '#'
+];
+~~~
+
+Concatenate two arrays:
+
+~~~ .php
+$def = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c'
+];
+
+$alt = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+
+$test = Anemon::concat($def, $alt);
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c',
+    3 => 'd',
+    4 => 'e',
+    5 => 'f'
+];
+
+$def = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c',
+    3 => 'd',
+    4 => 'e',
+    5 => 'f'
+];
+~~~
+
+With `Anemon::extend()`, result will be different:
+
+~~~ .php
+$def = [
+    0 => 'a',
+    1 => 'b',
+    2 => 'c'
+];
+
+$alt = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+
+$test = Anemon::extend($def, $alt);
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+
+$def = [
+    0 => 'd',
+    1 => 'e',
+    2 => 'f'
+];
+~~~
+
+### Eat
+
+Array manipulation. Starts with eating or walking…
+
+~~~ .php
+$array = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+
+Anemon::eat($array); // …
+~~~
+
+#### Vomit
+
+Output specific data.
+
+~~~ .php
+$test_1 = Anemon::eat($array)->vomit();
+$test_2 = Anemon::eat($array)->vomit('bar', '#fail');
+$test_3 = Anemon::eat($array)->vomit('wow', '#fail');
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = $array;
+~~~
+
+~~~ .php
+$test_2 = 1;
+~~~
+
+~~~ .php
+$test_3 = '#fail';
+~~~
+
+#### Shake
+
+Shuffle array values.
+
+~~~ .php
+$test = Anemon::eat($array)->shake()->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'qux' => 3,
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2
+];
+~~~
+
+### Sort
+
+Sort array values.
+
+~~~ .php
+$array = [
+    'foo' => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    'bar' => [
+        'id' => 4
+    ],
+    'baz' => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    'qux' => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ]
+];
+
+// basic
+$test_1 = Anemon::eat($array)->sort('ASC')->vomit();
+
+// sort by value of the `color` property
+$test_2 = Anemon::eat($array)->sort('ASC', 'color')->vomit();
+
+// preserve original array key
+$test_3 = Anemon::eat($array)->sort('DESC', 'color', true)->vomit();
+
+// set default value of array item with missing `color` property as `#black`
+$test_4 = Anemon::eat($array)->sort('DESC', 'color', true, '#black')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    0 => [
+        'id' => 4
+    ],
+    1 => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    2 => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    3 => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ]
+];
+
+$test_2 = [
+    0 => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    1 => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    2 => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ]
+];
+
+$test_3 = [
+    'qux' => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ],
+    'foo' => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    'baz' => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ]
+];
+
+$test_4 = [
+    'qux' => [
+        'size' => 'small',
+        'color' => 'red',
+        'id' => 1
+    ],
+    'foo' => [
+        'size' => 'medium',
+        'color' => 'green',
+        'id' => 2
+    ],
+    'baz' => [
+        'size' => 'large',
+        'color' => 'blue',
+        'id' => 3
+    ],
+    'bar' => [
+        'id' => 4,
+        'color' => '#black'
+    ]
+];
+~~~
+
+### Alter
+
+This is just a shortcut for `switch` and `case` statements:
+
+~~~ .php
+$input = 'bar';
+
+$test = Anemon::alter($input, [
+    'foo' => 1,
+    'bar' => 2,
+    'baz' => 3
+]);
+~~~
+
+Result:
+
+~~~ .php
+$test = 2;
+~~~
+
+### Chunk
+
+Chunk an array.
+
+~~~ .php
+$array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+$test_1 = Anemon::eat($array)->chunk(4);
+$test_2 = Anemon::eat($array)->chunk(4, 2);
+$test_3 = Anemon::eat($array)->chunk(4, 11, false);
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9]
+];
+
+$test_2 = [8, 9];
+
+$test_3 = false;
+~~~
+
+### Walk
+
+~~~ .php
+$array = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+
+Anemon::walk($array); // …
+~~~
+
+#### Next
+
+Move to next item.
+
+~~~ .php
+Anemon::walk($array)->next()->current();
+Anemon::walk($array)->next(1)->current(); // skip 1 item
+~~~
+
+#### Previous
+
+Move to previous item.
+
+~~~ .php
+Anemon::walk($array)->prev()->current();
+Anemon::walk($array)->prev(1)->current(); // skip 1 item
+~~~
+
+#### To
+
+Move to the 2<sup>nd</sup> item.
+
+~~~ .php
+Anemon::walk($array)->to(1)->current();
+~~~
+
+#### Before
+
+Insert before.
+
+~~~ .php
+$test_1 = Anemon::walk($array)->to(2)->before('#')->vomit();
+$test_2 = Anemon::walk($array)->to(2)->before('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    'foo' => 0,
+    'bar' => 1,
+    2 => '#',
+    'baz' => 2,
+    'qux' => 3
+];
+
+$test_2 = [
+    'foo' => 0,
+    'bar' => 1,
+    '#key' => '#',
+    'baz' => 2,
+    'qux' => 3
+];
+~~~
+
+#### After
+
+Insert after.
+
+~~~ .php
+$test_1 = Anemon::walk($array)->to(2)->after('#')->vomit();
+$test_2 = Anemon::walk($array)->to(2)->after('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    3 => '#',
+    'qux' => 3
+];
+
+$test_2 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    '#key' => '#',
+    'qux' => 3
+];
+~~~
+
+#### Append
+
+~~~ .php
+$test_1 = Anemon::walk($array)->append('#')->vomit();
+$test_2 = Anemon::walk($array)->append('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    0 => '#',
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+
+$test_2 = [
+    '#key' => '#',
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3
+];
+~~~
+
+#### Prepend
+
+~~~ .php
+$test_1 = Anemon::walk($array)->prepend('#')->vomit();
+$test_2 = Anemon::walk($array)->prepend('#', '#key')->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3,
+    4 => '#'
+];
+
+$test_2 = [
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    'qux' => 3,
+    '#key' => '#'
+];
+~~~
+
+#### First
+
+Get the first item.
+
+~~~ .php
+$test = Anemon::walk($array)->first();
+~~~
+
+#### Last
+
+Get the last item.
+
+~~~ .php
+$test = Anemon::walk($array)->last();
+~~~
+
+#### Count
+
+Count items.
+
+~~~ .php
+$test = Anemon::walk($array)->count();
+~~~
+
+#### Key
+
+Get array key by index.
+
+~~~ .php
+$test = Anemon::walk($array)->key(1);
+~~~
+
+#### Index
+
+Get array index by key.
+
+~~~ .php
+$test = Anemon::walk($array)->index('foo');
+~~~
+
+---
+
+### Constructor
+
+Create flexible array variable. An instance of `Anemon` class can be used to make the array becomes possible to be accessed as string, object or function:
+
+~~~ .php
+$test = new Anemon(['foo', 'bar', 'baz'], ', ');
+
+echo $test;
+echo $test(' + ');
+echo $test->join(' + ');
+echo $test->{1};
+echo $test->vomit(1);
+~~~
+
+Result:
+
+~~~ .php
+foo, bar, baz
+~~~
+
+~~~ .php
+foo + bar + baz
+~~~
+
+~~~ .php
+foo + bar + baz
+~~~
+
+~~~ .php
+bar
+~~~
+
+~~~ .php
+bar
+~~~
+
+Array keys prefixed with a `__` will be ignored by default.
+
+~~~ .php
+$test = new Anemon([
+    'foo' => 0,
+    'bar' => 1,
+    'baz' => 2,
+    '__hidden' => '#'
+], ', ');
+
+echo $test;
+echo $test(' + ');
+echo $test->join(' + ');
+echo $test->foo;
+echo $test->__hidden;
+echo $test->vomit('foo');
+~~~
+
+Result:
+
+~~~ .php
+0, 1, 2
+~~~
+
+~~~ .php
+0 + 1 + 2
+~~~
+
+~~~ .php
+0 + 1 + 2
+~~~
+
+~~~ .php
+0
+~~~
+
+~~~ .php
+#
+~~~
+
+~~~ .php
+0
+~~~

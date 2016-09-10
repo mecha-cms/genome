@@ -1,0 +1,39 @@
+---
+title: Class `Route`
+description: "Do something if URL path matched with pattern."
+author: Taufik Nurrohman
+type: Markdown
+...
+
+### Pattern
+
+Pattern | Description
+------- | -----------
+`(:any)` | Matched with any but `/`
+`(:num)` | Matched with any numbers.
+`(:all)` | Matched with any includes `/`
+`(foo|bar)` | Matched with `foo` and `bar`
+
+### Add
+
+### Remove
+
+### Get
+
+### Post
+
+### Is
+
+### Match
+
+### Fire
+
+### Hook
+
+### Added
+
+### Removed
+
+### Exist
+
+### Hooked

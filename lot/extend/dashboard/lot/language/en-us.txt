@@ -1,0 +1,37 @@
+#. Message
+#. -------
+
+notify_file_upload:
+  0: There is no error, the file uploaded with success.
+  1: The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.
+  2: The uploaded file exceeds the <code>MAX_FILE_SIZE</code> directive that was specified in the <abbr title="Hyper Text Markup Language">HTML</abbr> form.
+  3: The uploaded file was only partially uploaded.
+  4: No file was uploaded.
+  5: ?
+  6: Missing a temporary folder.
+  7: Failed to write file to disk.
+  8: A <abbr>PHP</abbr> extension stopped the file upload.
+
+notify_error_file_exist: File <code>%s</code> already exists.
+notify_error_file_extension: Extension <code>%s</code> is not allowed.
+notify_error_file_size:
+  0: File size too small.
+  1: File size too large.
+notify_error_file_type: Unknown file type.
+notify_error_token: Invalid token.
+
+notify_success_file_create: File <code>%s</code> successfully created.
+notify_success_file_delete: File <code>%s</code> successfully deleted.
+notify_success_file_update: File <code>%s</code> successfully updated.
+notify_success_file_upload: File <code>%s</code> successfully uploaded.
+
+notify_error_folder_exist: Folder <code>%s</code> already exists.
+
+notify_success_folder_create: Folder <code>%s</code> successfully created.
+notify_success_folder_delete: Folder <code>%s</code> successfully deleted.
+notify_success_folder_update: Folder <code>%s</code> successfully updated.
+notify_success_folder_upload: Folder <code>%s</code> successfully uploaded.
+
+# negation ...
+_notify_error_file_exist: File <code>%s</code> does not exist.
+_notify_error_folder_exist: Folder <code>%s</code> does not exist.

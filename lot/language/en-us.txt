@@ -1,0 +1,734 @@
+#. Property
+#. --------
+#.
+#. Please note that most of the key suffix does not follow the proper English grammar.
+#.
+#. Example:
+#.
+#.  - `category`
+#.  - `category(s)` → should be `categories`
+
+action: Action
+actions: Actions
+
+anon: Anonymous
+
+archive: Archive
+archives: Archives
+
+asset: Asset
+assets: Assets
+
+author: Author
+authors: Authors
+
+boolean: Boolean
+booleans: Booleans
+
+cache: Cache
+caches: Caches
+
+char: Character
+chars: Characters
+
+char_set: Character Set
+char_sets: Character Sets
+chars_set: Characters Set
+chars_sets: Characters Sets
+
+child: Child
+childs: Children
+
+common: Common
+commons: Commons
+
+composer: Composer
+composers: Composers
+
+config: Configuration
+configs: Configurations
+
+confirmation: Confirmation
+confirmations: Confirmations
+
+content: Content
+contents: Contents
+
+date: Date
+dates: Dates
+
+day: Day
+days: Days
+
+days_long:
+  - Sunday
+  - Monday
+  - Tuesday
+  - Wednesday
+  - Thursday
+  - Friday
+  - Saturday
+
+days_short:
+  - Sun
+  - Mon
+  - Tue
+  - Wed
+  - Thu
+  - Fri
+  - Sat
+
+default: Default
+defaults: Defaults
+
+description: Description
+descriptions: Descriptions
+
+detail: Detail
+details: Details
+
+draft: Draft
+drafts: Drafts
+
+editor: Editor
+editors: Editors
+
+email: Email
+emails: Emails
+
+encoding: Encoding
+encodings: Encodings
+
+error: Error
+errors: Errors
+
+extension: Extension
+extensions: Extensions
+
+file: File
+files: Files
+
+folder: Folder
+folders: Folders
+
+format: Format
+formats: Formats
+
+general: General
+generals: Generals
+
+hint: Hint
+hints: Hints
+
+hour: Hour
+hours: Hours
+
+id: ID
+ids: IDs
+
+image: Image
+images: Images
+
+key: Key
+keys: Keys
+
+keyword: Keyword
+keywords: Keywords
+
+key_word: Key Word
+key_words: Key Words
+
+kind: Kind
+kinds: Kinds
+
+language: Language
+languages: Languages
+
+less: Less
+
+media: Media
+medias: Media
+
+message: Message
+messages: Messages
+
+millisecond: Millisecond
+milliseconds: Milliseconds
+
+minute: Minute
+minutes: Minutes
+
+month: Month
+months: Months
+
+months_long:
+  - January
+  - February
+  - March
+  - April
+  - May
+  - June
+  - July
+  - August
+  - September
+  - October
+  - November
+  - December
+
+months_short:
+  - Jan
+  - Feb
+  - Mar
+  - Apr
+  - May
+  - Jun
+  - Jul
+  - Aug
+  - Sep
+  - Oct
+  - Nov
+  - Dec
+
+more: More
+
+name: Name
+names: Names
+
+new: New
+newer: Newer
+newest: Newest
+
+object: Object
+objects: Objects
+
+old: Old
+older: Older
+oldest: Oldest
+
+only: Only
+
+option: Option
+options: Options
+
+parent: Parent
+parents: Parents
+
+pass: Pass
+passs: Passes
+
+pattern: Pattern
+patterns: Patterns
+
+pending: Pending
+
+photo: Photo
+photos: Photos
+
+placeholder: Placeholder
+placeholders: Placeholders
+
+preview: Preview
+previews: Previews
+
+profile: Profile
+profiles: Profiles
+
+property: Property
+propertys: Properties
+
+reply: Reply
+replys: Replies
+
+scope: Scope
+scopes: Scopes
+
+second: Second
+seconds: Seconds
+
+setting: Setting
+settings: Settings
+
+sheet: Sheet
+sheets: Sheets
+
+shield: Shield
+shields: Shields
+
+site: Site
+sites: Sites
+
+size: Size
+sizes: Sizes
+
+slogan: Slogan
+slogans: Slogans
+
+slug: Slug
+slugs: Slugs
+
+sound: Sound
+sounds: Sounds
+
+spam: Spam
+spams: Spams
+
+specific: Specific
+specifics: Specifics
+
+state: State
+states: States
+
+status: Status
+statuses: Statuses
+
+subject: Subject
+subjects: Subjects
+
+summary: Summary
+summarys: Summaries
+
+text: Text
+texts: Texts
+
+time: Time
+times: Times
+
+time_zone: Time Zone
+time_zones: Time Zones
+times_zone: Times Zone
+times_zones: Times Zones
+
+title: Title
+titles: Titles
+_title: Untitled
+
+total: Total
+
+type: Type
+types: Types
+
+unknown: Unknown
+
+url: URL
+urls: URLs
+
+user: User
+users: Users
+
+value: Value
+values: Values
+
+variable: Variable
+variables: Variables
+
+version: Version
+versions: Versions
+
+video: Video
+videos: Videos
+
+view: View
+views: Views
+
+week: Week
+weeks: Weeks
+
+year: Year
+years: Years
+
+
+#. Label
+#. -----
+
+above: Above
+ago: Ago
+ago__: %s Ago
+all: All
+all__: All %s
+as: As
+begin: Begin
+both: Both
+both__: Both %s
+bottom: Bottom
+by: By
+by__: By %s
+current: Current
+current__: Current %s
+end: End
+finish: Finish
+first: First
+first__: First %s
+from: From
+in: In
+last: Last
+last__: Last %s
+left: Left
+next: Next
+next__: Next %s
+none: None
+not: Not
+not__: Not %s
+of: Of
+on: On
+previous: Previous
+previous__: Previous %s
+right: Right
+start: Start
+to: To
+today: Today
+tomorrow: Tomorrow
+tomorrow__: Tomorrow %s
+top: Top
+under: Under
+yesterday: Yesterday
+yesterday__: Yesterday %s
+
+
+#. Action
+#. ------
+#.
+#. Please note that most of the key suffix does not follow the proper English grammar.
+#.
+#. Example:
+#.
+#.  - `backup` → or `back_up`
+#.  - `backup(ing)` → should be `backing_up`
+#.  - `backup(ed)` → should be `backed_up`
+
+abort: Abort
+aborting: Aborting
+aborted: Aborted
+
+accept: Accept
+accepting: Accepting
+accepted: Accepted
+
+active: Active
+activate: Activate
+activateing: Activating
+activateed: Activated
+
+add: Add
+adding: Adding
+added: Added
+
+apply: Apply
+applying: Applying
+applyed: Applied
+
+approve: Approve
+approveing: Approving
+approveed: Approved
+
+archiveing: Archiving
+archiveed: Archived
+
+attach: Attach
+attaching: Attaching
+attached: Attached
+
+block: Block
+blocking: Blocking
+blocked: Blocked
+
+cancel: Cancel
+canceling: Cancelling
+canceled: Cancelled
+
+close: Close
+closeing: Closing
+closeed: Closed
+
+create: Create
+creating: Creating
+created: Created
+
+compose: Compose
+composeing: Composing
+composeed: Composed
+
+confirm: Confirm
+confirming: Confirming
+confirmed: Confirmed
+
+copy: Copy
+copying: Copying
+copyed: Copied
+
+decrease: Decrease
+decreaseing: Decreasing
+decreaseed: Decreased
+
+delete: Delete
+deleteing: Deleting
+deleted: Deleted
+
+disable: Disable
+disableing: Disabling
+disableed: Disabled
+
+download: Download
+downloading: Downloading
+downloaded: Downloaded
+
+drafting: Drafting
+drafted: Drafted
+
+edit: Edit
+editing: Editing
+edited: Edited
+
+eject: Eject
+ejecting: Ejecting
+ejected: Ejected
+
+enable: Enable
+enableing: Enabling
+enableed: Enabled
+
+enter: Enter
+entering: Entering
+entered: Entered
+
+exit: Exit
+exiting: Exit
+exited: Exit
+
+extend: Extend
+extending: Extending
+extended: Extended
+
+extract: Extract
+extracting: Extracting
+extracted: Extracted
+
+find: Find
+finding: Finding
+finded: Found
+
+help: Help
+helping: Helping
+helped: Helped
+
+hide: Hide
+hideing: Hidding
+hideed: Hidden
+hidden: Hidden
+
+ignore: Ignore
+ignoreing: Ignoring
+ignoreed: Ignored
+
+increase: Increase
+increaseing: Increasing
+increaseed: Increased
+
+install: Install
+installing: Installing
+installed: Installed
+
+load: Load
+loading: Loading
+loaded: Loaded
+
+log_in: Log In
+log_ining: Logging In
+log_ined: Logged In
+
+manage: Manage
+manageing: Managing
+manageed: Managed
+
+move: Move
+moveing: Moving
+moveed: Moved
+
+no: No
+
+ok: OK
+okay: Okay
+
+open: Open
+opening: Opening
+opened: Opened
+
+pack: Pack
+packing: Packing
+packed: Packed
+
+previewing: Previewing
+previewed: Previewed
+
+publish: Publish
+publishing: Publishing
+published: Published
+
+read: Read
+reading: Reading
+readed: Read
+
+redirect: Redirect
+redirecting: Redirecting
+redirected: Redirected
+
+reject: Reject
+rejecting: Rejecting
+rejected: Rejected
+
+remove: Remove
+removeing: Removing
+removeed: Removed
+
+rename: Rename
+renameing: Renaming
+renameed: Renamed
+
+repair: Repair
+repairing: Repairing
+repaired: Repaired
+
+replying: Replying
+replyed: Replied
+
+request: Request
+requesting: Requesting
+requested: Requested
+
+require: Require
+requireing: Requiring
+requireed: Required
+
+reset: Reset
+reseting: Reseting
+reseted: Reseted
+
+save: Save
+saveing: Saving
+saveed: Saved
+
+search: Search
+searching: Searching
+searched: Searched
+
+select: Select
+selecting: Selecting
+selected: Selected
+
+send: Send
+sending: Sending
+sended: Sent
+
+set: Set
+seting: Set
+seted: Set
+
+show: Show
+showing: Showing
+showed: Showed
+
+sign_in: Sign In
+sign_ining: Signing In
+sign_ined: Signed In
+
+spaming: Spamming
+spamed: Spammed
+
+submit: Submit
+submiting: Submiting
+submited: Submitted
+
+transfer: Transfer
+transfering: Transferring
+transfered: Transferred
+
+update: Update
+updateing: Updating
+updateed: Updated
+
+upload: Upload
+uploading: Uploading
+uploaded: Uploaded
+
+viewing: Viewing
+viewed: Viewed
+
+visible: Visible
+
+yes: Yes
+
+_active: Inactive
+_activate: Deactivate
+_activateing: Deactivating
+_activateed: Deactivated
+
+_approve: Unapprove
+_approveing: Unapproving
+_approveed: Unapproved
+
+_install: Uninstall
+_installing: Uninstalling
+_installed: Uninstalled
+
+_load: Unload
+_loading: Unloading
+_loaded: Unloaded
+
+_publish: Unpublish
+_publishing: Unpublishing
+_published: Unpublished
+
+
+#. Message
+#. -------
+
+notify_avail: %s is available.
+
+# negation ...
+_notify_avail: %s is not available.
+
+
+
+
+# testing ...
+
+a: aa
+b: bb
+c: ""
+d: ''
+e:
+f: ff
+g:
+  h: hh
+  i: ii
+j: jj
+k\: l: m
+"n: o": p
+"q\: r": s
+'t: u': v
+'w\: x': y
+: z
+
+# comment
+aa: #comment
+# bb: comment
+cc: "dd #comment ee" #comment
+ff: 'gg #comment hh' #comment
+
+fff:
+  - a
+  - b
+  - c
+
+ggg:
+  4: a
+  5: b
+  6: c
+
+hhh:
+  - [foo, true, false, null, 1]
+  - ["foo", "true", "false", "null", 1]
+  - { a: foo, b: true, c: false, d: null, e: 1 }
+  - { "a": "foo", "b": "true", "c": "false", "d": "null", "e": 1 }
+  - { 'a': 'foo', 'b': 'true', 'c': 'false', 'd': 'null', 'e': 1 }
+  - {a:foo,b:true,c:false,d:null,e:1}
+  - {"a":"foo","b":"true","c":"false","d":"null","e":1}
