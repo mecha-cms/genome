@@ -333,6 +333,7 @@ textarea.expand {min-height:34em}
   border:1px solid #ddd;
   z-index:9999;
   min-width:20em;
+  min-height:6em;
   box-shadow:0 0 2px rgba(0,0,0,.2);
 }
 .text-editor-modal-header,
@@ -388,7 +389,14 @@ textarea.expand {min-height:34em}
 .text-editor-modal-x {
   top:0;
   bottom:auto;
+  width:2.5em;
+  height:2.5em;
+  line-height:2.5em;
+  text-align:center;
   cursor:pointer;
+}
+.text-editor-modal-x:before {
+  content:'\2715';
 }
 
 .tab-header {
