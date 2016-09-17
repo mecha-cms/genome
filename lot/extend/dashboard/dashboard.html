@@ -1,6 +1,6 @@
+<meta charset="utf-8">
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 <style>
-
 * {
   margin:0;
   padding:0;
@@ -161,6 +161,8 @@ code,.code {
   display:block;
   width:100%;
 }
+.push-left {float:left}
+.push-right {float:right}
 .board {
   display:table;
   border-spacing:0;
@@ -230,16 +232,38 @@ code,.code {
   text-align:right;
 }
 textarea.expand {min-height:34em}
-.text-editor-control {
+.text-editor {
   background:#fefefe;
   border:1px solid #ddd;
-  border-bottom-width:0;
   color:#999;
 }
-.text-editor-control::after {
-  content:"";
-  display:table;
-  clear:both;
+.text-editor,
+.text-editor:before,
+.text-editor:after,
+.text-editor *:before,
+.text-editor *:after {
+  margin:0;
+  padding:0;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+}
+.text-editor-header,
+.text-editor-body,
+.text-editor-footer {
+  background:inherit;
+  border-color:inherit;
+  color:inherit;
+  position:relative;
+}
+.text-editor-tool {border-color:inherit}
+.text-editor-content {
+  display:block;
+  width:100%;
+  background:#fafafa;
+  color:#000;
+  border:0;
+  resize:vertical;
 }
 .text-editor-button,
 .text-editor-separator {
@@ -268,14 +292,111 @@ textarea.expand {min-height:34em}
   border-left:1px solid;
   border-color:inherit;
 }
+.text-editor-body {
+  border:0 solid #ddd;
+  border-top-color:#ccc;
+  border-width:1px 0;
+  overflow:auto;
+}
+.text-editor-footer {
+  text-transform:uppercase;
+  text-align:right;
+  line-height:1.5em;
+}
+.text-editor-description {
+  font-size:.65em;
+  padding:0 .75em;
+}
+.text-editor-tool:after,
+.text-editor-description:after {
+  content:"";
+  display:table;
+  clear:both;
+}
+.text-editor .left {float:left}
+.text-editor .right {float:right}
+.text-editor-overlay {
+  position:absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+  z-index:9998;
+  background:rgba(255,255,255,.5);
+  overflow:auto;
+}
+.text-editor-modal {
+  position:absolute;
+  top:-9999px;
+  left:-9999px;
+  background:white;
+  border:1px solid #ddd;
+  z-index:9999;
+  min-width:20em;
+  box-shadow:0 0 2px rgba(0,0,0,.2);
+}
+.text-editor-modal-header,
+.text-editor-modal-footer {
+  height:2.5em;
+  line-height:2.5em;
+  padding:0 1em;
+  position:absolute;
+  right:0;
+  left:0;
+}
+.text-editor-modal-header {
+  top:0;
+  cursor:move;
+}
+.text-editor-modal-body {
+  height:100%;
+  border-top:2.5em solid transparent;
+  border-bottom:3.5em solid transparent;
+  overflow:auto;
+}
+.text-editor-modal-content {
+  padding:1em;
+}
+.text-editor-modal-footer {
+  bottom:0;
+  height:3.5em;
+  line-height:3.5em;
+  background:#fafafa;
+  text-align:right;
+}
+.text-editor-modal-footer button {
+  display:inline-block;
+  border-width:0;
+  line-height:1em;
+  height:2em;
+  margin:.75em 0 0;
+}
+.text-editor-modal-body .block {
+  display:block;
+  width:100%;
+}
+.text-editor-modal-footer button + button {margin-left:.25em}
+.text-editor-modal-resize,
+.text-editor-modal-x {
+  position:absolute;
+  right:0;
+  bottom:0;
+  width:1em;
+  height:1em;
+  cursor:se-resize;
+}
+.text-editor-modal-x {
+  top:0;
+  bottom:auto;
+  cursor:pointer;
+}
 
 .tab-header {
   background:#fafafa;
-  border-bottom:1px solid rgba(0,0,0,.05);
   margin-bottom:1.5em;
   overflow:hidden;
 }
-.tab-header::after {
+.tab-header:after {
   content:"";
   display:table;
   clear:both;
@@ -289,16 +410,24 @@ textarea.expand {min-height:34em}
   padding:0 .5em;
   position:relative;
 }
-.tab-button:nth-child(1) {
+.tab-button.current {
   color:#000;
 }
+
+a {color:#678}
+a:focus,
+a:hover {color:#789}
+a:active {color:#567}
+.button-action {background:#9a9}
+.button-action:focus,
+.button-action:hover {background:#aba}
+.button-action:active {background:#898}
 
 html {
   background-image:linear-gradient(45deg,#eee 25%,transparent 25%),linear-gradient(-45deg,#eee 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eee 75%),linear-gradient(-45deg,transparent 75%,#eee 75%);
   background-size:3em 3em;
   background-position: 0 0, 0 1.5em, 1.5em -1.5em, -1.5em 0;
 }
-
 </style>
 
 
@@ -343,9 +472,9 @@ html {
   </nav>
   <section class="board-body">
     <section class="tab-header">
-      <a href="#" class="tab-button"><i class="fa fa-fw fa-pencil"></i> Editor</a>
-      <a href="#" class="tab-button"><i class="fa fa-fw fa-th-list"></i> Field</a>
-      <a href="#" class="tab-button"><i class="fa fa-fw fa-eye"></i> Preview</a>
+      <a href="#" class="tab-button current"><i class="fa fa-pencil"></i> Editor</a>
+      <a href="#" class="tab-button"><i class="fa fa-th-list"></i> Field</a>
+      <a href="#" class="tab-button"><i class="fa fa-eye"></i> Preview</a>
     </section>
     <section class="tab-body">
       <section class="tab-content">
@@ -369,43 +498,9 @@ html {
         </label>
         <div class="grid-meta">
           <label class="grid-meta-key" for="content-1">Content</label>
-          <span class="grid-meta-value">
-            <nav class="text-editor-control">
-              <a href="#" class="text-editor-button"><i class="fa fa-eraser"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-bold"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-italic"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-underline"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-strikethrough"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-link"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-image"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-subscript"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-superscript"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-paragraph"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-header"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-quote-left"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-code"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-list-ul"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-list-ol"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-align-left"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-align-center"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-align-right"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-align-justify"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-table"></i></a>
-              <span class="text-editor-separator"></span>
-              <a href="#" class="text-editor-button"><i class="fa fa-undo"></i></a>
-              <a href="#" class="text-editor-button"><i class="fa fa-repeat"></i></a>
-            </nav>
-            <textarea name="content" class="block expand code text-editor-target" id="content-1"></textarea>
-          </span>
+          <div class="grid-meta-value">
+            <textarea name="content" class="block expand code TE" id="content-1"></textarea>
+          </div>
         </div>
         <label class="grid-meta">
           <span class="grid-meta-key">Type</span>
@@ -438,7 +533,7 @@ html {
         </label>
         <div class="grid-meta">
           <span class="grid-meta-key">Others</span>
-          <span class="grid-meta-value"><input type="color" value="#ff0000"> <input type="color" value="#00ff00"> <input type="color" value="#0000ff"> foo bar <input type="checkbox"> foo bar <input type="radio"> foo bar <input type="image" value=""> foo bar <input type="range"> foo bar</span>
+          <span class="grid-meta-value"><input type="color" value="#ff0000"> <input type="color" value="#00ff00"> <input type="color" value="#0000ff"> foo bar <input type="checkbox"> foo bar <input type="radio"> foo bar <input type="image" value="/__mecha-v2/favicon.ico"> foo bar <input type="range"> foo bar <input type="date"> foo bar <input type="number"></span>
         </div>
         <div class="grid-meta">
           <span class="grid-meta-key">Others</span>
@@ -461,63 +556,67 @@ html {
       </section>
     </section>
     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat <input type="file"> volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-    <div class="grid-group">
-      <div class="grid span-1">Title</div>
-      <div class="grid span-5"><input type="text" placeholder="Lorem&hellip;"> <button>Ipsum</button></div>
-    </div>
-    <div>
-      <h1>Heading 1</h1>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
-      <ul>
-        <li>List item 1</li>
-        <li>List item 2
-          <ul>
-            <li>List item 2.1</li>
-            <li>List item 2.2</li>
-            <li>List item 2.3</li>
-          </ul>
-        </li>
-        <li>List item 3</li>
-        <li>List item 4</li>
-      </ul>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-      <h2>Heading 2</h2>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
-      <ol>
-        <li>List item 1</li>
-        <li>List item 2
-          <ol>
-            <li>List item 2.1</li>
-            <li>List item 2.2</li>
-            <li>List item 2.3</li>
-          </ol>
-        </li>
-        <li>List item 3</li>
-        <li>List item 4</li>
-      </ol>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-      <h3>Heading 3</h3>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-      <dl>
-        <dt>Definition Title 1</dt>
-        <dd>Definition data 1</dd>
-        <dt>Definition Title 2</dt>
-        <dd>Definition data 2</dd>
-        <dt>Definition Title 3</dt>
-        <dd>Definition data 3</dd>
-      </dl>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-      <h4>Heading 4</h4>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-      <h5>Heading 5</h5>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-      <h6>Heading 6</h6>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-    </div>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <h1>Heading 1</h1>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
+    <ul>
+      <li>List item 1</li>
+      <li>List item 2
+        <ul>
+          <li>List item 2.1</li>
+          <li>List item 2.2</li>
+          <li>List item 2.3</li>
+        </ul>
+      </li>
+      <li>List item 3</li>
+      <li>List item 4</li>
+    </ul>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <h2>Heading 2</h2>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
+    <ol>
+      <li>List item 1</li>
+      <li>List item 2
+        <ol>
+          <li>List item 2.1</li>
+          <li>List item 2.2</li>
+          <li>List item 2.3</li>
+        </ol>
+      </li>
+      <li>List item 3</li>
+      <li>List item 4</li>
+    </ol>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <h3>Heading 3</h3>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <dl>
+      <dt>Definition Title 1</dt>
+      <dd>Definition data 1</dd>
+      <dt>Definition Title 2</dt>
+      <dd>Definition data 2</dd>
+      <dt>Definition Title 3</dt>
+      <dd>Definition data 3</dd>
+    </dl>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <h4>Heading 4</h4>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <h5>Heading 5</h5>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <h6>Heading 6</h6>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
   </section>
 </section>
+<script src="../plugin/lot/asset/editor/asset/js/text-editor.min.js"></script>
+<script src="../plugin/lot/asset/editor/asset/js/text-editor.ui.min.js"></script>
+<script src="../plugin/lot/asset/editor/asset/js/text-editor-html.min.js"></script>
+<script>
+var te = document.getElementsByClassName('TE'),
+    targets = {}, i;
+for (i in te) {
+    targets[te[i].name || i] = new TE_HTML(te[i]);
+}
+</script>

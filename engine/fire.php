@@ -125,7 +125,7 @@ function __url__($key = null, $fail = false) {
 // d: declare class(es) with callback
 // e: evaluate string to their appropriate data type
 // f: filter/sanitize string
-// g:
+// g: advance PHP `glob` function
 // h: convert text to snake case with `-` (hyphen) as separator by default
 // i: include file(s) with callback
 // j:
@@ -719,7 +719,49 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
     return $x ? ($l ? l($x) : $x) : $s . $s;
 }
 
-function g() {}
+function g($s, $x = '*', $f = "", $S = true, $h = true) {
+    $x = str_replace(' ', "", $x);
+    $F = GLOB_NOSORT;
+    if (strpos($x, '{') !== false) {
+        $F = strpos($x, '/') === 0 ? GLOB_ONLYDIR | GLOB_BRACE | GLOB_NOSORT : GLOB_BRACE | GLOB_NOSORT;
+    } else {
+        if (strpos($x, '/') === 0) {
+            $x = substr($x, 1);
+            $F = GLOB_ONLYDIR | GLOB_NOSORT;
+            if (strpos($x, ',') !== false) {
+                $x = '{' . $x . '}';
+                $F = GLOB_ONLYDIR | GLOB_BRACE | GLOB_NOSORT;
+            }
+        } else {
+            if (strpos($x, ',') !== false) {
+                $x = '{' . $x . '}';
+                $F = GLOB_BRACE | GLOB_NOSORT;
+            }
+            $x = '*.' . $x;
+        }
+    }
+    $g = glob($s . DS . $x, $F);
+    if ($h) {
+        $g = array_merge(glob($s . '.' . $x, $F), $g);
+    }
+    if (!$f) return $g;
+    $o = [];
+    if (is_callable($f)) {
+        foreach ($g as $k => $v) {
+            if (call_user_func($f, $v, $k)) {
+                $o[] = $v;
+            }
+        }
+    } else {
+        foreach ($g as $k => $v) {
+            if (strpos($v, $f) !== false) {
+                $o[] = $v;
+            }
+        }
+    }
+    if ($S) natsort($o);
+    return $o;
+}
 
 function h($x, $s = '-', $X = "") {
     return f(preg_replace_callback('#(?<=[\p{Ll}\D])([\p{Lu}])#u', function($m) use($s) {
@@ -738,8 +780,7 @@ function i($a, $b = [], $fn = null, $s = []) {
             }
         }
     } else {
-        $f = strpos($b, '{') !== false ? GLOB_NOSORT | GLOB_BRACE : GLOB_NOSORT;
-        foreach (glob($a . DS . $b, $f) as $v) {
+        foreach (g($a, $b) as $v) {
             if ($s) extract($s);
             include $v;
             if (is_callable($fn)) {
@@ -806,8 +847,7 @@ function r($a, $b = [], $fn = null, $s = []) {
             }
         }
     } else {
-        $f = strpos($b, '{') !== false ? GLOB_NOSORT | GLOB_BRACE : GLOB_NOSORT;
-        foreach (glob($a . DS . $b, $f) as $v) {
+        foreach (g($a, $b) as $v) {
             if ($s) extract($s);
             require $v;
             if (is_callable($fn)) {
@@ -916,6 +956,7 @@ $seeds = [
     'config' => new Genome\Config,
     'date' => new Genome\Date,
     'language' => new Genome\Language,
+    /* 'request' => new Genome\Request, */
     'url' => new Genome\URL
 ];
 

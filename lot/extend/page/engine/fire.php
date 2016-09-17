@@ -3,7 +3,7 @@
 Route::add('(:all)', function($path) use($config) {
     if ($folder = Folder::exist(POST . DS . $path)) {
         $posts = [];
-        foreach (glob($folder . DS . '*.txt') as $post) {
+        foreach (g($folder, 'txt') as $post) {
             $posts[] = new Post($post);
         }
         Seed::set('posts', $posts);

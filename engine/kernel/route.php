@@ -176,7 +176,7 @@ class Route extends Genome {
                 call_user_func_array(self::$lot[1][$id]['fn'], $lot);
                 return true;
             } else {
-                $routes = Anemon::eat(self::$lot[1])->sort('ASC', 'stack', true)->vomit();
+                $routes = Anemon::eat(self::$lot[1] ?? [])->sort('ASC', 'stack', true)->vomit();
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path
                     if ($route = self::is($k)) {

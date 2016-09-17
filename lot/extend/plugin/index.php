@@ -4,7 +4,7 @@ define('PLUGIN', __DIR__);
 
 $plugins = [];
 $seed = Seed::get(null, []);
-foreach (glob(PLUGIN . DS . '*' . DS . '{index.php,index__.php,__index.php}', GLOB_NOSORT | GLOB_BRACE) as $v) {
+foreach (g(PLUGIN . DS . 'lot' . DS . 'asset' . DS . '*', '{index.php,index__.php,__index.php}') as $v) {
     $d = Path::D($v);
     $n = Path::N($v);
     d($d . DS . 'engine' . DS . 'kernel', function($w, $n) use($d, $seed) {
