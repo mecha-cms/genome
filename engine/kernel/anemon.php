@@ -93,7 +93,7 @@ class Anemon extends Genome {
     }
 
     public function sort($order = 'ASC', $key = null, $prsv_key = false, $null = X) {
-        if (!is_null($key)) {
+        if ($key !== null) {
             $before = $after = [];
             if (!empty($this->bucket)) {
                 foreach ($this->bucket as $k => $v) {

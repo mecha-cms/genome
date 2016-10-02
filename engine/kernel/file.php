@@ -278,30 +278,30 @@ class File extends Genome {
         // Create a safe file name
         $file['name'] = To::safe('file.name', $file['name']);
         $x = Path::X($file['name']);
-        $e = Language::notify_file_upload();
+        $e = Language::message_file_upload();
         // Something goes wrong
         if ($file['error'] > 0 && isset($e[$file['error']])) {
-            Notify::error($e[$file['error']]);
+            Message::error($e[$file['error']]);
         } else {
             // Unknown file type
             if (empty($file['type'])) {
-                Notify::error('file_type');
+                Message::error('file_type');
             }
             // Bad file extension
             $x_ok = X . implode(X, self::$config['extensions']) . X;
             if (strpos($x_ok, X . $x . X) === false) {
-                Notify::error('file_extension', $x);
+                Message::error('file_extension', $x);
             }
             // Too small
             if ($file['size'] < self::$config['sizes'][0]) {
-                Notify::error('file_size.0', self::size($file['size']));
+                Message::error('file_size.0', self::size($file['size']));
             }
             // Too large
             if ($file['size'] > self::$config['sizes'][1]) {
-                Notify::error('file_size.1', self::size($file['size']));
+                Message::error('file_size.1', self::size($file['size']));
             }
         }
-        if (!Notify::errors()) {
+        if (!Message::errors()) {
             // Destination not found
             if (!file_exists($target)) Folder::create($target);
             // Move the upload(ed) file to the destination folder
@@ -309,13 +309,13 @@ class File extends Genome {
                 move_uploaded_file($file['tmp_name'], $target . DS . $file['name']);
                 // Create public asset URL to be hooked on file uploaded
                 $file['url'] = To::url($target) . '/' . $file['name'];
-                Notify::success('file_upload', $file['name']);
+                Message::success('file_upload', $file['name']);
                 if (is_callable($fn)) {
                     return call_user_func($fn, $file);
                 }
                 return $target . DS . $file['name'];
             }
-            Notify::error('file_exist', $file['name']);
+            Message::error('file_exist', $file['name']);
             return $fail;
         }
         return $fail;

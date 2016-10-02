@@ -3,8 +3,8 @@
 class Folder extends File {
 
     public static function create($input, $consent = 0777) {
-        foreach((array) $input as $k => $v) {
-            if(!file_exists($v)) {
+        foreach ((array) $input as $k => $v) {
+            if (!file_exists($v)) {
                 if (is_array($consent)) {
                     $c = $consent[$k] ?? end($consent);
                 } else {

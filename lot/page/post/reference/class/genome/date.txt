@@ -91,3 +91,15 @@ $test_3 = '2016-04-21T16:00:00+07:00';
 ~~~ .php
 $test_1 = $date->ago();
 ~~~
+
+Result:
+
+~~~ .php
+$test_1 = [
+    'year' => ...,
+    'month' => ...,
+    'day' => ...,
+    'minute' => ...,
+    'second' => ...
+];
+~~~

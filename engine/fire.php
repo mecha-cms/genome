@@ -719,6 +719,11 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
     return $x ? ($l ? l($x) : $x) : $s . $s;
 }
 
+// $s: directory path
+// $x: file name pattern ... 'txt', '{log,txt}', '/foo'
+// $f: filter by keyword
+// $S: sort?
+// $h: include hidden files?
 function g($s, $x = '*', $f = "", $S = true, $h = true) {
     $x = str_replace(' ', "", $x);
     $F = GLOB_NOSORT;

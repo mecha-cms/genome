@@ -1,8 +1,8 @@
 <?php
 
-class Notify extends Genome {
+class Message extends Genome {
 
-    public static $id = 'message';
+    public static $id = 'mecha.message';
     public static $x = 0;
 
     public static $config = [

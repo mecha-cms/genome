@@ -3,7 +3,7 @@
 class Form extends HTML {
 
     public static $config = [
-        'session' => 'form'
+        'session' => ['form' => 'mecha.form']
     ];
 
     // `<input>`
@@ -105,20 +105,20 @@ class Form extends HTML {
         if (!is_array($k)) {
             $k = [$k => $v];
         }
-        $memo = Session::get(self::$config['session'], []);
-        Session::set(self::$config['session'], Anemon::extend($memo, $k));
+        $memo = Session::get(self::$config['session']['form'], []);
+        Session::set(self::$config['session']['form'], Anemon::extend($memo, $k));
     }
 
     // get sate
     public static function get($k = null, $fail = "") {
-        $memo = Session::get(self::$config['session']);
+        $memo = Session::get(self::$config['session']['form']);
         self::reset($k);
         return $k !== null ? Anemon::get($memo, $k, $fail ?? "") : $memo;
     }
 
     // reset state
     public static function reset($k = null) {
-        Session::reset(self::$config['session'] . ($k !== null ? '.' . $k : ""));
+        Session::reset(self::$config['session']['form'] . ($k !== null ? '.' . $k : ""));
     }
 
 }

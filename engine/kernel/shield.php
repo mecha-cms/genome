@@ -57,7 +57,7 @@ class Shield extends Genome {
             'author' => $i18n->anon,
             'link' => '#',
             'version' => '0.0.0',
-            'content' => $i18n->_notify_avail($i18n->description)
+            'content' => $i18n->_message_avail($i18n->description)
         ], strtolower(static::class) . ':');
         return $a ? $info : o($info);
     }
@@ -76,7 +76,7 @@ class Shield extends Genome {
             } elseif ($_path = File::exist(self::path($s[0], $fail))) {
                 $path__ = $_path;
             } else {
-                exit($i18n->_notify_error_file_exist('<code>' . $path__ . '</code>'));
+                exit($i18n->_message_error_file_exist('<code>' . $path__ . '</code>'));
             }
         }
         $lot__ = self::cargo();

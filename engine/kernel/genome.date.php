@@ -73,6 +73,11 @@ class Date extends \Genome {
             'FORMAT_5' => $hour_24 . ':' . $minute,
             'FORMAT_6' => $hour_12 . ':' . $minute . ' ' . $AP
         ];
+        if (!empty(Date::$formats)) {
+            foreach (Date::$formats as $k => $v) {
+                $output['FORMAT_' . $k] = call_user_func($v, $output, $language);
+            }
+        }
         return $key !== null ? ($output[$key] ?? false) : $output;
     }
 
@@ -81,7 +86,7 @@ class Date extends \Genome {
         $date = new DateTime();
         $date->setTimestamp((int) $this->format('U'));
         $interval = $date->diff(new DateTime('now'));
-		$time = $interval->format('%y.%m.%d.%h.%i.%s');
+        $time = $interval->format('%y.%m.%d.%h.%i.%s');
         $time = explode('.', $time);
         $data = [
             'year' => $time[0],
@@ -93,7 +98,7 @@ class Date extends \Genome {
         ];
         $output = [];
         foreach ($data as $k => $v) {
-			if ($compact && $v === '0') continue;
+            if ($compact && $v === '0') continue;
             $output[$k] = $v . ' ' . ($v === '1' ? $language->{$k} : $language->{$k . 's'});
         }
         unset($data);

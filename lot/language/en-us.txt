@@ -248,9 +248,6 @@ seconds: Seconds
 setting: Setting
 settings: Settings
 
-sheet: Sheet
-sheets: Sheets
-
 shield: Shield
 shields: Shields
 
@@ -681,10 +678,10 @@ _published: Unpublished
 #. Message
 #. -------
 
-notify_avail: %s is available.
+message_avail: %s is available.
 
 # negation ...
-_notify_avail: %s is not available.
+_message_avail: %s is not available.
 
 
 
