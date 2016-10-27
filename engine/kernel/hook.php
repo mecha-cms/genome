@@ -91,7 +91,6 @@ class Hook extends Genome {
 
     public static function blocked($id = null, $stack = null, $fail = false) {
         $c = static::class;
-        $stack = $stack ?? 10;
         if ($id === null) {
             return !empty(self::$lot[0][$c]) ? self::$lot[0][$c] : $fail;
         } elseif ($stack === null) {

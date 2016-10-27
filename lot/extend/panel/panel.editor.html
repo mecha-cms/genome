@@ -1,0 +1,99 @@
+<meta charset="utf-8">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+<link href="file:///G:/GitHub/text-editor/ui/ui.min.css" rel="stylesheet">
+<link href="lot/asset/css/dashboard.css" rel="stylesheet">
+
+<section class="board">
+  <section class="board-r">
+    <aside class="board-c">
+      <figure class="board-figure">
+        <p class="board-figure-image" role="image"></p>
+        <figcaption class="board-figure-caption">
+          <p>Taufik Nurrohman</p>
+        </figcaption>
+      </figure>
+      <nav class="board-tree">
+          <ul>
+            <li><a href="#"><i class="icon fa fa-fw fa-briefcase"></i> Asset</a></li>
+            <li class="current">
+              <a href="#"><i class="icon fa fa-fw fa-file-text"></i> Page</a>
+              <ul>
+                <li><a href="#"><i class="icon fa fa-fw fa-pencil"></i> Post</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-comment"></i> Response</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#"><i class="icon fa fa-fw fa-plug"></i> Extend</a>
+              <ul>
+                <li><a href="#"><i class="icon fa fa-fw fa-rss"></i> Blog</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-history"></i> Cache</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-comments-o"></i> Comment</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-th-list"></i> Field</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-file-picture-o"></i> Image</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-navicon"></i> Menu</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-compress"></i> Minify</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-file-archive-o"></i> Package</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-files-o"></i> Page</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-dashboard"></i> Dashboard</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-puzzle-piece"></i> Template</a></li>
+              </ul>
+            </li>
+            <li><a href="#"><i class="icon fa fa-fw fa-globe"></i> Language</a></li>
+            <li><a href="#"><i class="icon fa fa-fw fa-shield"></i> Shield</a></li>
+            <li>
+              <a href="#"><i class="icon fa fa-fw fa-cogs"></i> State</a>
+              <ul>
+                <li><a href="#"><i class="icon fa fa-fw fa-cog"></i> Configuration</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-tags"></i> Tag</a></li>
+                <li><a href="#"><i class="icon fa fa-fw fa-th-list"></i> Field</a></li>
+              </ul>
+            </li>
+          </ul>
+      </nav>
+    </aside>
+    <section class="board-c board-body">
+      <section class="tab-header">
+        <a href="#" class="tab-button current"><i class="icon fa fa-pencil"></i> Editor</a>
+      </section>
+      <section class="tab-body">
+        <section class="tab-content">
+          <label class="grid-meta">
+            <span class="grid-meta-key">Name</span>
+            <span class="grid-meta-value">
+              <input name="name" type="text" class="block">
+            </span>
+          </label>
+          <div class="grid-meta">
+            <label class="grid-meta-key" for="content-1">Content</label>
+            <div class="grid-meta-value">
+              <textarea name="content" class="block expand code TE" data-TE-config='{"tools":"indent outdent | undo redo","keys":false,"languages":{"others":{"preview":0,"_word":0,"_words":0}}}' id="content-1"></textarea>
+            </div>
+          </div>
+          <div class="grid-meta buttons">
+            <span class="grid-meta-key"></span>
+            <span class="grid-meta-value">
+              <button name="x" class="button button-action" type="submit"><i class="icon fa fa-check-circle"></i> Save</button>
+              <button name="x" class="button button-destruct" type="submit"><i class="icon fa fa-times-circle"></i> Delete</button>
+            </span>
+          </div>
+        </section>
+      </section>
+    </section>
+  </section>
+</section>
+<footer class="board-footer">
+  <div class="push-left">&copy; 2016 Mecha CMS</div>
+  <div class="pish-right"></div>
+</footer>
+<script src="file:///G:/GitHub/text-editor/text-editor.min.js"></script>
+<script src="file:///G:/GitHub/text-editor/ui/ui.min.js"></script>
+<script src="file:///G:/GitHub/text-editor/TE.HTML/TE.HTML.min.js"></script>
+<script>
+var te = document.getElementsByClassName('TE'),
+    targets = {}, i, c;
+for (i in te) {
+    c = te[i].getAttribute('data-TE-config') || '{}';
+    c = JSON && JSON.parse ? JSON.parse(c) : eval(c);
+    targets[te[i].name || i] = new TE.HTML(te[i], c);
+}
+</script>

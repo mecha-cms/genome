@@ -39,6 +39,7 @@ class Anemon extends Genome {
         return $input;
     }
 
+    // Remove array value recursively
     public static function reset(&$input, $k) {
         $kk = explode('.', $k);
         while (count($k) > 1) {
@@ -52,11 +53,13 @@ class Anemon extends Genome {
         }
     }
 
+    // Extend two array
     public static function extend(&$a, $b) {
         $a = array_replace_recursive((array) $a, (array) $b);
         return $a;
     }
 
+    // Concat two array
     public static function concat(&$a, $b) {
         $a = array_merge_recursive((array) $a, (array) $b);
         return $a;
@@ -70,6 +73,7 @@ class Anemon extends Genome {
         return $this->get($this->bucket, $k, $fail);
     }
 
+    // Randomize array order
     public function shake($fn = null) {
         if (is_callable($fn)) {
             $this->bucket = call_user_func($fn, $this->bucket);
@@ -92,6 +96,7 @@ class Anemon extends Genome {
         return $this;
     }
 
+    // Sort array value
     public function sort($order = 'ASC', $key = null, $prsv_key = false, $null = X) {
         if ($key !== null) {
             $before = $after = [];

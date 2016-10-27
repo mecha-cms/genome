@@ -330,7 +330,7 @@ class File extends Genome {
             $u = $size > 0 ? floor($size_base) : 0;
         }
         $output = round($size / pow(1024, $u), $prec);
-        return $output < 0 ? Language::get('unknown') : trim($output . ' ' . $x[$u]);
+        return $output < 0 ? Language::unknown() : trim($output . ' ' . $x[$u]);
     }
 
 }

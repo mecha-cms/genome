@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+<link href="file:///G:/GitHub/text-editor/text-editor/ui/ui.1960.min.css" rel="stylesheet">
+<link href="lot/asset/css/panel.css" rel="stylesheet">
+</head>
+<body>
+
+<section class="board">
+  <section class="board-grid">
+    <aside class="board-span">
+      <figure>
+        <p class="img" role="image"></p>
+        <figcaption>
+          <p>Taufik Nurrohman</p>
+          <p><small>@ta.tau.taufik</small></p>
+        </figcaption>
+      </figure>
+      <nav>
+        <ul>
+          <li><a href="#"><i class="icon fa fa-fw fa-briefcase"></i> Asset</a></li>
+          <li class="current">
+            <a href="#"><i class="icon fa fa-fw fa-file-text"></i> Page</a>
+            <ul>
+              <li><a href="#"><i class="icon fa fa-fw fa-pencil"></i> Post</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-comment"></i> Response</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#"><i class="icon fa fa-fw fa-plug"></i> Extend</a>
+            <ul>
+              <li><a href="#"><i class="icon fa fa-fw fa-rss"></i> Blog</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-history"></i> Cache</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-comments-o"></i> Comment</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-th-list"></i> Field</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-file-picture-o"></i> Image</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-navicon"></i> Menu</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-compress"></i> Minify</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-file-archive-o"></i> Package</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-files-o"></i> Page</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-dashboard"></i> Dashboard</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-puzzle-piece"></i> Template</a></li>
+            </ul>
+          </li>
+          <li><a href="#"><i class="icon fa fa-fw fa-globe"></i> Language</a></li>
+          <li><a href="#"><i class="icon fa fa-fw fa-shield"></i> Shield</a></li>
+          <li>
+            <a href="#"><i class="icon fa fa-fw fa-cogs"></i> State</a>
+            <ul>
+              <li><a href="#"><i class="icon fa fa-fw fa-cog"></i> Configuration</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-tags"></i> Tag</a></li>
+              <li><a href="#"><i class="icon fa fa-fw fa-th-list"></i> Field</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="board-span">
+      <div class="tab tab-main">
+        <div class="tab-header">
+          <a href="#" class="tab-button current"><i class="icon fa fa-pencil"></i> Editor</a>
+          <a href="#" class="tab-button"><i class="icon fa fa-th-list"></i> Field</a>
+          <a href="#" class="tab-button toggle"><i class="icon fa fa-eye"></i> Preview</a>
+        </div>
+        <div class="tab-body">
+          <div class="tab-content">
+            <label class="grid-meta">
+              <span class="grid-meta-key">Title</span>
+              <span class="grid-meta-value">
+                <input name="title" type="text" class="block">
+              </span>
+            </label>
+            <label class="grid-meta">
+              <span class="grid-meta-key">Slug</span>
+              <span class="grid-meta-value">
+                <input name="slug" type="text" class="block">
+              </span>
+            </label>
+            <div class="grid-meta">
+              <label class="grid-meta-key" for="content-1">Content</label>
+              <div class="grid-meta-value">
+                <textarea name="content" class="block expand code TE" id="content-1"></textarea>
+              </div>
+            </div>
+            <label class="grid-meta">
+              <span class="grid-meta-key">Type</span>
+              <span class="grid-meta-value">
+                <select name="html_parser[active]">
+                  <option value="HTML">HTML</option>
+                  <option value="Markdown">Parsedown</option>
+                </select>
+              </span>
+            </label>
+            <label class="grid-meta">
+              <span class="grid-meta-key">Description</span>
+              <span class="grid-meta-value">
+                <textarea name="description" class="block"></textarea>
+              </span>
+            </label>
+            <div class="grid-meta">
+              <span class="grid-meta-key">Tags</span>
+              <div class="grid-meta-value">
+                <label class="block"><input type="checkbox" checked> <span>Lorem</span></label>
+                <label class="block"><input type="checkbox"> <span>Ipsum</span></label>
+                <label class="block"><input type="checkbox"> <span>Dolor</span></label>
+                <label class="block"><input type="checkbox"> <span>Sit</span></label>
+                <label class="block"><input type="checkbox"> <span>Amet</span></label>
+              </div>
+            </div>
+            <label class="grid-meta">
+              <span class="grid-meta-key">Author</span>
+              <span class="grid-meta-value"><input name="author" type="text" placeholder="@user"></span>
+            </label>
+            <div class="grid-meta buttons">
+              <span class="grid-meta-key"></span>
+              <span class="grid-meta-value">
+                <button name="x" class="button button-construct" type="submit"><i class="icon fa fa-check-circle"></i> Publish</button>
+                <button name="x" class="button button-action" type="submit"><i class="icon fa fa-history"></i> Unpublish</button>
+                <button name="x" class="button button-destruct" type="submit"><i class="icon fa fa-times-circle"></i> Delete</button>
+              </span>
+            </div>
+          </div>
+          <div class="tab-content hidden">
+            <div class="grid-meta">
+              <span class="grid-meta-key">Others</span>
+              <span class="grid-meta-value"><input type="color" value="#ff0000"> <input type="color" value="#00ff00"> <input type="color" value="#0000ff"> foo bar <input type="checkbox"> foo bar <input type="radio"> foo bar <input type="image" value="/__mecha-v2/favicon.ico"> foo bar <input type="range"> foo bar <input type="date"> foo bar <input type="number"></span>
+            </div>
+            <div class="grid-meta">
+              <span class="grid-meta-key">Others</span>
+              <span class="grid-meta-value">
+                <select multiple>
+                  <option value="">Option 1</option>
+                  <option value="" selected>Option 2</option>
+                  <option value="">Option 3</option>
+                  <option value="">Option 4</option>
+                  <option value="">Option 5</option>
+                  <option value="">Option 6</option>
+                  <option value="">Option 7</option>
+                </select>
+              </span>
+            </div>
+          </div>
+          <div class="tab-content hidden"><p>Test toggle tab panel.</p></div>
+        </div>
+      </div>
+      <footer class="board-block">
+        <div class="left">&copy; 2016 Mecha CMS</div>
+        <div class="right"></div>
+      </footer>
+    </main>
+  </section>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="lot/asset/js/panel.js"></script>
+<script src="file:///G:/GitHub/text-editor/text-editor.min.js"></script>
+<script src="file:///G:/GitHub/text-editor/text-editor/ui/ui.min.js"></script>
+<script src="file:///G:/GitHub/text-editor/TE.HTML/TE.HTML.min.js"></script>
+<script src="file:///G:/GitHub/text-editor/TE.Markdown/TE.Markdown.min.js"></script>
+<script>
+var te = document.getElementsByClassName('TE'), i;
+for (var i = 0, j = te.length; i < j; ++i) {
+    new TE.Markdown(te[i], {extra: 1});
+}
+</script>
+</body>
+</html>

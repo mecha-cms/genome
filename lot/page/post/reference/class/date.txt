@@ -16,7 +16,7 @@ Date::TZ('Asia/Jakarta');
 ### Get the Current Time Zone
 
 ~~~ .php
-echo Date::$TZ;
+echo Date::TZ();
 ~~~
 
 ### Date Formatter
@@ -43,4 +43,31 @@ Result:
 
 ~~~ .no-highlight
 2016-04-21-16-00-00
+~~~
+
+---
+
+### Advance
+
+#### Custom Format
+
+~~~ .php
+Date::format('my_format', function($output, $language) {
+    return $output['year'] . '/' . $output['month'] . '/' . $output['day'];
+});
+~~~
+
+Usage:
+
+~~~ .php
+$date = new Genome\Date('2016/04/21 16:00:00');
+
+// [1]
+echo $date->extract('my_format');
+
+// [2]
+echo $date->my_format;
+
+// [3]
+echo Date::extract('2016/04/21 16:00:00', 'my_format');
 ~~~

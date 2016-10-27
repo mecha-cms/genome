@@ -1,0 +1,148 @@
+---
+title: Class `Hook`
+description: "Function hooks."
+author: Taufik Nurrohman
+type: Markdown
+...
+
+### Set
+
+Set a `the_header` hook with named function as the ID:
+
+~~~ .php
+function do_set_header() {
+    echo '<meta name="generator" content="Mecha">';
+}
+
+Hook::set('the_header', 'do_set_header');
+~~~
+
+Set a `the_header` hook with anonymous function:
+
+~~~ .php
+Hook::set('the_header', function() {
+    echo '<meta name="generator" content="Mecha">';
+});
+~~~
+
+Using custom priority:
+
+~~~ .php
+function do_set_header() {
+    echo '<meta name="generator" content="Mecha">';
+}
+
+Hook::set('the_header', 'do_set_header', 1);
+~~~
+
+`1` is the function execution priority. The smaller the value, the earlier the function will be executed. And functions with the same priority are executed in the order in which they were added to the hook. Default is `10`.
+
+### Get
+
+Get all of the attached hooks:
+
+~~~ .php
+__dump__(Hook::get());
+~~~
+
+Get all of the attached `the_header` hooks:
+
+~~~ .php
+__dump__(Hook::get('the_header'));
+~~~
+
+### Block
+
+Remove an attached `the_header` hook with ID `do_set_header` before execution, or prevent a `the_header` hook with ID `do_set_header` to be attached:
+
+~~~ .php
+Hook::block('the_header', 'do_set_header');
+~~~
+
+{{block.note}}
+You cannot remove/block hooks that are attached using anonymous function because they have no ID.
+{{/block}}
+
+### Blocked
+
+Check for the removed/prevented hooks:
+
+~~~ .php
+__dump__(Hook::blocked());
+~~~
+
+Check for the removed/prevented `the_header` hooks:
+
+~~~ .php
+__dump__(Hook::blocked('the_header'));
+~~~
+
+Check if `do_set_header` is removed/prevented from the `the_header` hook:
+
+~~~ .php
+__dump__(Hook::blocked('the_header', 'do_set_header'));
+~~~
+
+### Fire
+
+Execute the `the_header` hook:
+
+~~~ .php
+Hook::fire('the_header'); // → `<meta name="generator" content="Mecha">`
+~~~
+
+---
+
+### Advance
+
+#### Using Arguments
+
+With named function as the ID:
+
+~~~ .php
+function do_set_header($a, $b) {
+    echo '<meta name="author" content="' . $a . ' ' . $b . '">';
+}
+
+Hook::set('the_header', 'do_set_header');
+~~~
+
+With anonymous function:
+
+~~~ .php
+Hook::set('the_header', function($a, $b) {
+    echo '<meta name="generator" content="' . $a . ' ' . $b . '">';
+});
+~~~
+
+How to fire:
+
+~~~ .php
+Hook::fire('the_header', ['Taufik', 'Nurrohman']); // → `<meta name="author" content="Taufik Nurrohman">`
+~~~
+
+#### As Filter
+
+The first value of the available arguments will be returned. So, this test will return `Taufik`:
+
+~~~ .php
+__dump__(Hook::fire('the_header', ['Taufik', 'Nurrohman']));
+~~~
+
+And adding a new hook with arguments and returned its first parameter with custom value will return that custom value:
+
+~~~ .php
+Hook::set('the_header', function($a, $b) {
+    return '(' . $a . ')';
+}, 2);
+
+Hook::set('the_header', function($a, $b) {
+    return '{' . $a . '}';
+}, 1);
+
+Hook::set('the_header', function($a, $b) {
+    echo '<meta name="author" content="' . $a . ' ' . $b . '">';
+}, 3);
+
+Hook::fire('the_header', ['Taufik', 'Nurrohman']); // → `<meta name="author" content="({Taufik}) Nurrohman">`
+~~~

@@ -61,7 +61,7 @@ class Union extends \Genome {
     public function bond($a, $unit = "") {
         if (!is_array($a)) {
             $data = trim((string) $a);
-            return strlen($data) ? ' ' . $data : ""; // no filter(s) applied ...
+            return strlen($data) ? ' ' . $data : ""; // no hook(s) applied ...
         }
         $output = "";
         $c = strtolower(static::class);

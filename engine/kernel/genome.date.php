@@ -17,7 +17,7 @@ class Date extends \Genome {
         return date($format, strtotime($date));
     }
 
-    public function extract($key = null) {
+    public function extract($key = null, $fail = false) {
         $language = new Language;
         $months_long = $language->months_long;
         $days_long = $language->days_long;
@@ -40,7 +40,7 @@ class Date extends \Genome {
         $day_long = $days_long[(int) $d];
         $day_short = $days_short[(int) $d];
         $output = [
-            'unix' => (int) $this->format('U'),
+            'UNIX' => (int) $this->format('U'),
             'W3C' => $this->format('c'),
             'GMT' => $this->GMT('Y-m-d H:i:s'),
             'slug' => $year . '-' . $month . '-' . $day . '-' . $hour_24 . '-' . $minute . '-' . $second,
@@ -75,10 +75,10 @@ class Date extends \Genome {
         ];
         if (!empty(Date::$formats)) {
             foreach (Date::$formats as $k => $v) {
-                $output['FORMAT_' . $k] = call_user_func($v, $output, $language);
+                $output[$k] = call_user_func($v, $output, $language);
             }
         }
-        return $key !== null ? ($output[$key] ?? false) : $output;
+        return $key !== null ? ($output[$key] ?? $fail) : $output;
     }
 
     public function ago($key = null, $fail = false, $compact = true) {

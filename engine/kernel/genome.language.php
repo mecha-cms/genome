@@ -3,7 +3,7 @@
 class Language extends \Genome {
 
     public function __call($key, $lot) {
-        return vsprintf(\Config::get('__i18n.' . $key, $key), $lot + [""]);
+        return vsprintf(\Config::get('__i18n.' . $key, $key), array_merge($lot, [""]));
     }
 
     public function __get($key) {

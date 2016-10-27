@@ -15,8 +15,7 @@ class Message extends Genome {
         $kin = array_shift($lot);
         $text = array_shift($lot);
         $s = array_shift($lot) ?? "";
-        $c2f = __c2f__(static::class);
-        $text = Language::get($c2f . '_' . $kin . '_' . $text, (array) $s);
+        $text = Language::get(__c2f__(static::class) . '_' . $kin . '_' . $text, (array) $s);
         if ($count === 1) {
             self::set('default', $kin);
         } else {
