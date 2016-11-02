@@ -1,28 +1,35 @@
 * {
   margin:0;
   padding:0;
+  font-weight:inherit;
+  font-style:inherit;
+  text-decoration:inherit;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
 }
 ::-webkit-input-placeholder {
-  opacity:.4;
+  opacity:.2;
   color:inherit;
 }
 ::-moz-placeholder {
-  opacity:.4;
+  opacity:.2;
   color:inherit;
 }
 ::placeholder {
-  opacity:.4;
+  opacity:.2;
   color:inherit;
 }
 :focus {outline:0}
 html {
   background:#1f1f1f;
-  font:normal normal 14px/1.5em Helmet,FreeSans,Sans-Serif;
+  font:normal normal 13px/1.5 Helmet,FreeSans,Sans-Serif;
   color:#aaa;
 }
+b,dt,strong,th {font-weight:bold}
+blockquote,caption,em,figcaption,i,var {font-style:italic}
+ins,u {text-decoration:underline}
+del,s {text-decoration:line-through}
 button,
 input,
 select,
@@ -73,8 +80,7 @@ input[type="checkbox"],
 input[type="color"],
 input[type="file"],
 input[type="image"],
-input[type="radio"],
-input[type="range"] {
+input[type="radio"] {
   width:auto;
   height:auto;
   background:0 0;
@@ -84,7 +90,15 @@ input[type="range"] {
   box-shadow:none;
   cursor:pointer;
 }
-input[type="range"] {width:12em}
+input[type="range"] {
+  height:auto;
+  background:0 0;
+  border:0;
+  padding:0;
+  border-radius:0;
+  box-shadow:none;
+  cursor:e-resize;
+}
 input[type="color"] {
   width:2em;
   height:2em;
@@ -98,6 +112,7 @@ textarea {
   min-height:5em;
   overflow:auto;
 }
+textarea.expand {height:24em}
 select {cursor:pointer}
 optgroup,
 option {
@@ -120,24 +135,26 @@ hr {
 label {cursor:pointer}
 blockquote,
 dl,hr,
-iframe.block,
 h1,h2,h3,h4,h5,h6,
-ol,p,ul,
+iframe.block,
+ol,p,pre,table,ul,
 .image-container,
 .p,
-.tab {margin:1.5rem 0 0}
+.tab {margin:1rem 0 0}
 blockquote:first-child,
 dl:first-child,
 hr:first-child,
-iframe.block:first-child,
 h1:first-child,
 h2:first-child,
 h3:first-child,
 h4:first-child,
 h5:first-child,
 h6:first-child,
+iframe.block:first-child,
 ol:first-child,
 p:first-child,
+pre:first-child,
+table:first-child,
 ul:first-child,
 .image-container:first-child,
 .p:first-child,
@@ -151,7 +168,6 @@ dd {
   margin-top:1.5rem;
   padding-left:1.5rem;
 }
-h1,h2,h3,h4,h5,h6 {font-weight:400}
 h1 {
   font-size:2.6em;
   line-height:3rem;
@@ -166,11 +182,11 @@ h5 {font-size:1.2em}
 h6 {font-size:1.1em}
 ol {
   list-style-type:decimal;
-  padding-left:3em;
+  padding-left:2em;
 }
 ul {
   list-style-type:disc;
-  padding-left:3em;
+  padding-left:2em;
 }
 a {
   color:#678;
@@ -179,6 +195,33 @@ a {
 a:focus,
 a:hover {color:#789}
 code,.code {font-family:"Courier New",Courier,"Nimbus Mono L",Monospace}
+pre {
+  background:#1e1e1e;
+  padding:.5em .75em;
+}
+table {border-collapse:collapse}
+th,td {
+  text-align:inherit;
+  vertical-align:top;
+}
+table.border th,
+table.border td {
+  border:1px solid #2f2f2f;
+  padding:.25em .5em;
+}
+.align-left {
+  float:left;
+  margin:.25em 1em 0 0;
+}
+.align-right {
+  float:right;
+  margin:.25em 0 0 1em;
+}
+.align-center {
+  display:block;
+  margin-right:auto;
+  margin-left:auto;
+}
 .block {
   display:block;
   width:100%;
@@ -186,66 +229,80 @@ code,.code {font-family:"Courier New",Courier,"Nimbus Mono L",Monospace}
 .left {float:left}
 .right {float:right}
 .hidden {display:none}
-.board {}
-.board-grid {
+.panel {}
+.panel-grid {
   display:table;
   border-spacing:0;
   border-collapse:collapse;
   table-layout:fixed;
   width:100%;
 }
-.board-span {
+.panel-span {
   display:table-cell;
   vertical-align:top;
 }
-aside.board-span {width:12em}
-aside.board-span figure {
+aside.panel-span {width:12em}
+aside.panel-span figure {
   padding:.5em;
   border-bottom:1px solid #222;
 }
-aside.board-span figure .img {
+aside.panel-span figure .img {
   margin:0;
   padding:0 0 100%;
   background:#333;
 }
-aside.board-span figcaption {margin:.5em 0 0}
-aside.board-span figcaption p {
+aside.panel-span figcaption {
+  margin:.5em 0 0;
+  font-style:normal;
+}
+aside.panel-span figcaption p {
   margin:0;
   padding:0;
 }
 
-aside.board-span nav {line-height:3em}
-aside.board-span nav ul,
-aside.board-span nav li {
+aside.panel-span nav {line-height:3em}
+aside.panel-span nav ul,
+aside.panel-span nav li {
   margin:0;
   padding:0;
   list-style:none;
   position:relative;
 }
-aside.board-span nav a {
+aside.panel-span nav a {
   display:block;
   color:inherit;
-  padding:0 1em;
+  padding:0 .75em;
+  font-weight:bold;
 }
-aside.board-span nav a:focus,
-aside.board-span nav a:hover {background:#222}
-aside.board-span nav a:active,
-aside.board-span nav .current > a {
+aside.panel-span nav a:focus,
+aside.panel-span nav a:hover {background:#222}
+aside.panel-span nav a:active,
+aside.panel-span nav .current > a {
   background:#456;
   color:#eee;
 }
-aside.board-span nav ul ul {
+aside.panel-span nav ul ul {
   font-size:.9285714285714286em;
   line-height:2em;
+  padding-left:1.5em;
 }
-main.board-span {
+aside.panel-span nav ul ul a {font-weight:normal}
+aside.panel-span nav ul ul a:focus,
+aside.panel-span nav ul ul a:hover,
+aside.panel-span nav ul ul a:active {
+  background:0 0;
+  color:#eee;
+}
+aside.panel-span nav ul ul a:focus,
+aside.panel-span nav ul ul .current a {color:#678}
+main.panel-span {
   background:#222;
   margin-left:12em;
   padding:1.5em;
   box-shadow:0 0 2px rgba(0,0,0,.4);
   position:relative;
 }
-footer.board-block {
+footer.panel-block {
   padding:3.5em .5em 0;
   overflow:hidden;
 }
@@ -272,14 +329,24 @@ footer.board-block {
   text-overflow:ellipsis;
   text-align:right;
 }
-.grid-meta.buttons {margin-top:1.25em}
-.grid-meta.buttons .grid-meta-value {
+.grid-meta.expand .grid-meta-key {width:15em}
+.grid-meta.actions {margin-top:1.25em}
+.grid-meta.actions .grid-meta-value {
   padding-top:1.25em;
   border-top:1px solid #2f2f2f;
 }
-textarea.expand {height:24em}
 
+.checkbox,
+.radio {color:#789}
+.checkbox:focus,
+.radio:focus {color:#eee}
+.checkbox.x,
+.radio.x {color:inherit}
+.checkbox + input,
+.radio + input {display:none}
+.icon.info {color:#987}
 .tab-header {
+  line-height:2em;
   margin:0 0 1.5em;
   padding:0 0 1px;
   overflow:hidden;
@@ -295,27 +362,25 @@ textarea.expand {height:24em}
 .tab-button:active {
   display:block;
   float:left;
-  height:2em;
-  line-height:2em;
+  line-height:inherit;
   padding:0 .75em;
-  background:#def;
+  margin-left:.5em;
   border:1px solid;
   border-bottom-width:0;
   border-color:transparent;
   color:inherit;
   position:relative;
 }
-.tab-button + .tab-button {margin-left:.5em}
-.tab-button.current,
 .tab-button:focus,
-.tab-button:hover {
+.tab-button.current {
   background:0 0;
-  border-color:inherit;
+  border-color:#2f2f2f;
 }
 .tab-button.current:before,
 .tab-button.current:after {
   content:"";
   border-bottom:1px solid;
+  border-color:inherit;
   position:absolute;
   top:100%;
   width:9999em;
@@ -323,7 +388,7 @@ textarea.expand {height:24em}
 .tab-button.current:before {right:100%}
 .tab-button.current:after {left:100%}
 
-.tab-main .tab-header {
+.tab-main > .tab-header {
   margin-top:-1.5em;
   margin-right:-1.5em;
   margin-left:-1.5em;
@@ -331,19 +396,26 @@ textarea.expand {height:24em}
   background:#1f1f1f;
   border-bottom:2px solid #456;
 }
-.tab-main .tab-button {
+.tab-main > .tab-header .tab-button {
   background:0 0;
   border-width:0;
   margin-left:0;
-  color:#456;
+  color:#678;
 }
-.tab-main .tab-button:before,
-.tab-main .tab-button:after {display:none}
-.tab-main .tab-button.current {color:inherit}
+.tab-main > .tab-header .tab-button:before,
+.tab-main > .tab-header .tab-button:after {display:none}
+.tab-main > .tab-header .tab-button.current {color:inherit}
+
+.text-editor {border-width:0}
+.text-editor-body {border-width:1px}
+.text-editor-content {resize:vertical}
+.text-editor-footer,
+.text-editor-footer + .text-editor-resize {display:none}
+
 
 /*
-main.board-span {
-  background-image:linear-gradient(45deg,#eee 25%,transparent 25%),linear-gradient(-45deg,#eee 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eee 75%),linear-gradient(-45deg,transparent 75%,#eee 75%);
+main.panel-span {
+  background-image:linear-gradient(45deg,#111 25%,transparent 25%),linear-gradient(-45deg,#111 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#111 75%),linear-gradient(-45deg,transparent 75%,#111 75%);
   background-size:3em 3em;
   background-position: 0 0, 0 1.5em, 1.5em -1.5em, -1.5em 0;
 }
