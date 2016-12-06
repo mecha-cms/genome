@@ -1,5 +1,20 @@
 (function($, win, doc) {
 
+    var html = doc.documentElement,
+        head = doc.head,
+        body = doc.body;
+
+    function is_set(x) {
+        return typeof x !== "undefined";
+    }
+
+    function format(s, a) {
+        return s.replace(/%(\{\d+\}|\d+)/g, function(b, c) {
+            c = +c - 1;
+            return is_set(a[c]) ? a[c] : b;
+        });
+    }
+
     (function() {
         var $menus = $('aside.panel-span nav li:not(.current) a');
         if (!$menus.length) return;
@@ -14,27 +29,29 @@
     })();
 
     (function() {
-        var $toggles = $('input[type="checkbox"], input[type="radio"]');
+        var $toggles = $('.input--checkbox,.input--radio'),
+            x = ':not([disabled],[readonly])',
+            y = 'toggle i i-toggle i-toggle--%1 fa fa-%2%3',
+            icon = [['circle-o', 'dot-circle-o'], ['square', 'check-square']];
         if (!$toggles.length) return;
         $toggles.filter(function() {
             return $(this).parent().is('label');
         }).each(function() {
-            var radio = this.type === 'radio',
-                n = ' ' + this.type + (this.disabled ? ' x' : ""),
-                icon = [
-                    radio ? 'circle-o' : 'square',
-                    radio ? 'dot-circle-o' : 'check-square'
-                ], i;
-            i = icon[this.checked ? 1 : 0];
-            $('<a href="" class="icon icon-expand icon-' + i + n + ' fa fa-fw fa-' + i + '"></a>').on("click", function() {
-                $(this).next().prop('checked', !$(this).hasClass('fa-' + icon[1])).trigger("change");
+            var toggle = this.type === 'checkbox' ? 1 : 0,
+                h = (this.disabled ? ' x' : "") + (this.checked ? ' on' : ""),
+                i = icon[toggle][this.checked ? 1 : 0], j;
+            $('<a href="" class="' + format(y, [this.type, i, h]) + '"></a>').on("click", function() {
+                $(this).next().filter(x).prop('checked', toggle ? !$(this).hasClass('on') : true).trigger("change");
                 return false;
             }).insertBefore($(this).on("change", function() {
-                i = icon[this.checked ? 1 : 0];
-                if (radio) {
-                    $(this).parent().parent().find('input[name="' + this.name + '"]:not([disabled]):not([readonly])').prev().attr('class', 'icon icon-expand icon-' + icon[0] + n + ' fa fa-fw fa-' + icon[0]);
+                i = icon[toggle][this.checked ? 1 : 0];
+                if (j = $(this).data('group')) {
+                    $toggles.filter('[name="' + j + '"]' + x).prop('checked', this.checked).trigger("change");
                 }
-                $(this).prev().attr('class', 'icon icon-expand icon-' + i + n + ' fa fa-fw fa-' + i);
+                if (!toggle) {
+                    $(this).parent().parent().find('input[name="' + this.name + '"]' + x).prev().attr('class', format(y, [this.type, icon[0][0], h]));
+                }
+                $(this).prev().attr('class', format(y, [this.type, i, (this.disabled ? ' x' : "") + (this.checked ? ' on' : "")]));
                 return false;
             }));
         }).parent().on("touchstart mousedown", false);
@@ -46,12 +63,12 @@
         $tabs.on("click", function() {
             $id = (this.hash || "").replace('#', "");
             $id = ($id && $('#' + $id)) || $(this).closest('.tab').find('.tab-content').eq($(this).index());
-            $(this).addClass('current').siblings().removeClass('current');
+            $(this).addClass('on').siblings('.tab-button').removeClass('on');
             if ($id) {
-                $id[$(this).hasClass('toggle') ? 'toggleClass' : 'removeClass']('hidden').siblings().addClass('hidden');
+                $id[$(this).hasClass('toggle') ? 'toggleClass' : 'addClass']('on').siblings('.tab-content').removeClass('on');
             }
             return false;
-        }).on("touchstart mousedown", false);
+        }).on("touchstart mousedown", false).filter('.on').trigger("click");
     })();
 
     function slug(s, l, h, x) {

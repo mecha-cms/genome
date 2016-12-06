@@ -9,14 +9,14 @@ type: Markdown
 
 Pattern | Description
 ------- | -----------
-`(:any)` | Matched with any but `/`
-`(:num)` | Matched with any numbers.
-`(:all)` | Matched with any includes `/`
-`(foo|bar)` | Matched with `foo` and `bar`
+`%s` | Matched with any but `/`
+`%i` | Matched with any numbers.
+`%` | Matched with any includes `/`
+`%[foo,bar]` | Matched with `foo` and `bar`
 
-### Add
+### Set
 
-### Remove
+### Reset
 
 ### Get
 
@@ -29,10 +29,6 @@ Pattern | Description
 ### Fire
 
 ### Hook
-
-### Added
-
-### Removed
 
 ### Exist
 

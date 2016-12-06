@@ -2,18 +2,17 @@
 
 abstract class Genome {
 
+    // static method name's suffix
+    public static $_suffix = '_static';
+
     // Method(s) ...
     public static $_ = [];
-
-    // Get class instance ...
-    public static function _(...$lot) {
-        return new static(...$lot);
-    }
 
     // Show the added method(s)
     public static function kin($kin = null, $fail = false, $origin = false) {
         $c = static::class;
         if ($kin !== null) {
+            $kin .= self::$_suffix;
             if (!isset(self::$_[0][$c][$kin])) {
                 $output = self::$_[1][$c][$kin] ?? $fail;
                 return $origin && method_exists($c, $kin) ? 1 : $output;
@@ -25,7 +24,7 @@ abstract class Genome {
 
     // Add new method with `Genome::plug('foo')`
     public static function plug($kin, $fn) {
-        self::$_[1][static::class][$kin] = $fn;
+        self::$_[1][static::class][$kin . self::$_suffix] = $fn;
     }
 
     // Remove the added method with `Genome::unplug('foo')`
@@ -34,6 +33,7 @@ abstract class Genome {
             self::$_ = [];
         } else {
             $c = static::class;
+            $kin .= self::$_suffix;
             self::$_[0][$c][$kin] = 1;
             unset(self::$_[1][$c][$kin]);
         }
@@ -42,11 +42,15 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot) {
         $c = static::class;
-        if (!isset(self::$_[1][$c][$kin])) {
+        $kin_static = $kin .= self::$_suffix;
+        if (method_exists($c, $kin_static)) {
+            return call_user_func_array('self::' . $kin_static, $lot);
+        }
+        if (!isset(self::$_[1][$c][$kin_static])) {
             echo('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
             return false;
         }
-        return call_user_func_array(self::$_[1][$c][$kin], $lot);
+        return call_user_func_array(self::$_[1][$c][$kin_static], $lot);
     }
 
 }

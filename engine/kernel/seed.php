@@ -2,29 +2,30 @@
 
 class Seed extends Genome {
 
-    public static $scope = 'var';
+    public static $config = ['scope' => 'seed'];
 
-    public static function set($k, $v = null) {
+    protected static function set_static($k, $v = null) {
         if (__is_anemon__($k)) {
             foreach ($k as $kk => $vv) {
-                $GLOBALS[self::$scope][$kk] = $vv;
+                $GLOBALS[self::$config['scope']][$kk] = $vv;
             }
         } else {
-            $GLOBALS[self::$scope][$k] = $v;
+            $GLOBALS[self::$config['scope']][$k] = $v;
         }
         return new static;
     }
 
-    public static function get($k = null, $fail = false) {
-        if ($k === null) return $GLOBALS[self::$scope] ?? $fail;
-        return array_key_exists($k, $GLOBALS[self::$scope]) ? $GLOBALS[self::$scope][$k] : $fail;
+    protected static function get_static($k = null, $fail = false) {
+        $v = $GLOBALS[self::$config['scope']];
+        if ($k === null) return $v ?? $fail;
+        return array_key_exists($k, $v) ? $v[$k] : $fail;
     }
 
-    public static function reset($k = null) {
+    protected static function reset_static($k = null) {
         if ($k !== null) {
-            unset($GLOBALS[self::$scope][$k]);
+            unset($GLOBALS[self::$config['scope']][$k]);
         } else {
-            $GLOBALS[self::$scope] = [];
+            $GLOBALS[self::$config['scope']] = [];
         }
         return new static;
     }

@@ -7,14 +7,14 @@ class Anemon extends Genome {
     protected $i = 0;
 
     // Prevent `$x` exceeds the value of `$min` and `$max`
-    public static function edge($x, $min = 0, $max = 9999) {
-        if ($x < $min) return $min;
-        if ($x > $max) return $max;
+    protected static function edge_static($x, $min = null, $max = null) {
+        if ($min !== null && $x < $min) return $min;
+        if ($max !== null && $x > $max) return $max;
         return $x;
     }
 
     // Set array value recursively
-    public static function set(&$input, $k, $v = null) {
+    protected static function set_static(&$input, $k, $v = null) {
         $kk = explode('.', $k);
         while (count($kk) > 1) {
             $k = array_shift($kk);
@@ -27,7 +27,7 @@ class Anemon extends Genome {
     }
 
     // Get array value recursively
-    public static function get(&$input, $k = null, $fail = false) {
+    protected static function get_static(&$input, $k = null, $fail = false) {
         if ($k === null) return $input;
         $kk = explode('.', $k);
         foreach ($kk as $v) {
@@ -40,7 +40,7 @@ class Anemon extends Genome {
     }
 
     // Remove array value recursively
-    public static function reset(&$input, $k) {
+    protected static function reset_static(&$input, $k) {
         $kk = explode('.', $k);
         while (count($k) > 1) {
             $k = array_shift($kk);
@@ -54,19 +54,19 @@ class Anemon extends Genome {
     }
 
     // Extend two array
-    public static function extend(&$a, $b) {
+    protected static function extend_static(&$a, $b) {
         $a = array_replace_recursive((array) $a, (array) $b);
         return $a;
     }
 
     // Concat two array
-    public static function concat(&$a, $b) {
+    protected static function concat_static(&$a, $b) {
         $a = array_merge_recursive((array) $a, (array) $b);
         return $a;
     }
 
-    public static function eat($group) {
-        return new self($group);
+    protected static function eat_static($group) {
+        return new Anemon($group);
     }
 
     public function vomit($k = null, $fail = false) {
@@ -127,18 +127,18 @@ class Anemon extends Genome {
         return $this;
     }
 
-    public static function walk($group, $fn = null) {
+    protected static function each($group, $fn = null) {
         if (is_callable($fn)) {
             foreach (a($group) as $k => &$v) {
-                $v = is_array($v) ? array_merge($v, self::walk($v, $fn)) : call_user_func($fn, $v, $k);
+                $v = is_array($v) ? array_merge($v, self::each_static($v, $fn)) : call_user_func($fn, $v, $k);
             }
             unset($v);
             return $group;
         }
-        return self::eat($group);
+        return self::eat_static($group);
     }
 
-    public static function alter($input, $replace = [], $fail = null) {
+    protected static function alter_static($input, $replace = [], $fail = null) {
         // return the `$replace[$input]` value if exist
         // or the `$fail` value if `$replace[$input]` does not exist
         // or the `$input` value if `$fail` is `null`

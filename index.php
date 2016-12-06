@@ -23,12 +23,9 @@ define('SESSION', null);
 define('ENGINE', ROOT . DS . 'engine');
 define('LOT', ROOT . DS . 'lot');
 
-foreach (['asset', 'cache', 'extend', 'language', 'page', 'shield', 'state'] as $lot) {
-    define(strtoupper($lot), LOT . DS . $lot);
+foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
+    define(strtoupper(str_replace(['-', '.'], ['_', '__'], basename($lot))), $lot);
 }
-
-define('HTML_BEGIN', ""); // Begin HTML output
-define('HTML_END', N); // End HTML output
 
 // Common HTML tag(s) allowed to be written in the form field
 define('HTML_WISE_I', [
@@ -85,7 +82,7 @@ define('HTML_WISE_B', [
     'ul'
 ]);
 
-define('HTML_WISE', HTML_WISE_I + HTML_WISE_B);
+define('HTML_WISE', array_unique(array_merge(HTML_WISE_I, HTML_WISE_B)));
 
 define('FONT_X', [
     'eot',
@@ -150,4 +147,5 @@ define('SCRIPT_X', [
     'xml'
 ]);
 
+require ENGINE . DS . 'ignite.php';
 require ENGINE . DS . 'fire.php';

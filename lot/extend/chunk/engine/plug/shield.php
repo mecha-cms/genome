@@ -14,14 +14,14 @@ Shield::plug('chunk', function($input, $fail = false, $buffer = true) {
     $out = "";
     if ($path__) {
         // Begin chunk
-        Hook::fire($NS . 'lot.before', [$G, $G]);
+        Hook::fire($NS . 'lot.b', [$G, $G]);
         extract(Hook::fire($NS . 'lot', [], Shield::$lot));
-        Hook::fire($NS . 'lot.after', [$G, $G]);
-        Hook::fire($NS . 'before', [$G, $G]);
+        Hook::fire($NS . 'lot.e', [$G, $G]);
+        Hook::fire($NS . 'b', [$G, $G]);
         if ($buffer) {
             ob_start(function($content) use($path__, &$out) {
-                $content = Hook::NS($NS . 'input', [$path__], $content);
-                $out = Hook::NS($NS . 'output', [$path__], $content);
+                $content = Hook::NS($NS . 'i', [$path__], $content);
+                $out = Hook::NS($NS . 'o', [$path__], $content);
                 return $out;
             });
             require $path__;
@@ -31,6 +31,6 @@ Shield::plug('chunk', function($input, $fail = false, $buffer = true) {
         }
         $G['content'] = $out;
         // End chunk
-        Hook::fire($NS . 'after', [$G, $G]);
+        Hook::fire($NS . 'e', [$G, $G]);
     }
 });

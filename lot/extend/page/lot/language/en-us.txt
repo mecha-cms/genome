@@ -1,24 +1,5 @@
-article: Article
-articles: Articles
-
-category: Category
-categorys: Categories
-_category: Uncategorized
-
-comment: Comment
-comments: Comments
-
 feed: Feed
 feeds: Feeds
-
-inbox: Inbox
-inboxs: Inboxes
-
-log: Log
-logs: Logs
-
-note: Note
-notes: Notes
 
 page: Page
 pages: Pages
@@ -39,10 +20,3 @@ site_map: Site Map
 site_maps: Site maps
 sites_map: Sites Map
 sites_maps: Sites Maps
-
-tag: Tag
-tags: Tags
-_tag: Untagged
-
-taging: Tagging
-taged: Tagged

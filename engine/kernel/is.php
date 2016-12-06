@@ -2,23 +2,23 @@
 
 class Is extends Genome {
 
-    protected static $bucket = [];
+    protected static $bucket_static = [];
 
     // Initialize ...
-    public static function this($input) {
-        self::$bucket = $input;
+    protected static function this_static($input) {
+        self::$bucket_static = $input;
         return new static;
     }
 
     // @ditto
-    public static function these(...$input) {
-        self::$bucket = count((array) $input) === 1 ? (array) a($input) : $input;
+    protected static function these_static(...$input) {
+        self::$bucket_static = count((array) $input) === 1 ? (array) a($input) : $input;
         return new static;
     }
 
-    // Check if `self::$bucket` contains `$s`
-    public static function has($s, $all = false, $x = X) {
-        $input = $x . implode($x . self::$bucket) . $x;
+    // Check if `self::$bucket_static` contains `$s`
+    protected static function has_static($s, $all = false, $x = X) {
+        $input = $x . implode($x . self::$bucket_static) . $x;
         if (is_array($s)) {
             if (!$all) {
                 foreach ($s as $v) {
@@ -41,7 +41,7 @@ class Is extends Genome {
     }
 
     // Check for empty string, array or object
-    public static function void($x) {
+    protected static function void_static($x) {
         return (
             $x === "" ||
             is_string($x) && trim($x) === "" ||
@@ -51,54 +51,54 @@ class Is extends Genome {
     }
 
     // Check for IP address
-    public static function ip($x) {
+    protected static function ip_static($x) {
         return filter_var($x, FILTER_VALIDATE_IP);
     }
 
     // Check for URL address
-    public static function url($x) {
+    protected static function url_static($x) {
         return filter_var($x, FILTER_VALIDATE_URL);
     }
 
     // Check for valid local path address (whether it is exists or not)
-    public static function path($x, $e = false) {
+    protected static function path_static($x, $e = false) {
         if (!is_string($x)) return false;
         return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$e || file_exists($x));
     }
 
     // Check for email address
-    public static function email($x) {
+    protected static function email_static($x) {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
     }
 
     // Check for valid boolean value
-    public static function toggle($x) {
+    protected static function toggle_static($x) {
         return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
     // Is equal to `$x`
-    public static function eq($x) {
-        return q(self::$bucket) === $x;
+    protected static function eq_static($x) {
+        return q(self::$bucket_static) === $x;
     }
 
     // Is less than `$x`
-    public static function lt($x) {
-        return q(self::$bucket) < $x;
+    protected static function lt_static($x) {
+        return q(self::$bucket_static) < $x;
     }
 
     // Is greater than `$x`
-    public static function gt($x) {
-        return q(self::$bucket) > $x;
+    protected static function gt_static($x) {
+        return q(self::$bucket_static) > $x;
     }
 
     // Is less than or equal to `$x`
-    public static function lte($x) {
-        return q(self::$bucket) <= $x;
+    protected static function lte_static($x) {
+        return q(self::$bucket_static) <= $x;
     }
 
     // Is greater than or equal to `$x`
-    public static function gte($x) {
-        return q(self::$bucket) >= $x;
+    protected static function gte_static($x) {
+        return q(self::$bucket_static) >= $x;
     }
 
 }

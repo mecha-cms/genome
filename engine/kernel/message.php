@@ -6,40 +6,53 @@ class Message extends Genome {
     public static $x = 0;
 
     public static $config = [
-        'message' => '<p class="message message-%1$s cl cf">%2$s</p>',
-        'messages' => '<div class="messages p cl cf">%1$s</div>'
+        'message' => [
+            0 => 'p',
+            1 => '$2$s',
+            2 => [
+                'classes' => ['container', 'block', 'message', 'message-%1$s']
+            ],
+            3 => 1 // dent
+        ],
+        'messages' => [
+            0 => 'div',
+            1 => '%1$s',
+            2 => [
+                'classes' => ['container', 'block', 'messages', 'p']
+            ]
+        ]
     ];
 
-    public static function set(...$lot) {
+    protected static function set_static(...$lot) {
         $count = count($lot);
         $kin = array_shift($lot);
         $text = array_shift($lot);
         $s = array_shift($lot) ?? "";
         $text = Language::get(__c2f__(static::class) . '_' . $kin . '_' . $text, (array) $s);
         if ($count === 1) {
-            self::set('default', $kin);
+            self::set_static('default', $kin);
         } else {
-            Session::set(self::$id, Session::get(self::$id, "") . sprintf(self::$config['message'], $kin, $text));
+            Session::set(self::$id, Session::get(self::$id, "") . sprintf(call_user_func_array('HTML::unite', self::$config['message']), $kin, $text));
         }
         return new static;
     }
 
-    public static function reset($error_x = true) {
+    protected static function reset_static($error_x = true) {
         Session::reset(self::$id);
         if ($error_x) self::$x = 0;
     }
 
-    public static function errors($fail = false) {
+    protected static function errors_static($fail = false) {
         return self::$x > 0 ? self::$x : $fail;
     }
 
-    public static function get($session_x = true) {
-        $output = Session::get(self::$id, "") !== "" ? HTML::$begin . sprintf(self::$config['messages'], Session::get(self::$id)) . HTML::$end : "";
+    protected static function get_static($session_x = true) {
+        $output = Session::get(self::$id, "") !== "" ? HTML::$begin . sprintf(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) . HTML::$end : "";
         if ($session_x) self::reset();
         return $output;
     }
 
-    public static function send($from, $to, $subject, $message) {
+    protected static function send_static($from, $to, $subject, $message) {
         if (Is::void($to) || Is::email($to)) return false;
         $meta  = 'MIME-Version: 1.0' . N;
         $meta .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
@@ -49,14 +62,14 @@ class Message extends Genome {
         $meta .= 'X-Mailer: PHP/' . phpversion();
         $s = __c2f__(static::class) . ':' . __METHOD__;
         $meta = Hook::NS($s . '.meta', $meta);
-        $data = Hook::NS($s . '.data', $data);
+        $data = Hook::NS($s . '.data', $message);
         return mail($to, $subject, $data, $meta);
     }
 
     public static function __callStatic($kin, $lot) {
         if (!self::kin($kin)) {
             array_unshift($lot, $kin);
-            return call_user_func_array('self::set', $lot);
+            return call_user_func_array('self::set_static', $lot);
         }
         return parent::__callStatic($kin, $lot);
     }

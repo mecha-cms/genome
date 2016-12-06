@@ -6,25 +6,32 @@ class Route extends Genome {
     public static $lot_o = [];
 
     // Pattern as regular expression
-    protected function pattern($s) {
+    protected function _v($s) {
+        if (strpos($s, '%[') !== false) {
+            $s = preg_replace_callback('#%\[(.*?)\]#', function($m) {
+                $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
+                return '(' . $m[1] . ')';
+            }, $s);
+        }
         return str_replace([
-            '\(',
-            '\)',
-            '\|',
-            '\:any',
-            '\:num',
-            '\:all'
+            '\(', '\|', '\)',
+            '%s', // any string except `/`
+            '%i', // any string numbers
+             '%', // any string includes `/`
+              X
         ], [
-            '(',
-            ')',
-            '|',
+            '(', '|', ')',
             '[^/]+',
             '\d+',
-            '.*?'
+            '.*?',
+            ','
         ], x($s, '#'));
     }
 
-    public static function add($id, $fn = null, $stack = null, $pattern = false) {
+    protected static function set_static($id, $fn = null, $stack = null, $pattern = false) {
+        if (!is_callable($fn)) {
+            return self::seted_static($id, $fn ?? false);
+        }
         $i = 0;
         $id = (array) $id;
         $stack = (array) $stack;
@@ -42,33 +49,33 @@ class Route extends Genome {
         return true;
     }
 
-    public static function added($id = null, $fail = false) {
+    protected static function seted_static($id = null, $fail = false) {
         if ($id !== null) {
             return self::$lot[1][$id] ?? $fail;
         }
         return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
     }
 
-    // Alias for `Route::added()`
-    public static function exist(...$lot) {
-        return call_user_func_array('self::added', $lot);
+    // Alias for `Route::seted_static()`
+    protected static function exist_static(...$lot) {
+        return call_user_func_array('self::seted_static', $lot);
     }
 
-    public static function get(...$lot) {
+    protected static function get_static(...$lot) {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            return call_user_func_array('self::add', $lot);
+            return call_user_func_array('self::set_static', $lot);
         }
         return false;
     }
 
-    public static function post(...$lot) {
+    protected static function post_static(...$lot) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            return call_user_func_array('self::add', $lot);
+            return call_user_func_array('self::set_static', $lot);
         }
         return false;
     }
 
-    public static function remove($id) {
+    protected static function reset_static($id) {
         foreach ((array) $id as $v) {
             $v = URL::short($v, false);
             self::$lot[0][$v] = self::$lot[1][$v] ?? 1;
@@ -77,14 +84,14 @@ class Route extends Genome {
         return true;
     }
 
-    public static function removed($id = null, $fail = false) {
+    protected static function reseted_static($id = null, $fail = false) {
         if ($id === null) {
             return !empty(self::$lot[0]) ? self::$lot[0] : $fail;
         }
         return self::$lot[0][$id] ?? $fail;
     }
 
-    public static function hook($id, $fn = null, $stack = null, $pattern = false) {
+    protected static function hook_static($id, $fn = null, $stack = null, $pattern = false) {
         $id = URL::short($id, false);
         $stack = $stack ?? 10;
         if (!isset(self::$lot_o[1][$id])) {
@@ -98,7 +105,7 @@ class Route extends Genome {
         return true;
     }
 
-    public static function hooked($id = null, $stack = null, $fail = false) {
+    protected static function hooked_static($id = null, $stack = null, $fail = false) {
         if ($id !== null) {
             if ($stack !== null) {
                 $routes = [];
@@ -118,7 +125,7 @@ class Route extends Genome {
         return !empty(self::$lot_o[1]) ? self::$lot_o[1] : $fail;
     }
 
-    public static function match($pattern, $fn = false, $stack = null) {
+    protected static function pattern_static($pattern, $fn = false, $stack = null) {
         if (!is_callable($fn)) {
             $path = URL::path();
             if (preg_match($pattern, $path, $m)) {
@@ -131,20 +138,20 @@ class Route extends Genome {
             }
             return $fn;
         }
-        return self::add($pattern, $fn, $stack, true);
+        return self::set_static($pattern, $fn, $stack, true);
     }
 
-    public static function is($id, $fail = false) {
+    protected static function is_static($id, $fail = false) {
         $id = URL::short($id, false);
         $path = URL::path();
-        if (strpos($id, '(') === false) {
+        if (strpos($id, '%') === false) {
             return $path === $id ? [
                 'id' => $id,
                 'path' => $path,
                 'lot' => []
             ] : $fail;
         }
-        if (preg_match('#^' . self::pattern($id) . '$#', $path, $m)) {
+        if (preg_match('#^' . self::_v($id) . '$#', $path, $m)) {
             array_shift($m);
             return [
                 'id' => $id,
@@ -155,7 +162,7 @@ class Route extends Genome {
         return $fail;
     }
 
-    public static function fire($id = null, $lot = []) {
+    protected static function fire_static($id = null, $lot = []) {
         if ($id !== null) {
             $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
@@ -179,7 +186,7 @@ class Route extends Genome {
                 $routes = Anemon::eat(self::$lot[1] ?? [])->sort('ASC', 'stack', true)->vomit();
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path
-                    if ($route = self::is($k)) {
+                    if ($route = self::is_static($k)) {
                         // Loading hook(s) ...
                         if (isset(self::$lot_o[1][$k])) {
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort('ASC', 'stack')->vomit();

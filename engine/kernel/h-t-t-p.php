@@ -65,7 +65,7 @@ class HTTP extends Genome {
         511 => 'Network Authentication Required' // RFC6585
     ];
 
-    public static function status($i = 200, $v = null) {
+    protected static function status_static($i = 200, $v = null) {
         if (is_int($i) && isset(self::$message[$i])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
                 header('Status: ' . $i . ' ' . self::$message[$i]);
@@ -76,7 +76,7 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function query(...$lot) {
+    protected static function query_static(...$lot) {
         $q = array_shift($lot);
         $v = array_shift($lot);
         if ($q === null) return __url__('query');
@@ -106,10 +106,10 @@ class HTTP extends Genome {
         return $output;
     }
 
-    public static function header($k, $v = null) {
+    protected static function header_static($k, $v = null) {
         if (!is_array($k)) {
             if (is_int($k)) {
-                self::status($k);
+                self::status_static($k);
             } else {
                 if ($v !== null) {
                     header($k . ': ' . $v);
@@ -125,12 +125,12 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function mime($mime, $charset = null) {
+    protected static function mime_static($mime, $charset = null) {
         header('Content-Type: ' . $mime . ($charset !== null ? '; charset=' . $charset : ""));
         return new static;
     }
 
-    public static function post($url, $fields = []) {
+    protected static function post_static($url, $fields = []) {
         if (!function_exists('curl_init')) {
             exit('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
         }
@@ -145,7 +145,7 @@ class HTTP extends Genome {
         return $output;
     }
 
-    public static function get($url, $fields = []) {
+    protected static function get_static($url, $fields = []) {
         if (is_string($fields)) {
             $url .= '?' . str_replace([X . '?', X], "", X . $fields);
         } else {

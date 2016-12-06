@@ -7,21 +7,21 @@ class Form extends HTML {
     ];
 
     // `<input>`
-    public static function input($type = 'text', $name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) {
+    protected static function input_static($type = 'text', $name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
-        $attr_o['value'] = self::protect($value);
+        $attr_o['value'] = self::protect_static($value);
         $attr_o['placeholder'] = $placeholder;
         $attr_o['type'] = $type;
         return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);
     }
 
     // `<button>`
-    public static function button($text = "", $name = null, $value = null, $attr = [], $dent = 0) {
+    protected static function button_static($text = "", $name = null, $value = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -33,7 +33,7 @@ class Form extends HTML {
     }
 
     // `<select>`
-    public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
+    protected static function select_static($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
         $attr_o = [];
         $select = (string) $select;
@@ -52,7 +52,7 @@ class Form extends HTML {
                     $key = substr($key, 1);
                 }
                 $s['label'] = $key;
-                $o .= N . self::open('optgroup', $s, $dent + 1);
+                $o .= N . self::begin('optgroup', $s, $dent + 1);
                 foreach ($value as $k => $v) {
                     $s = [];
                     if (strpos($k, '.') === 0) {
@@ -66,7 +66,7 @@ class Form extends HTML {
                     $s['value'] = $k;
                     $o .= N . self::unite('option', $v, $s, $dent + 2);
                 }
-                $o .= N . self::close();
+                $o .= N . self::end();
             // option list
             } else {
                 $s = [];
@@ -86,7 +86,7 @@ class Form extends HTML {
     }
 
     // `<textarea>`
-    public static function textarea($name = null, $text = "", $placeholder = null, $attr = [], $dent = 0) {
+    protected static function textarea_static($name = null, $text = "", $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -98,7 +98,7 @@ class Form extends HTML {
     }
 
     // set state
-    public static function set($k = null, $v = "") {
+    protected static function set_static($k = null, $v = "") {
         if ($k === null) {
             $k = $_POST ?? $_GET ?? [];
         }
@@ -110,14 +110,14 @@ class Form extends HTML {
     }
 
     // get sate
-    public static function get($k = null, $fail = "") {
+    protected static function get_static($k = null, $fail = "") {
         $memo = Session::get(self::$config['session']['form']);
-        self::reset($k);
+        self::reset_static($k);
         return $k !== null ? Anemon::get($memo, $k, $fail ?? "") : $memo;
     }
 
     // reset state
-    public static function reset($k = null) {
+    protected static function reset_static($k = null) {
         Session::reset(self::$config['session']['form'] . ($k !== null ? '.' . $k : ""));
     }
 

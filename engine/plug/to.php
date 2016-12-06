@@ -159,5 +159,5 @@ To::safe('folder.name', function($input) {
 
 To::safe('key', function($input, $low = true) {
     $s = f($input, '_', $low);
-    return is_numeric($s[0]) ? preg_replace('#^\d+#', '_', $s) : $s;
+    return is_numeric($s[0]) ? '_' . $s : $s;
 });

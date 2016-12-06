@@ -1,11 +1,18 @@
-<?php namespace Genome;
+<?php
 
-class Union extends \Genome {
+class Union extends Genome {
 
     protected $union = [
-        'unit' => ['<', '>', '/', '[\w:.-]+'],
-        'data' => ['=', '"', '"', ' ', '[\w:.-]+'],
-        '.' => ['<!--', '-->']
+        // 0 => [
+        //     0 => ['\<', '\>', '\/'],
+        //     1 => ['\=', '\"', '\"', '\s+'],
+        //     2 => ['\<\!\-\-', '\-\-\>']
+        // ],
+        1 => [
+            0 => ['<', '>', '/', '[\w:.-]+'],
+            1 => ['=', '"', '"', ' ', '[\w:.-]+'],
+            2 => ['<!--', '-->']
+        ]
     ];
 
     protected $data = [
@@ -35,12 +42,8 @@ class Union extends \Genome {
         'style' => null
     ];
 
-    public function __construct($unit = [], $data = [], $__ = []) {
-        \Anemon::extend($this->union, [
-            'unit' => $unit,
-            'data' => $data,
-            '.' => $__
-        ]);
+    public function __construct($union = []) {
+        Anemon::extend($this->union, $union);
     }
 
     protected $unit = [];
@@ -51,10 +54,10 @@ class Union extends \Genome {
         return is_numeric($i) ? str_repeat(I, (int) $i) : $i;
     }
 
-    // Encode all union special character(s)
+    // Encode all union's special character(s)
     public function x($v) {
         if (!is_string($v)) return $v;
-        return \To::html_encode($v);
+        return To::html_encode($v);
     }
 
     // Build union attribute(s) ...
@@ -66,28 +69,32 @@ class Union extends \Genome {
         $output = "";
         $c = strtolower(static::class);
         $unit = $unit ? '.' . $unit : "";
-        $array = \Hook::NS($c . ':bond' . $unit, [array_replace($this->data, $a), $unit]);
-        // HTML5 `data-*` attribute
-        if (isset($a['data']) && is_array($a['data'])) {
-            foreach ($a['data'] as $k => $v) {
-                if ($v === null) continue;
-                $a['data-' . $k] = $v;
-            }
-            unset($a['data']);
-        }
+        $array = Hook::NS($c . ':bond' . $unit, [array_replace($this->data, $a), $unit]);
         foreach ($a as $k => $v) {
             if ($v === null) continue;
-            if (is_array($v)) {
-                // Inline CSS via `style` attribute
-                if ($k === 'style') {
+            if (__is_anemon__($v)) {
+                // class value as array
+                if ($k === 'classes') {
+                    $k = 'class';
+                    $v = implode(' ', array_unique($v));
+                // HTML5 `data-*` attribute
+                } elseif ($k === 'data') {
+                    foreach ($v as $kk => $vv) {
+                        if ($vv === null) continue;
+                        $a['data-' . $kk] = __is_anemon__($vv) ? json_encode($vv) : $vv;
+                    }
+                    unset($a['data']);
+                // Inline CSS via `css` attribute
+                } elseif ($k === 'css') {
                     $css = "";
                     foreach ($v as $kk => $vv) {
                         if ($vv === null) continue;
                         $css .= ' ' . $kk . ': ' . str_replace('"', '&quot;', $vv) . ';';
                     }
+                    $k = 'style';
                     $v = substr($css, 1);
                 } else {
-                    $v = implode(' ', array_unique($v));
+                    $v = __is_anemon__($v) ? json_encode($v) : $v;
                 }
             }
             $q = is_string($v) && strpos($v, '"') !== false ? "'" : '"';
@@ -100,38 +107,40 @@ class Union extends \Genome {
     public function unite($unit = 'html', $content = "", $data = [], $dent = 0) {
         $dent = $this->dent($dent);
         $c = strtolower(static::class);
-        $u = $this->union['unit'];
+        $u = $this->union[1][0];
         $s  = $dent . $u[0] . $unit . $this->bond($data, $unit);
         $s .= $content === false ? $u[1] : $u[1] . ($content ?? "") . $u[0] . $u[2] . $unit . $u[1];
-        return \Hook::NS($c . ':unit.' . $unit, [$s, $data]);
+        return Hook::NS($c . ':unit.' . $unit, [$s, [$unit, $content, $data]]);
     }
 
     // Inverse version of `Union::unite()`
     public function apart($input, $eval = true) {
-        $u = $this->union['unit'];
-        $d = $this->union['data'];
-        $u0 = x($u[0]);
-        $u1 = x($u[1]);
-        $u2 = x($u[2]);
-        $d0 = x($d[0]);
-        $d1 = x($d[1]);
-        $d2 = x($d[2]);
-        $d3 = x($d[3]);
+        $u = $this->union[1][0];
+        $d = $this->union[1][1];
+        $x_u = $this->union[0][0] ?? [];
+        $x_d = $this->union[0][1] ?? [];
+        $u0 = $x_u[0] ?? x($u[0]);
+        $u1 = $x_u[1] ?? x($u[1]);
+        $u2 = $x_u[2] ?? x($u[2]);
+        $d0 = $x_d[0] ?? x($d[0]);
+        $d1 = $x_d[1] ?? x($d[1]);
+        $d2 = $x_d[2] ?? x($d[2]);
+        $d3 = $x_d[3] ?? x($d[3]);
         $output = [
-            'unit' => null,
-            'data' => [],
-            'content' => null
+            0 => null, // `$.nodeName`
+            1 => null, // `$.innerHTML`
+            2 => []    // `$.attributes`
         ];
         if (!preg_match('/^\s*' . $u0 . '(' . $u[3] . ')(?:' . $d3 . '*' . $u2 . '?' . $u1 . '|(' . $d3 . '+.*?)' . $d3 . '*' . $u2 . '?' . $u1 . ')(([\s\S]*?)' . $u0 . $u2 . '\1' . $u1 . ')?\s*$/s', $input, $m)) return false;
-        $output['unit'] = $m[1];
-        $output['content'] = $m[4] ?? null;
+        $output[0] = $m[1];
+        $output[2] = $m[4] ?? null;
         if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '([\s\S]*?)' . $d2 . ')?/s', $m[2], $mm)) {
             foreach ($mm[1] as $k => $v) {
                 $s = $eval ? e($mm[2][$k]) : $mm[2][$k];
                 if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
                     $s = $v;
                 }
-                $output['data'][$v] = $s;
+                $output[2][$v] = $s;
             }
         }
         return $output;
@@ -145,35 +154,35 @@ class Union extends \Genome {
             $end = $block . $dent;
         }
         $c = strtolower(static::class);
-        $u = $this->union['.'];
-        return \Hook::NS($c . ':unit.__', $dent . $u[0] . $begin . $content . $end . $u[1]);
+        $u = $this->union[1][2];
+        return Hook::NS($c . ':unit.__', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
     }
 
     // Base union tag open
-    public function open($unit = 'html', $data = [], $dent = 0) {
+    public function begin($unit = 'html', $data = [], $dent = 0) {
         $dent = $this->dent($dent);
         $this->unit[] = $unit;
         $this->dent[] = $dent;
-        $u = $this->union['unit'];
+        $u = $this->union[1][0];
         $c = strtolower(static::class);
-        return \Hook::NS($c . ':open.' . $unit, [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], $data]);
+        return Hook::NS($c . ':' . $unit . '.b', [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], [$unit, null, $data]]);
     }
 
     // Base union tag close
-    public function close($unit = null, $dent = null) {
+    public function end($unit = null, $dent = null) {
         if ($unit === true) {
             // close all
             $s = "";
             foreach ($this->unit as $u) {
-                $s .= $this->close() . ($dent ?? N);
+                $s .= $this->end() . ($dent ?? N);
             }
             return $s;
         }
         $unit = $unit ?? array_pop($this->unit);
         $dent = $dent ?? array_pop($this->dent) ?? "";
         $c = strtolower(static::class);
-        $u = $this->union['unit'];
-        return \Hook::NS($c . ':close.' . $unit, $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "");
+        $u = $this->union[1][0];
+        return Hook::NS($c . ':' . $unit . '.e', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
     }
 
     // ...

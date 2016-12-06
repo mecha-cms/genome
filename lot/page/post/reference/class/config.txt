@@ -1,6 +1,6 @@
 ---
 title: Class `Config`
-description: "Configuration getter and setter, as well as a registry."
+description: "Configuration getter and setter."
 author: Taufik Nurrohman
 type: Markdown
 ...
@@ -72,7 +72,7 @@ Result:
     'url' => [ … ],
     'slogan' => 'My site slogan goes here.',
     'description' => 'My site description goes here.',
-    'tags' => 'my, site, key, words, goes, here',
+    'query' => 'my, site, key, words, goes, here',
     'lot' => [ … ],
     '__i18n' => [ … ]
 ];

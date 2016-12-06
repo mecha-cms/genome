@@ -1,4 +1,4 @@
-<?php namespace Genome;
+<?php
 
 class Color extends \Genome {
 
@@ -27,18 +27,11 @@ class Color extends \Genome {
                 'color' => [$m[2] / 255, $m[3] / 255, $m[4] / 255, (float) ($m[5] ?? 1)], // 255 >= a, b, c >= 0
                 'kind' => l($m[1])
             ];
-        // `hsl(0, 10%, 10%)` or `hsla(0, 10%, 10%, .4)`
-        } elseif (stripos($s, 'hsl') === 0 && preg_match('#^(hsla?)\s*\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:\s*,\s*((?:0?\.)?\d+))?\s*\)$#i', $s, $m)) {
-            return [
-                '__color' => [(int) $m[2], (int) $m[3], (int) $m[4], (float) ($m[5] ?? 1)],
-                'color' => [$m[2] / 360, $m[3] / 100, $m[4] / 100, (float) ($m[5] ?? 1)], // 360 >= a >= 0; 100 >= b >= 0; 100 >= c >= 0
-                'kind' => l($m[1])
-            ];
         // `hsv(0, 10%, 10%)` or `hsva(0, 10%, 10%, .4)`
         } elseif (stripos($s, 'hsv') === 0 && preg_match('#^(hsva?)\s*\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:\s*,\s*((?:0?\.)?\d+))?\s*\)$#i', $s, $m)) {
             return [
                 '__color' => [(int) $m[2], (int) $m[3], (int) $m[4], (float) ($m[5] ?? 1)],
-                'color' => [$m[2] / 360, $m[3] / 100, $m[4] / 100, (float) ($m[5] ?? 1)], // 360 >= a >= 0; 100 >= b >= 0; 100 >= c >= 0
+                'color' => [$m[2] / 360, $m[3] / 100, $m[4] / 100, (float) ($m[5] ?? 1)], // 360 >= a >= 0; 100 >= b >= 0; 100 >= c >= 0; 1 >= d => 0;
                 'kind' => l($m[1])
             ];
         }

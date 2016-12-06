@@ -21,7 +21,7 @@ class State extends Genome {
             $a = include $state;
             return $a ? $a : ($lot[0] ?? false);
         } elseif ($state = File::exist(STATE . DS . $kin . '.txt')) {
-            $a = unserialize(file_get_contents($state));
+            $a = File::open($state)->unserialize();
             return $a ? $a : ($lot[0] ?? false);
         }
         return parent::__callStatic($kin, $lot);

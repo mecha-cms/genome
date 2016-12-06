@@ -1,6 +1,6 @@
 <?php
 
-class HTML extends Genome {
+class HTML extends Union {
 
     protected static $lot;
 
@@ -9,12 +9,9 @@ class HTML extends Genome {
 
     public static function __callStatic($kin, $lot) {
         if (!isset(self::$lot)) {
-            self::$lot = new Genome\Union;
+            self::$lot = new HTML;
         }
-        if (!self::$lot->kin($kin)) {
-            return self::$lot->__call($kin, $lot);
-        }
-        return parent::__callStatic($kin, $lot);
+        return self::$begin . call_user_func_array([self::$lot, $kin], $lot) . self::$end;
     }
 
 }

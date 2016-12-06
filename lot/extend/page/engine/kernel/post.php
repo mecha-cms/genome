@@ -9,14 +9,14 @@ class Post {
             $a = Page::open($a)->read($content, $lot, $NS);
         }
         $this->lot = $a;
-        $this->lot['date'] = new Genome\Date($a['time'] ?? time());
+        $this->lot['date'] = new Date($a['time'] ?? time());
     }
 
     public function __call($key, $lot) {
         $fail = array_shift($lot);
-        if (is_string($fail) && strpos($fail, '~') === 0) {
-            return call_user_func(substr($fail, 1), $this->lot[$key] ?? false);
-        } elseif ($fail instanceof Closure) {
+        if (is_string($fail) && strpos($fail, 'fn:') === 0) {
+            return call_user_func(substr($fail, 3), $this->lot[$key] ?? false);
+        } elseif ($fail instanceof \Closure) {
             return call_user_func($fail, $this->lot[$key] ?? false);
         }
         return $this->lot[$key] ?? $fail ?? false;
