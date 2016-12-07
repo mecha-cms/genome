@@ -4,9 +4,9 @@ class Shield extends Genome {
 
     public static $lot = [];
 
-    protected static function version_static($info, $v = null) {
+    protected static function version_($info, $v = null) {
         if (is_string($info)) {
-            $info = self::info_static($info)->version;
+            $info = self::info_($info)->version;
         } else {
             $info = (object) $info;
             $info = $info->version ?? '0.0.0';
@@ -14,7 +14,7 @@ class Shield extends Genome {
         return Mecha::version($v, $info);
     }
 
-    protected static function cargo_static($key = null, $fail = false) {
+    protected static function cargo_($key = null, $fail = false) {
         self::$lot = array_merge(self::$lot, Seed::get(null, []));
         foreach (glob(PAGE . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
             $v = Path::B($v);
@@ -31,7 +31,7 @@ class Shield extends Genome {
         return self::$lot;
     }
 
-    protected static function path_static($input, $fail = false) {
+    protected static function path_($input, $fail = false) {
         $x = Path::X($input, "") !== 'php' ? '.php' : "";
         $input = To::path($input) . $x;
         // Full path, be quick!
@@ -46,7 +46,7 @@ class Shield extends Genome {
         return $fail;
     }
 
-    protected static function info_static($folder = null, $a = false) {
+    protected static function info_($folder = null, $a = false) {
         $folder = $folder ?? Config::get('shield');
         $i18n = new Language;
         // Check whether the localized "about" file is available
@@ -65,7 +65,7 @@ class Shield extends Genome {
         return $a ? $info : o($info);
     }
 
-    protected static function attach_static($input, $fail = false, $buffer = true) {
+    protected static function attach_($input, $fail = false, $buffer = true) {
         $path__ = To::path($input);
         $s = explode('-', Path::N($input), 2);
         $G = ['name' => $input, 'name.base' => $s[0]];
@@ -74,15 +74,15 @@ class Shield extends Genome {
         if (strpos($path__, ROOT) === 0 && is_file($path__)) {
             // do nothing ...
         } else {
-            if ($_path = File::exist(self::path_static($path__, $fail))) {
+            if ($_path = File::exist(self::path_($path__, $fail))) {
                 $path__ = $_path;
-            } elseif ($_path = File::exist(self::path_static($s[0], $fail))) {
+            } elseif ($_path = File::exist(self::path_($s[0], $fail))) {
                 $path__ = $_path;
             } else {
                 exit($i18n->_message_error_file_exist('<code>' . $path__ . '</code>'));
             }
         }
-        $lot__ = self::cargo_static();
+        $lot__ = self::cargo_();
         $path__ = Hook::NS($NS . 'path', $path__);
         $G['lot'] = $lot__;
         $G['path'] = $path__;
@@ -114,15 +114,15 @@ class Shield extends Genome {
         exit;
     }
 
-    protected static function abort_static($code = '404', $fail = false, $buffer = true) {
+    protected static function abort_($code = '404', $fail = false, $buffer = true) {
         $s = explode('-', $code, 2);
         $s = is_numeric($s[0]) ? $s[0] : '404';
         Config::set('page.type', $s);
         HTTP::status((int) $s);
-        self::attach_static($code, $fail, $buffer);
+        self::attach_($code, $fail, $buffer);
     }
 
-    protected static function exist_static($name, $fail = false) {
+    protected static function exist_($name, $fail = false) {
         return Folder::exist(SHIELD . DS . $name, $fail);
     }
 

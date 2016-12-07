@@ -15,7 +15,17 @@
         });
     }
 
-    (function() {
+    function do_table_data() {
+        var $rows = $('.table-data'),
+            $delete = $('.button-destruct').hide();
+        $rows.on("touchstart mousedown", 'tbody tr', function() {
+            $(this).toggleClass('on');
+            $delete[$(this).parent().find('.on').length ? 'show' : 'hide']();
+            return false;
+        });
+    }
+
+    function do_tree() {
         var $menus = $('aside.panel-span nav li:not(.current) a');
         if (!$menus.length) return;
         $menus.on("click", function() {
@@ -26,9 +36,9 @@
             }
             return $next.show(), $i;
         }).next('ul').hide();
-    })();
+    }
 
-    (function() {
+    function do_toggle() {
         var $toggles = $('.input--checkbox,.input--radio'),
             x = ':not([disabled],[readonly])',
             y = 'toggle i i-toggle i-toggle--%1 fa fa-%2%3',
@@ -37,6 +47,8 @@
         $toggles.filter(function() {
             return $(this).parent().is('label');
         }).each(function() {
+            if ($(this).data('mecha')) return;
+            $(this).data('mecha', 1);
             var toggle = this.type === 'checkbox' ? 1 : 0,
                 h = (this.disabled ? ' x' : "") + (this.checked ? ' on' : ""),
                 i = icon[toggle][this.checked ? 1 : 0], j;
@@ -55,9 +67,9 @@
                 return false;
             }));
         }).parent().on("touchstart mousedown", false);
-    })();
+    }
 
-    (function() {
+    function do_tab() {
         var $tabs = $('.tab-button'), $id;
         if (!$tabs.length) return;
         $tabs.on("click", function() {
@@ -69,7 +81,7 @@
             }
             return false;
         }).on("touchstart mousedown", false).filter('.on').trigger("click");
-    })();
+    }
 
     function slug(s, l, h, x) {
         h = h || '\\-';
@@ -568,7 +580,7 @@
 
     var events = "change keyup cut paste input focus blur";
 
-    (function() {
+    function do_slug() {
         var $in = $('[data-slug-i]'),
             $out = $('[data-slug-o]'), $hold;
         if (!$in.length || !$out.length) return;
@@ -586,9 +598,9 @@
         $out.on(events, function() {
             $(this).data('x', !!this.value);
         });
-    })();
+    }
 
-    (function() {
+    function do_description() {
         var $in = $('[data-description-i]'),
             $out = $('[data-description-o]'), $hold;
         if (!$in.length || !$out.length) return;
@@ -608,6 +620,19 @@
         $out.on(events, function() {
             $(this).data('x', !!this.value);
         });
-    })();
+    }
+
+    win.Mecha = {};
+    win.Mecha.ui = {};
+    win.Mecha.ui.refresh = function() {
+        do_table_data();
+        do_tree();
+        do_tab();
+        do_toggle();
+        do_slug();
+        do_description();
+    };
+
+    win.Mecha.ui.refresh();
 
 })(jQuery, window, document);

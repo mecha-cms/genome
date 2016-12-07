@@ -3,12 +3,12 @@
 class Mecha extends Genome {
 
     // Current version
-    protected static $version_static = '2.0.0';
+    protected static $version_ = '2.0.0';
 
     // Compare with current version
-    protected static function version_static($v = null, $c = null) {
+    protected static function version_($v = null, $c = null) {
         if ($c === null) {
-            $c = self::$version_static;
+            $c = self::$version_;
         }
         if ($v === null) {
             return $c;

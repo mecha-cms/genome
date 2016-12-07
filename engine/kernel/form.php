@@ -7,21 +7,21 @@ class Form extends HTML {
     ];
 
     // `<input>`
-    protected static function input_static($type = 'text', $name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) {
+    protected static function input_($type = 'text', $name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
-        $attr_o['value'] = self::protect_static($value);
+        $attr_o['value'] = self::protect_($value);
         $attr_o['placeholder'] = $placeholder;
         $attr_o['type'] = $type;
         return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);
     }
 
     // `<button>`
-    protected static function button_static($text = "", $name = null, $value = null, $attr = [], $dent = 0) {
+    protected static function button_($text = "", $name = null, $value = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -33,7 +33,7 @@ class Form extends HTML {
     }
 
     // `<select>`
-    protected static function select_static($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
+    protected static function select_($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
         $attr_o = [];
         $select = (string) $select;
@@ -86,7 +86,7 @@ class Form extends HTML {
     }
 
     // `<textarea>`
-    protected static function textarea_static($name = null, $text = "", $placeholder = null, $attr = [], $dent = 0) {
+    protected static function textarea_($name = null, $text = "", $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -98,7 +98,7 @@ class Form extends HTML {
     }
 
     // set state
-    protected static function set_static($k = null, $v = "") {
+    protected static function set_($k = null, $v = "") {
         if ($k === null) {
             $k = $_POST ?? $_GET ?? [];
         }
@@ -110,14 +110,14 @@ class Form extends HTML {
     }
 
     // get sate
-    protected static function get_static($k = null, $fail = "") {
+    protected static function get_($k = null, $fail = "") {
         $memo = Session::get(self::$config['session']['form']);
-        self::reset_static($k);
+        self::reset_($k);
         return $k !== null ? Anemon::get($memo, $k, $fail ?? "") : $memo;
     }
 
     // reset state
-    protected static function reset_static($k = null) {
+    protected static function reset_($k = null) {
         Session::reset(self::$config['session']['form'] . ($k !== null ? '.' . $k : ""));
     }
 

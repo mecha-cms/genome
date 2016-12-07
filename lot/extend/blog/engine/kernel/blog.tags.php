@@ -2,6 +2,6 @@
 
 class Tags extends \Genome {
 
-    protected static function get_static($scope = null) {}
+    protected static function get_($scope = null) {}
 
 }

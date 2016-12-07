@@ -2,40 +2,40 @@
 
 class Date extends Genome {
 
-    public static $TZ_static = false;
-    public static $formats_static = [];
+    public static $TZ_ = false;
+    public static $formats_ = [];
 
-    protected static function format_static($input, $format = 'Y-m-d H:i:s') {
+    protected static function format_($input, $format = 'Y-m-d H:i:s') {
         if (is_callable($format)) {
-            self::$formats_static[$input] = $format;
+            self::$formats_[$input] = $format;
             return true;
         }
         $date = new Date($input);
         return $date->format($format);
     }
 
-    protected static function slug_static($input) {
-        return self::format_static($input, 'Y-m-d-H-i-s');
+    protected static function slug_($input) {
+        return self::format_($input, 'Y-m-d-H-i-s');
     }
 
-    protected static function ago_static($input, $key = null, $fail = false, $compact = true) {
+    protected static function ago_($input, $key = null, $fail = false, $compact = true) {
         $date = new Date($input);
         return $date->ago($key, $fail, $compact);
     }
 
-    protected static function extract_static($input, $key = null, $fail = false) {
+    protected static function extract_($input, $key = null, $fail = false) {
         $date = new Date($input);
         return $date->extract($key, $fail);
     }
 
-    protected static function GMT_static($input, $format = 'Y-m-d H:i:s') {
+    protected static function GMT_($input, $format = 'Y-m-d H:i:s') {
         $date = new Date($input);
         return $date->GMT($format);
     }
 
-    protected static function TZ_static($zone = null) {
-        if ($zone === null) return self::$TZ_static;
-        self::$TZ_static = $zone;
+    protected static function TZ_($zone = null) {
+        if ($zone === null) return self::$TZ_;
+        self::$TZ_ = $zone;
         return date_default_timezone_set($zone);
     }
 
@@ -110,8 +110,8 @@ class Date extends Genome {
             'FORMAT_5' => $hour_24 . ':' . $minute,
             'FORMAT_6' => $hour_12 . ':' . $minute . ' ' . $AP
         ];
-        if (!empty(self::$formats_static)) {
-            foreach (self::$formats_static as $k => $v) {
+        if (!empty(self::$formats_)) {
+            foreach (self::$formats_ as $k => $v) {
                 $output[$k] = call_user_func($v, $k, $output, $language);
             }
         }

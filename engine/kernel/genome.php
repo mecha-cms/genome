@@ -2,8 +2,8 @@
 
 abstract class Genome {
 
-    // static method name's suffix
-    public static $_suffix = '_static';
+    // Static method name's suffix
+    public static $_suffix = '_';
 
     // Method(s) ...
     public static $_ = [];
@@ -42,15 +42,15 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot) {
         $c = static::class;
-        $kin_static = $kin .= self::$_suffix;
-        if (method_exists($c, $kin_static)) {
-            return call_user_func_array('self::' . $kin_static, $lot);
+        $kin_ = $kin .= self::$_suffix;
+        if (method_exists($c, $kin_)) {
+            return call_user_func_array('self::' . $kin_, $lot);
         }
-        if (!isset(self::$_[1][$c][$kin_static])) {
+        if (!isset(self::$_[1][$c][$kin_])) {
             echo('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
             return false;
         }
-        return call_user_func_array(self::$_[1][$c][$kin_static], $lot);
+        return call_user_func_array(self::$_[1][$c][$kin_], $lot);
     }
 
 }

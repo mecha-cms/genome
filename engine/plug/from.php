@@ -40,7 +40,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         // Start with `- `
         if (strpos($li, $s[3]) === 0) {
             $li = $i . $s[2] . substr($li, strlen($s[3]));
-            $i++;
+            ++$i;
         } else {
             $i = 0;
         }

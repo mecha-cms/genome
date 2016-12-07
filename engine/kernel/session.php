@@ -2,16 +2,16 @@
 
 class Session extends Genome {
 
-    protected static function set_static($id, $lot = "") {
+    protected static function set_($id, $lot = "") {
         Anemon::set($_SESSION, $id, $lot);
     }
 
-    protected static function get_static($id = null, $fail = "") {
+    protected static function get_($id = null, $fail = "") {
         if ($id === null) return $_SESSION;
         return Anemon::get($_SESSION, $id, $fail);
     }
 
-    protected static function reset_static($id = null) {
+    protected static function reset_($id = null) {
         if ($id === null || $id === true) {
             $_SESSION = [];
             if ($id === true) session_destroy();
@@ -20,7 +20,7 @@ class Session extends Genome {
         }
     }
 
-    protected static function ignite_static(...$lot) {
+    protected static function ignite_(...$lot) {
         $path = array_shift($lot) ?? SESSION;
         if ($path !== null) {
             Folder::create($path, 0600);
