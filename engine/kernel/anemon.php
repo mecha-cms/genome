@@ -7,14 +7,14 @@ class Anemon extends Genome {
     protected $i = 0;
 
     // Prevent `$x` exceeds the value of `$min` and `$max`
-    protected static function edge_($x, $min = null, $max = null) {
+    public static function edge($x, $min = null, $max = null) {
         if ($min !== null && $x < $min) return $min;
         if ($max !== null && $x > $max) return $max;
         return $x;
     }
 
     // Set array value recursively
-    protected static function set_(&$input, $k, $v = null) {
+    public static function set(&$input, $k, $v = null) {
         $kk = explode('.', $k);
         while (count($kk) > 1) {
             $k = array_shift($kk);
@@ -27,7 +27,7 @@ class Anemon extends Genome {
     }
 
     // Get array value recursively
-    protected static function get_(&$input, $k = null, $fail = false) {
+    public static function get(&$input, $k = null, $fail = false) {
         if ($k === null) return $input;
         $kk = explode('.', $k);
         foreach ($kk as $v) {
@@ -40,7 +40,7 @@ class Anemon extends Genome {
     }
 
     // Remove array value recursively
-    protected static function reset_(&$input, $k) {
+    public static function reset(&$input, $k) {
         $kk = explode('.', $k);
         while (count($k) > 1) {
             $k = array_shift($kk);
@@ -54,18 +54,18 @@ class Anemon extends Genome {
     }
 
     // Extend two array
-    protected static function extend_(&$a, $b) {
+    public static function extend(&$a, $b) {
         $a = array_replace_recursive((array) $a, (array) $b);
         return $a;
     }
 
     // Concat two array
-    protected static function concat_(&$a, $b) {
+    public static function concat(&$a, $b) {
         $a = array_merge_recursive((array) $a, (array) $b);
         return $a;
     }
 
-    protected static function eat_($group) {
+    public static function eat($group) {
         return new Anemon($group);
     }
 
@@ -127,18 +127,18 @@ class Anemon extends Genome {
         return $this;
     }
 
-    protected static function each($group, $fn = null) {
+    public static function walk($group, $fn = null) {
         if (is_callable($fn)) {
             foreach (a($group) as $k => &$v) {
-                $v = is_array($v) ? array_merge($v, self::each_($v, $fn)) : call_user_func($fn, $v, $k);
+                $v = is_array($v) ? array_merge($v, self::walk($v, $fn)) : call_user_func($fn, $v, $k);
             }
             unset($v);
             return $group;
         }
-        return self::eat_($group);
+        return self::eat($group);
     }
 
-    protected static function alter_($input, $replace = [], $fail = null) {
+    public static function alter($input, $replace = [], $fail = null) {
         // return the `$replace[$input]` value if exist
         // or the `$fail` value if `$replace[$input]` does not exist
         // or the `$input` value if `$fail` is `null`

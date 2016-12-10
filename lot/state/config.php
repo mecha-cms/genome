@@ -1,21 +1,22 @@
 <?php
 
 return [
-    'charset' => 'utf-8',
+    'encoding' => 'utf-8',
+    'encodings' => ['utf-8'],
     'direction' => 'ltr',
+    'directions' => ['ltr', 'rtl'],
     'language' => 'en-us',
+    'languages' => ['en-us', 'id-id'],
     'page' => [
-        'types' => [],
+        'title' => 'My Awesome Site',
+        'description' => 'My awesome description.',
+        'query' => ['foo', 'bar', 'baz', 'qux'],
         'type' => "",
-        'chunk' => 7
-    ],
-    'title' => 'My Site Title',
-    'description' => 'My site description.',
-    'query' => ['foo', 'bar', 'baz'],
-    'author' => [
-        'name' => 'Taufik Nurrohman',
-        'email' => 'email@domain.com',
+        'author' => '@ta.tau.taufik',
         'link' => null
     ],
-    'separator' => [' &ndash; ', ' &middot; ']
+    'separator' => ' &ndash; ',
+    'separators' => [' &ndash; ', ' &middot; '],
+    'shield' => 'normal',
+    'shields' => ['normal']
 ];

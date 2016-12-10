@@ -18,6 +18,8 @@ Pattern | Description
 
 ### Reset
 
+### Exist
+
 ### Get
 
 ### Post
@@ -29,7 +31,5 @@ Pattern | Description
 ### Fire
 
 ### Hook
-
-### Exist
 
 ### Hooked

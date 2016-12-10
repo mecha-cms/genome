@@ -347,6 +347,16 @@ pre {
   display:table-cell;
   vertical-align:top;
 }
+.panel-x {
+  position:absolute;
+  top:0;
+  right:0;
+  width:2em;
+  height:2em;
+  line-height:2em;
+  text-align:center;
+}
+.panel-x:before {content:'\2715'}
 aside.panel-span {width:12em}
 aside.panel-span figure {
   padding:.5em;
@@ -377,30 +387,43 @@ aside.panel-span nav li {
 aside.panel-span nav a {
   display:block;
   color:inherit;
-  padding:0 .75em;
+  padding:0 .75em 0 3em;
   font-weight:bold;
+  position:relative;
 }
 aside.panel-span nav a:focus,
-aside.panel-span nav a:hover {background:#222}
-aside.panel-span nav a:active,
-aside.panel-span nav .current > a {
+aside.panel-span nav a:hover,
+aside.panel-span nav .on > a {background:#222}
+aside.panel-span nav .on.current > a {
   background:#456;
   color:#eee;
+}
+aside.panel-span nav .i,
+aside.panel-span nav .i:before {
+  position:absolute;
+  top:0;
+  left:0;
+  width:3em;
+  height:auto;
+  line-height:inherit;
+  text-align:center;
 }
 aside.panel-span nav ul ul {
   font-size:.9285714285714286em;
   line-height:2em;
-  padding-left:1.5em;
+  display:none;
 }
-aside.panel-span nav ul ul a {font-weight:normal}
-aside.panel-span nav ul ul a:focus,
-aside.panel-span nav ul ul a:hover,
-aside.panel-span nav ul ul a:active {
-  background:0 0;
-  color:#eee;
+aside.panel-span nav .on ul {display:block}
+aside.panel-span nav ul ul .i,
+aside.panel-span nav ul ul .i:before {
+  line-height:inherit;
+  width:2em;
 }
-aside.panel-span nav ul ul a:focus,
-aside.panel-span nav ul ul .current a {color:#678}
+aside.panel-span nav ul ul .i {left:2.75em}
+aside.panel-span nav ul ul a {
+  font-weight:normal;
+  padding-left:4.75em;
+}
 main.panel-span {
   background:#222;
   margin-left:12em;
@@ -476,6 +499,21 @@ legend + .grid-meta {margin-top:-.5em}
   border:1px solid transparent;
 }
 
+.item {
+  display:block;
+  background:#262626;
+  border-left:4px solid #2f2f2f;
+  padding:.5em .75em;
+  position:relative;
+}
+.item + .item {margin-top:.25em}
+.item-title {
+  font:inherit;
+  font-weight:bold;
+  margin:0;
+  padding:0;
+}
+
 .pages,
 .page {
   margin:0;
@@ -524,11 +562,11 @@ legend + .grid-meta {margin-top:-.5em}
   cursor:progress;
 }
 
-.container.action-main {
+.container.actions {
   padding:1.5em;
   margin:-1.5em -1.5em 0;
 }
-.container.action-main form {margin-top:0}
+.container.actions form {margin-top:0}
 
 .tab-header {
   line-height:2em;

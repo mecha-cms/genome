@@ -26,16 +26,11 @@
     }
 
     function do_tree() {
-        var $menus = $('aside.panel-span nav li:not(.current) a');
+        var $menus = $('aside.panel-span nav li:not(.current) a + ul');
         if (!$menus.length) return;
-        $menus.on("click", function() {
-            var $next = $(this).next('ul'),
-                $i = $next.is(':visible');
-            if (!$next.length) {
-                return true;
-            }
-            return $next.show(), $i;
-        }).next('ul').hide();
+        $menus.prev().on("click", function() {
+            return $(this).parent().toggleClass('on'), false;
+        });
     }
 
     function do_toggle() {
@@ -622,6 +617,14 @@
         });
     }
 
+    function do_item() {
+        var $item = $('.item.is-can-destruct');
+        if (!$item.length) return;
+        $('<a class="panel-x" href=""></a>').on("click", function() {
+            return $(this).parent().remove(), false;
+        }).appendTo($item);
+    }
+
     win.Mecha = {};
     win.Mecha.ui = {};
     win.Mecha.ui.refresh = function() {
@@ -631,6 +634,7 @@
         do_toggle();
         do_slug();
         do_description();
+        do_item();
     };
 
     win.Mecha.ui.refresh();

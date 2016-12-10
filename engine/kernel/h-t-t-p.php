@@ -65,7 +65,7 @@ class HTTP extends Genome {
         511 => 'Network Authentication Required' // RFC6585
     ];
 
-    protected static function status_($i = 200, $v = null) {
+    public static function status($i = 200, $v = null) {
         if (is_int($i) && isset(self::$message[$i])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
                 header('Status: ' . $i . ' ' . self::$message[$i]);
@@ -76,7 +76,7 @@ class HTTP extends Genome {
         return new static;
     }
 
-    protected static function query_(...$lot) {
+    public static function query(...$lot) {
         $q = array_shift($lot);
         $v = array_shift($lot);
         if ($q === null) return __url__('query');
@@ -93,7 +93,7 @@ class HTTP extends Genome {
         return !empty($output) ? '?' . implode('&', $output) : "";
     }
 
-    protected static function _q($a, $k) {
+    public static function _q($a, $k) {
         $output = [];
         $s = $k ? '%5D' : "";
         foreach ($a as $kk => $vv) {
@@ -106,10 +106,10 @@ class HTTP extends Genome {
         return $output;
     }
 
-    protected static function header_($k, $v = null) {
+    public static function header($k, $v = null) {
         if (!is_array($k)) {
             if (is_int($k)) {
-                self::status_($k);
+                self::status($k);
             } else {
                 if ($v !== null) {
                     header($k . ': ' . $v);
@@ -125,12 +125,12 @@ class HTTP extends Genome {
         return new static;
     }
 
-    protected static function mime_($mime, $charset = null) {
+    public static function mime($mime, $charset = null) {
         header('Content-Type: ' . $mime . ($charset !== null ? '; charset=' . $charset : ""));
         return new static;
     }
 
-    protected static function post_($url, $fields = []) {
+    public static function post($url, $fields = []) {
         if (!function_exists('curl_init')) {
             exit('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
         }
@@ -145,7 +145,7 @@ class HTTP extends Genome {
         return $output;
     }
 
-    protected static function get_($url, $fields = []) {
+    public static function get($url, $fields = []) {
         if (is_string($fields)) {
             $url .= '?' . str_replace([X . '?', X], "", X . $fields);
         } else {

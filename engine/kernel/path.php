@@ -2,7 +2,7 @@
 
 class Path extends Genome {
 
-    public function B($path, $step = 1, $s = DS) {
+    public static function B($path, $step = 1, $s = DS) {
         if (($s !== DS && $s !== '/') || $step > 1) {
             $p = explode($s, $path);
             return implode($s, array_slice($p, $step * -1));
@@ -10,7 +10,7 @@ class Path extends Genome {
         return basename($path);
     }
 
-    public function D($path, $step = 1, $s = DS) {
+    public static function D($path, $step = 1, $s = DS) {
         if (($s !== DS && $s !== '/') || $step > 1) {
             $p = explode($s, $path);
             for ($i = 0; $i < $step; ++$i) {
@@ -21,11 +21,11 @@ class Path extends Genome {
         return dirname($path) === '.' ? "" : dirname($path);
     }
 
-    public function N($path, $x = false) {
+    public static function N($path, $x = false) {
         return pathinfo($path, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
     }
 
-    public function X($path, $fail = false) {
+    public static function X($path, $fail = false) {
         if (strpos($path, '.') === false) return $fail;
         $x = pathinfo($path, PATHINFO_EXTENSION);
         return $x ? strtolower($x) : $fail;

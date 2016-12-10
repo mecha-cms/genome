@@ -2,7 +2,7 @@
 
 class Folder extends File {
 
-    protected static function create_($input, $consent = 0777) {
+    public static function create($input, $consent = 0777) {
         foreach ((array) $input as $k => $v) {
             if (!file_exists($v)) {
                 if (is_array($consent)) {
@@ -15,7 +15,7 @@ class Folder extends File {
         }
     }
 
-    protected static function exist_($input, $fail = false) {
+    public static function exist($input, $fail = false) {
         $input = To::path($input);
         return is_dir($input) ? $input : $fail;
     }

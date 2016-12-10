@@ -462,7 +462,7 @@ $test_2 = [8, 9];
 $test_3 = false;
 ~~~
 
-### Each
+### Walk
 
 ~~~ .php
 $array = [
@@ -472,7 +472,7 @@ $array = [
     'qux' => 3
 ];
 
-Anemon::each($array); // …
+Anemon::walk($array); // …
 ~~~
 
 #### Next
@@ -480,8 +480,8 @@ Anemon::each($array); // …
 Move to next item.
 
 ~~~ .php
-Anemon::each($array)->next()->current();
-Anemon::each($array)->next(1)->current(); // skip 1 item
+Anemon::walk($array)->next()->current();
+Anemon::walk($array)->next(1)->current(); // skip 1 item
 ~~~
 
 #### Previous
@@ -489,8 +489,8 @@ Anemon::each($array)->next(1)->current(); // skip 1 item
 Move to previous item.
 
 ~~~ .php
-Anemon::each($array)->prev()->current();
-Anemon::each($array)->prev(1)->current(); // skip 1 item
+Anemon::walk($array)->prev()->current();
+Anemon::walk($array)->prev(1)->current(); // skip 1 item
 ~~~
 
 #### To
@@ -498,7 +498,7 @@ Anemon::each($array)->prev(1)->current(); // skip 1 item
 Move to the 2<sup>nd</sup> item.
 
 ~~~ .php
-Anemon::each($array)->to(1)->current();
+Anemon::walk($array)->to(1)->current();
 ~~~
 
 #### Before
@@ -506,8 +506,8 @@ Anemon::each($array)->to(1)->current();
 Insert before.
 
 ~~~ .php
-$test_1 = Anemon::each($array)->to(2)->before('#')->vomit();
-$test_2 = Anemon::each($array)->to(2)->before('#', '#key')->vomit();
+$test_1 = Anemon::walk($array)->to(2)->before('#')->vomit();
+$test_2 = Anemon::walk($array)->to(2)->before('#', '#key')->vomit();
 ~~~
 
 Result:
@@ -535,8 +535,8 @@ $test_2 = [
 Insert after.
 
 ~~~ .php
-$test_1 = Anemon::each($array)->to(2)->after('#')->vomit();
-$test_2 = Anemon::each($array)->to(2)->after('#', '#key')->vomit();
+$test_1 = Anemon::walk($array)->to(2)->after('#')->vomit();
+$test_2 = Anemon::walk($array)->to(2)->after('#', '#key')->vomit();
 ~~~
 
 Result:
@@ -562,8 +562,8 @@ $test_2 = [
 #### Append
 
 ~~~ .php
-$test_1 = Anemon::each($array)->append('#')->vomit();
-$test_2 = Anemon::each($array)->append('#', '#key')->vomit();
+$test_1 = Anemon::walk($array)->append('#')->vomit();
+$test_2 = Anemon::walk($array)->append('#', '#key')->vomit();
 ~~~
 
 Result:
@@ -589,8 +589,8 @@ $test_2 = [
 #### Prepend
 
 ~~~ .php
-$test_1 = Anemon::each($array)->prepend('#')->vomit();
-$test_2 = Anemon::each($array)->prepend('#', '#key')->vomit();
+$test_1 = Anemon::walk($array)->prepend('#')->vomit();
+$test_2 = Anemon::walk($array)->prepend('#', '#key')->vomit();
 ~~~
 
 Result:
@@ -618,7 +618,7 @@ $test_2 = [
 Get the first item.
 
 ~~~ .php
-$test = Anemon::each($array)->first();
+$test = Anemon::walk($array)->first();
 ~~~
 
 #### Last
@@ -626,7 +626,7 @@ $test = Anemon::each($array)->first();
 Get the last item.
 
 ~~~ .php
-$test = Anemon::each($array)->last();
+$test = Anemon::walk($array)->last();
 ~~~
 
 #### Count
@@ -634,7 +634,7 @@ $test = Anemon::each($array)->last();
 Count items.
 
 ~~~ .php
-$test = Anemon::each($array)->count();
+$test = Anemon::walk($array)->count();
 ~~~
 
 #### Key
@@ -642,7 +642,7 @@ $test = Anemon::each($array)->count();
 Get array key by index.
 
 ~~~ .php
-$test = Anemon::each($array)->key(1);
+$test = Anemon::walk($array)->key(1);
 ~~~
 
 #### Index
@@ -650,7 +650,7 @@ $test = Anemon::each($array)->key(1);
 Get array index by key.
 
 ~~~ .php
-$test = Anemon::each($array)->index('foo');
+$test = Anemon::walk($array)->index('foo');
 ~~~
 
 ---

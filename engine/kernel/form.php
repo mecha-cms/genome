@@ -2,12 +2,8 @@
 
 class Form extends HTML {
 
-    public static $config = [
-        'session' => ['form' => 'mecha.form']
-    ];
-
     // `<input>`
-    protected static function input_($type = 'text', $name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) {
+    public static function input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -21,7 +17,10 @@ class Form extends HTML {
     }
 
     // `<button>`
-    protected static function button_($text = "", $name = null, $value = null, $attr = [], $dent = 0) {
+    public static function button($name = null, $value = null, $text = "", $attr = [], $dent = 0) {
+        if (!array_key_exists('type', $attr)) {
+            $attr['type'] = 'button';
+        }
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -33,7 +32,7 @@ class Form extends HTML {
     }
 
     // `<select>`
-    protected static function select_($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
+    public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
         $attr_o = [];
         $select = (string) $select;
@@ -86,7 +85,7 @@ class Form extends HTML {
     }
 
     // `<textarea>`
-    protected static function textarea_($name = null, $text = "", $placeholder = null, $attr = [], $dent = 0) {
+    public static function textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
@@ -94,31 +93,7 @@ class Form extends HTML {
         }
         $attr_o['name'] = $name;
         $attr_o['placeholder'] = $placeholder;
-        return self::unite('textarea', self::x($text), Anemon::extend($attr_o, $attr), $dent);
-    }
-
-    // set state
-    protected static function set_($k = null, $v = "") {
-        if ($k === null) {
-            $k = $_POST ?? $_GET ?? [];
-        }
-        if (!is_array($k)) {
-            $k = [$k => $v];
-        }
-        $memo = Session::get(self::$config['session']['form'], []);
-        Session::set(self::$config['session']['form'], Anemon::extend($memo, $k));
-    }
-
-    // get sate
-    protected static function get_($k = null, $fail = "") {
-        $memo = Session::get(self::$config['session']['form']);
-        self::reset_($k);
-        return $k !== null ? Anemon::get($memo, $k, $fail ?? "") : $memo;
-    }
-
-    // reset state
-    protected static function reset_($k = null) {
-        Session::reset(self::$config['session']['form'] . ($k !== null ? '.' . $k : ""));
+        return self::unite('textarea', self::x($value), Anemon::extend($attr_o, $attr), $dent);
     }
 
 }

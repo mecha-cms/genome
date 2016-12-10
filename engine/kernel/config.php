@@ -2,18 +2,18 @@
 
 class Config extends Genome {
 
-    protected static $bucket_ = [];
+    protected static $bucket = [];
 
-    protected static function ignite_(...$lot) {
+    public static function ignite(...$lot) {
         $a = State::config();
         if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.txt')) {
             $f = LANGUAGE . DS . 'en-us.txt';
         }
         $a['__i18n'] = From::yaml(File::open($f)->read(""));
-        self::$bucket_ = $a;
+        self::$bucket = $a;
     }
 
-    protected static function set_($a, $b = null) {
+    public static function set($a, $b = null) {
         if (__is_anemon__($a)) $a = a($a);
         if (__is_anemon__($b)) $b = a($b);
         $cargo = [];
@@ -24,36 +24,36 @@ class Config extends Genome {
                 Anemon::set($cargo, $k, $v);
             }
         }
-        Anemon::extend(self::$bucket_, $cargo);
+        Anemon::extend(self::$bucket, $cargo);
     }
 
-    protected static function get_($a = null, $fail = false) {
+    public static function get($a = null, $fail = false) {
         if ($a === null) {
-            return !empty(self::$bucket_) ? o(self::$bucket_) : $fail;
+            return !empty(self::$bucket) ? o(self::$bucket) : $fail;
         }
         if (__is_anemon__($a)) {
             $output = [];
             foreach ($a as $k => $v) {
-                $output[$k] = self::get_($k, $v);
+                $output[$k] = self::get($k, $v);
             }
             return o($output);
         }
-        return o(Anemon::get(self::$bucket_, $a, $fail));
+        return o(Anemon::get(self::$bucket, $a, $fail));
     }
 
-    protected static function reset_($a = null) {
+    public static function reset($a = null) {
         if ($a !== null) {
             foreach ((array) $a as $v) {
-                Anemon::reset(self::$bucket_, $v);
+                Anemon::reset(self::$bucket, $v);
             }
         } else {
-            self::$bucket_ = [];
+            self::$bucket = [];
         }
         return new static;
     }
 
-    protected static function merge_(...$lot) {
-        call_user_func_array('self::set_', $lot);
+    public static function merge(...$lot) {
+        call_user_func_array('self::set', $lot);
     }
 
     public static function __callStatic($kin, $lot) {
@@ -63,7 +63,7 @@ class Config extends Genome {
                 $kin .= '.' . array_shift($lot);
                 $fail = array_shift($lot) ?? false;
             }
-            return self::get_($kin, $fail);
+            return self::get($kin, $fail);
         }
         return parent::__callStatic($kin, $lot);
     }
@@ -77,27 +77,27 @@ class Config extends Genome {
             $fail = array_shift($lot) ?? false;
         }
         if (is_string($fail) && strpos($fail, 'fn:') === 0) {
-            return call_user_func(substr($fail, 3), self::get_($key, false));
+            return call_user_func(substr($fail, 3), self::get($key, false));
         } elseif ($fail instanceof \Closure) {
-            return call_user_func($fail, self::get_($key, false));
+            return call_user_func($fail, self::get($key, false));
         }
-        return self::get_($key, $fail);
+        return self::get($key, $fail);
     }
 
     public function __get($key) {
-        return self::get_($key);
+        return self::get($key);
     }
 
     public function __set($key, $value = null) {
-        self::set_($key, $value);
+        self::set($key, $value);
     }
 
     public function __toString() {
-        return json_encode(self::get_());
+        return json_encode(self::get());
     }
 
     public function __invoke($fail = []) {
-        return self::get_(null, o($fail));
+        return self::get(null, o($fail));
     }
 
 }

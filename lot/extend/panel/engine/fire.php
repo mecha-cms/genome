@@ -1,5 +1,5 @@
 <?php
 
-Route::add('manage/(:any)', function($slug = "") {
+Route::set('panel/%', function($slug = "") {
     
 });

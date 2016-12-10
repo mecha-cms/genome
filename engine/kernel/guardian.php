@@ -9,14 +9,14 @@ class Guardian extends Genome {
         ]
     ];
 
-    protected static function user_($k = null, $fail = false) {
+    public static function user($k = null, $fail = false) {
         if ($log = Cookie::get(self::$config['session']['user'])) {
             return $k !== null ? ($log[$k] ?? $fail) : $log;
         }
         return $fail;
     }
 
-    protected static function users_($id = null, $fail = false) {
+    public static function users($id = null, $fail = false) {
         if ($folder = Folder::exist(ENGINE . DS . 'log' . DS . 'users')) {
             $ally = [];
             foreach (g($folder, 'log') as $file) {
@@ -28,38 +28,38 @@ class Guardian extends Genome {
             $ally = Hook::fire('users', $ally);
             return $id !== null ? ($ally[$id] ?? $fail) : $ally;
         } else {
-            self::abort_('Missing <code>' . ENGINE . DS . 'log' . DS . 'users</code> folder.');
+            self::abort('Missing <code>' . ENGINE . DS . 'log' . DS . 'users</code> folder.');
         }
     }
 
-    protected static function token_() {
-        $log = ENGINE . DS . 'token.' . To::safe('file.name', self::user_('id')) . '.log';
+    public static function token() {
+        $log = ENGINE . DS . 'token.' . To::safe('file.name', self::user('id')) . '.log';
         $token = self::$config['session']['token'];
         $hash = File::open($log)->read(Session::get($token, self::hash_()));
         Session::set($token, $hash);
         return $hash;
     }
 
-    protected static function hash_($salt = "") {
+    public static function hash($salt = "") {
         return sha1(uniqid(mt_rand(), true) . $salt);
     }
 
-    protected static function check_($token, $kick = false) {
+    public static function check($token, $kick = false) {
         $s = Session::get(self::$config['session']['token'], "");
         if ($s === "" || $s !== $token) {
             Message::error('token');
-            self::reject_()->kick_($kick ? trim($kick, '/') : URL::current());
+            self::reject()->kick($kick ? trim($kick, '/') : URL::current());
         }
     }
 
-    protected static function reject_() {
-        $log = ENGINE . DS . 'token.' . To::safe('file.name', self::user_('id')) . '.log';
+    public static function reject() {
+        $log = ENGINE . DS . 'token.' . To::safe('file.name', self::user('id')) . '.log';
         File::open($log)->delete();
         Session::reset(self::$config['session']['token']);
         Session::reset(self::$config['session']['user']);
     }
 
-    protected static function kick_($path = "") {
+    public static function kick($path = "") {
         $url = URL::long(To::url($path));
         $G = ['url' => $url, 'source' => $path];
         Session::set('url.previous', URL::current());
@@ -67,7 +67,7 @@ class Guardian extends Genome {
         exit;
     }
 
-    protected static function abort_($message, $exit = true) {
+    public static function abort($message, $exit = true) {
         echo Hook::fire('abort', [$message, $exit]);
         if ($exit) exit;
     }

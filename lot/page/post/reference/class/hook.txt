@@ -51,36 +51,36 @@ Get all of the attached `the_header` hooks:
 __dump__(Hook::get('the_header'));
 ~~~
 
-### Block
+### Reset
 
 Remove an attached `the_header` hook with ID `do_set_header` before execution, or prevent a `the_header` hook with ID `do_set_header` to be attached:
 
 ~~~ .php
-Hook::block('the_header', 'do_set_header');
+Hook::reset('the_header', 'do_set_header');
 ~~~
 
 {{block.note}}
-You cannot remove/block hooks that are attached using anonymous function because they have no ID.
+You cannot remove hooks that are attached using anonymous function because they have no ID.
 {{/block}}
 
-### Blocked
+### Exist
 
-Check for the removed/prevented hooks:
+Check for the added hooks:
 
 ~~~ .php
-__dump__(Hook::blocked());
+__dump__(Hook::set());
 ~~~
 
-Check for the removed/prevented `the_header` hooks:
+Check for the added `the_header` hooks:
 
 ~~~ .php
-__dump__(Hook::blocked('the_header'));
+__dump__(Hook::set('the_header'));
 ~~~
 
-Check if `do_set_header` is removed/prevented from the `the_header` hook:
+Check if `do_set_header` is exists in the `the_header` hook:
 
 ~~~ .php
-__dump__(Hook::blocked('the_header', 'do_set_header'));
+__dump__(Hook::set('the_header', 'do_set_header'));
 ~~~
 
 ### Fire

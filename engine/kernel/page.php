@@ -2,71 +2,71 @@
 
 class Page extends Genome {
 
-    protected static $meta_ = [];
-    protected static $data_ = "";
-    protected static $path_ = "";
+    protected static $meta = [];
+    protected static $data = "";
+    protected static $path = "";
 
     public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
     public static $x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
 
     // Escape ...
-    protected static function x_($s) {
+    public static function x($s) {
         return str_replace(self::$v, self::$x, $s);
     }
 
     // Un-Escape ...
-    protected static function v_($s) {
+    public static function v($s) {
         return str_replace(self::$x, self::$v, $s);
     }
 
-    protected static function open_($path) {
-        self::$path_ = $path;
-        self::apart_();
+    public static function open($path) {
+        self::$path = $path;
+        self::apart();
         return new static;
     }
 
     // Apart ...
-    protected static function apart_($input = null) {
-        $input = n($input ?? file_get_contents(self::$path_));
+    public static function apart($input = null) {
+        $input = n($input ?? file_get_contents(self::$path));
         $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
         $input = explode(self::$v[1] . N . N, $input, 2);
         // Do meta ...
-        self::$meta_ = [];
+        self::$meta = [];
         foreach (explode(self::$v[4], $input[0]) as $v) {
             $v = explode(self::$v[2], $v, 2);
-            self::$meta_[self::v_($v[0])] = e(self::v_($v[1] ?? false));
+            self::$meta[self::v($v[0])] = e(self::v($v[1] ?? false));
         }
         // Do data ...
-        self::$data_ = trim($input[1] ?? "");
+        self::$data = trim($input[1] ?? "");
         return new static;
     }
 
     // Unite ...
-    protected static function unite_() {
+    public static function unite() {
         $meta = [];
-        foreach (self::$meta_ as $k => $v) {
-            $meta[] = self::x_($k) . self::$v[2] . self::x_(s($v));
+        foreach (self::$meta as $k => $v) {
+            $meta[] = self::x($k) . self::$v[2] . self::x(s($v));
         }
-        return self::$v[0] . implode(N, $meta) . self::$v[1] . (self::$data_ ? N . N . self::$data_ : "");
+        return self::$v[0] . implode(N, $meta) . self::$v[1] . (self::$data ? N . N . self::$data : "");
     }
 
     // Create meta ...
-    protected static function meta_($a) {
-        Anemon::extend(self::$meta_, $a);
-        foreach (self::$meta_ as $k => $v) {
-            if ($v === false) unset(self::$meta_[$k]);
+    public static function meta($a) {
+        Anemon::extend(self::$meta, $a);
+        foreach (self::$meta as $k => $v) {
+            if ($v === false) unset(self::$meta[$k]);
         }
         return new static;
     }
 
     // Create data ...
-    protected static function data_($s) {
-        self::$data_ = $s;
+    public static function data($s) {
+        self::$data = $s;
         return new static;
     }
 
-    protected static function read_($as = 'content', $output = [], $NS = 'page:', $lot = []) {
-        $lot = array_merge($lot, self::$meta_);
+    public static function read($as = 'content', $output = [], $NS = 'page:', $lot = []) {
+        $lot = array_merge($lot, self::$meta);
         // Pre-defined page meta ...
         if ($output) {
             foreach ($output as $k => $v) {
@@ -76,7 +76,7 @@ class Page extends Genome {
             }
         }
         // Load page meta ...
-        return self::_meta(array_merge($output, $lot, [$as => self::$data_]), $NS, $lot);
+        return self::_meta(array_merge($output, $lot, [$as => self::$data]), $NS, $lot);
     }
 
     protected static function _meta($input, $NS, $lot) {
@@ -92,12 +92,12 @@ class Page extends Genome {
         return $output;
     }
 
-    protected static function saveTo_($path, $consent = 0600) {
-        File::open($path)->write(self::unite_())->save($consent);
+    public static function saveTo($path, $consent = 0600) {
+        File::open($path)->write(self::unite())->save($consent);
     }
 
-    protected static function save_($consent = 0600) {
-        return self::saveTo_(self::$path_, $consent);
+    public static function save($consent = 0600) {
+        return self::saveTo(self::$path, $consent);
     }
 
 }

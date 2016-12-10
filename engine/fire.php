@@ -16,7 +16,6 @@ $seeds = [
     'config' => new Config,
     'date' => new Date,
     'language' => new Language,
-    /* 'request' => new Request, */
     'url' => new URL
 ];
 

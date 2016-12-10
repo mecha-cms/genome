@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <title>Test</title>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="file:///G:/GitHub/text-editor/text-editor/ui/ui.css" rel="stylesheet">
+<link href="file:///G:/GitHub/text-editor/text-editor/ui/ui/ui.black.css" rel="stylesheet">
 <link href="lot/asset/css/panel.css" rel="stylesheet">
 </head>
 <body>
@@ -60,63 +62,36 @@
     <main class="panel-span">
       <div class="tab tab-main">
         <div class="tab-header">
-          <a href="#" class="tab-button on"><i class="i fa fa-files-o"></i> Files</a>
-          <a href="#" class="tab-button"><i class="i fa fa-folder"></i> Folder</a>
-          <a href="#" class="tab-button"><i class="i fa fa-cloud-upload"></i> Upload</a>
+          <a href="#" class="tab-button on"><i class="i fa fa-paper-plane"></i> Post</a>
+          <a href="#" class="tab-button"><i class="fa fa-clock-o"></i> Draft</a>
+          <a href="#" class="tab-button toggle"><i class="i fa fa-history"></i> Archive</a>
         </div>
         <div class="tab-body">
+          <div class="container actions">
+            <div class="right"><button class="button"><i class="fa fa-plus"></i> New Menu</button></div>
+            <form>
+              <input class="input input--text" type="text"> <button class="button"><i class="fa fa-search"></i> Find</button>
+            </form>
+          </div>
           <div class="tab-content">
-
-            <div class="container actions">
-              <div class="left">
-                <form>
-                  <p><input class="input input--text" type="text"> <button class="button"><i class="fa fa-search"></i> Find</button></p>
-                </form>
+            <div class="container">
+              <div class="item is-can-destruct">
+                <h3 class="item-title"><a class="item-url" href="#">Item Title</a></h3>
+                <p class="item-description">Lorem ipsum dolor sit amet.</p>
               </div>
-              <div class="right">
-                <button class="button button-destruct"><i class="fa fa-trash"></i> Delete</button> <button class="button button-construct"><i class="fa fa-plus"></i> New File</button>
+              <div class="item is-can-destruct">
+                <h3 class="item-title"><a class="item-url" href="#">Item Title</a></h3>
+                <p class="item-description">Lorem ipsum dolor sit amet.</p>
+              </div>
+              <div class="item">
+                <h3 class="item-title"><a class="item-url" href="#">Item Title</a></h3>
+                <p class="item-description">Lorem ipsum dolor sit amet.</p>
+              </div>
+              <div class="item">
+                <h3 class="item-title"><a class="item-url" href="#">Item Title</a></h3>
+                <p class="item-description">Lorem ipsum dolor sit amet.</p>
               </div>
             </div>
-
-            <p><a href=""><i class="fa fa-home"></i></a> / <a href="">extend</a> / <a href="">panel</a> / <a href="">lot</a> / <span>asset</span></p>
-
-            <table class="table table-data expand">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Date</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><i class="fa fa-fw fa-folder"></i> <a href="">css</a></td>
-                  <td>2016/04/21 14:00</td>
-                  <td><a href=""><i class="fa fa-navicon"></i></a></td>
-                </tr>
-                <tr>
-                  <td><i class="fa fa-fw fa-folder"></i> <a href="">js</a></td>
-                  <td>2016/04/21 14:00</td>
-                  <td><a href=""><i class="fa fa-navicon"></i></a></td>
-                </tr>
-                <tr>
-                  <td><i class="fa fa-fw fa-globe"></i> <a href="">favicon.ico</a></td>
-                  <td>2016/04/21 14:00</td>
-                  <td><a href=""><i class="fa fa-navicon"></i></a></td>
-                </tr>
-                <tr>
-                  <td><i class="fa fa-fw fa-file-code-o"></i> <a href="">index.html</a></td>
-                  <td>2016/04/21 14:00</td>
-                  <td><a href=""><i class="fa fa-navicon"></i></a></td>
-                </tr>
-                <tr>
-                  <td><i class="fa fa-fw fa-file-o"></i> <a href="">.htaccess</a></td>
-                  <td>2016/04/21 14:00</td>
-                  <td><a href=""><i class="fa fa-navicon"></i></a></td>
-                </tr>
-              </tbody>
-            </table>
-
             <div class="container">
               <nav class="pager">
                 <span><a href="">First</a> <a href="">Previous</a></span>
@@ -124,28 +99,8 @@
                 <span><a href="">Next</a> <a href="">Last</a></span>
               </nav>
             </div>
-
           </div>
-          <div class="tab-content">
-            <div class="container">
-              <form>
-                <p><input class="input input--text" type="text"> <button class="button button-construct"><i class="fa fa-check-circle"></i> Create</button></p>
-                <p><label><input class="input input--checkbox" type="checkbox"> <span>Redirect to Folder</span></label></p>
-              </form>
-            </div>
-          </div>
-          <div class="tab-content">
-            <div class="container">
-              <div class="drop-zone">
-                <label>
-                  <span>Drop files here&hellip;</span>
-                  <input type="file">
-                </label>
-                <p class="progress"><span style="width:20%;"></span></p>
-                <p><button class="button"><i class="fa fa-check-circle"></i> Upload</button></p>
-              </div>
-            </div>
-          </div>
+          <div class="tab-content"><p>Now drafts yet.</p></div>
         </div>
       </div>
       <footer class="panel-block">

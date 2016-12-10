@@ -2,7 +2,7 @@
 
 class URL extends Genome {
 
-    protected static function long_($url, $root = true) {
+    public static function long($url, $root = true) {
         if (!is_string($url)) return $url;
         $a = __url__();
         // Relative to the root domain
@@ -32,7 +32,7 @@ class URL extends Genome {
         return $url;
     }
 
-    protected static function short_($url, $root = true) {
+    public static function short($url, $root = true) {
         $a = __url__();
         $url = str_replace([X . $a['protocol'] . $a['host'], X], "", X . $url);
         return $root ? $url : ltrim($url, '/');

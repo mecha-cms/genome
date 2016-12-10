@@ -11,7 +11,7 @@ class HTML extends Union {
         if (!isset(self::$lot)) {
             self::$lot = new HTML;
         }
-        return self::$begin . call_user_func_array([self::$lot, $kin], $lot) . self::$end;
+        return call_user_func_array([self::$lot, $kin], $lot);
     }
 
 }

@@ -16,24 +16,24 @@ class Union extends Genome {
     ];
 
     protected $data = [
+        'class' => null,
+        'id' => null,
         'src' => null,
         'alt' => null,
         'width' => null,
         'height' => null,
         'property' => null,
-        'name' => null,
+        'name' => null, // [1]
         'content' => null,
-        'class' => null,
-        'id' => null,
         'href' => null,
         'rel' => null,
         'target' => null,
-        'type' => null,
+        'type' => null, // [2]
         'action' => null,
         'method' => null,
         'enctype' => null,
-        'value' => null,
-        'placeholder' => null,
+        'value' => null, // [3]
+        'placeholder' => null, // [4]
         'label' => null,
         'selected' => null,
         'checked' => null,
@@ -105,6 +105,9 @@ class Union extends Genome {
 
     // Base union constructor
     public function unite($unit = 'html', $content = "", $data = [], $dent = 0) {
+        if (is_array($content)) {
+            $content = N . call_user_func_array([$this, __METHOD__], array_merge($content, $dent + 1)) . N;
+        }
         $dent = $this->dent($dent);
         $c = strtolower(static::class);
         $u = $this->union[1][0];

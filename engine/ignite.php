@@ -720,17 +720,17 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
 }
 
 // $s: directory path
-// $x: file name pattern ... 'txt', '{log,txt}', '/foo'
-// $f: filter by keyword
+// $x: file name pattern ... 'txt', '{log,txt}', 'foo/'
+// $q: filter by query
 // $S: sort?
 // $h: include hidden file(s)?
-function g($s, $x = '*', $f = "", $S = true, $h = true) {
+function g($s, $x = '*', $q = "", $S = true, $h = true) {
     $x = str_replace(' ', "", $x);
     $F = GLOB_NOSORT;
     if (strpos($x, '{') !== false) {
-        $F = strpos($x, '/') === 0 ? GLOB_ONLYDIR | GLOB_BRACE | GLOB_NOSORT : GLOB_BRACE | GLOB_NOSORT;
+        $F = substr($x, -1) === '/' ? GLOB_ONLYDIR | GLOB_BRACE | GLOB_NOSORT : GLOB_BRACE | GLOB_NOSORT;
     } else {
-        if (strpos($x, '/') === 0) {
+        if (substr($x, -1) === '/') {
             $x = substr($x, 1);
             $F = GLOB_ONLYDIR | GLOB_NOSORT;
             if (strpos($x, ',') !== false) {
@@ -749,22 +749,26 @@ function g($s, $x = '*', $f = "", $S = true, $h = true) {
     if ($h) {
         $g = array_merge(glob($s . '.' . $x, $F), $g);
     }
-    if (!$f) return $g;
+    if (!$q) {
+        if ($S) natsort($g);
+        return $g;
+    }
     $o = [];
-    if (is_callable($f)) {
+    if (is_callable($q)) {
         foreach ($g as $k => $v) {
-            if (call_user_func($f, $v, $k)) {
+            if (call_user_func($q, $v, $k)) {
                 $o[] = $v;
             }
         }
     } else {
         foreach ($g as $k => $v) {
-            if (strpos($v, $f) !== false) {
+            if (strpos($v, $q) !== false) {
                 $o[] = $v;
             }
         }
     }
     if ($S) natsort($o);
+    unset($g);
     return $o;
 }
 

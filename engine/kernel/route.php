@@ -6,7 +6,7 @@ class Route extends Genome {
     public static $lot_o = [];
 
     // Pattern as regular expression
-    protected function _v($s) {
+    protected static function _v($s) {
         if (strpos($s, '%[') !== false) {
             $s = preg_replace_callback('#%\[(.*?)\]#', function($m) {
                 $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
@@ -28,9 +28,9 @@ class Route extends Genome {
         ], x($s, '#'));
     }
 
-    protected static function set_($id, $fn = null, $stack = null, $pattern = false) {
+    public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
         if (!is_callable($fn)) {
-            return self::seted_($id, $fn ?? false);
+            return self::exist($id, $fn ?? false);
         }
         $i = 0;
         $id = (array) $id;
@@ -49,28 +49,23 @@ class Route extends Genome {
         return true;
     }
 
-    protected static function seted_($id = null, $fail = false) {
+    public static function exist($id = null, $fail = false) {
         if ($id !== null) {
             return self::$lot[1][$id] ?? $fail;
         }
         return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
     }
 
-    // Alias for `Route::seted_()`
-    protected static function exist_(...$lot) {
-        return call_user_func_array('self::seted_', $lot);
-    }
-
-    protected static function get_(...$lot) {
+    public static function get(...$lot) {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            return call_user_func_array('self::set_', $lot);
+            return call_user_func_array('self::set', $lot);
         }
         return false;
     }
 
-    protected static function post_(...$lot) {
+    public static function post(...$lot) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            return call_user_func_array('self::set_', $lot);
+            return call_user_func_array('self::set', $lot);
         }
         return false;
     }
