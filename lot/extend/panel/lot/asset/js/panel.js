@@ -4,23 +4,20 @@
         head = doc.head,
         body = doc.body;
 
-    function is_set(x) {
-        return typeof x !== "undefined";
-    }
-
-    function format(s, a) {
+    $.format = function(s, a) {
         return s.replace(/%(\{\d+\}|\d+)/g, function(b, c) {
             c = +c - 1;
-            return is_set(a[c]) ? a[c] : b;
+            return typeof a[c] !== "undefined" ? a[c] : b;
         });
     }
 
     function do_table_data() {
-        var $rows = $('.table-data'),
-            $delete = $('.button-destruct').hide();
+        var $delete = $('.button-destruct').hide(),
+            $rows = $('.table-data');
+        if (!$rows.length) return;
         $rows.on("touchstart mousedown", 'tbody tr', function() {
             $(this).toggleClass('on');
-            $delete[$(this).parent().find('.on').length ? 'show' : 'hide']();
+            $delete[$(this).parent().has('.on').length ? 'show' : 'hide']();
             return false;
         });
     }
@@ -28,7 +25,7 @@
     function do_tree() {
         var $menus = $('aside.panel-span nav li:not(.current) a + ul');
         if (!$menus.length) return;
-        $menus.prev().on("click", function() {
+        $menus.prev().click(function() {
             return $(this).parent().toggleClass('on'), false;
         });
     }
@@ -43,22 +40,16 @@
             return $(this).parent().is('label');
         }).each(function() {
             if ($(this).data('mecha')) return;
-            $(this).data('mecha', 1);
             var toggle = this.type === 'checkbox' ? 1 : 0,
                 h = (this.disabled ? ' x' : "") + (this.checked ? ' on' : ""),
                 i = icon[toggle][this.checked ? 1 : 0], j;
-            $('<a href="" class="' + format(y, [this.type, i, h]) + '"></a>').on("click", function() {
-                $(this).next().filter(x).prop('checked', toggle ? !$(this).hasClass('on') : true).trigger("change");
-                return false;
-            }).insertBefore($(this).on("change", function() {
-                i = icon[toggle][this.checked ? 1 : 0];
-                if (j = $(this).data('group')) {
-                    $toggles.filter('[name="' + j + '"]' + x).prop('checked', this.checked).trigger("change");
+            $(this).data('mecha', 1).change(function() {
+                $(this).prev().attr('class', $.format(y, [this.type, icon[toggle][this.checked ? 1 : 0], this.checked ? ' on' : ""]));
+                if (this.type === 'radio') {
+                    $toggles.filter('[name="' + this.name + '"]' + x).not(this).prev().attr('class', $.format(y, [this.type, icon[0][0], ""]));
                 }
-                if (!toggle) {
-                    $(this).parent().parent().find('input[name="' + this.name + '"]' + x).prev().attr('class', format(y, [this.type, icon[0][0], h]));
-                }
-                $(this).prev().attr('class', format(y, [this.type, i, (this.disabled ? ' x' : "") + (this.checked ? ' on' : "")]));
+            }).before($('<a href="javascript:;" class="' + $.format(y, [this.type, i, h]) + '"></a>').click(function() {
+                $(this).next(x).prop('checked', toggle ? !$(this).hasClass('on') : true).trigger("change");
                 return false;
             }));
         }).parent().on("touchstart mousedown", false);
@@ -67,7 +58,7 @@
     function do_tab() {
         var $tabs = $('.tab-button'), $id;
         if (!$tabs.length) return;
-        $tabs.on("click", function() {
+        $tabs.click(function() {
             $id = (this.hash || "").replace('#', "");
             $id = ($id && $('#' + $id)) || $(this).closest('.tab').find('.tab-content').eq($(this).index());
             $(this).addClass('on').siblings('.tab-button').removeClass('on');
@@ -75,7 +66,7 @@
                 $id[$(this).hasClass('toggle') ? 'toggleClass' : 'addClass']('on').siblings('.tab-content').removeClass('on');
             }
             return false;
-        }).on("touchstart mousedown", false).filter('.on').trigger("click");
+        }).on("touchstart mousedown", false).filter('.on').click();
     }
 
     function slug(s, l, h, x) {
@@ -581,7 +572,7 @@
         if (!$in.length || !$out.length) return;
         $in.on(events, function() {
             if (!$hold) {
-                $hold = $out.filter('[data-slug-o="' + $(this).data('slug-i') + '"]');
+                $hold = $out.is('[data-slug-o="' + $(this).data('slug-i') + '"]');
             }
             if ($hold && !$hold.data('x')) {
                 var $this = $(this);
@@ -620,9 +611,11 @@
     function do_item() {
         var $item = $('.item.is-can-destruct');
         if (!$item.length) return;
+        /*
         $('<a class="panel-x" href=""></a>').on("click", function() {
             return $(this).parent().remove(), false;
         }).appendTo($item);
+        */
     }
 
     win.Mecha = {};
