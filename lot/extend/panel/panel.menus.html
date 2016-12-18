@@ -110,18 +110,27 @@
     </main>
   </section>
 </section>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="file:///G:/GitHub/d-o-m/d-o-m.min.js"></script>
 <script src="lot/asset/js/panel.js"></script>
 <script src="file:///G:/GitHub/text-editor/text-editor.js"></script>
 <script src="file:///G:/GitHub/text-editor/text-editor/ui/ui.js"></script>
 <script src="file:///G:/GitHub/text-editor/text-editor/ui/html/html.js"></script>
 <script src="file:///G:/GitHub/text-editor/text-editor/ui/markdown/markdown.js"></script>
 <script>
-var te = document.getElementsByClassName('editor'), editor, i;
-for (var i = 0, j = te.length; i < j; ++i) {
-    editor = TE.ui.HTML(te[i], {extra: 1, word_counter: 1, converters: 1, emoji: 1});
+var te = document.getElementsByClassName('editor'),
+    editor, config, i, j;
+for (i = 0, j = te.length; i < j; ++i) {
+    config = {
+        extra: 1,
+        converters: 1,
+        emoji: 1
+    };
+    if (te[i].classList.contains('code')) {
+        config.tools = "";
+        config.keys = 0;
+    }
+    editor = TE.ui.HTML(te[i], config);
 }
-
 </script>
 <script src="file:///G:/GitHub/text-editor/text-editor/ui/ui/expand/expand.min.js"></script>
 <script src="file:///G:/GitHub/text-editor/text-editor/ui/ui/table-grid/table-grid.min.js"></script>

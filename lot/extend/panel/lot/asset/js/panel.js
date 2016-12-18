@@ -2,76 +2,107 @@
 
     var html = doc.documentElement,
         head = doc.head,
-        body = doc.body;
+        body = doc.body,
+        replace = 'replace',
+
+        attributes = 'attributes',
+        classes = 'classes',
+        events = 'events',
+        hooks = 'hooks',
+
+        timer_reset = clearTimeout,
+        timer_set = setTimeout;
 
     $.format = function(s, a) {
-        return s.replace(/%(\{\d+\}|\d+)/g, function(b, c) {
+        return s[replace](/%(\{\d+\}|\d+)/g, function(b, c) {
             c = +c - 1;
             return typeof a[c] !== "undefined" ? a[c] : b;
         });
     }
 
+    function count(x) {
+        return x.length;
+    }
+
+    function pattern(a, b) {
+        return new RegExp(a, b);
+    }
+
+    function to_lower_case(s) {
+        return s.toLowerCase();
+    }
+
+    function to_upper_case(s) {
+        return s.toUpperCase();
+    }
+
     function do_table_data() {
-        var $delete = $('.button-destruct').hide(),
+        var $delete = $('.button-destruct').css('display', 'none'),
             $rows = $('.table-data');
-        if (!$rows.length) return;
-        $rows.on("touchstart mousedown", 'tbody tr', function() {
-            $(this).toggleClass('on');
-            $delete[$(this).parent().has('.on').length ? 'show' : 'hide']();
+        if (!count($rows)) return;
+        $rows[events].capture("touchstart mousedown", 'tbody tr', function() {
+            $(this)[classes].toggle('on');
+            $delete.css('display', count($(this).parent().has('.on')) ? "" : 'none');
             return false;
         });
     }
 
     function do_tree() {
         var $menus = $('aside.panel-span nav li:not(.current) a + ul');
-        if (!$menus.length) return;
-        $menus.prev().click(function() {
-            return $(this).parent().toggleClass('on'), false;
+        if (!count($menus)) return;
+        $menus.previous().click(function() {
+            return $(this).parent()[classes].toggle('on'), false;
         });
     }
 
     function do_toggle() {
         var $toggles = $('.input--checkbox,.input--radio'),
-            x = ':not([disabled],[readonly])',
             y = 'toggle i i-toggle i-toggle--%1 fa fa-%2%3',
             icon = [['circle-o', 'dot-circle-o'], ['square', 'check-square']];
-        if (!$toggles.length) return;
-        $toggles.filter(function() {
-            return $(this).parent().is('label');
+        if (!count($toggles)) return;
+        $toggles.is(function() {
+            return to_lower_case($(this).parent().get('node-name')) === 'label';
         }).each(function() {
-            if ($(this).data('mecha')) return;
-            var toggle = this.type === 'checkbox' ? 1 : 0,
-                h = (this.disabled ? ' x' : "") + (this.checked ? ' on' : ""),
-                i = icon[toggle][this.checked ? 1 : 0], j;
-            $(this).data('mecha', 1).change(function() {
-                $(this).prev().attr('class', $.format(y, [this.type, icon[toggle][this.checked ? 1 : 0], this.checked ? ' on' : ""]));
-                if (this.type === 'radio') {
-                    $toggles.filter('[name="' + this.name + '"]' + x).not(this).prev().attr('class', $.format(y, [this.type, icon[0][0], ""]));
+            if ($(this).data.get('mecha')) return;
+            var toggle = $(this).get('type') === 'checkbox' ? 1 : 0,
+                h = ($(this).get('disable') ? ' x' : "") + ($(this).get('check') ? ' on' : ""),
+                i = icon[toggle][$(this).get('check') ? 1 : 0];
+            $(this).data.set('mecha', 1).change(function() {
+                $(this).previous()[attributes].set('class', $.format(y, [$(this).get('type'), icon[toggle][$(this).get('check') ? 1 : 0], $(this).get('check') ? ' on' : ""]));
+                var self = this,
+                    self_type = $(self).get('type'),
+                    self_name = $(self).get('name');
+                if (self_type === 'radio') {
+                    $toggles.is(function() {
+                        return this !== self && $(this).get('name') === self_name && !$(this).get('disable') && !$(this).get('read-only');
+                    }).previous()[attributes].set('class', $.format(y, [self_type, icon[0][0], ""]));
                 }
-            }).before($('<a href="javascript:;" class="' + $.format(y, [this.type, i, h]) + '"></a>').click(function() {
-                $(this).next(x).prop('checked', toggle ? !$(this).hasClass('on') : true).trigger("change");
+            }).before($('<a href="javascript:;" class="' + $.format(y, [$(this).get('type'), i, h]) + '"></a>').click(function() {
+                $(this).next(function() {
+                    return !$(this).get('disable') && !$(this).get('read-only');
+                }).set('check', toggle ? !$(this)[classes].get('on') : true).change();
                 return false;
             }));
-        }).parent().on("touchstart mousedown", false);
+        }).parent()[events].set("touchstart mousedown", false);
     }
 
     function do_tab() {
         var $tabs = $('.tab-button'), $id;
-        if (!$tabs.length) return;
+        if (!count($tabs)) return;
         $tabs.click(function() {
-            $id = (this.hash || "").replace('#', "");
-            $id = ($id && $('#' + $id)) || $(this).closest('.tab').find('.tab-content').eq($(this).index());
-            $(this).addClass('on').siblings('.tab-button').removeClass('on');
+            $id = (this.hash || "")[replace]('#', "");
+            $id = ($id && $('#' + $id)) || $(this).closest('.tab').find('.tab-content').index($(this).index());
+            $(this)[classes].set('on').kin('.tab-button')[classes].reset('on');
             if ($id) {
-                $id[$(this).hasClass('toggle') ? 'toggleClass' : 'addClass']('on').siblings('.tab-content').removeClass('on');
+                $id[classes][$(this)[classes].get('toggle') ? 'toggle' : 'set']('on').kin('.tab-content')[classes].reset('on');
             }
             return false;
-        }).on("touchstart mousedown", false).filter('.on').click();
+        })[events].reset("touchstart mousedown", false).is('.on').click();
     }
 
-    function slug(s, l, h, x) {
+    $.slug = function(s, l, h, x) {
         h = h || '\\-';
-        var H = h.replace(/\\/g, "");
+        var H = h[replace](/\\/g, "");
         var a = {
             '¹': '1',
             '²': '2',
@@ -556,61 +587,62 @@
             'Ỷ': 'Y',
             'Ỹ': 'Y'
         }, i;
-        for (i in a) s.replace(new RegExp(i, 'g'), a[i]);
-        s = s.replace(/<.*?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);/gi, H);
-        s = s.replace(new RegExp('[^a-zA-Z\\d' + (x || "") + ']', 'g'), H);
-        s = s.replace(new RegExp('[' + h + ']+', 'g'), H);
-        s = s.replace(new RegExp('^[' + h + ']|[' + h + ']$', 'g'), "");
-        return l ? s.toLowerCase() : s;
+        for (i in a) s[replace](pattern(i, 'g'), a[i]);
+        s = s[replace](/<.*?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);/gi, H);
+        s = s[replace](pattern('[^a-zA-Z\\d' + (x || "") + ']', 'g'), H);
+        s = s[replace](pattern('[' + h + ']+', 'g'), H);
+        s = s[replace](pattern('^[' + h + ']|[' + h + ']$', 'g'), "");
+        return l ? to_lower_case(s) : s;
     }
 
-    var events = "change keyup cut paste input focus blur";
+    var $events = "change keyup cut paste input focus blur";
 
     function do_slug() {
         var $in = $('[data-slug-i]'),
             $out = $('[data-slug-o]'), $hold;
-        if (!$in.length || !$out.length) return;
-        $in.on(events, function() {
+        if (!count($in) || !count($out)) return;
+        $in[events].set($events, function() {
             if (!$hold) {
-                $hold = $out.is('[data-slug-o="' + $(this).data('slug-i') + '"]');
+                $hold = $out.is('[data-slug-o="' + $(this).data.get('slug-i') + '"]');
             }
-            if ($hold && !$hold.data('x')) {
+            if ($hold && !$hold.data.get('x')) {
                 var $this = $(this);
-                setTimeout(function() {
-                    $hold.val(slug($this.val(), 1));
+                timer_set(function() {
+                    $hold.value($.slug($this.value(), 1));
                 }, 1);
             }
         });
-        $out.on(events, function() {
-            $(this).data('x', !!this.value);
+        $out[events].set($events, function() {
+            $(this).data.set('x', !!this.value);
         });
     }
 
     function do_description() {
         var $in = $('[data-description-i]'),
             $out = $('[data-description-o]'), $hold;
-        if (!$in.length || !$out.length) return;
-        $in.on(events, function() {
+        if (!count($in) || !count($out)) return;
+        $in[events].set($events, function() {
             if (!$hold) {
-                $hold = $out.filter('[data-description-o="' + $(this).data('description-i') + '"]');
+                $hold = $out.is('[data-description-o="' + $(this).data.get('description-i') + '"]');
             }
-            if ($hold && !$hold.data('x')) {
-                var $this = $(this), dots = '\u2026';
-                setTimeout(function() {
-                    var value = $this.val().replace(/<.*?>|[<>]/g, "").match(/\s*(\S[a-z\d ]*)([^a-z\d ])?\s*/i) || ["", "", ""];
+            if ($hold && !$hold.data.get('x')) {
+                var $this = $(this),
+                    dots = '\u2026';
+                timer_set(function() {
+                    var value = $this.value()[replace](/<.*?>|[<>]/g, "").match(/\s*(\S[a-z\d ]*)([^a-z\d ])?\s*/i) || ["", "", ""];
                     value = value[1] + (value[2] && /^[?!.]$/.test(value[2]) ? value[2] : dots);
-                    $hold.val(value === dots ? "" : value);
+                    $hold.value(value === dots ? "" : value);
                 }, 1);
             }
         });
-        $out.on(events, function() {
-            $(this).data('x', !!this.value);
+        $out[events].set($events, function() {
+            $(this).data.set('x', !!this.value);
         });
     }
 
     function do_item() {
         var $item = $('.item.is-can-destruct');
-        if (!$item.length) return;
+        if (!count($item)) return;
         /*
         $('<a class="panel-x" href=""></a>').on("click", function() {
             return $(this).parent().remove(), false;
@@ -618,7 +650,7 @@
         */
     }
 
-    win.Mecha = {};
+    win.Mecha = $;
     win.Mecha.ui = {};
     win.Mecha.ui.refresh = function() {
         do_table_data();
@@ -632,4 +664,4 @@
 
     win.Mecha.ui.refresh();
 
-})(jQuery, window, document);
+})(DOM, window, document);

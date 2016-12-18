@@ -10,13 +10,13 @@
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', rtrim(__DIR__, DS));
 
-define('I', '  '); // Default indent
-define('N', "\n"); // Line break
-define('R', "\r"); // Return
-define('S', "\x00a0"); // Non break space
-define('T', "\t"); // Tab
-define('V', "\v"); // Vertical space
-define('X', "\x1A"); // Placeholder text
+define('I', '  '); // default indent
+define('N', "\n"); // line break
+define('R', "\r"); // return
+define('S', "\x00a0"); // non break space
+define('T', "\t"); // tab
+define('V', "\v"); // vertical space
+define('X', "\x1A"); // placeholder text
 
 define('SESSION', null);
 
@@ -27,7 +27,6 @@ foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
     define(strtoupper(str_replace(['-', '.'], ['_', '__'], basename($lot))), $lot);
 }
 
-// Common HTML tag(s) allowed to be written in the form field
 define('HTML_WISE_I', [
     'a',
     'abbr',
@@ -82,6 +81,7 @@ define('HTML_WISE_B', [
     'ul'
 ]);
 
+// common HTML tag(s) allowed to be written in the form field
 define('HTML_WISE', array_unique(array_merge(HTML_WISE_I, HTML_WISE_B)));
 
 define('FONT_X', [
