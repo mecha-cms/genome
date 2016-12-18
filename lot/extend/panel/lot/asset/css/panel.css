@@ -481,15 +481,15 @@ legend + .grid-meta {margin-top:-.5em}
   min-height:1em;
   text-align:center;
 }
-.i-toggle {
-  color:#789;
-  width:1.25em;
-  text-align:center;
+.i-toggle:before {
+  content:'\f0c8';
+  font-family:"FontAwesome";
 }
-.i-toggle:focus {color:#89a}
+.i-toggle--radio:before {content:'\f111'}
+.i-toggle.on:before {content:'\f14a'}
+.i-toggle--radio.on:before {content:'\f192'}
 .i-toggle.x {color:inherit}
 .i-toggle + .input {display:none}
-
 .input-group {padding:.25em 0}
 .input-control {
   position:absolute;

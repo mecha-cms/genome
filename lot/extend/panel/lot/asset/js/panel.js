@@ -57,27 +57,25 @@
 
     function do_toggle() {
         var $toggles = $('.input--checkbox,.input--radio'),
-            y = 'toggle i i-toggle i-toggle--%1 fa fa-%2%3',
-            icon = [['circle-o', 'dot-circle-o'], ['square', 'check-square']];
+            y = 'toggle i i-toggle i-toggle--%1%2';
         if (!count($toggles)) return;
         $toggles.is(function() {
             return to_lower_case($(this).parent().get('node-name')) === 'label';
         }).each(function() {
             if ($(this).data.get('mecha')) return;
             var toggle = $(this).get('type') === 'checkbox' ? 1 : 0,
-                h = ($(this).get('disable') ? ' x' : "") + ($(this).get('check') ? ' on' : ""),
-                i = icon[toggle][$(this).get('check') ? 1 : 0];
+                h = ($(this).get('disable') ? ' x' : "") + ($(this).get('check') ? ' on' : "");
             $(this).data.set('mecha', 1).change(function() {
-                $(this).previous()[attributes].set('class', $.format(y, [$(this).get('type'), icon[toggle][$(this).get('check') ? 1 : 0], $(this).get('check') ? ' on' : ""]));
+                $(this).previous()[attributes].set('class', $.format(y, [$(this).get('type'), $(this).get('check') ? ' on' : ""]));
                 var self = this,
                     self_type = $(self).get('type'),
                     self_name = $(self).get('name');
                 if (self_type === 'radio') {
                     $toggles.is(function() {
                         return this !== self && $(this).get('name') === self_name && !$(this).get('disable') && !$(this).get('read-only');
-                    }).previous()[attributes].set('class', $.format(y, [self_type, icon[0][0], ""]));
+                    }).previous()[attributes].set('class', $.format(y, [self_type, ""]));
                 }
-            }).before($('<a href="javascript:;" class="' + $.format(y, [$(this).get('type'), i, h]) + '"></a>').click(function() {
+            }).before($('<a class="' + $.format(y, [$(this).get('type'), h]) + '" href=""></a>').click(function() {
                 $(this).next(function() {
                     return !$(this).get('disable') && !$(this).get('read-only');
                 }).set('check', toggle ? !$(this)[classes].get('on') : true).change();
@@ -643,11 +641,11 @@
     function do_item() {
         var $item = $('.item.is-can-destruct');
         if (!count($item)) return;
-        /*
-        $('<a class="panel-x" href=""></a>').on("click", function() {
-            return $(this).parent().remove(), false;
-        }).appendTo($item);
-        */
+        $item.each(function() {
+            $(this).append($('<a class="panel-x" href=""></a>').click(function() {
+                return $(this).parent().remove(), false;
+            }));
+        });
     }
 
     win.Mecha = $;
