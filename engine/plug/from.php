@@ -13,7 +13,7 @@ From::plug('base64', function($input) {
 
 function __from_yaml__($input, $c = [], $in = '  ') {
     $s = Page::$v;
-    $q = ['"(?:\\.|[^"])*"#', '\'(?:\\.|[^\'])*\''];
+    $q = ['"(?:[^"\\\]|\\\.)*"', '\'(?:[^\'\\\]|\\\.)*\''];
     Anemon::extend($s, $c);
     if (!is_string($input)) return a($input);
     if (!trim($input)) return [];

@@ -144,7 +144,7 @@ function __url__($key = null, $fail = false) {
 // w: convert any data to plain word(s)
 // x: escape
 // y: output/yield an echo-based function as normal return value
-// z:
+// z: export array/object into a compect PHP string
 
 function a($o, $safe = true) {
     if (__is_anemon__($o)) {
@@ -829,9 +829,7 @@ function o($a, $safe = true) {
 }
 
 function p($x, $s = "", $X = "") {
-    return f(preg_replace_callback('#(?<=^|[^\p{L}])([\p{Ll}\d])#u', function($m) use($s) {
-        return $s . u($m[1]);
-    }, $x), $s, false, 'a-zA-Z\d' . x($X));
+    return c('-' . $x, $s, $X);
 }
 
 function q($x, $deep = false) {
@@ -941,4 +939,17 @@ function y($x, $a = []) {
     return $x;
 }
 
-function z() {}
+// $b: use `[]` or `array()` syntax?
+function z($a, $b = true) {
+    $a = json_encode($a);
+	$a = preg_split('#("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')#', $a, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);var_dump($a);
+	$s = "";
+	foreach ($a as $v) {
+		if ($v[0] === '"' && substr($v, -1) === '"') {
+			$s .= "'" . json_decode($v) . "'";
+		} else {
+			$s .= str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
+		}
+	}
+	return $s;
+}
