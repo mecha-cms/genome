@@ -1,3 +1,14 @@
+/**
+ * Font Size Category
+ * ------------------
+ *
+ *  - 0: 100%
+ *  - 1: 96%
+ *  - 2: 86%
+ *  - 3: 76%
+ *
+ */
+
 * {
   margin:0;
   padding:0;
@@ -67,6 +78,9 @@ del,s {text-decoration:line-through}
   box-shadow:0 1px 2px rgba(0,0,0,.6);
   cursor:pointer;
   overflow:hidden;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  user-select:none;
 }
 .button-group {
   border:0;
@@ -91,7 +105,7 @@ del,s {text-decoration:line-through}
 }
 .button:active {
   background:#345;
-  color:#eee;
+  color:#ccc;
 }
 .input[disabled],
 .select[disabled],
@@ -145,7 +159,7 @@ del,s {text-decoration:line-through}
   height:2.142857142857143em;
 }
 .input--file {
-  font-size:80%;
+  font-size:86%;
   cursor:pointer;
 }
 .select[multiple] {
@@ -169,8 +183,9 @@ del,s {text-decoration:line-through}
 .select optgroup option {
   padding-left:.5em;
   font-weight:normal;
-  font-size:80%;
+  font-size:86%;
 }
+.select optgroup option:before {content:'\2022\0020'}
 .textarea {resize:vertical}
 fieldset {
   border:1px solid #2f2f2f;
@@ -179,7 +194,7 @@ fieldset {
 }
 legend {
   padding:0 .5em;
-  font-size:80%;
+  font-size:86%;
   text-transform:uppercase;
   font-weight:bold;
 }
@@ -229,12 +244,12 @@ dd {
   margin-top:1.5rem;
   padding-left:1.5rem;
 }
-h1 {font-size:2.6em}
-h2 {font-size:2.1em}
-h3 {font-size:1.7em}
-h4 {font-size:1.4em}
-h5 {font-size:1.2em}
-h6 {font-size:1.1em}
+h1 {font-size:260%}
+h2 {font-size:210%}
+h3 {font-size:170%}
+h4 {font-size:140%}
+h5 {font-size:120%}
+h6 {font-size:110%}
 ol {
   list-style-type:decimal;
   padding-left:2em;
@@ -409,7 +424,7 @@ aside.panel-span nav .i:before {
   text-align:center;
 }
 aside.panel-span nav ul ul {
-  font-size:.9285714285714286em;
+  font-size:96%;
   line-height:2em;
   display:none;
 }
@@ -441,8 +456,7 @@ footer.panel-block {
   overflow:hidden;
   text-overflow:ellipsis;
 }
-
-
+.grid,
 .grid-meta {
   display:table;
   border-spacing:0;
@@ -451,8 +465,11 @@ footer.panel-block {
   width:100%;
   margin-top:.5em;
 }
+.grid,
 .grid-meta:first-child {margin-top:0}
+legend + .grid,
 legend + .grid-meta {margin-top:-.5em}
+.grid-span,
 .grid-meta-key,
 .grid-meta-value {
   display:table-cell;

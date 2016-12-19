@@ -59,12 +59,10 @@
         var $toggles = $('.input--checkbox,.input--radio'),
             y = 'toggle i i-toggle i-toggle--%1%2';
         if (!count($toggles)) return;
-        $toggles.is(function() {
-            return to_lower_case($(this).parent().get('node-name')) === 'label';
-        }).each(function() {
+        $toggles.each(function() {
             if ($(this).data.get('mecha')) return;
             var toggle = $(this).get('type') === 'checkbox' ? 1 : 0,
-                h = ($(this).get('disable') ? ' x' : "") + ($(this).get('check') ? ' on' : "");
+                h = ($(this).get('disable') ? ' x' : "") + ($(this).get('check') ? ' on' : ""), i;
             $(this).data.set('mecha', 1).change(function() {
                 $(this).previous()[attributes].set('class', $.format(y, [$(this).get('type'), $(this).get('check') ? ' on' : ""]));
                 var self = this,
@@ -72,7 +70,7 @@
                     self_name = $(self).get('name');
                 if (self_type === 'radio') {
                     $toggles.is(function() {
-                        return this !== self && $(this).get('name') === self_name && !$(this).get('disable') && !$(this).get('read-only');
+                        return this !== self && ((i = $(this).get('name')) && i === self_name) && !$(this).get('disable') && !$(this).get('read-only');
                     }).previous()[attributes].set('class', $.format(y, [self_type, ""]));
                 }
             }).before($('<a class="' + $.format(y, [$(this).get('type'), h]) + '" href=""></a>').click(function() {
@@ -81,7 +79,7 @@
                 }).set('check', toggle ? !$(this)[classes].get('on') : true).change();
                 return false;
             }));
-        }).parent()[events].set("touchstart mousedown", false);
+        }).closest('label')[events].set("touchstart mousedown", false);
     }
 
     function do_tab() {
@@ -650,7 +648,7 @@
 
     win.Mecha = $;
     win.Mecha.ui = {};
-    win.Mecha.ui.refresh = function() {
+    win.Mecha.ui.update = function() {
         do_table_data();
         do_tree();
         do_tab();
@@ -660,6 +658,6 @@
         do_item();
     };
 
-    win.Mecha.ui.refresh();
+    win.Mecha.ui.update();
 
 })(DOM, window, document);

@@ -77,9 +77,9 @@ class Date extends Genome {
         $day_long = $days_long[(int) $d];
         $day_short = $days_short[(int) $d];
         $output = [
-            'UNIX' => (int) $this->format('U'),
-            'W3C' => $this->format('c'),
+            'ISO_8601' => $this->format('c'),
             'GMT' => $this->GMT('Y-m-d H:i:s'),
+            'unix' => (int) $this->format('U'),
             'slug' => $year . '-' . $month . '-' . $day . '-' . $hour_24 . '-' . $minute . '-' . $second,
             'year' => $year,
             'year_short' => $year_short,
@@ -94,21 +94,13 @@ class Date extends Genome {
             'hour_24' => $hour_24, // alias for `hour`
             'minute' => $minute,
             'second' => $second,
-            'year_number' => (int) $year,
-            'month_number' => (int) $month,
-            'day_number' => (int) $day,
-            'hour_number' => (int) $hour_24,
-            'hour_12_number' => (int) $hour_12,
-            'hour_24_number' => (int) $hour_24,
-            'minute_number' => (int) $minute,
-            'second_number' => (int) $second,
             'AM_PM' => $AP,
-            'FORMAT_1' => $day_long . ', ' . $day . ' ' . $month_long . ' ' . $year,
-            'FORMAT_2' => $day_long . ', ' . $month_long . ' ' . $day . ', ' . $year,
-            'FORMAT_3' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
-            'FORMAT_4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AP,
-            'FORMAT_5' => $hour_24 . ':' . $minute,
-            'FORMAT_6' => $hour_12 . ':' . $minute . ' ' . $AP
+            'F1' => $day_long . ', ' . $day . ' ' . $month_long . ' ' . $year,
+            'F2' => $day_long . ', ' . $month_long . ' ' . $day . ', ' . $year,
+            'F3' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
+            'F4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AP,
+            'F5' => $hour_24 . ':' . $minute,
+            'F6' => $hour_12 . ':' . $minute . ' ' . $AP
         ];
         if (!empty(self::$formats_)) {
             foreach (self::$formats_ as $k => $v) {

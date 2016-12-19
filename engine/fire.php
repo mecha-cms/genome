@@ -50,8 +50,8 @@ r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function
     }, $seeds);
 }, $seeds);
 
-function do_start() {
+function do_begin() {
     Route::fire() and Shield::abort();
 }
 
-Hook::set('start', 'do_start')->fire('start');
+Hook::set('begin', 'do_begin')->fire('begin');
