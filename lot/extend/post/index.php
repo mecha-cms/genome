@@ -1,9 +1,9 @@
 <?php
 
-define('PAGE_POST', PAGE . DS . 'post');
+define('POST', PAGE . DS . 'post');
 
 Route::set(['post/%/%i', 'post/%', 'post'], function($path = "", $offset = 1) use($config) {
-    $folder = rtrim(PAGE_POST . DS . To::path($path), DS);
+    $folder = rtrim(POST . DS . To::path($path), DS);
     // from a file ...
     if ($file = File::exist([$folder . '.page', $folder . '.archive'])) {
         $page = new Page($file);
