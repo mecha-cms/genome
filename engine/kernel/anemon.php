@@ -8,8 +8,8 @@ class Anemon extends Genome {
 
     // Prevent `$x` exceeds the value of `$min` and `$max`
     public static function edge($x, $min = null, $max = null) {
-        if ($min !== null && $x < $min) return $min;
-        if ($max !== null && $x > $max) return $max;
+        if (isset($min) && $x < $min) return $min;
+        if (isset($max) && $x > $max) return $max;
         return $x;
     }
 
@@ -28,7 +28,7 @@ class Anemon extends Genome {
 
     // Get array value recursively
     public static function get(&$input, $k = null, $fail = false) {
-        if ($k === null) return $input;
+        if (!isset($k)) return $input;
         $kk = explode('.', $k);
         foreach ($kk as $v) {
             if (!is_array($input) || !array_key_exists($v, $input)) {
@@ -96,21 +96,21 @@ class Anemon extends Genome {
         return $this;
     }
 
-    // Sort array value
-    public function sort($order = 'ASC', $key = null, $prsv_key = false, $null = X) {
-        if ($key !== null) {
+    // Sort array value: `1` for "asc" and `-1` for "desc"
+    public function sort($order = 1, $key = null, $prsv_key = false, $null = X) {
+        if (isset($key)) {
             $before = $after = [];
             if (!empty($this->bucket)) {
                 foreach ($this->bucket as $k => $v) {
                     $v = (array) $v;
                     if (array_key_exists($key, $v)) {
                         $before[$k] = $v[$key];
-                    } elseif ($null !== X) {
+                    } else if ($null !== X) {
                         $before[$k] = $null;
                         $this->bucket[$k][$key] = $null;
                     }
                 }
-                $order === 'ASC' ? asort($before) : arsort($before);
+                $order === -1 ? arsort($before) : asort($before);
                 foreach ($before as $k => $v) {
                     $after[$k] = $this->bucket[$k];
                 }
@@ -119,7 +119,7 @@ class Anemon extends Genome {
             unset($before, $after);
         } else {
             $this->bucket = (array) $this->bucket;
-            $order === 'ASC' ? asort($this->bucket) : arsort($this->bucket);
+            $order === -1 ? arsort($this->bucket) : asort($this->bucket);
         }
         if (!$prsv_key) {
             $this->bucket = array_values($this->bucket);
@@ -139,10 +139,10 @@ class Anemon extends Genome {
     }
 
     public static function alter($input, $replace = [], $fail = null) {
-        // return the `$replace[$input]` value if exist
-        // or the `$fail` value if `$replace[$input]` does not exist
-        // or the `$input` value if `$fail` is `null`
-        return array_key_exists($input, $replace) ? $replace[$input] : ($fail ?? $input);
+        // return `$replace[$input]` value if exist
+        // or `$fail` value if `$replace[$input]` does not exist
+        // or `$input` value if `$fail` is `null`
+        return array_key_exists($input, $replace) ? $replace[$input] : (isset($fail) ? $fail : $input);
     }
 
     // Move to next array index
@@ -152,14 +152,9 @@ class Anemon extends Genome {
     }
 
     // Move to previous array index
-    public function prev($skip = 0) {
+    public function previous($skip = 0) {
         $this->i = self::edge($this->i - 1 - $skip, 0, $this->count() - 1);
         return $this;
-    }
-
-    // Alias for `Anemon::prev()`
-    public function previous(...$lot) {
-        return call_user_func_array([$this, 'prev'], $lot);
     }
 
     // Move to `$index` array index
@@ -170,7 +165,7 @@ class Anemon extends Genome {
 
     // Insert `$food` before current array index
     public function before($food, $key = null) {
-        $key = $key ?? $this->i;
+        $key = isset($key) ? $key : $this->i;
         $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $food] + array_slice($this->bucket, $this->i, null, true);
         $this->i = self::edge($this->i - 1, 0, $this->count() - 1);
         return $this;
@@ -178,7 +173,7 @@ class Anemon extends Genome {
 
     // Insert `$food` after current array index
     public function after($food, $key = null) {
-        $key = $key ?? $this->i + 1;
+        $key = isset($key) ? $key : $this->i + 1;
         $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $food] + array_slice($this->bucket, $this->i + 1, null, true);
         $this->i = self::edge($this->i + 1, 0, $this->count() - 1);
         return $this;
@@ -241,18 +236,19 @@ class Anemon extends Genome {
     // Get array key by position
     public function key($index, $fail = false) {
         $array = array_keys($this->bucket);
-        return $array[$index] ?? $fail;
+        return array_key_exists($index, $array) ? $array[$index] : $fail;
     }
 
     // Get position by array key
     public function index($key, $fail = false) {
-        return array_search($key, array_keys($this->bucket)) ?? $fail;
+        $search = array_search($key, array_keys($this->bucket));
+        return $search ? $search : $fail;
     }
 
     // Generate chunk(s) of array
     public function chunk($chunk = 25, $output = null, $fail = []) {
-        $chunk = array_chunk($this->bucket, $chunk, true);
-        return $output === null ? $chunk : $chunk[$output] ?? $fail;
+        $chunk = array_chunk(__is_anemon__($this->bucket) ? (array) $this->bucket : [], $chunk, true);
+        return !isset($output) ? $chunk : array_key_exists($output, $chunk) ? $chunk[$output] : $fail;
     }
 
     public function swap($a, $b = null) {
@@ -269,7 +265,7 @@ class Anemon extends Genome {
     }
 
     public function __get($key) {
-        return $this->bucket[$key] ?? false;
+        return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : false;
     }
 
     public function __set($key, $value = null) {

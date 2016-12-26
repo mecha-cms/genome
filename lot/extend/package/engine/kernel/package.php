@@ -46,7 +46,7 @@ class Package extends Genome {
             $package = Path::N($this->open);
         }
         // Handling for `Package::take('foo/bar')->pack()`
-        if ($target === null) {
+        if (!isset($target)) {
             $target = Path::D($root) . DS . $package . '.zip';
         } else {
             $target = To::path($target);
@@ -102,7 +102,7 @@ class Package extends Genome {
     }
 
     public function extractTo($target, $bucket = false) {
-        if ($target === null) {
+        if (!isset($target)) {
             $target = Path::D($this->open);
         } else {
             $target = To::path($target);
@@ -138,7 +138,7 @@ class Package extends Genome {
                 $file = Path::D($this->open) . DS . $file;
             }
             if (File::exist($file)) {
-                if ($target === null) {
+                if (!isset($target)) {
                     $target = Path::B($file);
                 }
                 $this->zip->addFile($file, $target);
@@ -235,7 +235,7 @@ class Package extends Genome {
             }
             $this->zip->close();
         }
-        if ($key !== null) {
+        if (isset($key)) {
             return Anemon::get($output, $key, $fail);
         }
         return !empty($output) ? $output : $fail;

@@ -11,12 +11,12 @@ class File extends Genome {
     ];
 
     // Inspect file path
-    public static function inspect($path, $key = null, $fail = false) {
+    public static function inspect($input, $key = null, $fail = false) {
         $path = To::path($input);
         $n = Path::N($path);
         $x = Path::X($path);
         $update = self::T($path);
-        $update_date = $update !== null ? date('Y-m-d H:i:s', $update) : null;
+        $update_date = isset($update) ? date(DATE_WISE, $update) : null;
         $output = [
             'path' => $path,
             'name' => $n,
@@ -33,7 +33,7 @@ class File extends Genome {
             '__update' => $update,
             '__size' => file_exists($path) ? filesize($path) : null
         ];
-        return $key !== null ? Anemon::get($output, $key, $fail) : $output;
+        return isset($key) ? Anemon::get($output, $key, $fail) : $output;
     }
 
     // List all file(s) from a folder
@@ -104,12 +104,16 @@ class File extends Genome {
     public static function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
         $output = "";
-        if ($hand = fopen(self::$path, 'r')) {
+        if (file_exists(self::$path) && ($hand = fopen(self::$path, 'r'))) {
             while (($chunk = fgets($hand, $ch)) !== false) {
-                if (is_int($stop) && $stop === $i) break;
                 $output .= $chunk;
+                if (
+                    is_int($stop) && $stop === $i ||
+                    is_string($stop) && strpos($chunk, $stop) !== false ||
+                    is_array($stop) && strpos($chunk, $stop[0]) === $stop[1] ||
+                    is_callable($stop) && call_user_func($stop, [$chunk, $i], $output)
+                ) break;
                 ++$i;
-                if (is_string($stop) && strpos($chunk, $stop) !== false || is_array($stop) && strpos($chunk, $stop[0]) === $stop[1]) break;
             }
             fclose($hand);
             return rtrim($output);
@@ -162,13 +166,14 @@ class File extends Genome {
         if (!file_exists(Path::D($input))) {
             mkdir(Path::D($input), 0777, true);
         }
-        $hand = fopen($input, 'w') or die('Cannot open file: ' . $input);
-        fwrite($hand, self::$content);
-        fclose($hand);
-        if ($consent !== null) {
-            chmod($input, $consent);
+        if (file_exists($input) && ($hand = fopen($input, 'w'))) {
+            fwrite($hand, self::$content);
+            fclose($hand);
+            if (isset($consent)) {
+                chmod($input, $consent);
+            }
+            self::$path = $input;
         }
-        self::$path = $input;
         return new static;
     }
 
@@ -278,16 +283,16 @@ class File extends Genome {
                 Message::error('file_type');
             }
             // Bad file extension
-            $x_ok = X . implode(X, self:$config['extensions']) . X;
+            $x_ok = X . implode(X, self::$config['extensions']) . X;
             if (strpos($x_ok, X . $x . X) === false) {
                 Message::error('file_extension', $x);
             }
             // Too small
-            if ($file['size'] < self:$config['sizes'][0]) {
+            if ($file['size'] < self::$config['sizes'][0]) {
                 Message::error('file_size.0', self::size($file['size']));
             }
             // Too large
-            if ($file['size'] > self:$config['sizes'][1]) {
+            if ($file['size'] > self::$config['sizes'][1]) {
                 Message::error('file_size.1', self::size($file['size']));
             }
         }

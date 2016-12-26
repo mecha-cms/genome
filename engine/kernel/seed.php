@@ -17,12 +17,12 @@ class Seed extends Genome {
 
     public static function get($k = null, $fail = false) {
         $v = $GLOBALS[self::$config['scope']];
-        if ($k === null) return $v ?? $fail;
+        if (!isset($k)) return isset($v) ? $v : $fail;
         return array_key_exists($k, $v) ? $v[$k] : $fail;
     }
 
     public static function reset($k = null) {
-        if ($k !== null) {
+        if (isset($k)) {
             unset($GLOBALS[self::$config['scope']][$k]);
         } else {
             $GLOBALS[self::$config['scope']] = [];

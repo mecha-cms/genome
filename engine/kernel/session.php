@@ -3,8 +3,9 @@
 class Session extends Genome {
 
     public static function ignite(...$lot) {
-        $path = array_shift($lot) ?? SESSION;
-        if ($path !== null) {
+        $path = array_shift($lot);
+        $path = $path ? $path : SESSION;
+        if (isset($path)) {
             Folder::create($path, 0600);
             session_save_path($path);
         }
@@ -16,12 +17,12 @@ class Session extends Genome {
     }
 
     public static function get($id = null, $fail = "") {
-        if ($id === null) return $_SESSION;
+        if (!isset($id)) return $_SESSION;
         return Anemon::get($_SESSION, $id, $fail);
     }
 
     public static function reset($id = null) {
-        if ($id === null || $id === true) {
+        if (!isset($id) || $id === true) {
             $_SESSION = [];
             if ($id === true) session_destroy();
         } else {

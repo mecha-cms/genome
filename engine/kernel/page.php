@@ -2,8 +2,7 @@
 
 class Page extends Genome {
 
-    protected static $meta = [];
-    protected static $data = "";
+    protected static $data = [];
     protected static $path = "";
 
     public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
@@ -27,46 +26,80 @@ class Page extends Genome {
 
     // Apart ...
     public static function apart($input = null) {
-        $input = n($input ?? file_get_contents(self::$path));
-        $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
-        $input = explode(self::$v[1] . N . N, $input, 2);
-        // Do meta ...
-        self::$meta = [];
-        foreach (explode(self::$v[4], $input[0]) as $v) {
-            $v = explode(self::$v[2], $v, 2);
-            self::$meta[self::v($v[0])] = e(self::v($v[1] ?? false));
+        global $config;
+        $data = [];
+        if (!isset($input)) {
+            $input = self::$path;
         }
-        // Do data ...
-        self::$data = trim($input[1] ?? "");
+        if (is_file($input)) {
+            $data = Get::page($input);
+            $input = n(file_get_contents($input));
+            if (strpos($input, self::$v[0]) !== 0) {
+                $data['content'] = self::v($input);
+            } else {
+                $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
+                $input = explode(self::$v[1] . N . N, $input, 2);
+                // Do meta ...
+                foreach (explode(self::$v[4], $input[0]) as $v) {
+                    $v = explode(self::$v[2], $v, 2);
+                    $data[self::v($v[0])] = e(self::v(isset($v[1]) ? $v[1] : false));
+                }
+                // Do data ...
+                $data['content'] = trim(isset($input[1]) ? $input[1] : "");
+            }
+            $s = self::$path;
+            $input = Path::D($s) . DS . Path::N($s);
+            if (is_dir($input)) {
+                foreach (g($input, 'data') as $v) { // get all `*.data` file(s) from a folder
+                    $a = Path::N($v);
+                    $b = file_get_contents($v);
+                    $data[$a] = e($b);
+                }
+            }
+        }
+        if (!array_key_exists('time', $data)) {
+            $data['time'] = $data['update'];
+        }
+        $data = Anemon::extend($config->page, $data);
+        $url = __url__();
+        $url_path = To::url(str_replace([PAGE_POST . DS, PAGE_POST], "", Path::D($data['path'])));
+        $data['url'] = $url['url'] . ($url_path ? '/' . $url_path : "") . '/' . $data['slug'];
+        $data['date'] = new Date($data['time']);
+        self::$data = $data;
         return new static;
     }
 
     // Unite ...
     public static function unite() {
         $meta = [];
-        foreach (self::$meta as $k => $v) {
+        $data = "";
+        if (isset(self::$data['content'])) {
+            $data = self::$data['content'];
+            unset(self::$data['content']);
+        }
+        foreach (self::$data as $k => $v) {
             $meta[] = self::x($k) . self::$v[2] . self::x(s($v));
         }
-        return self::$v[0] . implode(N, $meta) . self::$v[1] . (self::$data ? N . N . self::$data : "");
+        return self::$v[0] . implode(N, $meta) . self::$v[1] . ($data ? N . N . $data : "");
     }
 
     // Create meta ...
     public static function meta($a) {
-        Anemon::extend(self::$meta, $a);
-        foreach (self::$meta as $k => $v) {
-            if ($v === false) unset(self::$meta[$k]);
+        Anemon::extend(self::$data, $a);
+        foreach (self::$data as $k => $v) {
+            if ($v === false) unset(self::$data[$k]);
         }
         return new static;
     }
 
     // Create data ...
     public static function data($s) {
-        self::$data = $s;
+        self::$data['content'] = $s;
         return new static;
     }
 
-    public static function read($as = 'content', $output = [], $NS = 'page:', $lot = []) {
-        $lot = array_merge($lot, self::$meta);
+    // Read all page propert(y|ies)
+    public static function read($output = [], $NS = 'page.') {
         // Pre-defined page meta ...
         if ($output) {
             foreach ($output as $k => $v) {
@@ -76,19 +109,22 @@ class Page extends Genome {
             }
         }
         // Load page meta ...
-        return self::_meta(array_merge($output, $lot, [$as => self::$data]), $NS, $lot);
+        return self::_meta_hook(array_merge($output, self::$data), $output, $NS);
     }
 
-    protected static function _meta($input, $NS, $lot) {
-        $output = [];
-        foreach ($input as $k => $v) {
-            $v = Hook::NS($NS . '__' . $k, [$v, $lot]);
-            $output['__' . $k] = $v; // private item
-            $v = Hook::NS($NS . 'pattern.i', [$v, $lot]); // before pattern set-up
-            $v = Hook::NS($NS . $k, [$v, $lot]); // public item
-            $v = Hook::NS($NS . 'pattern.o', [$v, $lot]); // after pattern set-up
-            $output[$k] = $v;
+    // Read specific page property
+    public static function get($key, $fail = "", $NS = 'page.') {
+        $input = self::$path;
+        $data = Get::page($input);
+        if (is_dir($input)) {
+            $data[$key] = File::open($input . DS . $key . '.data')->read($fail);
         }
+        return self::_meta_hook($data, $data, $NS)[$key];
+    }
+
+    protected static function _meta_hook($input, $lot, $NS) {
+        $input = Hook::NS($NS . 'input', [$input, $lot]);
+        $output = Hook::NS($NS . 'output', [$input, $lot]);
         return $output;
     }
 

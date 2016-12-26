@@ -1,0 +1,31 @@
+category: Category
+categorys: Categories
+
+feed: Feed
+feeds: Feeds
+
+page: Page
+pages: Pages
+
+post: Post
+posts: Posts
+
+response: Response
+responses: Responses
+
+rss: RSS
+rsss: RSSs
+
+sitemap: Sitemap
+sitemaps: Sitemaps
+
+site_map: Site Map
+site_maps: Site maps
+sites_map: Sites Map
+sites_maps: Sites Maps
+
+tag: Tag
+tags: Tags
+
+_category: Uncategorized
+_tag: Untagged

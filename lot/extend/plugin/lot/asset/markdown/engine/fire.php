@@ -1,29 +1,32 @@
 <?php
 
-function do_markdown_proto() {
+function do_markdown_parse(&$input) {
     $slot = new ParsedownExtraPlugin;
     $slot->links = [];
-    return $slot;
+    $input = $slot->text($input);
 }
 
 From::plug('markdown', function($input) {
-    return do_markdown_proto()->text($input);
+    do_markdown_parse($input);
+    return $input;
 });
 
 To::plug('markdown', function($input) {
     return $input; // TODO
 });
 
-function do_markdown_i(...$a) {
-    return t(call_user_func_array('do_markdown_b', $a), '<p>', '</p>');
+function do_markdown_parse_i(&$input) {
+    do_markdown_parse($input);
+    $input = t($input, '<p>', '</p>');
 }
 
-function do_markdown_b($data, $meta) {
-    if (!isset($meta['content_type']) || $meta['content_type'] === 'Markdown') {
-        return do_markdown_proto()->text($data);
+function do_markdown($data) {
+    if ($data['type'] === 'Markdown') {
+        do_markdown_parse_i($data['title']);
+        do_markdown_parse_i($data['description']);
+        do_markdown_parse($data['content']);
     }
     return $data;
 }
 
-Hook::set('title', 'do_markdown_i', 1);
-Hook::set('content', 'do_markdown_b', 1);
+Hook::set('post.output', 'do_markdown', 1);

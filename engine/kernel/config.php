@@ -28,7 +28,7 @@ class Config extends Genome {
     }
 
     public static function get($a = null, $fail = false) {
-        if ($a === null) {
+        if (!isset($a)) {
             return !empty(self::$bucket) ? o(self::$bucket) : $fail;
         }
         if (__is_anemon__($a)) {
@@ -42,7 +42,7 @@ class Config extends Genome {
     }
 
     public static function reset($a = null) {
-        if ($a !== null) {
+        if (isset($a)) {
             foreach ((array) $a as $v) {
                 Anemon::reset(self::$bucket, $v);
             }
@@ -61,7 +61,8 @@ class Config extends Genome {
             $fail = false;
             if (count($lot)) {
                 $kin .= '.' . array_shift($lot);
-                $fail = array_shift($lot) ?? false;
+                $fail = array_shift($lot);
+                $fail = $fail ? $fail : false;
             }
             return self::get($kin, $fail);
         }
@@ -74,7 +75,8 @@ class Config extends Genome {
             if ($count > 1) {
                 $key = $key . '.' . array_shift($lot);
             }
-            $fail = array_shift($lot) ?? false;
+            $fail = array_shift($lot);
+            $fail = $fail ? $fail : false;
         }
         if (is_string($fail) && strpos($fail, 'fn:') === 0) {
             return call_user_func(substr($fail, 3), self::get($key, false));

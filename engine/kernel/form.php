@@ -10,7 +10,7 @@ class Form extends HTML {
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
-        $attr_o['value'] = self::protect_($value);
+        $attr_o['value'] = self::x($value);
         $attr_o['placeholder'] = $placeholder;
         $attr_o['type'] = $type;
         return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);

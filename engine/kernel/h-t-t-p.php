@@ -79,7 +79,7 @@ class HTTP extends Genome {
     public static function query(...$lot) {
         $q = array_shift($lot);
         $v = array_shift($lot);
-        if ($q === null) return __url__('query');
+        if (!isset($q)) return __url__('query');
         if (count($lot) === 2) {
             $q = [$q => $v];
         }
@@ -90,7 +90,7 @@ class HTTP extends Genome {
             $v = $v !== true ? '=' . urlencode(s($v)) : "";
             $output[] = $k . $v;
         }
-        return !empty($output) ? '?' . implode('&', $output) : "";
+        return !empty($output) ? '?' . implode('&amp;', $output) : "";
     }
 
     public static function _q($a, $k) {
@@ -111,7 +111,7 @@ class HTTP extends Genome {
             if (is_int($k)) {
                 self::status($k);
             } else {
-                if ($v !== null) {
+                if (isset($v)) {
                     header($k . ': ' . $v);
                 } else {
                     header($k);
@@ -126,7 +126,7 @@ class HTTP extends Genome {
     }
 
     public static function mime($mime, $charset = null) {
-        header('Content-Type: ' . $mime . ($charset !== null ? '; charset=' . $charset : ""));
+        header('Content-Type: ' . $mime . (isset($charset) ? '; charset=' . $charset : ""));
         return new static;
     }
 

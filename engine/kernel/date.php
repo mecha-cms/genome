@@ -2,50 +2,38 @@
 
 class Date extends Genome {
 
-    public static $TZ_ = false;
-    public static $formats_ = [];
+    public static $TZ = false;
+    public static $formats = [];
 
-    protected static function format_($input, $format = 'Y-m-d H:i:s') {
-        if (is_callable($format)) {
-            self::$formats_[$input] = $format;
-            return true;
-        }
-        $date = new Date($input);
-        return $date->format($format);
-    }
-
-    protected static function slug_($input) {
-        return self::format_($input, 'Y-m-d-H-i-s');
-    }
-
-    protected static function ago_($input, $key = null, $fail = false, $compact = true) {
-        $date = new Date($input);
-        return $date->ago($key, $fail, $compact);
-    }
-
-    protected static function extract_($input, $key = null, $fail = false) {
-        $date = new Date($input);
-        return $date->extract($key, $fail);
-    }
-
-    protected static function GMT_($input, $format = 'Y-m-d H:i:s') {
-        $date = new Date($input);
-        return $date->GMT($format);
-    }
-
-    protected static function TZ_($zone = null) {
-        if ($zone === null) return self::$TZ_;
-        self::$TZ_ = $zone;
+    public static function TZ($zone = null) {
+        if (!isset($zone)) return self::$TZ;
+        self::$TZ = $zone;
         return date_default_timezone_set($zone);
+    }
+
+    public static function set($format = null, $fn = null) {
+        if (isset($format)) {
+            self::$formats[$format] = $fn;
+        }
+        return self::$formats;
+    }
+
+    public static function reset($format = null) {
+        if (isset($format)) {
+            unset(self::$formats[$format]);
+        } else {
+            self::$formats = [];
+        }
+        return self::$formats;
     }
 
     protected $date = "";
 
     public function __construct($s = null) {
-        $this->date = $s ?? $_SERVER['REQUEST_TIME'] ?? time();
+        $this->date = isset($s) ? $s : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
     }
 
-    public function format($format = 'Y-m-d H:i:s') {
+    public function format($format = DATE_WISE) {
         $date = $this->date;
         if (is_numeric($date)) return date($format, $date);
         if (substr_count($date, '-') === 5) {
@@ -77,8 +65,8 @@ class Date extends Genome {
         $day_long = $days_long[(int) $d];
         $day_short = $days_short[(int) $d];
         $output = [
-            'ISO_8601' => $this->format('c'),
-            'GMT' => $this->GMT('Y-m-d H:i:s'),
+            'W3C' => $this->format('c'),
+            'GMT' => $this->GMT(DATE_WISE),
             'unix' => (int) $this->format('U'),
             'slug' => $year . '-' . $month . '-' . $day . '-' . $hour_24 . '-' . $minute . '-' . $second,
             'year' => $year,
@@ -102,12 +90,13 @@ class Date extends Genome {
             'F5' => $hour_24 . ':' . $minute,
             'F6' => $hour_12 . ':' . $minute . ' ' . $AP
         ];
-        if (!empty(self::$formats_)) {
-            foreach (self::$formats_ as $k => $v) {
-                $output[$k] = call_user_func($v, $k, $output, $language);
+        if (!empty(self::$formats)) {
+            foreach (self::$formats as $k => $v) {
+                if (!is_callable($v)) continue;
+                $output[$k] = call_user_func($v, $output, $language);
             }
         }
-        return $key !== null ? ($output[$key] ?? $fail) : $output;
+        return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;
     }
 
     public function ago($key = null, $fail = false, $compact = true) {
@@ -131,10 +120,10 @@ class Date extends Genome {
             $output[$k] = $v . ' ' . ($v === '1' ? $language->{$k} : $language->{$k . 's'});
         }
         unset($data);
-        return $key !== null ? ($output[$key] ?? $fail) : $output;
+        return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;
     }
 
-    public function GMT($format = 'Y-m-d H:i:s') {
+    public function GMT($format = DATE_WISE) {
         $date_GMT = new DateTime($this->format('c'));
         $date_GMT->setTimeZone(new DateTimeZone('UTC'));
         return $date_GMT->format($format);
@@ -147,10 +136,10 @@ class Date extends Genome {
     public function __set($key, $value = null) {}
 
     public function __toString() {
-        return $this->date;
+        return date(DATE_WISE, $this->date);
     }
 
-    public function __invoke($format = 'Y-m-d H:i:s') {
+    public function __invoke($format = DATE_WISE) {
         return $this->format($format);
     }
 

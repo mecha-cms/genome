@@ -3,7 +3,7 @@
 Shield::plug('chunk', function($input, $fail = false, $buffer = true) {
     $path__ = To::path($input);
     $G = ['name' => $input];
-    $NS = 'shield.chunk:';
+    $NS = 'shield.chunk.';
     if (__is_anemon__($fail)) {
         Shield::$lot = array_merge(Shield::$lot, $fail);
         $fail = false;

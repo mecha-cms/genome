@@ -58,13 +58,13 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
     return $input !== $s[4] && strpos($input, $s[2]) !== false ? json_encode($input) : $input;
 }
 
-To::plug('case', 'w');
+To::plug('text', 'w');
 
-To::plug('case_lower', 'l');
+To::plug('text_lower', 'l');
 
-To::plug('case_upper', 'u');
+To::plug('text_upper', 'u');
 
-To::plug('case_title', function($input) {
+To::plug('text_title', function($input) {
     if (function_exists('mb_strtoupper')) {
         return preg_replace_callback('#(^|[^a-z\d])(\p{Ll})#u', function($m) {
             return $m[1] . mb_strtoupper($m[2]);
@@ -73,18 +73,18 @@ To::plug('case_title', function($input) {
     return ucwords(w($input));
 });
 
-To::plug('case_pascal', 'p');
+To::plug('text_pascal', 'p');
 
-To::plug('case_camel', 'c');
+To::plug('text_camel', 'c');
 
-To::plug('case_slug', 'h');
+To::plug('text_slug', 'h');
 
-To::plug('case_snake', function($input) {
+To::plug('text_snake', function($input) {
     return h($input, '_');
 });
 
-To::plug('title', 'To::case_title');
-To::plug('slug', 'To::case_slug');
+To::plug('title', 'To::text_title');
+To::plug('slug', 'To::text_slug');
 
 To::plug('html', function($input) {
     return $input; // do nothing ...

@@ -7,10 +7,10 @@ class Mecha extends Genome {
 
     // Compare with current version
     public static function version($v = null, $c = null) {
-        if ($c === null) {
+        if (!isset($c)) {
             $c = self::$version;
         }
-        if ($v === null) {
+        if (!isset($v)) {
             return $c;
         }
         $v = explode(' ', $v);

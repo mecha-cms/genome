@@ -2,9 +2,9 @@
 
 class Tag extends \Genome {
 
-    protected static function getByID_($id, $fail = false) {}
-    protected static function getBySlug_($slug, $fail = false) {}
-    protected static function getByScope_($query, $fail = false) {}
-    protected static function getByTitle_($query, $fail = false) {}
+    public static function getByID($id, $fail = false) {}
+    public static function getBySlug($slug, $fail = false) {}
+    public static function getByScope($query, $fail = false) {}
+    public static function getByTitle($query, $fail = false) {}
 
 }

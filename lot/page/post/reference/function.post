@@ -1,0 +1,80 @@
+---
+title: Function Reference
+description: Jump to `engine\ignite.php`
+type: Markdown
+...
+
+### Debug
+
+~~~ .php
+__dump__($foo, $bar, $baz);
+~~~
+
+### Array and Object
+
+#### Convert Array to Object
+
+~~~ .php
+o([
+    'a' => 'b',
+    'c' => 'd',
+    'e' => ['f', 'g', 'h', 'i'],
+    'j' => [
+        0 => 'k',
+        1 => 'l',
+        '2' => 'm'
+    ],
+    'n' => [
+        0 => 'o',
+        1 => 'p',
+        'q' => 'r'
+    ]
+]);
+~~~
+
+Result:
+
+~~~ .php
+stdClass::__set_state([
+    'a' => 'b',
+    'c' => 'd',
+    'e' => ['f', 'g', 'h', 'i'], // array with numeric keys will not be converted into object
+    'j' => ['k', 'l', 'm'],
+    'n' => stdClass::__set_state([
+        0 => 'o',
+        1 => 'p',
+        'q' => 'r'
+    ])
+])
+~~~
+
+#### Convert Object to Array
+
+~~~ .php
+$test = new stdClass;
+$test->a = 'b';
+$test->c = new Date;
+$test->d = (object) [
+    'year' => 0,
+    'month' => 0,
+    'day' => 0
+];
+
+a($test);
+~~~
+
+Result:
+
+~~~ .php
+[
+    'a' => 'b',
+    'c' => Date::__set_state([ // class instance will not be converted into array
+        'date' => '2016-12-25 23:11:16'
+    ]),
+    'd' => [
+        'year' => 0,
+        'month' => 0,
+        'day' => 0
+    ]
+]
+~~~

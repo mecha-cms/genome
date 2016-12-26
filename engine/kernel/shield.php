@@ -9,7 +9,7 @@ class Shield extends Genome {
             $info = self::info($info)->version;
         } else {
             $info = (object) $info;
-            $info = $info->version ?? '0.0.0';
+            $info = isset($info->version) ? $info->version : '0.0.0';
         }
         return Mecha::version($v, $info);
     }
@@ -25,7 +25,7 @@ class Shield extends Genome {
                 self::$lot['lot'][$v . 's'] = [];
             }
         }
-        if ($key !== null) {
+        if (isset($key)) {
             return Anemon::get(self::$lot, $key, $fail);
         }
         return self::$lot;
@@ -47,39 +47,42 @@ class Shield extends Genome {
     }
 
     public static function info($folder = null, $a = false) {
-        $folder = $folder ?? Config::get('shield');
+        $folder = isset($folder) ? $folder : Config::get('shield');
         $i18n = new Language;
         // Check whether the localized "about" file is available
         $f = SHIELD . DS . $folder . DS;
         if (!$info = File::exist($f . 'about.' . Config::get('language') . '.txt')) {
             $info = $f . 'about.txt';
         }
-        $info = Page::open($info)->read('content', [
+        $info = Page::open($info)->read([
             'id' => Folder::exist(SHIELD . DS . $folder) ? $folder : null,
             'title' => To::title($folder),
             'author' => $i18n->anon,
-            'link' => '#',
             'version' => '0.0.0',
             'content' => $i18n->_message_avail($i18n->description)
-        ], strtolower(static::class) . ':');
+        ], strtolower(static::class) . '.');
         return $a ? $info : o($info);
     }
 
     public static function attach($input, $fail = false, $buffer = true) {
         $path__ = To::path($input);
+        if (substr($path__, -4) !== '.php') {
+            $path__ .= '.php';
+        }
         $s = explode('-', Path::N($input), 2);
         $G = ['name' => $input, 'name.base' => $s[0]];
-        $NS = strtolower(static::class) . ':';
+        $NS = strtolower(static::class) . '.';
         $i18n = new Language;
         if (strpos($path__, ROOT) === 0 && is_file($path__)) {
             // do nothing ...
         } else {
-            if ($_path = File::exist(self::path($path__, $fail))) {
+            $r = SHIELD . DS . Config::get('shield') . DS;
+            if ($_path = File::exist(self::path($r . $path__, $fail))) {
                 $path__ = $_path;
-            } elseif ($_path = File::exist(self::path($s[0], $fail))) {
+            } elseif ($_path = File::exist(self::path($r . $s[0], $fail))) {
                 $path__ = $_path;
             } else {
-                exit($i18n->_message_error_file_exist('<code>' . $path__ . '</code>'));
+                Guardian::abort($i18n->_message_error_file_exist('<code>' . $r . $path__ . '</code>'));
             }
         }
         $lot__ = self::cargo();

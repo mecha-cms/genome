@@ -11,7 +11,7 @@ class Guardian extends Genome {
 
     public static function user($k = null, $fail = false) {
         if ($log = Cookie::get(self::$config['session']['user'])) {
-            return $k !== null ? ($log[$k] ?? $fail) : $log;
+            return isset($k) ? (array_key_exists($k, $log) ? $log[$k] : $fail) : $log;
         }
         return $fail;
     }
@@ -26,7 +26,7 @@ class Guardian extends Genome {
                 ], 'user:');
             }
             $ally = Hook::fire('users', $ally);
-            return $id !== null ? ($ally[$id] ?? $fail) : $ally;
+            return isset($id) ? (array_key_exists($id, $ally) ? $ally[$id] : $fail) : $ally;
         } else {
             self::abort('Missing <code>' . ENGINE . DS . 'log' . DS . 'users</code> folder.');
         }

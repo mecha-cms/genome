@@ -41,7 +41,8 @@ class URL extends Genome {
     public static function __callStatic($kin, $lot) {
         $a = __url__();
         if (!self::kin($kin)) {
-            return $a[$kin] ?? array_shift($lot) ?? false;
+            $fail = array_shift($lot);
+            return array_key_exists($kin, $a) ? $a[$kin] : ($fail ? $fail : false);
         }
         return parent::__callStatic($kin, $lot);
     }
@@ -53,7 +54,7 @@ class URL extends Genome {
     }
 
     public function __get($key) {
-        return $this->{$key} ?? false;
+        return isset($this->{$key}) ? $this->{$key} : false;
     }
 
     public function __set($key, $value = null) {

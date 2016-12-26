@@ -6,7 +6,7 @@ class Folder extends File {
         foreach ((array) $input as $k => $v) {
             if (!file_exists($v)) {
                 if (is_array($consent)) {
-                    $c = $consent[$k] ?? end($consent);
+                    $c = array_key_exists($k, $consent) ? $consent[$k] : end($consent);
                 } else {
                     $c = $consent;
                 }

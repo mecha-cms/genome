@@ -76,6 +76,16 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
+    // Is file?
+    public static function F($x) {
+        return is_file($x);
+    }
+
+    // Is directory?
+    public static function D($x) {
+        return is_dir($x);
+    }
+
     // Is equal to `$x`
     public static function eq($x) {
         return q(self::$bucket) === $x;

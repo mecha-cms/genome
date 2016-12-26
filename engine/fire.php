@@ -7,7 +7,7 @@ d(ENGINE . DS . 'kernel', function($w, $n) {
     }
 });
 
-File::$config['extensions'] = array_unique(array_merge(FONT_X, IMAGE_X, MEDIA_X, PACKAGE_X, SCRIPT_X));
+File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X . ',' . MEDIA_X . ',' . PACKAGE_X . ',' . SCRIPT_X));
 
 Session::ignite();
 Config::ignite();
@@ -19,10 +19,20 @@ $seeds = [
     'url' => new URL
 ];
 
+// set default date time zone
+Date::TZ($seeds['config']->TZ);
+
 // plant and extract ...
 extract(Seed::set($seeds)->get(null, []));
 
-r(EXTEND . DS . '*', '{index.php,index__.php,__index.php}', function($f) use($seeds) {
+$extends = [];
+foreach (g(EXTEND . DS . '*', '{index.php,index__.php,__index.php}') as $v) {
+    $extends[str_replace(EXTEND . DS, "", $v)] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
+}
+
+asort($extends);
+
+r(EXTEND, array_keys($extends), function($f) use($seeds) {
     extract($seeds);
     $i18n = Path::D($f) . DS . 'lot' . DS . 'language';
     if (!$l = File::exist($i18n . DS . $config->language . '.txt')) {

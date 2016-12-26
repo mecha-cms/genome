@@ -1,0 +1,35 @@
+---
+title: Class `Route`
+description: Do something if URL path matched with pattern.
+type: Markdown
+...
+
+### Pattern
+
+Pattern | Description
+------- | -----------
+`%s` | Matched with any but `/`
+`%i` | Matched with any numbers.
+`%f` | Matched with any numbers and floats.
+`%` | Matched with any and `/`
+`%[foo,bar]` | Matched with `foo` and `bar`
+
+### Set
+
+### Reset
+
+### Exist
+
+### Get
+
+### Post
+
+### Is
+
+### Pattern
+
+### Fire
+
+### Hook
+
+### Hooked

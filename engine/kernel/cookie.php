@@ -33,13 +33,13 @@ class Cookie extends Genome {
 
     public static function get($id = null, $fail = "") {
         $c = isset($_COOKIE) ? e($_COOKIE) : $fail;
-        if ($id === null) return $c;
+        if (!isset($id)) return $c;
         $v = Anemon::get($c, $id, $fail);
-        return !is_array($v) && ($o = To::anemon(From::base64($v))) !== null ? $o : $v;
+        return !is_array($v) && isset($o = To::anemon(From::base64($v))) ? $o : $v;
     }
 
     public static function reset($id = null) {
-        if ($id === null) {
+        if (!isset($id)) {
             $_COOKIE = [];
             foreach (explode(';', $_SERVER['HTTP_COOKIE'] ?? "") as $v) {
                 $c = explode('=', $v, 2);

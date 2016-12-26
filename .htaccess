@@ -39,7 +39,7 @@ AddDefaultCharset UTF-8
 <ifModule mod_gzip.c>
     mod_gzip_on Yes
     mod_gzip_dechunk Yes
-    mod_gzip_item_include file \.(archive|cache|css|eot|hold|html?|js(onp?|ld)?|otf|php|pl|ttf|txt|xml)$
+    mod_gzip_item_include file \.(archive|cache|css|data|draft|eot|html?|js(onp?|ld)?|otf|php|pl|post|ttf|txt|xml)$
     mod_gzip_item_include handler ^cgi-script$
     mod_gzip_item_include mime ^text/.*
     mod_gzip_item_include mime ^application/.*

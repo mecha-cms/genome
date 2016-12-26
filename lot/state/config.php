@@ -7,16 +7,22 @@ return [
     'directions' => ['ltr', 'rtl'],
     'language' => 'en-us',
     'languages' => ['en-us', 'id-id'],
+    'title' => 'Mecha CMS',
+    'description' => 'The site slogan.',
     'page' => [
-        'title' => 'My Awesome Site',
-        'description' => 'My awesome description.',
-        'query' => ['foo', 'bar', 'baz', 'qux'],
+        'time' => "",
+        'kind' => [0],
+        'slug' => '--',
+        'state' => 'post',
+        'title' => "",
+        'description' => "",
+        'query' => [],
         'type' => "",
         'author' => '@ta.tau.taufik',
-        'link' => null
+        'link' => null,
+        'content' => ""
     ],
-    'separator' => ' &ndash; ',
-    'separators' => [' &ndash; ', ' &middot; '],
-    'shield' => 'normal',
-    'shields' => ['normal']
+    'shield' => 'blastula',
+    'shields' => ['blastula', 'journal'],
+    'TZ' => 'Asia/Jakarta'
 ];

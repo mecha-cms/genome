@@ -457,7 +457,7 @@ footer.panel-block {
   text-overflow:ellipsis;
 }
 .grid,
-.grid-meta {
+.grid-data {
   display:table;
   border-spacing:0;
   border-collapse:collapse;
@@ -466,17 +466,17 @@ footer.panel-block {
   margin-top:.5em;
 }
 .grid,
-.grid-meta:first-child {margin-top:0}
+.grid-data:first-child {margin-top:0}
 legend + .grid,
-legend + .grid-meta {margin-top:-.5em}
-.grid-span,
-.grid-meta-key,
-.grid-meta-value {
+legend + .grid-data {margin-top:-.5em}
+.col,
+.col-data-key,
+.col-data-value {
   display:table-cell;
   vertical-align:top;
   position:relative;
 }
-.grid-meta-key {
+.col-data-key {
   width:7.5em;
   border-top:1px solid transparent; /* same as `border-top-width` of `.input` */
   padding:.25em 1.5em 0 0;
@@ -485,9 +485,9 @@ legend + .grid-meta {margin-top:-.5em}
   text-overflow:ellipsis;
   text-align:right;
 }
-.grid-meta.expand .grid-meta-key {width:15em}
-.grid-meta.actions {margin-top:1.25em}
-.grid-meta.actions .grid-meta-value {
+.grid-data.expand .col-data-key {width:15em}
+.grid-data.actions {margin-top:1.25em}
+.grid-data.actions .col-data-value {
   padding-top:1.25em;
   border-top:1px solid #262626;
 }
@@ -647,6 +647,29 @@ legend + .grid-meta {margin-top:-.5em}
 .tab-main > .tab-header .tab-button:before,
 .tab-main > .tab-header .tab-button:after {display:none}
 .tab-main > .tab-header .tab-button.on {color:inherit}
+
+.messages {margin-bottom:1.5em}
+.message {
+  margin:0;
+  padding:1em 1em 1em 3em;
+  background:#aaa;
+  color:#222;
+  position:relative;
+}
+.message-error {background:#eaa}
+.message-success {background:#aea}
+.message-info {background:#aae}
+.message-warning {background:#eea}
+.message + .message {margin-top:.25em}
+.message .i {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  padding:1em;
+  line-height:inherit;
+  width:3em;
+}
 
 .drop-zone {max-width:24em}
 .drop-zone label {

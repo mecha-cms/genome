@@ -1,0 +1,71 @@
+---
+title: Class `Date`
+description: Working with date and time.
+type: Markdown
+...
+
+### Set Default Date Time Zone
+
+Find the complete list of time zones supported by PHP [here](http://php.net/manual/en/timezones.php "List of Supported Timezones").
+
+~~~ .php
+Date::TZ('Asia/Jakarta');
+~~~
+
+### Get the Current Time Zone
+
+~~~ .php
+echo Date::TZ();
+~~~
+
+### Date Formatter
+
+Read more about date formatting patterns [here](http://php.net/manual/en/function.date.php "PHP date()").
+
+~~~ .php
+$date = new Date('2016/04/21 16:00:00');
+echo $date->format('c');
+~~~
+
+Result:
+
+~~~ .no-highlight
+2016-04-21T16:00:00+07:00
+~~~
+
+### Convert Time to Slug
+
+~~~ .php
+$date = new Date('2016/04/21 16:00:00');
+echo $date->slug;
+~~~
+
+Result:
+
+~~~ .no-highlight
+2016-04-21-16-00-00
+~~~
+
+---
+
+### Advance
+
+#### Custom Format
+
+~~~ .php
+Date::set('my_format', function($output, $language) {
+    return $output['year'] . '/' . $output['month'] . '/' . $output['day'];
+});
+~~~
+
+Usage:
+
+~~~ .php
+$date = new Date('2016/04/21 16:00:00');
+
+// [1]
+echo $date->extract('my_format');
+
+// [2]
+echo $date->my_format;
+~~~

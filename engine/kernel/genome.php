@@ -11,10 +11,10 @@ abstract class Genome {
     // Show the added method(s)
     public static function kin($kin = null, $fail = false, $origin = false) {
         $c = static::class;
-        if ($kin !== null) {
+        if (isset($kin)) {
             $kin .= self::$_suffix;
             if (!isset(self::$_[0][$c][$kin])) {
-                $output = self::$_[1][$c][$kin] ?? $fail;
+                $output = isset(self::$_[1][$c][$kin]) ? self::$_[1][$c][$kin] : $fail;
                 return $origin && method_exists($c, $kin) ? 1 : $output;
             }
             return $fail;
@@ -42,12 +42,12 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot) {
         $c = static::class;
-        $kin_ = $kin .= self::$_suffix;
+        $kin_ = ($kin .= self::$_suffix);
         if (method_exists($c, $kin_)) {
             return call_user_func_array('self::' . $kin_, $lot);
         }
         if (!isset(self::$_[1][$c][$kin_])) {
-            echo('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
+            echo 'Method <code>' . $c . '::' . $kin . '()</code> does not exist.';
             return false;
         }
         return call_user_func_array(self::$_[1][$c][$kin_], $lot);

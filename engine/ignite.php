@@ -59,11 +59,11 @@ function __is_json__($x) {
 function __is_serialize__($x) {
     if (!is_string($x) || !trim($x)) {
         return false;
-    } elseif ($x === 'N;') {
+    } else if ($x === 'N;') {
         return true;
-    } elseif (strpos($x, ':') === false) {
+    } else if (strpos($x, ':') === false) {
         return false;
-    } elseif ($x === 'b:1;' || $x === 'b:0;' || $x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}') {
+    } else if ($x === 'b:1;' || $x === 'b:0;' || $x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}') {
         return true;
     }
     return strpos($x, 'a:') === 0 || strpos($x, 'O:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0;
@@ -72,51 +72,58 @@ function __is_serialize__($x) {
 function __dump__(...$a) {
     foreach ($a as $b) {
         $s = var_export($b, true);
-        echo '<pre style="word-wrap:break-word;white-space:pre-wrap;">';
-        highlight_string("<?php\n\n" . $s . "\n\n?>");
+        echo '<pre style="word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:1px solid;padding:.5em;">';
+        echo str_replace(["\n", "\r"], "", highlight_string("<?php\n\n" . $s . "\n\n?>", true));
         echo '</pre>';
     }
 }
 
+// Convert class name to file name
 function __c2f__($x) {
     return str_replace(['\\-', '_-'], ['.', '_'], h($x, '-', '_\\'));
 }
 
+// Convert file name to class name
 function __f2c__($x) {
     return p(str_replace('.', '\\', $x), "", '_\\');
 }
 
+$scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
+$protocol = $scheme . '://';
+$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : "");
+$sub = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
+$sub = $sub === '.' ? "" : trim($sub, '/');
+$url = rtrim($protocol . $host  . '/' . $sub, '/');
+$path = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
+$path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $sub . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
+
+if ($path !== "") {
+    array_shift($_GET);
+}
+
+$query = http_build_query($_GET);
+$current = rtrim($url . '/' . $path, '/');
+
+$__url__ = [
+    'scheme' => $scheme,
+    'protocol' => $protocol,
+    'host' => $host,
+    'port' => (int) $_SERVER['SERVER_PORT'],
+    'user' => null,
+    'pass' => null,
+    'sub' => $sub,
+    'url' => $url,
+    'path' => $path,
+    'query' => $query ? '?' . $query : "",
+    'previous' => isset($_SESSION['url']['previous']) ? $_SESSION['url']['previous'] : null,
+    'current' => $current,
+    'next' => isset($_SESSION['url']['next']) ? $_SESSION['url']['next'] : null,
+    'hash' => isset($_COOKIE['url']['hash']) ? $_COOKIE['url']['hash'] : null
+];
+
 function __url__($key = null, $fail = false) {
-    $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
-    $protocol = $scheme . '://';
-    $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
-    $sub = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
-    $sub = $sub === '.' ? "" : trim($sub, '/');
-    $url = rtrim($protocol . $host  . '/' . $sub, '/');
-    $s = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
-    $path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $sub . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $s;
-    if ($path !== "") {
-        array_shift($_GET);
-    }
-    $query = http_build_query($_GET);
-    $current = rtrim($url . '/' . $path, '/');
-    $a = [
-        'scheme' => $scheme,
-        'protocol' => $protocol,
-        'host' => $host,
-        'port' => (int) $_SERVER['SERVER_PORT'],
-        'user' => null,
-        'pass' => null,
-        'sub' => $sub,
-        'url' => $url,
-        'path' => $path,
-        'query' => $query ? '?' . $query : "",
-        'previous' => $_SESSION['url']['previous'] ?? null,
-        'current' => $current,
-        'next' => $_SESSION['url']['next'] ?? null,
-        'hash' => $_COOKIE['url']['hash'] ?? null
-    ];
-    return $key !== null ? ($a[$key] ?? $fail) : $a;
+    global $__url__;
+    return isset($key) ? (array_key_exists($key, $__url__) ? $__url__[$key] : $fail) : $__url__;
 }
 
 // a: convert object to array
@@ -144,7 +151,7 @@ function __url__($key = null, $fail = false) {
 // w: convert any data to plain word(s)
 // x: escape
 // y: output/yield an echo-based function as normal return value
-// z: export array/object into a compect PHP string
+// z: export array/object into a compact PHP file
 
 function a($o, $safe = true) {
     if (__is_anemon__($o)) {
@@ -188,9 +195,9 @@ function e($x) {
         if ($x === "") return $x;
         if (is_numeric($x)) {
             return strpos($x, '.') !== false ? (float) $x : (int) $x;
-        } elseif (__is_json__($x) && $v = json_decode($x, true)) {
+        } else if (__is_json__($x) && $v = json_decode($x, true)) {
             return $v;
-        } elseif ($x[0] === '"' || $x[0] === "'") {
+        } else if ($x[0] === '"' || $x[0] === "'") {
             return t($x, $x[0]);
         }
         $xx = [
@@ -210,7 +217,7 @@ function e($x) {
             'off' => false
         ];
         return array_key_exists($x, $xx) ? $xx[$x] : $x;
-    } elseif (__is_anemon__($x)) {
+    } else if (__is_anemon__($x)) {
         foreach ($x as &$v) {
             $v = e($v);
         }
@@ -720,14 +727,14 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
 }
 
 // $s: directory path
-// $x: file name pattern ... 'txt', '{log,txt}', 'foo/'
+// $x: file extension or name pattern ... `txt`, `log,txt`, `foo/`
 // $q: filter by query
-// $S: sort?
+// $o: order?
 // $h: include hidden file(s)?
-function g($s, $x = '*', $q = "", $S = true, $h = true) {
+function g($s = ROOT, $x = '*', $q = "", $o = true, $h = true) {
     $x = str_replace(' ', "", $x);
     $F = GLOB_NOSORT;
-    if (strpos($x, '{') !== false) {
+    if (strpos($s . $x, '{') !== false) {
         $F = substr($x, -1) === '/' ? GLOB_ONLYDIR | GLOB_BRACE | GLOB_NOSORT : GLOB_BRACE | GLOB_NOSORT;
     } else {
         if (substr($x, -1) === '/') {
@@ -739,37 +746,40 @@ function g($s, $x = '*', $q = "", $S = true, $h = true) {
             }
         } else {
             if (strpos($x, ',') !== false) {
-                $x = '{' . $x . '}';
+                $x = strpos($x, '.') === false ? '*.{' . $x . '}' : '{' . $x . '}';
+                $F = GLOB_BRACE | GLOB_NOSORT;
+            } else if (strpos($x, '.') === false) {
+                $x = '*.' . $x;
                 $F = GLOB_BRACE | GLOB_NOSORT;
             }
-            $x = '*.' . $x;
         }
     }
-    $g = glob($s . DS . $x, $F);
+    $g = glob(rtrim($s, DS) . DS . $x, $F);
     if ($h) {
         $g = array_merge(glob($s . '.' . $x, $F), $g);
     }
     if (!$q) {
-        if ($S) natsort($g);
+        if ($o) natsort($g);
         return $g;
     }
-    $o = [];
+    $O = [];
     if (is_callable($q)) {
         foreach ($g as $k => $v) {
             if (call_user_func($q, $v, $k)) {
-                $o[] = $v;
+                $O[] = $v;
             }
         }
     } else {
         foreach ($g as $k => $v) {
-            if (strpos($v, $q) !== false) {
-                $o[] = $v;
+            $s = basename($v, '.' . pathinfo($v, PATHINFO_EXTENSION));
+            if (strpos($s, $q) !== false) {
+                $O[] = $v;
             }
         }
     }
-    if ($S) natsort($o);
+    if ($o) natsort($O);
     unset($g);
-    return $o;
+    return $O;
 }
 
 function h($x, $s = '-', $X = "") {
@@ -778,22 +788,34 @@ function h($x, $s = '-', $X = "") {
     }, $x), $s, true, 'a-zA-Z\d' . x($X));
 }
 
-function i($a, $b = [], $fn = null, $s = []) {
+function i($a, $b = [], $fn = [null, null], $s = []) {
+    if (!is_array($fn)) {
+        $fn = [null, $fn];
+    }
+    if (!isset($fn[1])) {
+        $fn[1] = null;
+    }
     if (__is_anemon__($b)) {
         foreach ($b as $v) {
             if ($s) extract($s);
             $v = $a . DS . $v;
+            if (is_callable($fn[0])) { // before
+                call_user_func($fn[0], $v, $s);
+            }
             include $v;
-            if (is_callable($fn)) {
-                call_user_func($fn, $v, $s);
+            if (is_callable($fn[1])) { // after
+                call_user_func($fn[1], $v, $s);
             }
         }
     } else {
         foreach (g($a, $b) as $v) {
             if ($s) extract($s);
+            if (is_callable($fn[0])) { // before
+                call_user_func($fn[0], $v, $s);
+            }
             include $v;
-            if (is_callable($fn)) {
-                call_user_func($fn, $v, $s);
+            if (is_callable($fn[1])) { // after
+                call_user_func($fn[1], $v, $s);
             }
         }
     }
@@ -808,7 +830,7 @@ function l($x) {
 
 function m() {}
 
-function n($x, $t = I) {
+function n($x, $t = DENT) {
     // Tab to 2 space(s), line-break to `\n`
     return str_replace(["\t", "\r\n", "\r"], [$t, N, N], $x);
 }
@@ -835,30 +857,42 @@ function p($x, $s = "", $X = "") {
 function q($x, $deep = false) {
     if (is_int($x) || is_float($x)) {
         return $x;
-    } elseif (is_string($x)) {
+    } else if (is_string($x)) {
         return function_exists('mb_strlen') ? mb_strlen($x) : strlen($x);
-    } elseif (__is_anemon__($x)) {
+    } else if (__is_anemon__($x)) {
         return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
     return count($x);
 }
 
-function r($a, $b = [], $fn = null, $s = []) {
+function r($a, $b = [], $fn = [null, null], $s = []) {
+    if (!is_array($fn)) {
+        $fn = [null, $fn];
+    }
+    if (!isset($fn[1])) {
+        $fn[1] = null;
+    }
     if (__is_anemon__($b)) {
         foreach ($b as $v) {
             if ($s) extract($s);
             $v = $a . DS . $v;
+            if (is_callable($fn[0])) { // before
+                call_user_func($fn[0], $v, $s);
+            }
             require $v;
-            if (is_callable($fn)) {
-                call_user_func($fn, $v, $s);
+            if (is_callable($fn[1])) { // after
+                call_user_func($fn[1], $v, $s);
             }
         }
     } else {
         foreach (g($a, $b) as $v) {
             if ($s) extract($s);
+            if (is_callable($fn[0])) { // before
+                call_user_func($fn[0], $v, $s);
+            }
             require $v;
-            if (is_callable($fn)) {
-                call_user_func($fn, $v, $s);
+            if (is_callable($fn[1])) { // after
+                call_user_func($fn[1], $v, $s);
             }
         }
     }
@@ -867,11 +901,11 @@ function r($a, $b = [], $fn = null, $s = []) {
 function s($x) {
     if ($x === true) {
         return 'true';
-    } elseif ($x === false) {
+    } else if ($x === false) {
         return 'false';
-    } elseif ($x === null) {
+    } else if ($x === null) {
         return 'null';
-    } elseif (__is_anemon__($x)) {
+    } else if (__is_anemon__($x)) {
         foreach ($x as &$v) {
             $v = s($v);
         }
@@ -882,7 +916,7 @@ function s($x) {
 }
 
 function t($x, $o = '"', $c = null) {
-    $c = $c ?? $o;
+    $c = isset($c) ? $c : $o;
     if ($x && strpos($x, $o) === 0 && substr($x, -strlen($c)) === $c) {
         return substr(substr($x, strlen($o)), 0, -strlen($c));
     }
@@ -942,14 +976,14 @@ function y($x, $a = []) {
 // $b: use `[]` or `array()` syntax?
 function z($a, $b = true) {
     $a = json_encode($a);
-	$a = preg_split('#("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')#', $a, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);var_dump($a);
-	$s = "";
-	foreach ($a as $v) {
-		if ($v[0] === '"' && substr($v, -1) === '"') {
-			$s .= "'" . json_decode($v) . "'";
-		} else {
-			$s .= str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
-		}
-	}
-	return $s;
+    $a = preg_split('#("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')#', $a, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+    $s = "";
+    foreach ($a as $v) {
+        if ($v[0] === '"' && substr($v, -1) === '"') {
+            $s .= "'" . json_decode($v) . "'";
+        } else {
+            $s .= str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
+        }
+    }
+    return $s;
 }

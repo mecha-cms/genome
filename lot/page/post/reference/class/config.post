@@ -1,0 +1,113 @@
+---
+title: Class `Config`
+description: Configuration getter and setter.
+type: Markdown
+...
+
+### Set
+
+Set new value:
+
+~~~ .php
+Config::set('test', '#ok');
+~~~
+
+Then, you can call the value of `test` in the page after the declaration above this way:
+
+~~~ .php
+echo Config::get('test'); // => `#ok`
+~~~
+
+Or you could also set multiple variables with the help of array:
+
+~~~ .php
+Config::set([
+    'foo' => 'bar',
+    'baz' => 'qux'
+]);
+~~~
+
+Or with dot notation:
+
+~~~ .php
+Config::set('author.name', '#test');
+~~~
+
+There is also a shortcut variable called `$config` which also able to do the same:
+
+~~~ .php
+$config->test = '#ok';
+~~~
+
+### Get
+
+Perform a test:
+
+~~~ .php
+__dump__(Config::get());
+~~~
+
+Result:
+
+~~~ .php
+[
+    'TZ' => 'Asia/Jakarta',
+    'encoding' => 'utf-8',
+    'language' => 'en-us',
+    'direction' => 'ltr',
+    'shield' => 'normal',
+    'title' => 'My Site',
+    'description' => 'My site description.',
+    'query' => ['my', 'site', 'key', 'words', 'goes', 'here'],
+    'lot' => [ … ],
+    '__i18n' => [ … ]
+];
+~~~
+
+Get item by key:
+
+~~~ .php
+echo Config::get('title');
+~~~
+
+With dot notation:
+
+~~~ .php
+echo Config::get('author.name');
+~~~
+
+This will return the value of `foo` if available, otherwise, return `false`:
+
+~~~ .php
+echo Config::get('foo', false);
+~~~
+
+Get multiple data at once:
+
+~~~ .php
+$data = Config::get([
+    'title' => false,
+    'description' => false,
+    'author' => false
+]);
+~~~
+
+### Reset
+
+Remove item by key:
+
+~~~ .php
+Config::reset('title');
+~~~
+
+With dot notation:
+
+~~~ .php
+Config::reset('author.name');
+~~~
+
+Remove multiple data at once:
+
+~~~ .php
+Config::reset(['title', 'description', 'author']);
+~~~

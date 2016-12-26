@@ -2,19 +2,19 @@
 
 class Post extends \Genome {
 
-    protected static function get_($fail = []) {
+    public static function get($fail = []) {
         return \Shield::cargo('lot.post', $fail);
     }
 
-    protected static function getByID_($id, $fail = false) {}
-    protected static function getByTime_($time, $fail = false) {}
-    protected static function getByKind_($kind, $fail = false) {}
-    protected static function getBySlug_($slug, $fail = false) {}
-    protected static function getByStatus_($query, $fail = false) {}
-    protected static function getByQuery_($query, $fail = false) {}
+    public static function getByID($id, $fail = false) {}
+    public static function getByTime($time, $fail = false) {}
+    public static function getByKind($kind, $fail = false) {}
+    public static function getBySlug($slug, $fail = false) {}
+    public static function getByStatus($query, $fail = false) {}
+    public static function getByQuery($query, $fail = false) {}
 
     public static function __callStatic($kin, $lot) {
-        $post = self::get_((object) []);
+        $post = self::get((object) []);
         if (!self::kin($kin)) {
             return $post->{$kin} ?? array_shift($lot) ?? false;
         }
