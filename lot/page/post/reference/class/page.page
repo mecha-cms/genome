@@ -1,0 +1,28 @@
+---
+title: Class `Page`
+description: Working with pages.
+type: Markdown
+...
+
+### Open
+
+### Data
+
+### Apart
+
+### Read
+
+### Get
+
+### Save
+
+### Save To
+
+---
+
+### Constructor
+
+~~~ .php
+// `Page($path, $shift, $lot, $NS)`
+$page = new Page('path\to\file.page', "", [], 'page.');
+~~~

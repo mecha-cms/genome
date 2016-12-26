@@ -13,7 +13,7 @@ return [
         'time' => "",
         'kind' => [0],
         'slug' => '--',
-        'state' => 'post',
+        'state' => 'page',
         'title' => "",
         'description' => "",
         'query' => [],
@@ -22,7 +22,7 @@ return [
         'link' => null,
         'content' => ""
     ],
-    'shield' => 'blastula',
-    'shields' => ['blastula', 'journal'],
+    'shield' => 'document',
+    'shields' => ['document', 'journal'],
     'TZ' => 'Asia/Jakarta'
 ];

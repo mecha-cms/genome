@@ -94,7 +94,29 @@ Hook::fire('the_header'); // → `<meta name="generator" content="Mecha">`
 
 ### Advance
 
-#### Using Arguments
+#### Namespaces
+
+This …
+
+~~~ .php
+Hook::NS('foo.bar.baz', [$a, $b]);
+~~~
+
+… is equal to this:
+
+~~~ .php
+Hook::fire(['foo.bar.baz', 'foo.bar', 'foo'], [$a, $b]);
+~~~
+
+… is equal to these:
+
+~~~ .php
+Hook::fire('foo.bar.baz', [$a, $b]);
+Hook::fire('foo.bar', [$a, $b]);
+Hook::fire('foo', [$a, $b]);
+~~~
+
+#### Arguments
 
 With named function as the ID:
 
