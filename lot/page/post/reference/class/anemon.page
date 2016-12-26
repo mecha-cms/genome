@@ -274,6 +274,44 @@ $test_2 = 1;
 $test_3 = '#';
 ~~~
 
+#### Is
+
+Reduce array data to those that pass the function’s test.
+
+~~~ .php
+$test = Anemon::eat($array)->is(function($value, $key) {
+    return $value < 2;
+})->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'foo' => 0,
+    'bar' => 1
+];
+~~~
+
+#### Not
+
+Reduce array data to those that does not pass the function’s test.
+
+~~~ .php
+$test = Anemon::eat($array)->not(function($value, $key) {
+    return $value < 2;
+})->vomit();
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'baz' => 2,
+    'qux' => 3
+];
+~~~
+
 #### Shake
 
 Shuffle array values.
@@ -293,7 +331,7 @@ $test = [
 ];
 ~~~
 
-### Sort
+#### Sort
 
 Sort array values.
 
@@ -319,17 +357,21 @@ $array = [
     ]
 ];
 
+
+//  `1`: ASC
+// `-1`: DESC
+
 // basic
-$test_1 = Anemon::eat($array)->sort('ASC')->vomit();
+$test_1 = Anemon::eat($array)->sort(1)->vomit();
 
 // sort by value of the `color` property
-$test_2 = Anemon::eat($array)->sort('ASC', 'color')->vomit();
+$test_2 = Anemon::eat($array)->sort(1, 'color')->vomit();
 
 // preserve original array key
-$test_3 = Anemon::eat($array)->sort('DESC', 'color', true)->vomit();
+$test_3 = Anemon::eat($array)->sort(-1, 'color', true)->vomit();
 
 // set default value of array item with missing `color` property as `#black`
-$test_4 = Anemon::eat($array)->sort('DESC', 'color', true, '#black')->vomit();
+$test_4 = Anemon::eat($array)->sort(-1, 'color', true, '#black')->vomit();
 ~~~
 
 Result:
@@ -415,27 +457,7 @@ $test_4 = [
 ];
 ~~~
 
-### Alter
-
-This is just a shortcut for `switch` and `case` statements:
-
-~~~ .php
-$input = 'bar';
-
-$test = Anemon::alter($input, [
-    'foo' => 1,
-    'bar' => 2,
-    'baz' => 3
-]);
-~~~
-
-Result:
-
-~~~ .php
-$test = 2;
-~~~
-
-### Chunk
+#### Chunk
 
 Chunk an array.
 
@@ -650,6 +672,26 @@ Get array index by key.
 
 ~~~ .php
 $test = Anemon::walk($array)->index('foo');
+~~~
+
+### Alter
+
+This is just a shortcut for `switch` and `case` statements:
+
+~~~ .php
+$input = 'bar';
+
+$test = Anemon::alter($input, [
+    'foo' => 1,
+    'bar' => 2,
+    'baz' => 3
+]);
+~~~
+
+Result:
+
+~~~ .php
+$test = 2;
 ~~~
 
 ---

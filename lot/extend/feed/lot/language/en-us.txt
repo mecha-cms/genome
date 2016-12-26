@@ -1,0 +1,13 @@
+feed: Feed
+feeds: Feeds
+
+rss: RSS
+rsss: RSSs
+
+sitemap: Sitemap
+sitemaps: Sitemaps
+
+site_map: Site Map
+site_maps: Site maps
+sites_map: Sites Map
+sites_maps: Sites Maps

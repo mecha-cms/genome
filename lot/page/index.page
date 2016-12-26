@@ -1,0 +1,10 @@
+---
+title: Home Page Example
+description: Lorem ipsum dolor sit amet.
+type: Markdown
+...
+
+### Menu
+
+ - [About](about)
+ - [Reference](post/reference)

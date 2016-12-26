@@ -15,7 +15,7 @@ class Language extends Config {
 
     public static function get($k = null, $a = [], $fail = null) {
         $a = array_merge($a, [""]);
-        $fail = isset($fail) ? $fail : $k;
+        $fail = $fail ?: $k;
         if (!isset($k)) return parent::get('__i18n', $fail);
         $s = parent::get('__i18n.' . $k, $fail);
         if (strpos($s, '%') !== 0 && u($a[0]) !== $a[0]) {

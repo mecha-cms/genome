@@ -9,7 +9,7 @@ type: Markdown
 ~~~ .php
 File::$config = [
     // `$min` is for the minimum file size allowed in byte(s)
-    // `$max` is the maximum file size allowed in byte(s)
+    // `$max` is for the maximum file size allowed in byte(s)
     'sizes' => [$min, $max],
     // list of allowed file extension(s)
     'extensions' = ['log', 'txt']

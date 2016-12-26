@@ -8,10 +8,10 @@ class Hook extends Genome {
         if (!is_callable($fn)) {
             // `$fn` as `$stack`
             // `$stack` as `$fail`
-            return self::exist($id, $fn, isset($stack) ? $stack : false);
+            return self::exist($id, $fn, $stack ?: false);
         }
         $c = static::class;
-        $stack = isset($stack) ? $stack : 10;
+        $stack = $stack ?: 10;
         if (!is_array($id)) {
             if (!isset(self::$lot[0][$c][$id][$stack])) {
                 if (!isset(self::$lot[1][$c][$id])) {
@@ -34,7 +34,7 @@ class Hook extends Genome {
         if (!is_array($id)) {
             $c = static::class;
             if (isset($id)) {
-                self::$lot[0][$c][$id][isset($stack) ? $stack : 10] = isset(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : 1;
+                self::$lot[0][$c][$id][$stack ?: 10] = isset(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : 1;
                 if (isset(self::$lot[1][$c][$id])) {
                     if (isset($stack)) {
                         foreach (self::$lot[1][$c][$id] as $k => $v) {
@@ -90,7 +90,7 @@ class Hook extends Genome {
                 self::$lot[1][$c][$id] = [];
                 return $lot[0];
             }
-            $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort('ASC', 'stack')->vomit();
+            $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort(1, 'stack')->vomit();
             foreach ($hooks as $v) {
                 $lot[0] = call_user_func_array($v['fn'], $lot);
             }

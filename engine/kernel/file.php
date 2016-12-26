@@ -64,6 +64,15 @@ class File extends Genome {
 
     // Check if file/folder does exist
     public static function exist($input, $fail = false) {
+        if (is_array($input)) {
+            foreach ($input as $v) {
+                $v = To::path($v);
+                if (file_exists($v)) {
+                    return $v;
+                }
+            }
+            return $fail;
+        }
         $input = To::path($input);
         return file_exists($input) ? $input : $fail;
     }

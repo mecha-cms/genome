@@ -29,4 +29,4 @@ function do_markdown($data) {
     return $data;
 }
 
-Hook::set('post.output', 'do_markdown', 1);
+Hook::set('page.output', 'do_markdown', 1);

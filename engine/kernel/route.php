@@ -32,7 +32,7 @@ class Route extends Genome {
 
     public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
         if (!is_callable($fn)) {
-            return self::exist($id, isset($fn) ? $fn : false);
+            return self::exist($id, $fn ?: false);
         }
         $i = 0;
         $id = (array) $id;
@@ -76,7 +76,7 @@ class Route extends Genome {
 
     public static function hook($id, $fn = null, $stack = null, $pattern = false) {
         $id = URL::short($id, false);
-        $stack = isset($stack) ? $stack : 10;
+        $stack = $stack ?: 10;
         if (!isset(self::$lot_o[1][$id])) {
             self::$lot_o[1][$id] = [];
         }
@@ -164,7 +164,7 @@ class Route extends Genome {
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s) ...
                 if (isset(self::$lot_o[1][$id])) {
-                    $fn = Anemon::eat(self::$lot_o[1][$id])->sort('ASC', 'stack')->vomit();
+                    $fn = Anemon::eat(self::$lot_o[1][$id])->sort(1, 'stack')->vomit();
                     foreach ($fn as $v) {
                         call_user_func_array($v['fn'], $lot);
                     }
@@ -173,13 +173,13 @@ class Route extends Genome {
                 call_user_func_array(self::$lot[1][$id]['fn'], $lot);
                 return true;
             } else {
-                $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort('ASC', 'stack', true)->vomit();
+                $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort(1, 'stack', true)->vomit();
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path
                     if ($route = self::is($k)) {
                         // Loading hook(s) ...
                         if (isset(self::$lot_o[1][$k])) {
-                            $fn = Anemon::eat(self::$lot_o[1][$k])->sort('ASC', 'stack')->vomit();
+                            $fn = Anemon::eat(self::$lot_o[1][$k])->sort(1, 'stack')->vomit();
                             foreach ($fn as $f) {
                                 call_user_func_array($f['fn'], $route['lot']);
                             }

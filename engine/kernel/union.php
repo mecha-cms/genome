@@ -177,7 +177,7 @@ class Union extends Genome {
             // close all
             $s = "";
             foreach ($this->unit as $u) {
-                $s .= $this->end() . (isset($dent) ? $dent : N);
+                $s .= $this->end() . ($dent ?: N);
             }
             return $s;
         }

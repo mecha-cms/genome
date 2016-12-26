@@ -12,9 +12,16 @@ Pattern | Description
 `%i` | Matched with any numbers.
 `%f` | Matched with any numbers and floats.
 `%` | Matched with any and `/`
-`%[foo,bar]` | Matched with `foo` and `bar`
+`%[foo,bar,baz\,qux]` | Matched with `foo`, `bar` and `baz,qux`
 
 ### Set
+
+~~~ .php
+Route::set('blog/%s', function($slug = 1) {
+    // here, `$slug` will return `4` if we are in `http://localhost/blog/4`
+    // and will return `1` if we are in `http://localhost/blog`
+});
+~~~
 
 ### Reset
 

@@ -2,15 +2,9 @@
 
 class Get extends Genome {
 
-    // 0: draft
-    // 1: post
-    // 2: archive
-    protected static $states = ['draft', 'post', 'archive'];
-    protected static $i = ['time', 'kind', 'slug', 'state'];
-
     public static function page($path) {
         if (!file_exists($path)) return false;
-        $i = self::$i;
+        $i = Page::$i;
         $slug = Path::N($path);
         $time = date(DATE_WISE, File::T($path));
         $state = Path::X($path);
@@ -33,7 +27,7 @@ class Get extends Genome {
                 } else if ($n === $i[1]) {
                     $v = e(explode(',', $v));
                 } else if ($n === $i[3]) {
-                    $v = isset(self::$states[$v]) ? self::$states[$v] : $v;
+                    $v = isset(Page::$states[$v]) ? Page::$states[$v] : $v;
                 }
                 $output[$n] = $v;
             }
@@ -43,7 +37,7 @@ class Get extends Genome {
     }
 
     public static function pages($folder = PAGE, $state = [], $sort = 1, $by = 'time') {
-        $states = self::$states;
+        $states = Page::$states;
         $state = empty($state) ? $states : (array) $state;
         $state = implode(',', $state === [true] ? array_slice($states, 1) : $state);
         $output = [];

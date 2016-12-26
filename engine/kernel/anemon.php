@@ -91,8 +91,16 @@ class Anemon extends Genome {
         return $this;
     }
 
-    public function filter($fn) {
+    public function is($fn) {
         $this->bucket = array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
+        return $this;
+    }
+
+    public function not($fn) {
+        $a = array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
+        $b = array_diff($this->bucket, $a);
+        $this->bucket = $b;
+        unset($a);
         return $this;
     }
 
@@ -142,7 +150,7 @@ class Anemon extends Genome {
         // return `$replace[$input]` value if exist
         // or `$fail` value if `$replace[$input]` does not exist
         // or `$input` value if `$fail` is `null`
-        return array_key_exists($input, $replace) ? $replace[$input] : (isset($fail) ? $fail : $input);
+        return array_key_exists($input, $replace) ? $replace[$input] : ($fail ?: $input);
     }
 
     // Move to next array index
@@ -165,7 +173,7 @@ class Anemon extends Genome {
 
     // Insert `$food` before current array index
     public function before($food, $key = null) {
-        $key = isset($key) ? $key : $this->i;
+        $key = $key ?: $this->i;
         $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $food] + array_slice($this->bucket, $this->i, null, true);
         $this->i = self::edge($this->i - 1, 0, $this->count() - 1);
         return $this;
@@ -173,7 +181,7 @@ class Anemon extends Genome {
 
     // Insert `$food` after current array index
     public function after($food, $key = null) {
-        $key = isset($key) ? $key : $this->i + 1;
+        $key = $key ?: $this->i + 1;
         $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $food] + array_slice($this->bucket, $this->i + 1, null, true);
         $this->i = self::edge($this->i + 1, 0, $this->count() - 1);
         return $this;
@@ -277,7 +285,7 @@ class Anemon extends Genome {
     }
 
     public function __invoke($s = ', ', $filter = true) {
-        return implode($s, $filter ? $this->filter(function($v, $k) {
+        return implode($s, $filter ? $this->is(function($v, $k) {
             return strpos($k, '__') !== 0;
         })->vomit() : $this->bucket);
     }
