@@ -14,14 +14,12 @@ class Route extends Genome {
             }, $s);
         }
         return str_replace([
-            '\(', '\|', '\)',
             '%s', // any string excludes `/`
             '%i', // any string number(s)
             '%f', // any string number(s) includes float(s)
              '%', // any string includes `/`
               X
         ], [
-            '(', '|', ')',
             '([^/]+)?',
             '(\-?\d+)?',
             '(\-?(?:(?:\d+)?\.)?\d+)?',
@@ -32,6 +30,7 @@ class Route extends Genome {
 
     public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
         if (!is_callable($fn)) {
+            // `$fn` as `$fail`
             return self::exist($id, $fn ?: false);
         }
         $i = 0;
@@ -42,7 +41,7 @@ class Route extends Genome {
             if (!isset(self::$lot[0][$v])) {
                 self::$lot[1][$v] = [
                     'fn' => $fn,
-                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : end($stack)) + $i),
+                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) ?: 10)) + $i),
                     'is' => ['pattern' => $pattern]
                 ];
                 $i += .1;
@@ -104,7 +103,7 @@ class Route extends Genome {
         return self::set($pattern, $fn, $stack, true);
     }
 
-    public static function is($id, $fail = false) {
+    public static function is($id, $fail = false, $pattern = false) {
         $id = URL::short($id, false);
         $path = URL::path();
         if (strpos($id, '%') === false) {
@@ -114,7 +113,7 @@ class Route extends Genome {
                 'lot' => []
             ] : $fail;
         }
-        if (preg_match('#^' . self::_v($id) . '$#', $path, $m)) {
+        if (preg_match(!$pattern ? '#^' . self::_v($id) . '$#' : $id, $path, $m)) {
             array_shift($m);
             return [
                 'pattern' => $id,
@@ -176,7 +175,7 @@ class Route extends Genome {
                 $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort(1, 'stack', true)->vomit();
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path
-                    if ($route = self::is($k)) {
+                    if ($route = self::is($k, false, $v['is']['pattern'])) {
                         // Loading hook(s) ...
                         if (isset(self::$lot_o[1][$k])) {
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort(1, 'stack')->vomit();

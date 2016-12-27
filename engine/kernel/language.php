@@ -4,13 +4,12 @@ class Language extends Config {
 
     public static function set($a, $b = null) {
         if (!__is_anemon__($a)) {
-            parent::set('__i18n.' . $a, $b);
-        } else {
-            foreach ($a as $k => $v) {
-                $aa['__i18n.' . $k] = $v;
-            }
-            parent::set(isset($aa) ? $aa : [], $b);
+            return parent::set('__i18n.' . $a, $b);
         }
+        foreach ($a as $k => $v) {
+            $aa['__i18n.' . $k] = $v;
+        }
+        return parent::set(isset($aa) ? $aa : [], $b);
     }
 
     public static function get($k = null, $a = [], $fail = null) {
@@ -38,7 +37,7 @@ class Language extends Config {
     }
 
     public function __set($key, $value = null) {
-        parent::set('__i18n.' . $key, $value);
+        return parent::set('__i18n.' . $key, $value);
     }
 
     public function __toString() {

@@ -156,13 +156,14 @@ class Page extends Genome {
     }
 
     public function __call($key, $lot) {
-        $fail = array_shift($lot);
+        $fail = array_shift($lot) ?: false;
+        $fail_alt = array_shift($lot) ?: false;
         if (is_string($fail) && strpos($fail, 'fn:') === 0) {
-            return call_user_func(substr($fail, 3), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : false);
+            return call_user_func(substr($fail, 3), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         } else if ($fail instanceof \Closure) {
-            return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : false);
+            return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         }
-        return array_key_exists($key, $this->lot) ? o($this->lot[$key]) : (isset($fail) ? $fail : false);
+        return array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail;
     }
 
     public function __set($key, $value = null) {

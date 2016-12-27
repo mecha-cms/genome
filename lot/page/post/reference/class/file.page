@@ -326,5 +326,5 @@ echo File::size('path\to\file.txt', 'KB'); // Force to `KB`
 ~~~
 
 ~~~ .php
-echo File::size(1000000, 'KB'); // As numbers ...
+echo File::size(1000000, 'KB'); // As numbers …
 ~~~

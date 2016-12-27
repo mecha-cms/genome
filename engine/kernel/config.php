@@ -10,7 +10,7 @@ class Config extends Genome {
             $f = LANGUAGE . DS . 'en-us.txt';
         }
         $a['__i18n'] = From::yaml(File::open($f)->read(""));
-        self::$bucket = $a;
+        return (self::$bucket = $a);
     }
 
     public static function set($a, $b = null) {
@@ -24,7 +24,7 @@ class Config extends Genome {
                 Anemon::set($cargo, $k, $v);
             }
         }
-        Anemon::extend(self::$bucket, $cargo);
+        return Anemon::extend(self::$bucket, $cargo);
     }
 
     public static function get($a = null, $fail = false) {
@@ -53,7 +53,7 @@ class Config extends Genome {
     }
 
     public static function merge(...$lot) {
-        call_user_func_array('self::set', $lot);
+        return call_user_func_array('self::set', $lot);
     }
 
     public static function __callStatic($kin, $lot) {
@@ -75,13 +75,13 @@ class Config extends Genome {
             if ($count > 1) {
                 $key = $key . '.' . array_shift($lot);
             }
-            $fail = array_shift($lot);
-            $fail = $fail ? $fail : false;
+            $fail = array_shift($lot) ?: false;
+            $fail_alt = array_shift($lot) ?: false;
         }
         if (is_string($fail) && strpos($fail, 'fn:') === 0) {
-            return call_user_func(substr($fail, 3), self::get($key, false));
+            return call_user_func(substr($fail, 3), self::get($key, $fail_alt));
         } elseif ($fail instanceof \Closure) {
-            return call_user_func($fail, self::get($key, false));
+            return call_user_func($fail, self::get($key, $fail_alt));
         }
         return self::get($key, $fail);
     }
@@ -91,7 +91,7 @@ class Config extends Genome {
     }
 
     public function __set($key, $value = null) {
-        self::set($key, $value);
+        return self::set($key, $value);
     }
 
     public function __toString() {

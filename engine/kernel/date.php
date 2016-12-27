@@ -57,13 +57,15 @@ class Date extends Genome {
             $hour_12,
             $minute,
             $second,
-            $AP,
+            $AM_PM,
             $d
         ) = explode('.', $this->format('Y.y.m.d.H.h.i.s.A.w'));
         $month_long = $months_long[(int) $month - 1];
         $month_short = $months_short[(int) $month - 1];
         $day_long = $days_long[(int) $d];
         $day_short = $days_short[(int) $d];
+        $a = ['am' => "ᴀᴍ", 'pm' => "ᴘᴍ"];
+        $AM_PM = $a[strtolower($AM_PM)];
         $output = [
             'W3C' => $this->format('c'),
             'GMT' => $this->GMT(DATE_WISE),
@@ -82,13 +84,13 @@ class Date extends Genome {
             'hour_24' => $hour_24, // alias for `hour`
             'minute' => $minute,
             'second' => $second,
-            'AM_PM' => $AP,
+            'AM_PM' => $AM_PM,
             'F1' => $day_long . ', ' . $day . ' ' . $month_long . ' ' . $year,
             'F2' => $day_long . ', ' . $month_long . ' ' . $day . ', ' . $year,
             'F3' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
-            'F4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AP,
+            'F4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AM_PM,
             'F5' => $hour_24 . ':' . $minute,
-            'F6' => $hour_12 . ':' . $minute . ' ' . $AP
+            'F6' => $hour_12 . ':' . $minute . ' ' . $AM_PM
         ];
         if (!empty(self::$formats)) {
             foreach (self::$formats as $k => $v) {

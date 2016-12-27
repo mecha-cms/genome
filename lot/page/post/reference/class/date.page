@@ -46,6 +46,44 @@ Result:
 2016-04-21-16-00-00
 ~~~
 
+### Extract Date Format
+
+~~~ .php
+$date = new Date('2016/04/21 16:00:00');
+__dump__($date->extract());
+~~~
+
+Result:
+
+~~~ .php
+[
+    'W3C' => '2016-04-21T16:00:00+07:00',
+    'GMT' => '2016-04-21 09:00:00',
+    'unix' => 1461229200,
+    'slug' => '2016-04-21-16-00-00',
+    'year' => '2016',
+    'year_short' => '16',
+    'month' => '04',
+    'day' => '21',
+    'month_long' => 'April',
+    'day_long' => 'Thursday',
+    'month_short' => 'Apr',
+    'day_short' => 'Thu',
+    'hour' => '16',
+    'hour_12' => '04',
+    'hour_24' => '16',
+    'minute' => '00',
+    'second' => '00',
+    'AM_PM' => 'ᴘᴍ',
+    'F1' => 'Thursday, 21 April 2016',
+    'F2' => 'Thursday, April 21, 2016',
+    'F3' => '2016/04/21 16:00:00',
+    'F4' => '2016/04/21 04:00:00 ᴘᴍ',
+    'F5' => '16:00',
+    'F6' => '04:00 ᴘᴍ',
+]
+~~~
+
 ---
 
 ### Advance

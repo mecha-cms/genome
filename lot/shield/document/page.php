@@ -3,9 +3,15 @@
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
-      <p><time datetime="<?php echo $page->date->W3C; ?>"><?php echo $page->date->F1; ?></time></p>
+      <?php $date = new Date($page->update); ?>
+      <p><time datetime="<?php echo $date->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $date->F1; ?></time></p>
     </header>
-    <section><?php echo $page->content; ?></section>
+    <section>
+      <blockquote>
+        <p><?php echo $page->description; ?></p>
+      </blockquote>
+      <?php echo $page->content; ?>
+    </section>
     <footer>
       <p><strong>Author:</strong> <?php echo $page->author; ?></p>
     </footer>

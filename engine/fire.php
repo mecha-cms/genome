@@ -26,7 +26,7 @@ Date::TZ($seeds['config']->TZ);
 extract(Seed::set($seeds)->get(null, []));
 
 $extends = [];
-foreach (g(EXTEND . DS . '*', '{index.php,index__.php,__index.php}') as $v) {
+foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {
     $extends[str_replace(EXTEND . DS, "", $v)] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
 }
 
@@ -49,7 +49,7 @@ r(EXTEND, array_keys($extends), function($f) use($seeds) {
     }, $seeds);
 }, $seeds);
 
-r(SHIELD . DS . $config->shield, '{index.php,index__.php,__index.php}', function($f) use($seeds) {
+r(SHIELD . DS . $config->shield, '{index__,index,__index}.php', function($f) use($seeds) {
     $f = Path::D($f) . DS . 'engine';
     d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
         $f .= DS . 'plug' . DS . $n . '.php';
