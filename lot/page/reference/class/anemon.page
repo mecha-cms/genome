@@ -9,10 +9,12 @@ type: Markdown
 Prevent input value exceeds the minimum and maximum value.
 
 ~~~ .php
+// `Anemon::edge($input, $min = null, $max = null)`
+
 $min = 0;
 $max = 100;
 
-__dump__(
+__test__(
     Anemon::edge(4, $min, $max),
     Anemon::edge(-4, $min, $max)
     Anemon::edge(104, $min, $max)
@@ -38,6 +40,8 @@ Result:
 Set or replace array value recursively.
 
 ~~~ .php
+// `Anemon::set($input, $key, $value = null)`
+
 $array = [
     'foo' => 1,
     'bar' => [
@@ -66,6 +70,8 @@ $array = [
 Get array value recursively.
 
 ~~~ .php
+// `Anemon::get($input, $key = null, $fail = false)`
+
 $array = [
     'foo' => 1,
     'bar' => [
@@ -93,6 +99,8 @@ $test_2 = '#';
 Remove array value recursively.
 
 ~~~ .php
+// `Anemon::reset($input, $key)`
+
 $array = [
     'foo' => 1,
     'bar' => [
@@ -117,9 +125,11 @@ $array = [
 
 ### Extend and Concat
 
-Extend two arrays:
+Extend arrays:
 
 ~~~ .php
+// `Anemon::extend($input, $a[, $b[, $c[, ...]]])`
+
 $a = [
     'foo' => 1,
     'bar' => [
@@ -150,7 +160,9 @@ $test = [
     ],
     'qux' => '#'
 ];
+~~~
 
+~~~ .php
 $a = [
     'foo' => 1,
     'bar' => [
@@ -161,9 +173,11 @@ $a = [
 ];
 ~~~
 
-Concatenate two arrays:
+Concatenate arrays:
 
 ~~~ .php
+// `Anemon::concat($input, $a[, $b[, $c[, ...]]])`
+
 $a = [
     0 => 'a',
     1 => 'b',
@@ -190,7 +204,9 @@ $test = [
     4 => 'e',
     5 => 'f'
 ];
+~~~
 
+~~~ .php
 $a = [
     0 => 'a',
     1 => 'b',
@@ -201,7 +217,7 @@ $a = [
 ];
 ~~~
 
-With `Anemon::extend()`, result will be different:
+With `Anemon::extend()`, the result is different:
 
 ~~~ .php
 $a = [
@@ -227,7 +243,9 @@ $test = [
     1 => 'e',
     2 => 'f'
 ];
+~~~
 
+~~~ .php
 $a = [
     0 => 'd',
     1 => 'e',
@@ -237,7 +255,7 @@ $a = [
 
 ### Eat
 
-Array manipulation. Starts with eating or scanning…
+Array manipulation. Starts with eating or walking…
 
 ~~~ .php
 $array = [
@@ -255,6 +273,7 @@ Anemon::eat($array); // …
 Output specific data.
 
 ~~~ .php
+// `->vomit($key = null, $fail = false)`
 $test_1 = Anemon::eat($array)->vomit();
 $test_2 = Anemon::eat($array)->vomit('bar', '#');
 $test_3 = Anemon::eat($array)->vomit('wow', '#');
@@ -279,6 +298,7 @@ $test_3 = '#';
 Reduce array data to those that pass the function’s test.
 
 ~~~ .php
+// `->is($fn ($value, $key))`
 $test = Anemon::eat($array)->is(function($value, $key) {
     return $value < 2;
 })->vomit();
@@ -298,6 +318,7 @@ $test = [
 Reduce array data to those that does not pass the function’s test.
 
 ~~~ .php
+// `->not($fn ($value, $key))`
 $test = Anemon::eat($array)->not(function($value, $key) {
     return $value < 2;
 })->vomit();
@@ -317,17 +338,28 @@ $test = [
 Shuffle array values.
 
 ~~~ .php
-$test = Anemon::eat($array)->shake()->vomit();
+// `->shake($preserve_key = true)`
+$test_1 = Anemon::eat($array)->shake()->vomit();
+$test_2 = Anemon::eat($array)->shake(false)->vomit();
 ~~~
 
 Result:
 
 ~~~ .php
-$test = [
+$test_1 = [
     'qux' => 3,
     'foo' => 0,
     'bar' => 1,
     'baz' => 2
+];
+~~~
+
+~~~ .php
+$test_2 = [
+    0 => 3,
+    1 => 0,
+    2 => 1,
+    3 => 2
 ];
 ~~~
 
@@ -336,6 +368,8 @@ $test = [
 Sort array values.
 
 ~~~ .php
+// `->sort($order = 1, $key = null, $preserve_key = false, $null = X)`
+
 $array = [
     'foo' => [
         'size' => 'medium',
@@ -397,7 +431,9 @@ $test_1 = [
         'id' => 1
     ]
 ];
+~~~
 
+~~~ .php
 $test_2 = [
     0 => [
         'size' => 'large',
@@ -415,7 +451,9 @@ $test_2 = [
         'id' => 1
     ]
 ];
+~~~
 
+~~~ .php
 $test_3 = [
     'qux' => [
         'size' => 'small',
@@ -433,7 +471,9 @@ $test_3 = [
         'id' => 3
     ]
 ];
+~~~
 
+~~~ .php
 $test_4 = [
     'qux' => [
         'size' => 'small',
@@ -462,6 +502,8 @@ $test_4 = [
 Chunk an array.
 
 ~~~ .php
+// `->chunk($chunk = 25, $index = null, $fail = [])`
+
 $array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 $test_1 = Anemon::eat($array)->chunk(4);
@@ -501,6 +543,7 @@ Anemon::walk($array); // …
 Move to next item.
 
 ~~~ .php
+// `->next($skip = 0)`
 Anemon::walk($array)->next()->current();
 Anemon::walk($array)->next(1)->current(); // skip 1 item
 ~~~
@@ -510,6 +553,7 @@ Anemon::walk($array)->next(1)->current(); // skip 1 item
 Move to previous item.
 
 ~~~ .php
+// `->previous($skip = 0)`
 Anemon::walk($array)->previous()->current();
 Anemon::walk($array)->previous(1)->current(); // skip 1 item
 ~~~
@@ -519,6 +563,7 @@ Anemon::walk($array)->previous(1)->current(); // skip 1 item
 Move to the 2<sup>nd</sup> item.
 
 ~~~ .php
+// `->to($index)`
 Anemon::walk($array)->to(1)->current();
 ~~~
 
@@ -527,6 +572,7 @@ Anemon::walk($array)->to(1)->current();
 Insert before.
 
 ~~~ .php
+// `->before($value, $key = null)`
 $test_1 = Anemon::walk($array)->to(2)->before('#')->vomit();
 $test_2 = Anemon::walk($array)->to(2)->before('#', '#key')->vomit();
 ~~~
@@ -541,7 +587,9 @@ $test_1 = [
     'baz' => 2,
     'qux' => 3
 ];
+~~~
 
+~~~ .php
 $test_2 = [
     'foo' => 0,
     'bar' => 1,
@@ -556,6 +604,7 @@ $test_2 = [
 Insert after.
 
 ~~~ .php
+// `->after($value, $key = null)`
 $test_1 = Anemon::walk($array)->to(2)->after('#')->vomit();
 $test_2 = Anemon::walk($array)->to(2)->after('#', '#key')->vomit();
 ~~~
@@ -570,7 +619,9 @@ $test_1 = [
     3 => '#',
     'qux' => 3
 ];
+~~~
 
+~~~ .php
 $test_2 = [
     'foo' => 0,
     'bar' => 1,
@@ -583,6 +634,7 @@ $test_2 = [
 #### Append
 
 ~~~ .php
+// `->append($value, $key = null)`
 $test_1 = Anemon::walk($array)->append('#')->vomit();
 $test_2 = Anemon::walk($array)->append('#', '#key')->vomit();
 ~~~
@@ -597,7 +649,9 @@ $test_1 = [
     'baz' => 2,
     'qux' => 3
 ];
+~~~
 
+~~~ .php
 $test_2 = [
     '#key' => '#',
     'foo' => 0,
@@ -610,6 +664,7 @@ $test_2 = [
 #### Prepend
 
 ~~~ .php
+// `->prepend($value, $key = null)`
 $test_1 = Anemon::walk($array)->prepend('#')->vomit();
 $test_2 = Anemon::walk($array)->prepend('#', '#key')->vomit();
 ~~~
@@ -624,7 +679,9 @@ $test_1 = [
     'qux' => 3,
     4 => '#'
 ];
+~~~
 
+~~~ .php
 $test_2 = [
     'foo' => 0,
     'bar' => 1,
@@ -655,6 +712,7 @@ $test = Anemon::walk($array)->last();
 Count items.
 
 ~~~ .php
+// `->count($deep = false)`
 $test = Anemon::walk($array)->count();
 ~~~
 
@@ -663,6 +721,7 @@ $test = Anemon::walk($array)->count();
 Get array key by index.
 
 ~~~ .php
+// `->key($index, $fail = false)`
 $test = Anemon::walk($array)->key(1);
 ~~~
 
@@ -671,6 +730,7 @@ $test = Anemon::walk($array)->key(1);
 Get array index by key.
 
 ~~~ .php
+// `->index($key, $fail = false)`
 $test = Anemon::walk($array)->index('foo');
 ~~~
 
@@ -679,6 +739,8 @@ $test = Anemon::walk($array)->index('foo');
 This is just a shortcut for `switch` and `case` statements:
 
 ~~~ .php
+// `Anemon::alter($input, $replace = [], $fail = null)`
+
 $input = 'bar';
 
 $test = Anemon::alter($input, [

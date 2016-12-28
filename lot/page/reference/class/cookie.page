@@ -1,0 +1,63 @@
+---
+title: Class `Cookie`
+description: Persistent storage using cookies.
+type: Markdown
+...
+
+### Set
+
+Set a cookie:
+
+~~~ .php
+// `Cookie::set($key, $value = "", $config = [] | $expire)`
+Cookie::set('my_cookie', 'the value', 1); // expired in a day
+~~~
+
+Set a cookie with advance configuration data:
+
+~~~ .php
+Cookie::set('my_cookie', 'the value', [
+    'expire' => 1,
+    'path' => '/',
+    'domain' => "",
+    'secure' => false,
+    'http_only' => false
+]);
+~~~
+
+### Reset
+
+Remove a cookie:
+
+~~~ .php
+// `Cookie::reset($key = null)`
+Cookie::reset('my_cookie');
+~~~
+
+Remove multiple cookies:
+
+~~~ .php
+// `Cookie::reset($keys = null)`
+Cookie::reset(['my_cookie', 'your_cookie', 'our_cookie']);
+~~~
+
+Remove all cookies:
+
+~~~ .php
+Cookie::reset();
+~~~
+
+### Get
+
+Get a cookie:
+
+~~~ .php
+// `Cookie::get($key = null, $fail = "")`
+Cookie::get('my_cookie', '#');
+~~~
+
+Get all cookies:
+
+~~~ .php
+Cookie::get();
+~~~

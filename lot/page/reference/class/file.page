@@ -19,6 +19,7 @@ File::$config = [
 ### Check the Existence of a File/Folder
 
 ~~~ .php
+// `File::exist($input, $fail = false)`
 if (File::exist('test.txt')) {
     echo 'File `test.txt` is exists.';
 }
@@ -40,16 +41,29 @@ Shortcut:
 include File::exist('header.php', 'header.legacy.php');
 ~~~
 
+Loop through list of file path until it finds a file that is exists:
+
+~~~ .php
+if ($test = File::exist(['page-post-2016.php', 'page-post.php', 'page.php'], false)) {
+    echo $test . ' does exist.';
+} else {
+    echo $test . ' is now `false`.';
+}
+~~~
+
 ### Inspect File Details
 
 ~~~ .php
-$test = File::inspect('.\path\to\file.txt');
+// `File::inspect($input, $key = null, $fail = false)`
+$test_1 = File::inspect('.\path\to\file.txt');
+$test_2 = File::inspect('.\path\to\file.txt', 'url');
+$test_3 = File::inspect('.\path\to\file.txt', 'wow');
 ~~~
 
 Result:
 
 ~~~ .php
-$test = [
+$test_1 = [
     'path' => '.\path\to\file.txt',
     'name' => 'file',
     'url' => 'http://localhost/path/to/file.txt',
@@ -66,9 +80,18 @@ $test = [
 ];
 ~~~
 
+~~~ .php
+$test_2 = 'http://localhost/path/to/file.txt';
+~~~
+
+~~~ .php
+$test_3 = false;
+~~~
+
 ### List All Files from a Folder
 
 ~~~ .php
+// `File::explore($folder = ROOT, $deep = false, $flat = false, $fail = false)`
 $tree_1 = File::explore('path\to\folder');
 $tree_2 = File::explore('path\to\folder', true);
 $tree_3 = File::explore('path\to\folder', true, true);
@@ -84,7 +107,9 @@ $tree_1
  ├── path\to\folder\folder-1: 0
  ├── path\to\folder\folder-2: 0
  └── path\to\folder\folder-3: 0
+~~~
 
+~~~ .no-highlight
 $tree_2
  │
  ├── path\to\folder\file-1.txt: 1
@@ -102,7 +127,9 @@ $tree_2
          ├── path\to\folder\folder-3\folder-1\file-1.txt: 1
          ├── path\to\folder\folder-3\folder-1\file-2.txt: 1
          └── path\to\folder\folder-3\folder-1\file-3.txt: 1
+~~~
 
+~~~ .no-highlight
 $tree_3
  │
  ├── path\to\folder\file-1.txt: 1
@@ -125,13 +152,13 @@ $tree_3
 Options:
 
 ~~~ .php
-File::explore($folder, $recursive, $flat);
+File::explore($folder, $deep, $flat, $fail);
 ~~~
 
 Parameter | Description
 --------- | -----------
 `$folder` | The folder path to explore.
-`$recursive` | Explore the folder contents recursively.
+`$deep` | Explore the folder contents recursively.
 `$flat` | Data output as flat array instead of nested array.
 
 ### Create a File
@@ -318,13 +345,13 @@ File::upload($_FILES['file'], 'path\to\folder', function($file) {
 **Options:** `B`, `KB`, `MB`, `GB`, `TB`
 
 ~~~ .php
-echo File::size('path\to\file.txt'); // Automatic (as short as possible)
+echo File::size('path\to\file.txt'); // automatic (as short as possible)
 ~~~
 
 ~~~ .php
-echo File::size('path\to\file.txt', 'KB'); // Force to `KB`
+echo File::size('path\to\file.txt', 'KB'); // force to `KB`
 ~~~
 
 ~~~ .php
-echo File::size(1000000, 'KB'); // As numbers …
+echo File::size(1000000, 'KB'); // as number(s) …
 ~~~

@@ -11,16 +11,16 @@ class Date extends Genome {
         return date_default_timezone_set($zone);
     }
 
-    public static function set($format = null, $fn = null) {
-        if (isset($format)) {
-            self::$formats[$format] = $fn;
+    public static function set($key = null, $fn = null) {
+        if (isset($key)) {
+            self::$formats[$key] = $fn;
         }
         return self::$formats;
     }
 
-    public static function reset($format = null) {
-        if (isset($format)) {
-            unset(self::$formats[$format]);
+    public static function reset($key = null) {
+        if (isset($key)) {
+            unset(self::$formats[$key]);
         } else {
             self::$formats = [];
         }
@@ -29,8 +29,8 @@ class Date extends Genome {
 
     protected $date = "";
 
-    public function __construct($s = null) {
-        $this->date = isset($s) ? $s : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
+    public function __construct($date = null) {
+        $this->date = isset($date) ? $date : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
     }
 
     public function format($format = DATE_WISE) {

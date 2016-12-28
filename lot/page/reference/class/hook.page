@@ -9,6 +9,8 @@ type: Markdown
 Set a `the_header` hook with named function as the ID:
 
 ~~~ .php
+// `Hook::set($id = null, $fn = null, $stack = null)`
+
 function do_set_header() {
     echo '<meta name="generator" content="Mecha">';
 }
@@ -41,13 +43,14 @@ Hook::set('the_header', 'do_set_header', 1);
 Get all of the attached hooks:
 
 ~~~ .php
-__dump__(Hook::get());
+// `Hook::get($id = null, $fail = false)`
+__test__(Hook::get());
 ~~~
 
 Get all of the attached `the_header` hooks:
 
 ~~~ .php
-__dump__(Hook::get('the_header'));
+__test__(Hook::get('the_header'));
 ~~~
 
 ### Reset
@@ -55,6 +58,7 @@ __dump__(Hook::get('the_header'));
 Remove an attached `the_header` hook with ID `do_set_header` before execution, or prevent a `the_header` hook with ID `do_set_header` to be attached:
 
 ~~~ .php
+// `Hook::reset($id = null, $stack = null | $fn = null)`
 Hook::reset('the_header', 'do_set_header');
 ~~~
 
@@ -62,31 +66,12 @@ Hook::reset('the_header', 'do_set_header');
 You cannot remove hooks that are attached using anonymous function because they have no ID.
 {{/block}}
 
-### Exist
-
-Check for the added hooks:
-
-~~~ .php
-__dump__(Hook::set());
-~~~
-
-Check for the added `the_header` hooks:
-
-~~~ .php
-__dump__(Hook::set('the_header'));
-~~~
-
-Check if `do_set_header` is exists in the `the_header` hook:
-
-~~~ .php
-__dump__(Hook::set('the_header', 'do_set_header'));
-~~~
-
 ### Fire
 
 Execute the `the_header` hook:
 
 ~~~ .php
+// `Hook::fire($id, $lot = null)`
 Hook::fire('the_header'); // → `<meta name="generator" content="Mecha">`
 ~~~
 
@@ -99,6 +84,7 @@ Hook::fire('the_header'); // → `<meta name="generator" content="Mecha">`
 This …
 
 ~~~ .php
+// `Hook::NS($id, $lot)`
 Hook::NS('foo.bar.baz', [$a, $b]);
 ~~~
 
@@ -147,7 +133,7 @@ Hook::fire('the_header', ['Taufik', 'Nurrohman']); // → `<meta name="author" c
 The first value of the available arguments will be returned. So, this test will return `Taufik`:
 
 ~~~ .php
-__dump__(Hook::fire('the_header', ['Taufik', 'Nurrohman']));
+__test__(Hook::fire('the_header', ['Taufik', 'Nurrohman']));
 ~~~
 
 And adding a new hook with arguments and returned its first parameter with custom value will return that custom value:

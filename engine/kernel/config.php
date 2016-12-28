@@ -13,38 +13,38 @@ class Config extends Genome {
         return (self::$bucket = $a);
     }
 
-    public static function set($a, $b = null) {
-        if (__is_anemon__($a)) $a = a($a);
-        if (__is_anemon__($b)) $b = a($b);
+    public static function set($key, $value = null) {
+        if (__is_anemon__($key)) $key = a($key);
+        if (__is_anemon__($value)) $value = a($value);
         $cargo = [];
-        if (!is_array($a)) {
-            Anemon::set($cargo, $a, $b);
+        if (!is_array($key)) {
+            Anemon::set($cargo, $key, $value);
         } else {
-            foreach ($a as $k => $v) {
+            foreach ($key as $k => $v) {
                 Anemon::set($cargo, $k, $v);
             }
         }
         return Anemon::extend(self::$bucket, $cargo);
     }
 
-    public static function get($a = null, $fail = false) {
-        if (!isset($a)) {
+    public static function get($key = null, $fail = false) {
+        if (!isset($key)) {
             return !empty(self::$bucket) ? o(self::$bucket) : $fail;
         }
-        if (__is_anemon__($a)) {
+        if (__is_anemon__($key)) {
             $output = [];
-            foreach ($a as $k => $v) {
+            foreach ($key as $k => $v) {
                 $output[$k] = self::get($k, $v);
             }
             return o($output);
         }
-        return o(Anemon::get(self::$bucket, $a, $fail));
+        return o(Anemon::get(self::$bucket, $key, $fail));
     }
 
-    public static function reset($a = null) {
-        if (isset($a)) {
-            foreach ((array) $a as $v) {
-                Anemon::reset(self::$bucket, $v);
+    public static function reset($key = null) {
+        if (isset($key)) {
+            foreach ((array) $key as $value) {
+                Anemon::reset(self::$bucket, $value);
             }
         } else {
             self::$bucket = [];

@@ -307,7 +307,7 @@ class File extends Genome {
         }
         if (!Message::errors()) {
             // Destination not found
-            if (!file_exists($target)) Folder::create($target);
+            if (!file_exists($target)) Folder::set($target);
             // Move the upload(ed) file to the destination folder
             if (!file_exists($target . DS . $file['name'])) {
                 move_uploaded_file($file['tmp_name'], $target . DS . $file['name']);
@@ -335,6 +335,20 @@ class File extends Genome {
         }
         $output = round($size / pow(1024, $u), $prec);
         return $output < 0 ? Language::unknown() : trim($output . ' ' . $x[$u]);
+    }
+
+    public static function set($input, $data, $consent = null) {
+        return self::write($data)->saveTo($input, $consent);
+    }
+
+    /*
+    public static function get($input, $fail = false) {
+        return self::exist($input, $fail);
+    }
+    */
+
+    public static function reset($input) {
+        return self::open($input)->delete();
     }
 
 }

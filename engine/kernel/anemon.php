@@ -14,79 +14,84 @@ class Anemon extends Genome {
     }
 
     // Set array value recursively
-    public static function set(&$input, $k, $v = null) {
-        $kk = explode('.', $k);
-        while (count($kk) > 1) {
-            $k = array_shift($kk);
-            if (!array_key_exists($k, $input)) {
-                $input[$k] = [];
+    public static function set(&$input, $key, $value = null) {
+        $keys = explode('.', $key);
+        while (count($keys) > 1) {
+            $key = array_shift($keys);
+            if (!array_key_exists($key, $input)) {
+                $input[$key] = [];
             }
-            $input =& $input[$k];
+            $input =& $input[$key];
         }
-        $input[array_shift($kk)] = $v;
+        $input[array_shift($keys)] = $value;
     }
 
     // Get array value recursively
-    public static function get(&$input, $k = null, $fail = false) {
-        if (!isset($k)) return $input;
-        $kk = explode('.', $k);
-        foreach ($kk as $v) {
-            if (!is_array($input) || !array_key_exists($v, $input)) {
+    public static function get(&$input, $key = null, $fail = false) {
+        if (!isset($key)) return $input;
+        $keys = explode('.', $key);
+        foreach ($keys as $value) {
+            if (!is_array($input) || !array_key_exists($value, $input)) {
                 return $fail;
             }
-            $input =& $input[$v];
+            $input =& $input[$value];
         }
         return $input;
     }
 
     // Remove array value recursively
-    public static function reset(&$input, $k) {
-        $kk = explode('.', $k);
-        while (count($k) > 1) {
-            $k = array_shift($kk);
-            if (array_key_exists($k, $input)) {
-                $input =& $input[$k];
+    public static function reset(&$input, $key) {
+        $keys = explode('.', $key);
+        while (count($key) > 1) {
+            $key = array_shift($keys);
+            if (array_key_exists($key, $input)) {
+                $input =& $input[$key];
             }
         }
-        if (is_array($input) && array_key_exists($v = array_shift($kk), $input)) {
-            unset($input[$v]);
+        if (is_array($input) && array_key_exists($value = array_shift($keys), $input)) {
+            unset($input[$value]);
         }
     }
 
     // Extend two array
-    public static function extend(&$a, $b) {
-        $a = array_replace_recursive((array) $a, (array) $b);
-        return $a;
+    public static function extend(&$input, ...$b) {
+        $input = array_replace_recursive((array) $input, ...$b);
+        return $input;
     }
 
     // Concat two array
-    public static function concat(&$a, $b) {
-        $a = array_merge_recursive((array) $a, (array) $b);
-        return $a;
+    public static function concat(&$input, ...$b) {
+        $input = array_merge_recursive((array) $input, ...$b);
+        return $input;
     }
 
-    public static function eat($group) {
-        return new Anemon($group);
+    public static function eat($array) {
+        return new Anemon($array);
     }
 
-    public function vomit($k = null, $fail = false) {
-        return $this->get($this->bucket, $k, $fail);
+    public function vomit($key = null, $fail = false) {
+        return $this->get($this->bucket, $key, $fail);
     }
 
     // Randomize array order
-    public function shake($fn = null) {
-        if (is_callable($fn)) {
-            $this->bucket = call_user_func($fn, $this->bucket);
+    public function shake($preserve_key = true) {
+        if (is_callable($preserve_key)) {
+            // `$preserve_key` as `$fn`
+            $this->bucket = call_user_func($preserve_key, $this->bucket);
         } else {
             // <http://php.net/manual/en/function.shuffle.php#94697>
-            $k = array_keys($this->bucket);
-            $v = [];
-            shuffle($k);
-            foreach ($k as $kk) {
-                $v[$kk] = $this->bucket[$kk];
+            if ($preserve_key) {
+                $k = array_keys($this->bucket);
+                $v = [];
+                shuffle($k);
+                foreach ($k as $kk) {
+                    $v[$kk] = $this->bucket[$kk];
+                }
+                $this->bucket = $v;
+                unset($k, $v);
+            } else {
+                shuffle($this->bucket);
             }
-            $this->bucket = $v;
-            unset($k, $v);
         }
         return $this;
     }
@@ -105,7 +110,7 @@ class Anemon extends Genome {
     }
 
     // Sort array value: `1` for "asc" and `-1` for "desc"
-    public function sort($order = 1, $key = null, $prsv_key = false, $null = X) {
+    public function sort($order = 1, $key = null, $preserve_key = false, $null = X) {
         if (isset($key)) {
             $before = $after = [];
             if (!empty($this->bucket)) {
@@ -129,21 +134,21 @@ class Anemon extends Genome {
             $this->bucket = (array) $this->bucket;
             $order === -1 ? arsort($this->bucket) : asort($this->bucket);
         }
-        if (!$prsv_key) {
+        if (!$preserve_key) {
             $this->bucket = array_values($this->bucket);
         }
         return $this;
     }
 
-    public static function walk($group, $fn = null) {
+    public static function walk($array, $fn = null) {
         if (is_callable($fn)) {
-            foreach (a($group) as $k => &$v) {
+            foreach (a($array) as $k => &$v) {
                 $v = is_array($v) ? array_merge($v, self::walk($v, $fn)) : call_user_func($fn, $v, $k);
             }
             unset($v);
-            return $group;
+            return $array;
         }
-        return self::eat($group);
+        return self::eat($array);
     }
 
     public static function alter($input, $replace = [], $fail = null) {
@@ -171,28 +176,28 @@ class Anemon extends Genome {
         return $this;
     }
 
-    // Insert `$food` before current array index
-    public function before($food, $key = null) {
+    // Insert `$value` before current array index
+    public function before($value, $key = null) {
         $key = $key ?: $this->i;
-        $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $food] + array_slice($this->bucket, $this->i, null, true);
+        $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $value] + array_slice($this->bucket, $this->i, null, true);
         $this->i = self::edge($this->i - 1, 0, $this->count() - 1);
         return $this;
     }
 
-    // Insert `$food` after current array index
-    public function after($food, $key = null) {
+    // Insert `$value` after current array index
+    public function after($value, $key = null) {
         $key = $key ?: $this->i + 1;
-        $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $food] + array_slice($this->bucket, $this->i + 1, null, true);
+        $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $value] + array_slice($this->bucket, $this->i + 1, null, true);
         $this->i = self::edge($this->i + 1, 0, $this->count() - 1);
         return $this;
     }
 
-    // Replace current array index value with `$food`
-    public function replace($food) {
+    // Replace current array index value with `$value`
+    public function replace($value) {
         $i = 0;
         foreach ($this->bucket as $k => $v) {
             if ($i === $this->i) {
-                $this->bucket[$k] = $food;
+                $this->bucket[$k] = $value;
                 break;
             }
             ++$i;
@@ -200,16 +205,16 @@ class Anemon extends Genome {
         return $this;
     }
 
-    // Append `$food` to array
-    public function append($food, $key = null) {
+    // Append `$value` to array
+    public function append($value, $key = null) {
         $this->i = $this->count() - 1;
-        return $this->after($food, $key);
+        return $this->after($value, $key);
     }
 
-    // Prepend `$food` to array
-    public function prepend($food, $key = null) {
+    // Prepend `$value` to array
+    public function prepend($value, $key = null) {
         $this->i = 0;
-        return $this->before($food, $key);
+        return $this->before($value, $key);
     }
 
     // Get first array value
@@ -254,9 +259,9 @@ class Anemon extends Genome {
     }
 
     // Generate chunk(s) of array
-    public function chunk($chunk = 25, $output = null, $fail = []) {
+    public function chunk($chunk = 25, $index = null, $fail = []) {
         $chunk = array_chunk(__is_anemon__($this->bucket) ? (array) $this->bucket : [], $chunk, true);
-        return !isset($output) ? $chunk : array_key_exists($output, $chunk) ? $chunk[$output] : $fail;
+        return !isset($index) ? $chunk : array_key_exists($index, $chunk) ? $chunk[$index] : $fail;
     }
 
     public function swap($a, $b = null) {
@@ -267,8 +272,8 @@ class Anemon extends Genome {
         return $this->__invoke($s);
     }
 
-    public function __construct($group = [], $s = ', ') {
-        $this->bucket = $group;
+    public function __construct($array = [], $s = ', ') {
+        $this->bucket = $array;
         $this->separator = $s;
     }
 

@@ -6,9 +6,10 @@ type: Markdown
 
 ### Set
 
-Set new value:
+Set an item:
 
 ~~~ .php
+// `Config::set($key, $value = null)`
 Config::set('test', '#ok');
 ~~~
 
@@ -41,32 +42,10 @@ $config->test = '#ok';
 
 ### Get
 
-Perform a test:
-
-~~~ .php
-__dump__(Config::get());
-~~~
-
-Result:
-
-~~~ .php
-[
-    'TZ' => 'Asia/Jakarta',
-    'encoding' => 'utf-8',
-    'language' => 'en-us',
-    'direction' => 'ltr',
-    'shield' => 'normal',
-    'title' => 'My Site',
-    'description' => 'My site description.',
-    'query' => ['my', 'site', 'key', 'words', 'goes', 'here'],
-    'lot' => [ … ],
-    '__i18n' => [ … ]
-];
-~~~
-
 Get item by key:
 
 ~~~ .php
+// `Config::get($key = null, $fail = false)`
 echo Config::get('title');
 ~~~
 
@@ -92,11 +71,18 @@ $data = Config::get([
 ]);
 ~~~
 
+Get all items:
+
+~~~ .php
+__test__(Config::get());
+~~~
+
 ### Reset
 
 Remove item by key:
 
 ~~~ .php
+// `Config::reset($key = null)`
 Config::reset('title');
 ~~~
 
@@ -106,8 +92,14 @@ With dot notation:
 Config::reset('author.name');
 ~~~
 
-Remove multiple data at once:
+Remove multiple item at once:
 
 ~~~ .php
 Config::reset(['title', 'description', 'author']);
+~~~
+
+Remove all items:
+
+~~~ .php
+Config::reset();
 ~~~

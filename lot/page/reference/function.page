@@ -7,7 +7,7 @@ type: Markdown
 ### Debug
 
 ~~~ .php
-__dump__($foo, $bar, $baz);
+__test__($foo, $bar, $baz);
 ~~~
 
 ### Array and Object

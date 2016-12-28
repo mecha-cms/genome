@@ -6,27 +6,27 @@ class Session extends Genome {
         $path = array_shift($lot);
         $path = $path ? $path : SESSION;
         if (isset($path)) {
-            Folder::create($path, 0600);
+            Folder::set($path, 0600);
             session_save_path($path);
         }
         return !session_id() ? session_start() : true;
     }
 
-    public static function set($id, $lot = "") {
-        Anemon::set($_SESSION, $id, $lot);
+    public static function set($key, $value = "") {
+        Anemon::set($_SESSION, $key, $value);
     }
 
-    public static function get($id = null, $fail = "") {
-        if (!isset($id)) return $_SESSION;
-        return Anemon::get($_SESSION, $id, $fail);
+    public static function get($key = null, $fail = "") {
+        if (!isset($key)) return $_SESSION;
+        return Anemon::get($_SESSION, $key, $fail);
     }
 
-    public static function reset($id = null) {
-        if (!isset($id) || $id === true) {
+    public static function reset($key = null) {
+        if (!isset($key) || $key === true) {
             $_SESSION = [];
-            if ($id === true) session_destroy();
+            if ($key === true) session_destroy();
         } else {
-            Anemon::reset($_SESSION, $id);
+            Anemon::reset($_SESSION, $key);
         }
     }
 

@@ -113,7 +113,7 @@ class Package extends Genome {
         }
         if ($bucket !== false && !File::exist($target . DS . $bucket)) {
             $bucket = To::path($bucket);
-            Folder::create($target . DS . $bucket);
+            Folder::set($target . DS . $bucket);
         }
         if ($this->zip->open($this->open) === true) {
             if ($bucket !== false) {

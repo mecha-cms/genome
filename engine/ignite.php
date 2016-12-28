@@ -69,13 +69,39 @@ function __is_serialize__($x) {
     return strpos($x, 'a:') === 0 || strpos($x, 'O:') === 0 || strpos($x, 'd:') === 0 || strpos($x, 'i:') === 0 || strpos($x, 's:') === 0;
 }
 
-function __dump__(...$a) {
+function __test__(...$a) {
     foreach ($a as $b) {
         $s = var_export($b, true);
         echo '<pre style="word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:1px solid;padding:.5em;">';
         echo str_replace(["\n", "\r"], "", highlight_string("<?php\n\n" . $s . "\n\n?>", true));
         echo '</pre>';
     }
+}
+
+function __format__($s = "", $x = '\n', $d = '#', $req = true) {
+    if (!$s) return $s;
+    if (strpos($s, '%[') !== false) {
+        $s = preg_replace_callback('#%\[(.*?)\]#', function($m) {
+            $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
+            return '(' . $m[1] . ')';
+        }, $s);
+    }
+    $req = $req ? "" : '?';
+    return str_replace([
+        '%s', // any string excludes `\n`
+        '%i', // any string number(s)
+        '%f', // any string number(s) includes float(s)
+        '%b', // any string boolean(s)
+         '%', // any string includes `\n`
+          X
+    ], [
+        '([^' . $x . ']+)' . $req,
+        '(\-?\d+)' . $req,
+        '(\-?(?:(?:\d+)?\.)?\d+)' . $req,
+        '(\b(?:TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b)' . $req,
+        '([\s\S]+)' . $req,
+        ','
+    ], x($s, $d)); // return a regular expression string without the delimiter(s)
 }
 
 // Convert class name to file name

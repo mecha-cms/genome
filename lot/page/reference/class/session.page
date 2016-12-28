@@ -1,0 +1,51 @@
+---
+title: Class `Session`
+description: Persistent storage using sessions.
+type: Markdown
+...
+
+### Set
+
+Set a session:
+
+~~~ .php
+// `Session::set($key, $value = "")`
+Session::set('my_session', 'the value');
+~~~
+
+### Reset
+
+Remove a session:
+
+~~~ .php
+// `Session::reset($key = null)`
+Session::reset('my_session');
+~~~
+
+Remove multiple sessions:
+
+~~~ .php
+// `Session::reset($keys = null)`
+Session::reset(['my_session', 'your_session', 'our_session']);
+~~~
+
+Remove all sessions:
+
+~~~ .php
+Session::reset();
+~~~
+
+### Get
+
+Get a session:
+
+~~~ .php
+// `Session::get($key = null, $fail = "")`
+Session::get('my_session', '#');
+~~~
+
+Get all sessions:
+
+~~~ .php
+Session::get();
+~~~

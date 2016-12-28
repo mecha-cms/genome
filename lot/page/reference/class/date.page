@@ -9,6 +9,7 @@ type: Markdown
 Find the complete list of time zones supported by PHP [here](http://php.net/manual/en/timezones.php "List of Supported Timezones").
 
 ~~~ .php
+// `Date::TZ($zone = null)`
 Date::TZ('Asia/Jakarta');
 ~~~
 
@@ -23,6 +24,7 @@ echo Date::TZ();
 Read more about date formatting patterns [here](http://php.net/manual/en/function.date.php "PHP date()").
 
 ~~~ .php
+// `->format($format = DATE_WISE)`
 $date = new Date('2016/04/21 16:00:00');
 echo $date->format('c');
 ~~~
@@ -49,8 +51,9 @@ Result:
 ### Extract Date Format
 
 ~~~ .php
+// `->extract($key = null, $fail = false)`
 $date = new Date('2016/04/21 16:00:00');
-__dump__($date->extract());
+__test__($date->extract());
 ~~~
 
 Result:
@@ -91,6 +94,7 @@ Result:
 #### Custom Format
 
 ~~~ .php
+// `Date::set($key = null, $fn = null ($output, $language))`
 Date::set('my_format', function($output, $language) {
     return $output['year'] . '/' . $output['month'] . '/' . $output['day'];
 });

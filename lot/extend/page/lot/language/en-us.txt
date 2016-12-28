@@ -1,14 +1,2 @@
-category: Category
-categorys: Categories
-
 page: Page
-pages: Pages
-
-response: Response
-responses: Responses
-
-tag: Tag
-tags: Tags
-
-_category: Uncategorized
-_tag: Untagged
+pages: pages

@@ -2,7 +2,7 @@
 
 class Folder extends File {
 
-    public static function create($input, $consent = 0777) {
+    public static function set($input, $consent = 0777) {
         foreach ((array) $input as $k => $v) {
             if (!file_exists($v)) {
                 if (is_array($consent)) {
@@ -16,8 +16,12 @@ class Folder extends File {
     }
 
     public static function exist($input, $fail = false) {
-        $input = To::path($input);
-        return is_dir($input) ? $input : $fail;
+        $file = parent::exist($input);
+        return $file && is_dir($file) ? $file : $fail;
+    }
+
+    public static function get($input, $fail = false) {
+        return self::exist($input, $fail);
     }
 
 }

@@ -19,7 +19,7 @@ Pattern | Description
 Set a new route:
 
 ~~~ .php
-// `Route::set($pattern, $fn, $stack)`
+// `Route::set($id = null, $fn = null, $stack = null, $pattern = false)`
 Route::set('blog/%i', function($offset = 1) {
     // here, `$offset` will return `4` if we are in `http://localhost/blog/4`
     // and will return `1` if we are in `http://localhost/blog`
@@ -46,7 +46,7 @@ Route::set('blog', function($slug = "", $offset = 1) { … }, 10.3);
 Remove a route:
 
 ~~~ .php
-// `Route::reset($pattern)`
+// `Route::reset($id)`
 Route::reset('blog/%s');
 ~~~
 
@@ -56,29 +56,22 @@ Remove routes:
 Route::reset(['blog/%s/%i', 'blog/%s']);
 ~~~
 
-### Exist
+### Get
 
 Check whether `blog/%s` route is exists:
 
 ~~~ .php
-// `Route::exist($pattern, $fail)`
-if (Route::exist('blog/%s')) { … }
-~~~
-
-Alternate method:
-
-~~~ .php
-// `Route::set($pattern, $fail)`
-if (Route::set('blog/%s')) { … }
+// `Route::get($id = null, $fail = false)`
+if (Route::get('blog/%s')) { … }
 ~~~
 
 This method will return the route data that has been set by `Route::set()`; or `false`:
 
 ~~~ .php
-__dump__(
-    Route::set('blog/%s'),
-    Route::set('blog/$'),
-    Route::set('blog/$', 0)
+__test__(
+    Route::get('blog/%s'),
+    Route::get('blog/$'),
+    Route::get('blog/$', 0)
 );
 ~~~
 
@@ -100,30 +93,12 @@ false
 0
 ~~~
 
-### Get
-
-Set a route that will active only on `GET` request:
-
-~~~ .php
-// `Route::get($pattern, $fn, $stack)`
-Route::get('blog/%s', function($slug = "") { … });
-~~~
-
-### Post
-
-Set a route that will active only on `POST` request:
-
-~~~ .php
-// `Route::post($pattern, $fn, $stack)`
-Route::post('blog/%s', function($slug = "") { … });
-~~~
-
 ### Pattern
 
 Set a new route or routes using plain regular expression pattern:
 
 ~~~ .php
-// `Route::pattern($pattern, $fn, $stack)`
+// `Route::pattern($pattern, $fn = false, $stack = null)`
 Route::pattern('#^blog\/([^\/]+)?\/(\d+)?$#', function($slug = "", $offset = 1) { … });
 ~~~
 
@@ -132,14 +107,14 @@ Route::pattern('#^blog\/([^\/]+)?\/(\d+)?$#', function($slug = "", $offset = 1) 
 Detect whether current URL path is matched with the route pattern:
 
 ~~~ .php
-// `Route::get($pattern, $fail, $is_pattern)`
+// `Route::is($id, $fail = false, $pattern = false)`
 if (Route::is('blog/%s')) { … }
 ~~~
 
 This method will return the route data, parsed from the current URL path; or `false`:
 
 ~~~ .php
-__dump__(
+__test__(
     Route::is('blog/%s/%i'),
     Route::is('blog/$'),
     Route::is('blog/$', 0)
@@ -169,7 +144,7 @@ false
 Execute the added routes:
 
 ~~~ .php
-// `Route::fire($pattern, $lot)`
+// `Route::fire($id = null, $lot = [])`
 Route::fire();
 ~~~
 
@@ -188,7 +163,7 @@ function my_route_hook_fn($slug = "") {
     $_POST['foo'] = 'bar';
 }
 
-// `Route::hook($id, $fn, $stack)`
+// `Route::hook($id, $fn = null, $stack = null, $pattern = false)`
 Route::hook('blog/%s', 'my_hook_fn'); // ← default `$stack` value is `10`
 ~~~
 
@@ -197,5 +172,6 @@ Route::hook('blog/%s', 'my_hook_fn'); // ← default `$stack` value is `10`
 Check whether `my_route_hook_fn` already hooked to the `blog/%s` route:
 
 ~~~ .php
+// `Route::hooked($id = null, $stack = null, $fail = false)`
 if (Route::hooked('blog/%s', 'my_route_hook_fn')) { … }
 ~~~

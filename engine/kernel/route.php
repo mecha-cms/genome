@@ -5,34 +5,7 @@ class Route extends Genome {
     public static $lot = [];
     public static $lot_o = [];
 
-    // Pattern as regular expression
-    protected static function _v($s) {
-        if (strpos($s, '%[') !== false) {
-            $s = preg_replace_callback('#%\[(.*?)\]#', function($m) {
-                $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
-                return '(' . $m[1] . ')';
-            }, $s);
-        }
-        return str_replace([
-            '%s', // any string excludes `/`
-            '%i', // any string number(s)
-            '%f', // any string number(s) includes float(s)
-             '%', // any string includes `/`
-              X
-        ], [
-            '([^/]+)?',
-            '(\-?\d+)?',
-            '(\-?(?:(?:\d+)?\.)?\d+)?',
-            '(.*?)?',
-            ','
-        ], x($s, '#'));
-    }
-
     public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
-        if (!is_callable($fn)) {
-            // `$fn` as `$fail`
-            return self::exist($id, $fn ?: false);
-        }
         $i = 0;
         $id = (array) $id;
         $stack = (array) $stack;
@@ -48,20 +21,6 @@ class Route extends Genome {
             }
         }
         return true;
-    }
-
-    public static function get(...$lot) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            return call_user_func_array('self::set', $lot);
-        }
-        return false;
-    }
-
-    public static function post(...$lot) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            return call_user_func_array('self::set', $lot);
-        }
-        return false;
     }
 
     public static function reset($id) {
@@ -87,19 +46,7 @@ class Route extends Genome {
         return true;
     }
 
-    public static function pattern($pattern, $fn = false, $stack = null) {
-        if (!is_callable($fn)) {
-            $path = URL::path();
-            if (preg_match($pattern, $path, $m)) {
-                array_shift($m);
-                return [
-                    'pattern' => $pattern,
-                    'path' => $path,
-                    'lot' => e($m)
-                ];
-            }
-            return $fn;
-        }
+    public static function pattern($pattern, $fn = null, $stack = null) {
         return self::set($pattern, $fn, $stack, true);
     }
 
@@ -113,7 +60,7 @@ class Route extends Genome {
                 'lot' => []
             ] : $fail;
         }
-        if (preg_match(!$pattern ? '#^' . self::_v($id) . '$#' : $id, $path, $m)) {
+        if (preg_match(!$pattern ? '#^' . __format__($id, '\/\n', '#', false) . '$#' : $id, $path, $m)) {
             array_shift($m);
             return [
                 'pattern' => $id,
@@ -124,11 +71,11 @@ class Route extends Genome {
         return $fail;
     }
 
-    public static function exist($id = null, $fail = false) {
-        if (isset($id)) {
-            return isset(self::$lot[1][$id]) ? self::$lot[1][$id] : $fail;
+    public static function get($id = null, $fail = false) {
+        if (!isset($id)) {
+            return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
         }
-        return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
+        return isset(self::$lot[1][$id]) ? self::$lot[1][$id] : $fail;
     }
 
     public static function hooked($id = null, $stack = null, $fail = false) {
