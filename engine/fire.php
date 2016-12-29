@@ -60,9 +60,9 @@ r(SHIELD . DS . $config->shield, '{index__,index,__index}.php', function($f) use
     }, $seeds);
 }, $seeds);
 
-function do_begin() {
+function do_ignite() {
     Route::fire();
     Shield::abort();
 }
 
-Hook::set('begin', 'do_begin')->fire('begin');
+Hook::set('ignite', 'do_ignite')->fire('ignite');
