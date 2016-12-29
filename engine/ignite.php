@@ -1001,13 +1001,17 @@ function y($x, $a = []) {
 }
 
 // $b: use `[]` or `array()` syntax?
-function z($a, $b = true) {
+function z($a, $b = true, $safe = true) {
     $a = json_encode($a);
     $a = preg_split('#("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')#', $a, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
     $s = "";
     foreach ($a as $v) {
         if ($v[0] === '"' && substr($v, -1) === '"') {
-            $s .= "'" . json_decode($v) . "'";
+            $v = json_decode($v);
+            if ($safe) {
+                $v = str_replace(['<?php', '?>'], ['&lt;?php', '?&gt;'], $v);
+            }
+            $s .= "'" . $v . "'";
         } else {
             $s .= str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
         }
