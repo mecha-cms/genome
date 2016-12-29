@@ -502,7 +502,7 @@ $test_4 = [
 Chunk an array.
 
 ~~~ .php
-// `->chunk($chunk = 25, $index = null, $fail = [])`
+// `->chunk($chunk = 5, $index = null, $fail = [])`
 
 $array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 

@@ -78,28 +78,29 @@ function __test__(...$a) {
     }
 }
 
-function __format__($s = "", $x = '\n', $d = '#', $req = true) {
-    if (!$s) return $s;
-    if (strpos($s, '%[') !== false) {
-        $s = preg_replace_callback('#%\[(.*?)\]#', function($m) {
+function __format__($s = "", $x = '\n', $d = '#', $r = true) {
+    if (!$s || strpos($s, '%') === false) return $s;
+    $r = $r ? "" : '?';
+    // group: `%{foo,bar,baz}%`
+    if (strpos($s, '%[') !== false && strpos($s, ']%') !== false) {
+        $s = preg_replace_callback('#%\[([\s\S]+?)' . $r . '\]%#', function($m) {
             $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
             return '(' . $m[1] . ')';
         }, $s);
     }
-    $req = $req ? "" : '?';
     return str_replace([
-        '%s', // any string excludes `\n`
-        '%i', // any string number(s)
-        '%f', // any string number(s) includes float(s)
-        '%b', // any string boolean(s)
-         '%', // any string includes `\n`
+        '%s%', // any string excludes `\n`
+        '%i%', // any string number(s)
+        '%f%', // any string number(s) includes float(s)
+        '%b%', // any string boolean(s)
+         '%%', // any string includes `\n`
           X
     ], [
-        '([^' . $x . ']+)' . $req,
-        '(\-?\d+)' . $req,
-        '(\-?(?:(?:\d+)?\.)?\d+)' . $req,
-        '(\b(?:TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b)' . $req,
-        '([\s\S]+)' . $req,
+        '([^' . $x . ']+)' . $r,
+        '(\-?\d+)' . $r,
+        '(\-?(?:(?:\d+)?\.)?\d+)' . $r,
+        '(\b(?:TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b)' . $r,
+        '([\s\S]+)' . $r,
         ','
     ], x($s, $d)); // return a regular expression string without the delimiter(s)
 }

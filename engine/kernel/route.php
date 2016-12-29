@@ -84,7 +84,7 @@ class Route extends Genome {
                 $routes = [];
                 foreach (self::$lot_o[1][$id] as $v) {
                     if (
-                        $v['fn'] === $stack ||
+                        $v['fn'] === $stack || // `$stack` as `$fn`
                         is_numeric($stack) && $v['stack'] === (float) $stack
                     ) {
                         $routes[] = $v;

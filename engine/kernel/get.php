@@ -2,7 +2,7 @@
 
 class Get extends Genome {
 
-    public static function page($path) {
+    public static function page($path, $key = null, $fail = false) {
         if (!file_exists($path)) return false;
         $i = Page::$i;
         $slug = Path::N($path);
@@ -33,19 +33,19 @@ class Get extends Genome {
             }
         }
         $output['id'] = (string) date('U', strtotime($output['time']));
-        return $output;
+        return !isset($key) ? $output : (array_key_exists($key, $output) ? $output[$key] : $fail);
     }
 
-    public static function pages($folder = PAGE, $state = [], $sort = 1, $by = 'time') {
+    public static function pages($folder = PAGE, $state = [], $sort = 1, $by = 'time', $key = null) {
         $states = Page::$states;
         $state = empty($state) ? $states : (array) $state;
         $state = implode(',', $state === [true] ? array_slice($states, 1) : $state);
         $output = [];
         if ($input = g($folder, $state, "", false)) {
             foreach ($input as $v) {
-                $output[] = self::page($v);
+                $output[] = self::page($v, $key);
             }
-            return !empty($output) ? Anemon::eat($output)->sort(1, $by)->vomit() : false;
+            return !empty($output) ? Anemon::eat($output)->sort(1, !isset($key) ? $by : null)->vomit() : false;
         }
         return false;
     }

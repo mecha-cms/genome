@@ -140,12 +140,9 @@ class Anemon extends Genome {
         return $this;
     }
 
-    public static function walk($array, $fn = null) {
+    public static function walk($array, $fn = null, $deep = false) {
         if (is_callable($fn)) {
-            foreach (a($array) as $k => &$v) {
-                $v = is_array($v) ? array_merge($v, self::walk($v, $fn)) : call_user_func($fn, $v, $k);
-            }
-            unset($v);
+            $deep ? array_walk_recursive($array, $fn, $array) : array_walk($array, $fn, $array);
             return $array;
         }
         return self::eat($array);
@@ -259,9 +256,9 @@ class Anemon extends Genome {
     }
 
     // Generate chunk(s) of array
-    public function chunk($chunk = 25, $index = null, $fail = []) {
-        $chunk = array_chunk(__is_anemon__($this->bucket) ? (array) $this->bucket : [], $chunk, true);
-        return !isset($index) ? $chunk : array_key_exists($index, $chunk) ? $chunk[$index] : $fail;
+    public function chunk($chunk = 5, $index = null, $fail = [], $preserve_key = false) {
+        $chunks = array_chunk(__is_anemon__($this->bucket) ? (array) $this->bucket : [], $chunk, $preserve_key);
+        return !isset($index) ? $chunks : (array_key_exists($index, $chunks) ? $chunks[$index] : $fail);
     }
 
     public function swap($a, $b = null) {

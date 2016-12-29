@@ -12,6 +12,7 @@
     <footer></footer>
   </article>
   <?php endforeach; ?>
+  <p><?php echo $pager; ?></p>
   <?php endif; ?>
 </main>
 <?php include 'footer.php'; ?>

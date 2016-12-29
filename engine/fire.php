@@ -61,7 +61,8 @@ r(SHIELD . DS . $config->shield, '{index__,index,__index}.php', function($f) use
 }, $seeds);
 
 function do_begin() {
-    Route::fire() and Shield::abort();
+    Route::fire();
+    Shield::abort();
 }
 
 Hook::set('begin', 'do_begin')->fire('begin');

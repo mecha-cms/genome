@@ -8,11 +8,12 @@ type: Markdown
 
 Pattern | Description
 ------- | -----------
-`%s` | Matched with any but `/`
-`%i` | Matched with any numbers.
-`%f` | Matched with any numbers and floats.
-`%` | Matched with any and `/`
-`%[foo,bar,baz\,qux]` | Matched with `foo`, `bar` and `baz,qux`
+`%s%` | Matched with any but `/`
+`%i%` | Matched with any numbers.
+`%f%` | Matched with any numbers and floats.
+`%%` | Matched with any and `/`
+`%[foo,bar,baz\,qux]%` | Matched with `foo`, `bar` and `baz,qux`
+`%[foo,bar,%i%]%` | Matched with `foo`, `bar` and any numbers.
 
 ### Set
 
@@ -20,7 +21,7 @@ Set a new route:
 
 ~~~ .php
 // `Route::set($id = null, $fn = null, $stack = null, $pattern = false)`
-Route::set('blog/%i', function($offset = 1) {
+Route::set('blog/%i%', function($offset = 1) {
     // here, `$offset` will return `4` if we are in `http://localhost/blog/4`
     // and will return `1` if we are in `http://localhost/blog`
 }); // ← default `$stack` value is `10`
@@ -29,15 +30,15 @@ Route::set('blog/%i', function($offset = 1) {
 Set multiple routes:
 
 ~~~ .php
-Route::set(['blog/%s/%i', 'blog/%s', 'blog/%i', 'blog'], function($slug = "", $offset = 1) { … });
+Route::set(['blog/%s%/%i%', 'blog/%s%', 'blog/%i%', 'blog'], function($slug = "", $offset = 1) { … });
 ~~~
 
 The code above is equal to these:
 
 ~~~ .php
-Route::set('blog/%s/%i', function($slug = "", $offset = 1) { … }, 10);
-Route::set('blog/%s', function($slug = "", $offset = 1) { … }, 10.1);
-Route::set('blog/%i', function($slug = "", $offset = 1) { … }, 10.2);
+Route::set('blog/%s%/%i%', function($slug = "", $offset = 1) { … }, 10);
+Route::set('blog/%s%', function($slug = "", $offset = 1) { … }, 10.1);
+Route::set('blog/%i%', function($slug = "", $offset = 1) { … }, 10.2);
 Route::set('blog', function($slug = "", $offset = 1) { … }, 10.3);
 ~~~
 
@@ -47,29 +48,29 @@ Remove a route:
 
 ~~~ .php
 // `Route::reset($id)`
-Route::reset('blog/%s');
+Route::reset('blog/%s%');
 ~~~
 
 Remove routes:
 
 ~~~ .php
-Route::reset(['blog/%s/%i', 'blog/%s']);
+Route::reset(['blog/%s%/%i%', 'blog/%s%']);
 ~~~
 
 ### Get
 
-Check whether `blog/%s` route is exists:
+Check whether `blog/%s%` route is exists:
 
 ~~~ .php
 // `Route::get($id = null, $fail = false)`
-if (Route::get('blog/%s')) { … }
+if (Route::get('blog/%s%')) { … }
 ~~~
 
 This method will return the route data that has been set by `Route::set()`; or `false`:
 
 ~~~ .php
 __test__(
-    Route::get('blog/%s'),
+    Route::get('blog/%s%'),
     Route::get('blog/$'),
     Route::get('blog/$', 0)
 );
@@ -108,14 +109,14 @@ Detect whether current URL path is matched with the route pattern:
 
 ~~~ .php
 // `Route::is($id, $fail = false, $pattern = false)`
-if (Route::is('blog/%s')) { … }
+if (Route::is('blog/%s%')) { … }
 ~~~
 
 This method will return the route data, parsed from the current URL path; or `false`:
 
 ~~~ .php
 __test__(
-    Route::is('blog/%s/%i'),
+    Route::is('blog/%s%/%i%'),
     Route::is('blog/$'),
     Route::is('blog/$', 0)
 );
@@ -125,7 +126,7 @@ Result:
 
 ~~~ .php
 [
-    'pattern' => 'blog/%s/%i',
+    'pattern' => 'blog/%s%/%i%',
     'path' => 'blog/archive/4',
     'lot' => ['archive', 4]
 ]
@@ -151,12 +152,12 @@ Route::fire();
 Execute specific route with pre–defined value:
 
 ~~~ .php
-Route::fire('blog/%s/%i', ['archive', 4]);
+Route::fire('blog/%s%/%i%', ['archive', 4]);
 ~~~
 
 ### Hook
 
-Set custom actions before `blog/%s` route execution:
+Set custom actions before `blog/%s%` route execution:
 
 ~~~ .php
 function my_route_hook_fn($slug = "") {
@@ -164,14 +165,14 @@ function my_route_hook_fn($slug = "") {
 }
 
 // `Route::hook($id, $fn = null, $stack = null, $pattern = false)`
-Route::hook('blog/%s', 'my_hook_fn'); // ← default `$stack` value is `10`
+Route::hook('blog/%s%', 'my_hook_fn'); // ← default `$stack` value is `10`
 ~~~
 
 ### Hooked
 
-Check whether `my_route_hook_fn` already hooked to the `blog/%s` route:
+Check whether `my_route_hook_fn` already hooked to the `blog/%s%` route:
 
 ~~~ .php
-// `Route::hooked($id = null, $stack = null, $fail = false)`
-if (Route::hooked('blog/%s', 'my_route_hook_fn')) { … }
+// `Route::hooked($id = null, $stack = null | $fn = null, $fail = false)`
+if (Route::hooked('blog/%s%', 'my_route_hook_fn')) { … }
 ~~~

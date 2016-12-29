@@ -9,6 +9,7 @@ return [
     'title' => 'Mecha CMS',
     'description' => 'The site slogan.',
     'query' => [],
+    'chunk' => 3,
     'page' => [
         'time' => "",
         'kind' => [0],

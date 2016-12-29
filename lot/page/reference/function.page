@@ -4,10 +4,44 @@ description: Jump to `engine\ignite.php`
 type: Markdown
 ...
 
-### Debug
+### Test
+
+Dump a PHP code to show the results:
 
 ~~~ .php
+// `__test__($a[, $b[, $c[, ...]]])`
 __test__($foo, $bar, $baz);
+~~~
+
+### Format
+
+Create regular expression pattern from a string contains some [wildcards](https://en.wikipedia.org/wiki/Wildcard_character "Wildcard Characters – Wikipedia"):
+
+~~~ .php
+// `__format__($s, $x = '\n', $d = '#', $r = true)`
+$pattern = __format__('lorem %s% ipsum %i% dolor # sit amet');
+~~~
+
+Parameter | Description
+--------- | -----------
+`$s` | The string input.
+`$x` | Forbidden characters for the `%s%` wildcard.
+`$d` | The regular expression delimiter to escape.
+`$r` | Can the wildcard be replaced by an empty data?
+
+Pattern | Description
+------- | -----------
+`%s%` | Accept any string but `$x`.
+`%i%` | Accept any string numbers.
+`%f%` | Accept any string numbers and floats.
+`%%` | Accept any string and `$x`.
+`%[foo,bar,baz\,qux]%` | Accept `foo`, `bar` and `baz,qux`.
+`%[foo,bar,%i%]%` | Accept `foo`, `bar` and any string numbers.
+
+This function will return a regular expression string without the delimiters:
+
+~~~ .php
+$pattern = 'lorem ([^\n]+) ipsum (\d+) dolor \# sit amet';
 ~~~
 
 ### Array and Object

@@ -3,8 +3,8 @@
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
-      <?php $date = new Date($page->update); ?>
-      <p><time datetime="<?php echo $date->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $date->F1; ?></time></p>
+      <?php $update = new Date($page->update); ?>
+      <p><time datetime="<?php echo $update->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $update->F1; ?></time></p>
     </header>
     <section>
       <blockquote>
