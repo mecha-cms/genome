@@ -21,8 +21,8 @@ Set a new route:
 
 ~~~ .php
 // `Route::set($id = null, $fn = null, $stack = null, $pattern = false)`
-Route::set('blog/%i%', function($offset = 1) {
-    // here, `$offset` will return `4` if we are in `http://localhost/blog/4`
+Route::set('blog/%i%', function($step = 1) {
+    // here, `$step` will return `4` if we are in `http://localhost/blog/4`
     // and will return `1` if we are in `http://localhost/blog`
 }); // ← default `$stack` value is `10`
 ~~~
@@ -30,16 +30,16 @@ Route::set('blog/%i%', function($offset = 1) {
 Set multiple routes:
 
 ~~~ .php
-Route::set(['blog/%s%/%i%', 'blog/%s%', 'blog/%i%', 'blog'], function($slug = "", $offset = 1) { … });
+Route::set(['blog/%s%/%i%', 'blog/%s%', 'blog/%i%', 'blog'], function($slug = "", $step = 1) { … });
 ~~~
 
 The code above is equal to these:
 
 ~~~ .php
-Route::set('blog/%s%/%i%', function($slug = "", $offset = 1) { … }, 10);
-Route::set('blog/%s%', function($slug = "", $offset = 1) { … }, 10.1);
-Route::set('blog/%i%', function($slug = "", $offset = 1) { … }, 10.2);
-Route::set('blog', function($slug = "", $offset = 1) { … }, 10.3);
+Route::set('blog/%s%/%i%', function($slug = "", $step = 1) { … }, 10);
+Route::set('blog/%s%', function($slug = "", $step = 1) { … }, 10.1);
+Route::set('blog/%i%', function($slug = "", $step = 1) { … }, 10.2);
+Route::set('blog', function($slug = "", $step = 1) { … }, 10.3);
 ~~~
 
 ### Reset
@@ -80,7 +80,7 @@ Result:
 
 ~~~ .php
 [
-    'fn' => function($slug = "", $offset = 1) { … },
+    'fn' => function($slug = "", $step = 1) { … },
     'stack' => 10,
     'is' => ['pattern' => false]
 ]
@@ -100,7 +100,7 @@ Set a new route or routes using plain regular expression pattern:
 
 ~~~ .php
 // `Route::pattern($pattern, $fn = false, $stack = null)`
-Route::pattern('#^blog\/([^\/]+)?\/(\d+)?$#', function($slug = "", $offset = 1) { … });
+Route::pattern('#^blog\/([^\/]+)?\/(\d+)?$#', function($slug = "", $step = 1) { … });
 ~~~
 
 ### Is

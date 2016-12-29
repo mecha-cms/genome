@@ -68,8 +68,8 @@ class Union extends Genome {
         }
         $output = "";
         $c = strtolower(static::class);
-        $unit = $unit ? '.' . $unit : "";
-        $array = Hook::NS($c . '.bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
+        $unit = $unit ? Anemon::NS . $unit : "";
+        $array = Hook::NS($c . Anemon::NS . 'bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
             if (__is_anemon__($v)) {
@@ -113,7 +113,7 @@ class Union extends Genome {
         $u = $this->union[1][0];
         $s  = $dent . $u[0] . $unit . $this->bond($data, $unit);
         $s .= $content === false ? $u[1] : $u[1] . ($content ? $content : "") . $u[0] . $u[2] . $unit . $u[1];
-        return Hook::NS($c . '.unit.' . $unit, [$s, [$unit, $content, $data]]);
+        return Hook::NS($c . Anemon::NS . 'unit' . Anemon::NS . $unit, [$s, [$unit, $content, $data]]);
     }
 
     // Inverse version of `Union::unite()`
@@ -158,7 +158,7 @@ class Union extends Genome {
         }
         $c = strtolower(static::class);
         $u = $this->union[1][2];
-        return Hook::NS($c . '.unit.__', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
+        return Hook::NS($c . Anemon::NS . 'unit' . Anemon::NS . '__', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
     }
 
     // Base union tag open
@@ -168,7 +168,7 @@ class Union extends Genome {
         $this->dent[] = $dent;
         $u = $this->union[1][0];
         $c = strtolower(static::class);
-        return Hook::NS($c . '.' . $unit . '.begin', [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], [$unit, null, $data]]);
+        return Hook::NS($c . Anemon::NS . $unit . Anemon::NS . 'begin', [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], [$unit, null, $data]]);
     }
 
     // Base union tag close
@@ -185,7 +185,7 @@ class Union extends Genome {
         $dent = isset($dent) ? $dent : array_pop($this->dent);
         $c = strtolower(static::class);
         $u = $this->union[1][0];
-        return Hook::NS($c . '.' . $unit . '.end', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
+        return Hook::NS($c . Anemon::NS . $unit . Anemon::NS . 'end', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
     }
 
     // ...

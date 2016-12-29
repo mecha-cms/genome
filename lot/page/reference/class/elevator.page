@@ -1,0 +1,56 @@
+---
+title: Class `Elevator`
+description: This class was inspired by a vertical transportation that moves people or goods between floors called _Elevator_. This class produces some navigation items that can be used to go to the next and previous chunks, step by step, just like [navigation buttons in an elevator](https://en.wikipedia.org/wiki/Storey "Storey – Wikipedia").
+type: Markdown
+...
+
+### Constructor
+
+~~~ .php
+// `Elevator($input, $chunk = 5, $index = 0, $path = true, $config = [])`
+$elevator = new Elevator([0, 1, 2, 3, 4, 5, 6, 7], 3, 0, 'foo/bar');
+$elevator_str = $elevator . "";
+~~~
+
+Result:
+
+~~~ .php
+$elevator = [
+    'up' => null,
+    '0' => 'foo/bar',
+    'down' => 'foo/bar/2'
+];
+~~~
+
+~~~ .php
+$elevator_str = '<span>▲</span> <a href="foo/bar">◆</a> <a href="foo/bar/2">▼</a>';
+~~~
+
+To create horizontal elevator:
+
+~~~ .php
+$elevator = new Elevator([0, 1, 2, 3, 4, 5, 6, 7], 3, 0, 'foo/bar', [
+    'up' => 'previous',
+    'down' => 'next'
+], 'your_namespace');
+
+Hook::set('elevator.your_namespace', function($content) {
+    return str_replace(['&#x25B2;', '&#x25BC;'], ['&#x25C0;', '&#x25B6;'], $content);
+});
+
+$elevator_str = $elevator . "";
+~~~
+
+Result:
+
+~~~ .php
+$elevator = [
+    'previous' => null,
+    '0' => 'foo/bar',
+    'next' => 'foo/bar/2'
+];
+~~~
+
+~~~ .php
+$elevator_str = '<span>◀</span> <a href="foo/bar">◆</a> <a href="foo/bar/2">▶</a>';
+~~~

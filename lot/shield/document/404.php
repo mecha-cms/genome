@@ -1,3 +1,3 @@
-<?php include 'header.php'; ?>
+<?php Shield::get('header'); ?>
 <p>:(</p>
-<?php include 'footer.php'; ?>
+<?php Shield::get('footer'); ?>

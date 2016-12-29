@@ -6,6 +6,23 @@ class Anemon extends Genome {
     protected $separator = "";
     protected $i = 0;
 
+    const NS = '.';
+
+    // Create list of namespace step(s)
+    public static function step($input, $NS = null) {
+        $NS = $NS ?: self::NS;
+        if (is_string($input) && strpos($input, $NS) !== false) {
+            $input = explode($NS, trim($input, $NS));
+            $a = array_shift($input);
+            $output = [$a];
+            while ($b = array_shift($input)) {
+                array_unshift($output, $a . $NS . $b);
+            }
+            return $output;
+        }
+        return (array) $input;
+    }
+
     // Prevent `$x` exceeds the value of `$min` and `$max`
     public static function edge($x, $min = null, $max = null) {
         if (isset($min) && $x < $min) return $min;
@@ -15,7 +32,7 @@ class Anemon extends Genome {
 
     // Set array value recursively
     public static function set(&$input, $key, $value = null) {
-        $keys = explode('.', $key);
+        $keys = explode(self::NS, $key);
         while (count($keys) > 1) {
             $key = array_shift($keys);
             if (!array_key_exists($key, $input)) {
@@ -29,7 +46,7 @@ class Anemon extends Genome {
     // Get array value recursively
     public static function get(&$input, $key = null, $fail = false) {
         if (!isset($key)) return $input;
-        $keys = explode('.', $key);
+        $keys = explode(self::NS, $key);
         foreach ($keys as $value) {
             if (!is_array($input) || !array_key_exists($value, $input)) {
                 return $fail;
@@ -41,7 +58,7 @@ class Anemon extends Genome {
 
     // Remove array value recursively
     public static function reset(&$input, $key) {
-        $keys = explode('.', $key);
+        $keys = explode(self::NS, $key);
         while (count($key) > 1) {
             $key = array_shift($keys);
             if (array_key_exists($key, $input)) {

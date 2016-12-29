@@ -106,7 +106,7 @@ class Page extends Genome {
     }
 
     // Read all page propert(y|ies)
-    public static function read($output = [], $NS = 'page.') {
+    public static function read($output = [], $NS = 'page') {
         // Pre-defined page meta ...
         if ($output) {
             foreach ($output as $k => $v) {
@@ -120,7 +120,7 @@ class Page extends Genome {
     }
 
     // Read specific page property
-    public static function get($key, $fail = "", $NS = 'page.') {
+    public static function get($key, $fail = "", $NS = 'page') {
         $data = Get::page($input = self::$path);
         $input = Path::D($input) . DS . Path::N($input);
         if (is_dir($input)) {
@@ -131,8 +131,8 @@ class Page extends Genome {
     }
 
     protected static function _meta_hook($input, $lot, $NS) {
-        $input = Hook::NS($NS . 'input', [$input, $lot]);
-        $output = Hook::NS($NS . 'output', [$input, $lot]);
+        $input = Hook::NS($NS . Anemon::NS . 'input', [$input, $lot]);
+        $output = Hook::NS($NS . Anemon::NS . 'output', [$input, $lot]);
         return $output;
     }
 
@@ -146,7 +146,7 @@ class Page extends Genome {
 
     protected $lot = [];
 
-    public function __construct($a = null, $shift = "", $lot = [], $NS = 'page.') {
+    public function __construct($a = null, $shift = "", $lot = [], $NS = 'page') {
         if ($a) {
             if (!__is_anemon__($a)) {
                 $a = self::open($a, $shift)->read($lot, $NS);
@@ -158,8 +158,8 @@ class Page extends Genome {
     public function __call($key, $lot) {
         $fail = array_shift($lot) ?: false;
         $fail_alt = array_shift($lot) ?: false;
-        if (is_string($fail) && strpos($fail, 'fn:') === 0) {
-            return call_user_func(substr($fail, 3), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
+        if (is_string($fail) && strpos($fail, 'fn::') === 0) {
+            return call_user_func(substr($fail, 4), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         } else if ($fail instanceof \Closure) {
             return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         }

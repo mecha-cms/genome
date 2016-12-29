@@ -662,6 +662,8 @@ _approve: Unapprove
 _approveing: Unapproving
 _approveed: Unapproved
 
+_finded: Not Found
+
 _install: Uninstall
 _installing: Uninstalling
 _installed: Uninstalled

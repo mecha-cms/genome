@@ -16,12 +16,12 @@ class Cookie extends Genome {
         Anemon::extend($cc, $config);
         $cc = array_values($cc);
         $cc[0] = time() + 60 * 60 * 24 * $cc[0]; // 1 day
-        if (strpos($key, '.') !== false) {
-            $a = explode('.', $key);
+        if (strpos($key, Anemon::NS) !== false) {
+            $a = explode(Anemon::NS, $key);
             $n = array_shift($a);
             $o = e($_COOKIE[$n] ?? []);
             if (__is_anemon__($value)) $value = a($value);
-            Anemon::set($o, implode('.', $a), $value);
+            Anemon::set($o, implode(Anemon::NS, $a), $value);
             $value = $o;
         }
         array_unshift($cc, [$key, To::base64(To::json($value))]);
@@ -51,8 +51,8 @@ class Cookie extends Genome {
                 setcookie($n, null, -1, '/');
             }
         } else {
-            if (strpos($key, '.') !== false) {
-                $a = explode('.', $key);
+            if (strpos($key, Anemon::NS) !== false) {
+                $a = explode(Anemon::NS, $key);
                 if (isset($_COOKIE[$a[0]])) {
                     $o = e($_COOKIE[$a[0]]);
                     Anemon::reset($o, $key);

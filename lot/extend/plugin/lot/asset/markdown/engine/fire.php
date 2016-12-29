@@ -23,7 +23,7 @@ function do_markdown_parse_i(&$input) {
 function do_markdown($data) {
     if ($data['type'] === 'Markdown') {
         do_markdown_parse_i($data['title']);
-        do_markdown_parse_i($data['description']);
+        do_markdown_parse($data['description']);
         do_markdown_parse($data['content']);
     }
     return $data;

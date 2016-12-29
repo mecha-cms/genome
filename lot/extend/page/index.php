@@ -1,50 +1,37 @@
 <?php
 
-Route::set(['%%/%i%', '%%', ""], function($path = "", $offset = 1) use($config, $url) {
-    --$offset; // 0–based index
-    $folder = rtrim(PAGE . DS . To::path($path === "" ? 'index' : $path), DS);
-    // from a file ...
-    if ($file = File::exist([$folder . '.page', $folder . '.archive'])) {
+Route::set(['%%/%i%', '%%', ""], function($path = "", $step = 1) use($config, $language, $url) {
+    $step = $step - 1; // 0-based index ...
+    $path_alt = $path === "" ? 'index' : $path;
+    $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
+    // Change vertical elevator into horizontal elevator
+    $elevator = [
+        'up' => 'previous',
+        'down' => 'next'
+    ];
+    // --ditto
+    Hook::set('elevator.pager', function($content) {
+        return str_replace(['&#x25B2;', '&#x25BC;'], ['&#x25C0;', '&#x25B6;'], $content);
+    }, 1);
+    $pages = $page = [];
+    Config::set('page.title', new Anemon([$config->title], ' &#x2013; '));
+    if ($file = File::exist([$folder . '.page', $folder . '.archive'])) { // File does exist
         $page = new Page($file);
-        Config::set('page.title', new Anemon([$page->title, $config->title], ' &ndash; '));
         Seed::set('page', $page);
+        Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x2013; '));
         if ($files = Get::pages($folder, [], 1, 'time', 'path')) {
-            $pages = [];
-            foreach (Anemon::eat($files)->chunk($config->chunk, $offset) as $file) {
+            foreach (Anemon::eat($files)->chunk($config->chunk, $step) as $file) {
                 $pages[] = new Page($file);
             }
             if (empty($pages)) {
-                Shield::abort(['204-pages', '404-pages', '204', '404']);
+                Shield::abort(['204/' . $path_alt, '404/' . $path_alt, '204', '404']);
             }
             Seed::set([
-                'pager' => new Elevator($files, $config->chunk, $offset, $url . '/' . $path),
+                'pager' => new Elevator($files, $config->chunk, $step, $url . '/' . $path, $elevator, 'pager'),
                 'pages' => $pages
             ]);
-            Shield::attach('pages');
+            Shield::attach('pages/' . $path_alt);
         }
-        Shield::attach('page');
-    // from a folder ...
-    } else if (Is::D($folder)) {
-        if ($file = File::exist([$folder . '.page', $folder . '.archive'])) {
-            $page = new Page($file);
-        } else {
-            $page = false;
-        }
-        if ($files = Get::pages($folder, [], 1, 'time', 'path')) {
-            $pages = [];
-            foreach (Anemon::eat($files)->chunk($config->chunk, $offset) as $file) {
-                $pages[] = new Page($file);
-            }
-        }
-        if (empty($pages)) {
-            Shield::abort(['204-pages', '404-pages', '204', '404']);
-        }
-        Config::set('page.title', new Anemon($page ? [$page->title, $config->title] : [$config->title], ' &ndash; '));
-        Seed::set([
-            'pager' => new Elevator($files, $config->chunk, $offset, $url . '/' . $path),
-            'page' => $page,
-            'pages' => $pages
-        ]);
-        Shield::attach('pages');
+        Shield::attach('page/' . $path_alt);
     }
 });

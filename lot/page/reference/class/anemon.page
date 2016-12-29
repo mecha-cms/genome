@@ -4,6 +4,25 @@ description: Array workers.
 type: Markdown
 ...
 
+### Step
+
+Create list of _namespace_ steps from a string.
+
+~~~ .php
+// `Anemon::step($input, $NS = null)`
+$test = Anemon::step('foo.bar.baz'); // ← default `$NS` is `.`
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'foo.bar.baz',
+    'foo.bar',
+    'foo'
+];
+~~~
+
 ### Edge
 
 Prevent input value exceeds the minimum and maximum value.
