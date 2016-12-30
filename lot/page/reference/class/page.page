@@ -22,7 +22,10 @@ type: Markdown
 
 ### Constructor
 
+~~~ .code-sample.php
+Page($input = null, $shift = "", $lot = [], $NS = 'page');
+~~~
+
 ~~~ .php
-// `Page($path, $shift, $lot, $NS)`
-$page = new Page('path\to\file.page', "", [], 'page.');
+$page = new Page('path\to\file.page');
 ~~~

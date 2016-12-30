@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html dir="<?php echo $config->direction; ?>">
   <head>
-    <meta charset="<?php echo $config->encoding; ?>">
+    <meta charset="<?php echo $config->charset; ?>">
     <meta name="viewport" content="width=device-width">
     <title><?php echo To::text($config->page->title); ?></title>
     <link href="<?php echo $url; ?>/lot/shield/<?php echo $config->shield; ?>/asset/css/<?php echo $config->shield; ?>.min.css" rel="stylesheet">

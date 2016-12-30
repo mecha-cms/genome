@@ -1,0 +1,150 @@
+---
+title: Class `Form`
+description: HTML forms.
+type: Markdown
+...
+
+### Button
+
+~~~ .code-sample.php
+Form::button($name = null, $value = null, $text = "", $attr = [], $dent = 0);
+~~~
+
+Create a HTML `<button>` element:
+
+~~~ .php
+$test = Form::button('x', 'on', 'Activate');
+~~~
+
+Result:
+
+~~~ .php
+$test = '<button name="x" type="button" value="on">Activate</button>';
+~~~
+
+### Input
+
+~~~ .code-sample.php
+Form::input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0);
+~~~
+
+Create a HTML `<input>` element:
+
+~~~ .php
+$test = Form::input('x', 'url', 'test value', 'http://');
+~~~
+
+Result:
+
+~~~ .php
+$test = '<input name="x" type="url" value="test value" placeholder="http://">';
+~~~
+
+### Select
+
+~~~ .coda-sample.php
+Form::select($name = null, $option = [], $select = null, $attr = [], $dent = 0);
+~~~
+
+Create a HTML `<select>` element:
+
+~~~ .php
+$test_1 = Form::select('o', [
+    0 => 'red',
+    1 => 'green',
+    2 => 'blue'
+], 1);
+
+$test_2 = Form::select('o', [
+    [
+        'Color' => [
+            '0.0' => 'red',
+            '0.1' => 'green',
+            '0.2' => 'blue'
+        ],
+        'Size' => [
+            '1.0' => 'small',
+            '1.1' => 'medium',
+            '1.2' => 'large'
+        ]
+    ]
+], '1.1');
+~~~
+
+Result:
+
+~~~ .php
+$test_1 = '<select name="o">
+  <option value="0">red</option>
+  <option value="1" selected>green</option>
+  <option value="2">blue</option>
+</select>';
+~~~
+
+~~~ .php
+$test_2 = '<select name="o">
+  <optgroup label="Color">
+    <option value="0.0">red</option>
+    <option value="0.1">green</option>
+    <option value="0.2">blue</option>
+  </optgroup>
+  <optgroup label="Size">
+    <option value="1.0">small</option>
+    <option value="1.1">medium</option>
+    <option value="1.2">large</option>
+  </optgroup>
+</select>';
+~~~
+
+### Textarea
+
+~~~ .coda-sample.php
+Form::textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0);
+~~~
+
+Create a HTML `<textarea>` element:
+
+~~~ .php
+$test = Form::textarea('x', 'test value', 'some text…');
+~~~
+
+Result:
+
+~~~ .php
+$test = '<textarea name="x" placeholder="some text…">test value</textarea>';
+~~~
+
+> All strings in the text area content and HTML attributes will be HTML encoded.
+
+> To disable the form field, prepend a `.` to the form name. For `<select>` elements, to disable some option fields, prepend a `.` to the array key in the option list.
+>
+> ~~~ .php
+> $test_1 = Form::button('.x'); // disabled button
+> $test_2 = Form::input('.x'); // disabled input
+> $test_3 = Form::select('.x'); // disabled select
+> $test_4 = Form::textarea('.x'); // disabled textarea
+> $test_5 = Form::textarea('\.x'); // not disabled, this will create `<textarea name=".x">`
+> ~~~
+>
+> ~~~ .php
+> $test_1 = Form::select('x', [
+>     '.0' => 'red', // disabled
+>     '1' => 'green',
+>     '2' => 'blue'
+> ]);
+>
+> $test_2 = Form::input('x', [
+>    [
+>        '.Color' => [ // disabled
+>            '0.0' => 'red',
+>            '0.1' => 'green',
+>            '0.2' => 'blue'
+>        ],
+>        'Size' => [
+>            '.1.0' => 'small', // disabled
+>            '1.1' => 'medium',
+>            '1.2' => 'large'
+>        ]
+>    ]
+> ]);
+> ~~~

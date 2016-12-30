@@ -6,10 +6,13 @@ type: Markdown
 
 ### Set
 
+~~~ .code-sample.php
+Cookie::set($key, $value = "", $config = [] | $expire);
+~~~
+
 Set a cookie:
 
 ~~~ .php
-// `Cookie::set($key, $value = "", $config = [] | $expire)`
 Cookie::set('my_cookie', 'the value', 1); // expired in a day
 ~~~
 
@@ -27,17 +30,19 @@ Cookie::set('my_cookie', 'the value', [
 
 ### Reset
 
+~~~ .code-sample.php
+Cookie::reset($key = null);
+~~~
+
 Remove a cookie:
 
 ~~~ .php
-// `Cookie::reset($key = null)`
 Cookie::reset('my_cookie');
 ~~~
 
 Remove multiple cookies:
 
 ~~~ .php
-// `Cookie::reset($keys = null)`
 Cookie::reset(['my_cookie', 'your_cookie', 'our_cookie']);
 ~~~
 
@@ -49,10 +54,13 @@ Cookie::reset();
 
 ### Get
 
+~~~ .code-sample.php
+Cookie::get($key = null, $fail = "");
+~~~
+
 Get a cookie:
 
 ~~~ .php
-// `Cookie::get($key = null, $fail = "")`
 Cookie::get('my_cookie', '#');
 ~~~
 

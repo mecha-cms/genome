@@ -43,7 +43,7 @@ class Date extends Genome {
     }
 
     public function extract($key = null, $fail = false) {
-        $language = new Language;
+        global $config, $language;
         $months_long = $language->months_long;
         $days_long = $language->days_long;
         $months_short = $language->months_short;
@@ -85,12 +85,12 @@ class Date extends Genome {
             'minute' => $minute,
             'second' => $second,
             'AM_PM' => $AM_PM,
-            'F1' => $day_long . ', ' . $day . ' ' . $month_long . ' ' . $year,
-            'F2' => $day_long . ', ' . $month_long . ' ' . $day . ', ' . $year,
-            'F3' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
-            'F4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AM_PM,
-            'F5' => $hour_24 . ':' . $minute,
-            'F6' => $hour_12 . ':' . $minute . ' ' . $AM_PM
+            'en_us' => $day_long . ', ' . $month_long . ' ' . $day . ', ' . $year,
+            'id_id' => $day_long . ', ' . $day . ' ' . $month_long . ' ' . $year,
+            'F1' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
+            'F2' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AM_PM,
+            'F3' => $hour_24 . ':' . $minute,
+            'F4' => $hour_12 . ':' . $minute . ' ' . $AM_PM
         ];
         if (!empty(self::$formats)) {
             foreach (self::$formats as $k => $v) {

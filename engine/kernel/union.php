@@ -43,7 +43,10 @@ class Union extends Genome {
     ];
 
     public function __construct($union = []) {
-        Anemon::extend($this->union, $union);
+        Hook::set('union.union', function($data) {
+            return $data;
+        });
+        $this->union = Hook::NS(strtolower(static::class) . Anemon::NS . 'union', [[array_replace_recursive($this->union, $union)]]);
     }
 
     protected $unit = [];
@@ -68,6 +71,7 @@ class Union extends Genome {
         }
         $output = "";
         $c = strtolower(static::class);
+        $u = $this->union[1][1];
         $unit = $unit ? Anemon::NS . $unit : "";
         $array = Hook::NS($c . Anemon::NS . 'bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
         foreach ($a as $k => $v) {
@@ -89,7 +93,7 @@ class Union extends Genome {
                     $css = "";
                     foreach ($v as $kk => $vv) {
                         if (!isset($vv)) continue;
-                        $css .= ' ' . $kk . ': ' . str_replace('"', '&quot;', $vv) . ';';
+                        $css .= ' ' . $kk . ': ' . $vv . ';';
                     }
                     $k = 'style';
                     $v = substr($css, 1);
@@ -97,8 +101,7 @@ class Union extends Genome {
                     $v = __is_anemon__($v) ? json_encode($v) : $v;
                 }
             }
-            $q = is_string($v) && strpos($v, '"') !== false ? "'" : '"';
-            $output .= ' ' . ($v !== true ? $k . '=' . $q . $v . $q : $k);
+            $output .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . self::x($v) . $u[2] : $k);
         }
         return $output;
     }
@@ -136,10 +139,11 @@ class Union extends Genome {
         ];
         if (!preg_match('/^\s*' . $u0 . '(' . $u[3] . ')(?:' . $d3 . '*' . $u2 . '?' . $u1 . '|(' . $d3 . '+.*?)' . $d3 . '*' . $u2 . '?' . $u1 . ')(([\s\S]*?)' . $u0 . $u2 . '\1' . $u1 . ')?\s*$/s', $input, $m)) return false;
         $output[0] = $m[1];
-        $output[2] = isset($m[4]) ? $m[4] : null;
+        $output[1] = isset($m[4]) ? $m[4] : false;
         if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '([\s\S]*?)' . $d2 . ')?/s', $m[2], $mm)) {
             foreach ($mm[1] as $k => $v) {
-                $s = $eval ? e($mm[2][$k]) : $mm[2][$k];
+                $s = To::html_decode($mm[2][$k]);
+                $s = $eval ? e($s) : $s;
                 if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
                     $s = $v;
                 }
@@ -182,7 +186,7 @@ class Union extends Genome {
             return $s;
         }
         $unit = isset($unit) ? $unit : array_pop($this->unit);
-        $dent = isset($dent) ? $dent : array_pop($this->dent);
+        $dent = isset($dent) ? self::dent($dent) : array_pop($this->dent);
         $c = strtolower(static::class);
         $u = $this->union[1][0];
         return Hook::NS($c . Anemon::NS . $unit . Anemon::NS . 'end', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);

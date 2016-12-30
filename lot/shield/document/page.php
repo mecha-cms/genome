@@ -4,7 +4,7 @@
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
       <?php $update = new Date($page->update); ?>
-      <p><time datetime="<?php echo $update->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $update->F2; ?></time></p>
+      <p><time datetime="<?php echo $update->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $update->{str_replace('-', '_', $config->language)}; ?></time></p>
     </header>
     <section>
       <blockquote><?php echo $page->description; ?></blockquote>

@@ -4,27 +4,35 @@ description: Working with date and time.
 type: Markdown
 ...
 
-### Set Default Date Time Zone
+### Time Zone
 
-Find the complete list of time zones supported by PHP [here](http://php.net/manual/en/timezones.php "List of Supported Timezones").
+~~~ .code-sample.php
+Date::TZ($zone = null);
+~~~
+
+Set default date time zone:
 
 ~~~ .php
-// `Date::TZ($zone = null)`
 Date::TZ('Asia/Jakarta');
 ~~~
 
-### Get the Current Time Zone
+Find the complete list of time zones supported by PHP [here](http://php.net/manual/en/timezones.php "List of Supported Timezones").
+
+Get the current time zone:
 
 ~~~ .php
 echo Date::TZ();
 ~~~
 
-### Date Formatter
+### Format
 
-Read more about date formatting patterns [here](http://php.net/manual/en/function.date.php "PHP date()").
+~~~ .code-sample.php
+->format($format = DATE_WISE);
+~~~
+
+Date formatter:
 
 ~~~ .php
-// `->format($format = DATE_WISE)`
 $date = new Date('2016/04/21 16:00:00');
 echo $date->format('c');
 ~~~
@@ -34,6 +42,8 @@ Result:
 ~~~ .no-highlight
 2016-04-21T16:00:00+07:00
 ~~~
+
+Read more about date formatting patterns [here](http://php.net/manual/en/function.date.php "PHP date()").
 
 ### Convert Time to Slug
 
@@ -48,10 +58,15 @@ Result:
 2016-04-21-16-00-00
 ~~~
 
-### Extract Date Format
+### Extract
+
+~~~ .code-sample.php
+->extract($key = null, $fail = false);
+~~~
+
+Extract date formats:
 
 ~~~ .php
-// `->extract($key = null, $fail = false)`
 $date = new Date('2016/04/21 16:00:00');
 __test__($date->extract());
 ~~~
@@ -91,10 +106,15 @@ Result:
 
 ### Advance
 
-#### Custom Format
+#### Set
+
+~~~ .code-sample.php
+Date::set($key = null, $fn = null ($output, $language));
+~~~
+
+Set custom date format:
 
 ~~~ .php
-// `Date::set($key = null, $fn = null ($output, $language))`
 Date::set('my_format', function($output, $language) {
     return $output['year'] . '/' . $output['month'] . '/' . $output['day'];
 });
@@ -110,4 +130,16 @@ echo $date->extract('my_format');
 
 // [2]
 echo $date->my_format;
+~~~
+
+#### Remove
+
+~~~ .code-sample.php
+Date::reset($key = null);
+~~~
+
+Remove custom date format:
+
+~~~ .php
+Date::reset('my_format');
 ~~~

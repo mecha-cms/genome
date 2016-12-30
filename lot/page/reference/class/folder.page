@@ -4,10 +4,15 @@ description: Working with folders.
 type: Markdown
 ...
 
-### Check the Existence of a Folder
+### Exist
+
+~~~ .code-sample.php
+Folder::exist($input, $fail = false);
+~~~
+
+Check the existence of a folder:
 
 ~~~ .php
-// `Folder::exist($input, $fail = false)`
 if (Folder::exist('path\to\folder')) {
     echo 'Folder `path\to\folder` is exists.';
 }
@@ -39,10 +44,15 @@ if ($test = Folder::exist(['page-post-2016', 'page-post', 'page'], false)) {
 }
 ~~~
 
-### Create a Folder
+### Set
+
+~~~ .code-sample.php
+Folder::set($input, $consent = 0777);
+~~~
+
+Create a folder:
 
 ~~~ .php
-// `Folder::set($input, $consent = 0777)`
 Folder::set('foo\bar\baz');
 ~~~
 
@@ -52,7 +62,9 @@ Set custom folder permission:
 Folder::set('foo\bar\baz', 0700);
 ~~~
 
-### Set Folder Permission
+### Consent
+
+Set folder permission:
 
 ~~~ .php
 Folder::open('path\to\folder')->consent(0600);

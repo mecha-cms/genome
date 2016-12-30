@@ -17,10 +17,13 @@ Pattern | Description
 
 ### Set
 
+~~~ .code-sample.php
+Route::set($id = null, $fn = null, $stack = null, $pattern = false);
+~~~
+
 Set a new route:
 
 ~~~ .php
-// `Route::set($id = null, $fn = null, $stack = null, $pattern = false)`
 Route::set('blog/%i%', function($step = 1) {
     // here, `$step` will return `4` if we are in `http://localhost/blog/4`
     // and will return `1` if we are in `http://localhost/blog`
@@ -44,10 +47,13 @@ Route::set('blog', function($slug = "", $step = 1) { … }, 10.3);
 
 ### Reset
 
+~~~ .code-sample.php
+Route::reset($id);
+~~~
+
 Remove a route:
 
 ~~~ .php
-// `Route::reset($id)`
 Route::reset('blog/%s%');
 ~~~
 
@@ -59,10 +65,13 @@ Route::reset(['blog/%s%/%i%', 'blog/%s%']);
 
 ### Get
 
+~~~ .code-sample.php
+Route::get($id = null, $fail = false);
+~~~
+
 Check whether `blog/%s%` route is exists:
 
 ~~~ .php
-// `Route::get($id = null, $fail = false)`
 if (Route::get('blog/%s%')) { … }
 ~~~
 
@@ -96,19 +105,25 @@ false
 
 ### Pattern
 
+~~~ .code-sample.php
+Route::pattern($pattern, $fn = false, $stack = null);
+~~~
+
 Set a new route or routes using plain regular expression pattern:
 
 ~~~ .php
-// `Route::pattern($pattern, $fn = false, $stack = null)`
 Route::pattern('#^blog\/([^\/]+)?\/(\d+)?$#', function($slug = "", $step = 1) { … });
 ~~~
 
 ### Is
 
+~~~ .code-sample.php
+Route::is($id, $fail = false, $pattern = false);
+~~~
+
 Detect whether current URL path is matched with the route pattern:
 
 ~~~ .php
-// `Route::is($id, $fail = false, $pattern = false)`
 if (Route::is('blog/%s%')) { … }
 ~~~
 
@@ -142,10 +157,13 @@ false
 
 ### Fire
 
+~~~ .code-sample.php
+Route::fire($id = null, $lot = []);
+~~~
+
 Execute the added routes:
 
 ~~~ .php
-// `Route::fire($id = null, $lot = [])`
 Route::fire();
 ~~~
 
@@ -157,6 +175,10 @@ Route::fire('blog/%s%/%i%', ['archive', 4]);
 
 ### Hook
 
+~~~ .code-sample.php
+Route::hook($id, $fn = null, $stack = null, $pattern = false);
+~~~
+
 Set custom actions before `blog/%s%` route execution:
 
 ~~~ .php
@@ -164,15 +186,17 @@ function my_route_hook_fn($slug = "") {
     $_POST['foo'] = 'bar';
 }
 
-// `Route::hook($id, $fn = null, $stack = null, $pattern = false)`
 Route::hook('blog/%s%', 'my_hook_fn'); // ← default `$stack` value is `10`
 ~~~
 
 ### Hooked
 
+~~~ .code-sample.php
+Route::hooked($id = null, $stack = null | $fn = null, $fail = false);
+~~~
+
 Check whether `my_route_hook_fn` already hooked to the `blog/%s%` route:
 
 ~~~ .php
-// `Route::hooked($id = null, $stack = null | $fn = null, $fail = false)`
 if (Route::hooked('blog/%s%', 'my_route_hook_fn')) { … }
 ~~~

@@ -2,20 +2,6 @@
 
 class Form extends HTML {
 
-    // `<input>`
-    public static function input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0) {
-        $attr_o = [];
-        if (strpos($name, '.') === 0) {
-            $attr_o['disabled'] = true;
-            $name = substr($name, 1);
-        }
-        $attr_o['name'] = $name;
-        $attr_o['value'] = self::x($value);
-        $attr_o['placeholder'] = $placeholder;
-        $attr_o['type'] = $type;
-        return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);
-    }
-
     // `<button>`
     public static function button($name = null, $value = null, $text = "", $attr = [], $dent = 0) {
         if (!array_key_exists('type', $attr)) {
@@ -25,10 +11,28 @@ class Form extends HTML {
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
+        } else if (strpos($name, '\.') === 0) { // escaped
+            $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
         $attr_o['value'] = $value;
         return self::unite('button', $text, Anemon::extend($attr_o, $attr), $dent);
+    }
+
+    // `<input>`
+    public static function input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0) {
+        $attr_o = [];
+        if (strpos($name, '.') === 0) {
+            $attr_o['disabled'] = true;
+            $name = substr($name, 1);
+        } else if (strpos($name, '\.') === 0) { // escaped
+            $name = substr($name, 1);
+        }
+        $attr_o['name'] = $name;
+        $attr_o['value'] = self::x($value);
+        $attr_o['placeholder'] = $placeholder;
+        $attr_o['type'] = $type;
+        return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);
     }
 
     // `<select>`
@@ -38,6 +42,8 @@ class Form extends HTML {
         $select = (string) $select;
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
+            $name = substr($name, 1);
+        } else if (strpos($name, '\.') === 0) { // escaped
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
@@ -49,6 +55,8 @@ class Form extends HTML {
                 if (strpos($key, '.') === 0) {
                     $s['disabled'] = true;
                     $key = substr($key, 1);
+                } else if (strpos($key, '\.') === 0) { // escaped
+                    $key = substr($key, 1);
                 }
                 $s['label'] = $key;
                 $o .= N . self::begin('optgroup', $s, $dent + 1);
@@ -56,6 +64,8 @@ class Form extends HTML {
                     $s = [];
                     if (strpos($k, '.') === 0) {
                         $s['disabled'] = true;
+                        $k = substr($k, 1);
+                    } else if (strpos($k, '\.') === 0) { // escaped
                         $k = substr($k, 1);
                     }
                     $k = (string) $k;
@@ -71,6 +81,8 @@ class Form extends HTML {
                 $s = [];
                 if (strpos($key, '.') === 0) {
                     $s['disabled'] = true;
+                    $key = substr($key, 1);
+                } else if (strpos($key, '\.') === 0) { // escaped
                     $key = substr($key, 1);
                 }
                 $key = (string) $key;
@@ -89,6 +101,8 @@ class Form extends HTML {
         $attr_o = [];
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
+            $name = substr($name, 1);
+        } else if (strpos($name, '\.') === 0) { // escaped
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;

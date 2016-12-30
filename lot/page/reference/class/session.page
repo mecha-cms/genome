@@ -6,26 +6,31 @@ type: Markdown
 
 ### Set
 
+~~~ .coda-sample.php
+Session::set($key, $value = "");
+~~~
+
 Set a session:
 
 ~~~ .php
-// `Session::set($key, $value = "")`
 Session::set('my_session', 'the value');
 ~~~
 
 ### Reset
 
+~~~ .code-sample.php
+Session::reset($key = null);
+~~~
+
 Remove a session:
 
 ~~~ .php
-// `Session::reset($key = null)`
 Session::reset('my_session');
 ~~~
 
 Remove multiple sessions:
 
 ~~~ .php
-// `Session::reset($keys = null)`
 Session::reset(['my_session', 'your_session', 'our_session']);
 ~~~
 
@@ -37,10 +42,13 @@ Session::reset();
 
 ### Get
 
+~~~ .coda-sample.php
+Session::get($key = null, $fail = "");
+~~~
+
 Get a session:
 
 ~~~ .php
-// `Session::get($key = null, $fail = "")`
 Session::get('my_session', '#');
 ~~~
 

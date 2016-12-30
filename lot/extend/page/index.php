@@ -6,13 +6,27 @@ Route::set(['%%/%i%', '%%', ""], function($path = "", $step = 1) use($config, $l
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     // Change vertical elevator into horizontal elevator
     $elevator = [
-        'up' => 'previous',
-        'down' => 'next'
+        'direction' => [
+            '-1' => 'previous',
+            '1' => 'next'
+        ],
+        'union' => [
+            '-2' => [
+                2 => [
+                    'class' => 'a',
+                    'rel' => null
+                ]
+            ],
+            '-1' => [
+                1 => '&#x25C0;',
+                2 => ['rel' => 'prev']
+            ],
+            '1' => [
+                1 => '&#x25B6;',
+                2 => ['rel' => 'next']
+            ]
+        ]
     ];
-    // --ditto
-    Hook::set('elevator.pager', function($content) {
-        return str_replace(['&#x25B2;', '&#x25BC;'], ['&#x25C0;', '&#x25B6;'], $content);
-    }, 1);
     $pages = $page = [];
     Config::set('page.title', new Anemon([$config->title], ' &#x2013; '));
     if ($file = File::exist([$folder . '.page', $folder . '.archive'])) { // File does exist

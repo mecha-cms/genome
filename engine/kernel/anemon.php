@@ -286,9 +286,9 @@ class Anemon extends Genome {
         return $this->__invoke($s);
     }
 
-    public function __construct($array = [], $s = ', ') {
+    public function __construct($array = [], $separator = ', ') {
         $this->bucket = $array;
-        $this->separator = $s;
+        $this->separator = $separator;
     }
 
     public function __get($key) {

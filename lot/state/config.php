@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'encoding' => 'utf-8',
+    'charset' => 'utf-8',
     'direction' => 'ltr',
     'directions' => ['ltr', 'rtl'],
     'language' => 'en-us',

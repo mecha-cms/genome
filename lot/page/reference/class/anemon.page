@@ -6,10 +6,13 @@ type: Markdown
 
 ### Step
 
-Create list of _namespace_ steps from a string.
+~~~ .code-sample.php
+Anemon::step($input, $NS = null);
+~~~
+
+Create list of _namespace_ steps from a string:
 
 ~~~ .php
-// `Anemon::step($input, $NS = null)`
 $test = Anemon::step('foo.bar.baz'); // ← default `$NS` is `.`
 ~~~
 
@@ -25,10 +28,13 @@ $test = [
 
 ### Edge
 
-Prevent input value exceeds the minimum and maximum value.
+~~~ .code-sample.php
+Anemon::edge($input, $min = null, $max = null);
+~~~
+
+Prevent input value exceeds the minimum and maximum value:
 
 ~~~ .php
-// `Anemon::edge($input, $min = null, $max = null)`
 
 $min = 0;
 $max = 100;
@@ -56,11 +62,13 @@ Result:
 
 ### Set
 
-Set or replace array value recursively.
+~~~ .code-sample.php
+Anemon::set($input, $key, $value = null);
+~~~
+
+Set or replace array value recursively:
 
 ~~~ .php
-// `Anemon::set($input, $key, $value = null)`
-
 $array = [
     'foo' => 1,
     'bar' => [
@@ -86,11 +94,13 @@ $array = [
 
 ### Get
 
-Get array value recursively.
+~~~ .code-sample.php
+Anemon::get($input, $key = null, $fail = false);
+~~~
+
+Get array value recursively:
 
 ~~~ .php
-// `Anemon::get($input, $key = null, $fail = false)`
-
 $array = [
     'foo' => 1,
     'bar' => [
@@ -115,11 +125,13 @@ $test_2 = '#';
 
 ### Reset
 
-Remove array value recursively.
+~~~ .code-sample.php
+Anemon::reset($input, $key);
+~~~
+
+Remove array value recursively:
 
 ~~~ .php
-// `Anemon::reset($input, $key)`
-
 $array = [
     'foo' => 1,
     'bar' => [
@@ -144,11 +156,17 @@ $array = [
 
 ### Extend and Concat
 
+~~~ .code-sample.php
+Anemon::extend($input, $a[, $b[, $c[, ...]]]);
+~~~
+
+~~~ .code-sample.php
+Anemon::concat($input, $a[, $b[, $c[, ...]]]);
+~~~
+
 Extend arrays:
 
 ~~~ .php
-// `Anemon::extend($input, $a[, $b[, $c[, ...]]])`
-
 $a = [
     'foo' => 1,
     'bar' => [
@@ -195,8 +213,6 @@ $a = [
 Concatenate arrays:
 
 ~~~ .php
-// `Anemon::concat($input, $a[, $b[, $c[, ...]]])`
-
 $a = [
     0 => 'a',
     1 => 'b',
@@ -289,10 +305,13 @@ Anemon::eat($array); // …
 
 #### Vomit
 
-Output specific data.
+~~~ .code-sample.php
+->vomit($key = null, $fail = false);
+~~~
+
+Output specific data:
 
 ~~~ .php
-// `->vomit($key = null, $fail = false)`
 $test_1 = Anemon::eat($array)->vomit();
 $test_2 = Anemon::eat($array)->vomit('bar', '#');
 $test_3 = Anemon::eat($array)->vomit('wow', '#');
@@ -314,10 +333,13 @@ $test_3 = '#';
 
 #### Is
 
-Reduce array data to those that pass the function’s test.
+~~~ .code-sample.php
+->is($fn ($value, $key));
+~~~
+
+Reduce array data to those that pass the function’s test:
 
 ~~~ .php
-// `->is($fn ($value, $key))`
 $test = Anemon::eat($array)->is(function($value, $key) {
     return $value < 2;
 })->vomit();
@@ -334,10 +356,13 @@ $test = [
 
 #### Not
 
-Reduce array data to those that does not pass the function’s test.
+~~~ .code-sample.php
+->not($fn ($value, $key));
+~~~
+
+Reduce array data to those that does not pass the function’s test:
 
 ~~~ .php
-// `->not($fn ($value, $key))`
 $test = Anemon::eat($array)->not(function($value, $key) {
     return $value < 2;
 })->vomit();
@@ -354,10 +379,13 @@ $test = [
 
 #### Shake
 
-Shuffle array values.
+~~~ .code-sample.php
+->shake($preserve_key = true);
+~~~
+
+Shuffle array values:
 
 ~~~ .php
-// `->shake($preserve_key = true)`
 $test_1 = Anemon::eat($array)->shake()->vomit();
 $test_2 = Anemon::eat($array)->shake(false)->vomit();
 ~~~
@@ -384,11 +412,13 @@ $test_2 = [
 
 #### Sort
 
-Sort array values.
+~~~ .php
+->sort($order = 1, $key = null, $preserve_key = false, $null = X);
+~~~
+
+Sort array values:
 
 ~~~ .php
-// `->sort($order = 1, $key = null, $preserve_key = false, $null = X)`
-
 $array = [
     'foo' => [
         'size' => 'medium',
@@ -518,11 +548,13 @@ $test_4 = [
 
 #### Chunk
 
-Chunk an array.
+~~~ .code-sample.php
+->chunk($chunk = 5, $index = null, $fail = []);
+~~~
+
+Chunk an array:
 
 ~~~ .php
-// `->chunk($chunk = 5, $index = null, $fail = [])`
-
 $array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 $test_1 = Anemon::eat($array)->chunk(4);
@@ -559,39 +591,51 @@ Anemon::walk($array); // …
 
 #### Next
 
-Move to next item.
+~~~ .code-sample.php
+->next($skip = 0);
+~~~
+
+Move to next item:
 
 ~~~ .php
-// `->next($skip = 0)`
 Anemon::walk($array)->next()->current();
 Anemon::walk($array)->next(1)->current(); // skip 1 item
 ~~~
 
 #### Previous
 
-Move to previous item.
+~~~ .code-sample.php
+->previous($skip = 0);
+~~~
+
+Move to previous item:
 
 ~~~ .php
-// `->previous($skip = 0)`
 Anemon::walk($array)->previous()->current();
 Anemon::walk($array)->previous(1)->current(); // skip 1 item
 ~~~
 
 #### To
 
-Move to the 2<sup>nd</sup> item.
+~~~ .code-sample.php
+->to($index);
+~~~
+
+Move to the 2<sup>nd</sup> item:
 
 ~~~ .php
-// `->to($index)`
 Anemon::walk($array)->to(1)->current();
 ~~~
 
 #### Before
 
-Insert before.
+~~~ .code-sample.php
+->before($value, $key = null);
+~~~
+
+Insert before:
 
 ~~~ .php
-// `->before($value, $key = null)`
 $test_1 = Anemon::walk($array)->to(2)->before('#')->vomit();
 $test_2 = Anemon::walk($array)->to(2)->before('#', '#key')->vomit();
 ~~~
@@ -620,10 +664,13 @@ $test_2 = [
 
 #### After
 
-Insert after.
+~~~ .code-sample.php
+->after($value, $key = null);
+~~~
+
+Insert after:
 
 ~~~ .php
-// `->after($value, $key = null)`
 $test_1 = Anemon::walk($array)->to(2)->after('#')->vomit();
 $test_2 = Anemon::walk($array)->to(2)->after('#', '#key')->vomit();
 ~~~
@@ -652,8 +699,13 @@ $test_2 = [
 
 #### Append
 
+~~~ .code-sample.php
+->append($value, $key = null);
+~~~
+
+Append an array item:
+
 ~~~ .php
-// `->append($value, $key = null)`
 $test_1 = Anemon::walk($array)->append('#')->vomit();
 $test_2 = Anemon::walk($array)->append('#', '#key')->vomit();
 ~~~
@@ -682,8 +734,13 @@ $test_2 = [
 
 #### Prepend
 
+~~~ .code-sample.php
+->prepend($value, $key = null);
+~~~
+
+Prepend an array item:
+
 ~~~ .php
-// `->prepend($value, $key = null)`
 $test_1 = Anemon::walk($array)->prepend('#')->vomit();
 $test_2 = Anemon::walk($array)->prepend('#', '#key')->vomit();
 ~~~
@@ -712,7 +769,11 @@ $test_2 = [
 
 #### First
 
-Get the first item.
+~~~ .code-sample.php
+->first();
+~~~
+
+Get the first item:
 
 ~~~ .php
 $test = Anemon::walk($array)->first();
@@ -720,7 +781,11 @@ $test = Anemon::walk($array)->first();
 
 #### Last
 
-Get the last item.
+~~~ .code-sample.php
+->last();
+~~~
+
+Get the last item:
 
 ~~~ .php
 $test = Anemon::walk($array)->last();
@@ -728,38 +793,49 @@ $test = Anemon::walk($array)->last();
 
 #### Count
 
-Count items.
+~~~ .code-sample.php
+->count($deep = false);
+~~~
+
+Count items:
 
 ~~~ .php
-// `->count($deep = false)`
 $test = Anemon::walk($array)->count();
 ~~~
 
 #### Key
 
-Get array key by index.
+~~~ .code-sample.php
+->key($index, $fail = false);
+~~~
+
+Get array key by index:
 
 ~~~ .php
-// `->key($index, $fail = false)`
 $test = Anemon::walk($array)->key(1);
 ~~~
 
 #### Index
 
-Get array index by key.
+~~~ .code-sample.php
+->index($key, $fail = false);
+~~~
+
+Get array index by key:
 
 ~~~ .php
-// `->index($key, $fail = false)`
 $test = Anemon::walk($array)->index('foo');
 ~~~
 
 ### Alter
 
+~~~ .code-sample.php
+Anemon::alter($input, $replace = [], $fail = null);
+~~~
+
 This is just a shortcut for `switch` and `case` statements:
 
 ~~~ .php
-// `Anemon::alter($input, $replace = [], $fail = null)`
-
 $input = 'bar';
 
 $test = Anemon::alter($input, [
@@ -779,10 +855,14 @@ $test = 2;
 
 ### Constructor
 
+~~~ .code-sample.php
+Anemon($array = [], $separator = ', ');
+~~~
+
 Create flexible array variable. An instance of `Anemon` class can be used to make the array becomes possible to be accessed as string, object or function:
 
 ~~~ .php
-$test = new Anemon(['foo', 'bar', 'baz'], ', ');
+$test = new Anemon(['foo', 'bar', 'baz']);
 
 echo $test;
 echo $test(' + ');
@@ -813,7 +893,7 @@ bar
 bar
 ~~~
 
-Array keys prefixed by a `__` will be ignored by default.
+Array keys prefixed by a `__` will be ignored by default:
 
 ~~~ .php
 $test = new Anemon([

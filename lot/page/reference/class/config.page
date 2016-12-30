@@ -6,17 +6,20 @@ type: Markdown
 
 ### Set
 
+~~~ .code-sample.php
+Config::set($key, $value = null);
+~~~
+
 Set an item:
 
 ~~~ .php
-// `Config::set($key, $value = null)`
 Config::set('test', '#ok');
 ~~~
 
 Then, you can call the value of `test` in the page after the declaration above this way:
 
 ~~~ .php
-echo Config::get('test'); // => `#ok`
+echo Config::get('test'); // → `#ok`
 ~~~
 
 Or you could also set multiple variables with the help of array:
@@ -42,10 +45,13 @@ $config->test = '#ok';
 
 ### Get
 
+~~~ .code-sample.php
+Config::get($key = null, $fail = false);
+~~~
+
 Get item by key:
 
 ~~~ .php
-// `Config::get($key = null, $fail = false)`
 echo Config::get('title');
 ~~~
 
@@ -79,10 +85,13 @@ __test__(Config::get());
 
 ### Reset
 
+~~~ .code-sample.php
+Config::reset($key = null);
+~~~
+
 Remove item by key:
 
 ~~~ .php
-// `Config::reset($key = null)`
 Config::reset('title');
 ~~~
 

@@ -124,7 +124,11 @@ class Page extends Genome {
         $data = Get::page($input = self::$path);
         $input = Path::D($input) . DS . Path::N($input);
         if (is_dir($input)) {
-            $data[$key] = File::open($input . DS . $key . '.data')->read($fail);
+            $data[$key] = File::open($input . DS . $key . '.data')->read(false);
+        }
+        if ($data[$key] === false && file_exists(self::$path)) {
+            self::open(self::$path)->apart();
+            $data[$key] = array_key_exists($key, self::$data) ? self::$data[$key] : $fail;
         }
         $output = self::_meta_hook($data, $data, $NS);
         return array_key_exists($key, $output) ? $output[$key] : $fail;
@@ -146,12 +150,12 @@ class Page extends Genome {
 
     protected $lot = [];
 
-    public function __construct($a = null, $shift = "", $lot = [], $NS = 'page') {
-        if ($a) {
-            if (!__is_anemon__($a)) {
-                $a = self::open($a, $shift)->read($lot, $NS);
+    public function __construct($input = null, $shift = "", $lot = [], $NS = 'page') {
+        if ($input) {
+            if (!__is_anemon__($input)) {
+                $input = self::open($input, $shift)->read($lot, $NS);
             }
-            $this->lot = $a;
+            $this->lot = $input;
         }
     }
 

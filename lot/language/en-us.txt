@@ -31,6 +31,9 @@ caches: Caches
 char: Character
 chars: Characters
 
+charset: Charset
+charsets: Charsets
+
 char_set: Character Set
 char_sets: Character Sets
 chars_set: Characters Set
