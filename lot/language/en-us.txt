@@ -123,6 +123,8 @@ generals: Generals
 hint: Hint
 hints: Hints
 
+home: Home
+
 hour: Hour
 hours: Hours
 
