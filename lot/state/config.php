@@ -13,7 +13,9 @@ return [
     'chunk' => 3,
     'sort' => [-1, 'time'],
     'page' => [
+        'path' => "",
         'time' => "",
+        'update' => "",
         'kind' => [0],
         'slug' => '--',
         'state' => 'page',

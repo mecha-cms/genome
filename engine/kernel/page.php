@@ -65,7 +65,7 @@ class Page extends Genome {
                 }
             }
         }
-        if (!array_key_exists('time', $data)) {
+        if (!array_key_exists('time', $data) && isset($data['update'])) {
             $data['time'] = $data['update'];
         }
         $data = Anemon::extend($config->page, $data);
@@ -134,11 +134,14 @@ class Page extends Genome {
             $data[$key] = false;
         }
         if ($data[$key] === false && file_exists(self::$path)) {
-            self::open(self::$path)->apart();
-            $data[$key] = array_key_exists($key, self::$data) ? self::$data[$key] : $fail;
+            self::open(self::$path);
+            Anemon::extend($data, self::$data);
+            if (!array_key_exists($key, $data) || $data[$key] !== '0' && empty($data[$key])) {
+                $data[$key] = $fail;
+            }
         }
-        $output = self::_meta_hook($data, $data, $NS);
-        return array_key_exists($key, $output) ? $output[$key] : $fail;
+        $output = self::_meta_hook($data, $data, $NS)[$key];
+        return $output !== false ? $output : $fail;
     }
 
     protected static function _meta_hook($input, $lot, $NS) {

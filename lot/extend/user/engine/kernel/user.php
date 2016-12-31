@@ -46,7 +46,7 @@ class User extends Genome {
     public function __toString() {
         $bucket = $this->lot;
         $id = $this->id;
-        return array_key_exists('author', $bucket) ? $bucket['author'] : (array_key_exists('id', $bucket) ? '@' . $bucket['id'] : $this->id);
+        return array_key_exists('author', $bucket) ? $bucket['author'] : self::ID . (array_key_exists('id', $bucket) ? $bucket['id'] : $this->id);
     }
 
 }

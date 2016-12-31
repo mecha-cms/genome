@@ -26,12 +26,15 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         ]
     ];
     $pages = $page = [];
+    Seed::set('page', new Page($page));
     Config::set('page.title', new Anemon([$config->title], ' &#x2013; '));
-    if ($file = File::exist([$folder . '.page', $folder . '.archive'])) { // File does exist
-        $page = new Page($file);
-        $chunk = $page->chunk($config->chunk);
-        $sort = $page->sort($config->sort);
-        Seed::set('page', $page);
+    $name = Path::B($folder);
+    if ($file = File::exist([
+        $folder . '.page', // `lot\page\page-slug.page`
+        $folder . '.archive', // `lot\page\page-slug.archive`
+        $folder . DS . $name . '.page', // `lot\page\page-slug\page-slug.page`
+        $folder . DS . $name . '.archive' // `lot\page\page-slug\page-slug.archive`
+    ])) { // File does exist, then ...
         // Load user functions from the current shield folder if any
         if ($fn = File::exist([$folder_shield . DS . 'index.php', $folder_shield . DS . 'index__.php'])) {
             include $fn;
@@ -40,8 +43,15 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         if ($fn = File::exist([$folder . DS . 'index.php', $folder . DS . 'index__.php'])) {
             include $fn;
         }
+        $page = new Page($file);
+        $chunk = $page->chunk($config->chunk);
+        $sort = $page->sort($config->sort);
+        Seed::set('page', $page);
         Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x2013; '));
-        if ($files = Get::pages($folder, [], $sort[0], $sort[1], 'path')) {
+        if (
+            !File::exist($folder . DS . $name . '.page') &&
+            ($files = Get::pages($folder, 'page', $sort[0], $sort[1], 'path'))
+        ) {
             foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
                 $pages[] = new Page($file);
             }

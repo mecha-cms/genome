@@ -69,9 +69,7 @@ Remove an attached `the_header` hook with ID `do_set_header` before execution, o
 Hook::reset('the_header', 'do_set_header');
 ~~~
 
-{{block.note}}
-You cannot remove hooks that are attached using anonymous function because they have no ID.
-{{/block}}
+> **Note:** You cannot remove hooks that are attached using anonymous function because they have no ID.
 
 ### Fire
 

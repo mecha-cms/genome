@@ -3,6 +3,11 @@
 function do_markdown_parse(&$input) {
     $slot = new ParsedownExtraPlugin;
     $slot->links = [];
+    $slot->table_class = 'border';
+    $slot->links_external_attr = [
+        'rel' => 'nofollow',
+        'target' => '_blank'
+    ];
     $input = $slot->text($input);
 }
 

@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'title' => 'Mecha CMS',
-    'description' => 'Mecha CMS blog and documentation.',
+    'title' => 'Mecha <abbr title="Content Management System">CMS</abbr>',
+    'description' => 'Mecha <abbr title="Content Management System">CMS</abbr> blog and documentation.',
     'slug' => 'article',
     'chunk' => 4,
     'sort' => [1, 'slug'],
