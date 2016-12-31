@@ -41,7 +41,7 @@ $test = '<input name="x" type="url" value="test value" placeholder="http://">';
 
 ### Select
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 Form::select($name = null, $option = [], $select = null, $attr = [], $dent = 0);
 ~~~
 
@@ -97,7 +97,7 @@ $test_2 = '<select name="o">
 
 ### Textarea
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 Form::textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0);
 ~~~
 

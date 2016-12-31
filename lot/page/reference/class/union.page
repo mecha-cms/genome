@@ -17,7 +17,7 @@ $union = new Union();
 
 #### Unite
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 ->unite($unit = 'html', $content = "", $data = [], $dent = 0);
 ~~~
 
@@ -50,7 +50,7 @@ $test_4 = '<input type="text">';
 
 #### Apart
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 ->apart($input, $eval = true);
 ~~~
 
@@ -167,7 +167,7 @@ false
 
 #### Begin
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 ->begin($unit = 'html', $data = [], $dent = 0);
 ~~~
 
@@ -192,7 +192,7 @@ Result:
 
 #### End
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 ->end($unit = null, $dent = null);
 ~~~
 

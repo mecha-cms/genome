@@ -5,7 +5,7 @@ description: Persistent storage using sessions.
 
 ### Set
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 Session::set($key, $value = "");
 ~~~
 
@@ -41,7 +41,7 @@ Session::reset();
 
 ### Get
 
-~~~ .coda-sample.php
+~~~ .code-sample.php
 Session::get($key = null, $fail = "");
 ~~~
 
