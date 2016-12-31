@@ -1,0 +1,34 @@
+---
+title: Reserved Variables
+description: You should not redefine these PHP variables used by Mecha.
+...
+
+This is not mandatory, but it would be better if you don’t change the value.
+
+### `$config`
+
+This variable is an instance of the [`Config` class][link:class/config].
+
+### `$date`
+
+This variable is an instance of the [`Date` class][link:class/date] with current time as the input.
+
+### `$language`
+
+This variable is an instance of the [`Language` class][link:class/language].
+
+### `$url`
+
+This variable is an instance of the [`URL` class][link:class/u-r-l].
+
+### `$pages`
+
+This variable is a list of the [`Page` class][link:class/page] instances.
+
+### `$page`
+
+This variable is an instance of the [`Page` class][link:class/page].
+
+### `$pager`
+
+This variable is an instance of the [`Elevator` class][link:class/elevator].

@@ -12,8 +12,8 @@ define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', rtrim(__DIR__, DS));
 
 define('DENT', '  '); // Default HTML indent
-define('NBSP', "\xA0"); // Non break space
-define('TAB', "\t"); // Tab
+define('S', "\xA0"); // Non break space
+define('T', "\t"); // Tab
 define('N', "\n"); // Line break
 define('X', "\x1A"); // Placeholder text
 

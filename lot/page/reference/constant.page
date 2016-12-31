@@ -1,0 +1,34 @@
+---
+title: Constants
+description: The available constants.
+...
+
+Constant | Description
+-------- | -----------
+`DS` |
+`ROOT` |
+`DENT` |
+`S` |
+`T` |
+`N` |
+`X` |
+`SESSION` |
+`ENGINE` |
+`LOT` |
+`ASSET` |
+`EXTEND` |
+`FIELD` |
+`LANGUAGE` |
+`PAGE` |
+`SHIELD` |
+`STATE` |
+`PLUGIN` |
+`HTML_WISE_I` |
+`HTML_WISE_B` |
+`HTML_WISE` |
+`DATE_WISE` |
+`FONT_X` |
+`IMAGE_X` |
+`MEDIA_X` |
+`PACKAGE_X` |
+`SCRIPT_X` |
