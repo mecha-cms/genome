@@ -1,7 +1,6 @@
 ---
 title: Class `Union`
-description: Any markup constructor.
-type: Markdown
+description: Universal markup constructor.
 ...
 
 ### Constructor

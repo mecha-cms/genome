@@ -34,7 +34,7 @@ Pattern | Description
 `%s%` | Accept any string but `$x`.
 `%i%` | Accept any string numbers.
 `%f%` | Accept any string numbers and floats.
-`%%` | Accept any string and `$x`.
+`%*%` | Accept any string and `$x`.
 `%[foo,bar,baz\,qux]%` | Accept `foo`, `bar` and `baz,qux`.
 `%[foo,bar,%i%]%` | Accept `foo`, `bar` and any string numbers.
 

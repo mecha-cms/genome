@@ -43,9 +43,17 @@ class Get extends Genome {
         $output = [];
         if ($input = g($folder, $state, "", false)) {
             foreach ($input as $v) {
-                $output[] = self::page($v, $key);
+                $output[] = self::page($v);
             }
-            return !empty($output) ? Anemon::eat($output)->sort(1, !isset($key) ? $by : null)->vomit() : false;
+            $output = $oo = Anemon::eat($output)->sort($sort, $by)->vomit();
+            if (isset($key)) {
+                $oo = [];
+                foreach ($output as $o) {
+                    if (!array_key_exists($key, $o)) continue;
+                    $oo[] = $o[$key];
+                }
+            }
+            return !empty($oo) ? $oo : false;
         }
         return false;
     }

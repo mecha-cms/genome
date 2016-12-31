@@ -1,7 +1,6 @@
 ---
 title: Class `Elevator`
 description: This class was inspired by a vertical transportation that moves people or goods between floors called _Elevator_. This class produces some navigation items that can be used to go to the next and previous chunks, step by step, just like [navigation buttons in an elevator](https://en.wikipedia.org/wiki/Storey "Storey – Wikipedia").
-type: Markdown
 ...
 
 ### Constructor

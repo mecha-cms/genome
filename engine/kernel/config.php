@@ -80,7 +80,7 @@ class Config extends Genome {
         }
         if (is_string($fail) && strpos($fail, 'fn::') === 0) {
             return call_user_func(substr($fail, 4), self::get($key, $fail_alt));
-        } elseif ($fail instanceof \Closure) {
+        } else if ($fail instanceof \Closure) {
             return call_user_func($fail, self::get($key, $fail_alt));
         }
         return self::get($key, $fail);
@@ -95,7 +95,7 @@ class Config extends Genome {
     }
 
     public function __toString() {
-        return json_encode(self::get());
+        return To::yaml(self::get());
     }
 
     public function __invoke($fail = []) {

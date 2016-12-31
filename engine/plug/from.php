@@ -12,11 +12,11 @@ From::plug('base64', function($input) {
 });
 
 function __from_yaml__($input, $c = [], $in = '  ') {
+    if (!is_string($input)) return a($input);
+    if (!trim($input)) return [];
     $s = Page::$v;
     $q = ['"(?:[^"\\\]|\\\.)*"', '\'(?:[^\'\\\]|\\\.)*\''];
     Anemon::extend($s, $c);
-    if (!is_string($input)) return a($input);
-    if (!trim($input)) return [];
     $i = 0;
     $output = $data = [];
     // Normalize white-space(s)
@@ -50,7 +50,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         }
         if ($li[0] === '"' && preg_match('/^' . $q[0] . '\s*' . x($s[2]) . '(.*?)$/', $li, $part)) {
             array_shift($part);
-        } elseif ($li[0] === "'" && preg_match('/^' . $q[1] . '\s*' . x($s[2]) . '(.*?)$/', $li, $part)) {
+        } else if ($li[0] === "'" && preg_match('/^' . $q[1] . '\s*' . x($s[2]) . '(.*?)$/', $li, $part)) {
             array_shift($part);
         } else {
             $part = explode($s[2], $li, 2);
@@ -81,7 +81,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
                     if (is_string($v)) {
                         if (strpos($v, '[') === 0 && substr($v, -1) === ']') {
                             $v = e(preg_split('/\s*,\s*/', trim(t($v, '[', ']'))));
-                        } elseif (strpos($v, '{') === 0 && substr($v, -1) === '}') {
+                        } else if (strpos($v, '{') === 0 && substr($v, -1) === '}') {
                             $v = trim(t($v, '{', '}'));
                             $v = preg_replace('/\s*,\s*/', $s[4], $v);
                             $v = __from_yaml__($v);

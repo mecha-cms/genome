@@ -19,20 +19,20 @@ To::plug('path', function($input) use($url) {
     return str_replace([$url['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
 });
 
-function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
+function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
     $s = Page::$v;
     Anemon::extend($s, $c);
     if (__is_anemon__($input)) {
         $t = "";
-        $line = $safe && __is_anemon_a__($input);
+        $line = !__is_anemon_assoc__($input) && !$safe;
         $T = str_repeat($in, $dent);
         foreach ($input as $k => $v) {
             if (!__is_anemon__($v) || empty($v)) {
                 if (is_array($v)) {
                     $v = '[]';
-                } elseif (is_object($v)) {
+                } else if (is_object($v)) {
                     $v = '{}';
-                } elseif ($v === "") {
+                } else if ($v === "") {
                     $v = '""';
                 } else {
                     $v = s($v);
@@ -42,7 +42,7 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
                 if ($v === $s[4]) {
                     $t .= $s[4];
                 // Comment
-                } elseif (strpos($v, '#') === 0) {
+                } else if (strpos($v, '#') === 0) {
                     $t .= $T . trim($v) . $s[4];
                 // ...
                 } else {
@@ -60,31 +60,21 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = true, $dent = 0) {
 
 To::plug('text', 'w');
 
-To::plug('text_lower', 'l');
-
-To::plug('text_upper', 'u');
-
-To::plug('text_title', function($input) {
+To::plug('title', function($input) {
+    $input = w($input);
     if (function_exists('mb_strtoupper')) {
         return preg_replace_callback('#(^|[^a-z\d])(\p{Ll})#u', function($m) {
             return $m[1] . mb_strtoupper($m[2]);
-        }, w($input));
+        }, $input);
     }
-    return ucwords(w($input));
+    return ucwords($input);
 });
 
-To::plug('text_pascal', 'p');
+To::plug('slug', 'h');
 
-To::plug('text_camel', 'c');
-
-To::plug('text_slug', 'h');
-
-To::plug('text_snake', function($input) {
+To::plug('snake', function($input) {
     return h($input, '_');
 });
-
-To::plug('title', 'To::text_title');
-To::plug('slug', 'To::text_slug');
 
 To::plug('html', function($input) {
     return $input; // do nothing ...
@@ -98,7 +88,7 @@ To::plug('html_decode', function($input) {
     return htmlspecialchars_decode($input);
 });
 
-To::plug('dec', function($input, $z = false) {
+To::plug('html_dec', function($input, $z = false) {
     $output = "";
     for($i = 0, $count = strlen($input); $i < $count; ++$i) {
         $s = ord($input[$i]);
@@ -108,7 +98,7 @@ To::plug('dec', function($input, $z = false) {
     return $output;
 });
 
-To::plug('hex', function($input, $z = false) {
+To::plug('html_hex', function($input, $z = false) {
     $output = "";
     for($i = 0, $count = strlen($input); $i < $count; ++$i) {
         $s = dechex(ord($input[$i]));
@@ -143,7 +133,7 @@ To::plug('anemon', function($input) {
 
 To::plug('yaml', function(...$lot) {
     if (!__is_anemon__($lot[0])) return s($lot[0]);
-    if (Is::path($lot[0])) {
+    if (Is::path($lot[0], true)) {
         $lot[0] = include $lot[0];
     }
     return call_user_func_array('__to_yaml__', $lot);

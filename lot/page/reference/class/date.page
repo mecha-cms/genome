@@ -1,7 +1,6 @@
 ---
 title: Class `Date`
 description: Working with date and time.
-type: Markdown
 ...
 
 ### Time Zone
@@ -93,12 +92,12 @@ Result:
     'minute' => '00',
     'second' => '00',
     'AM_PM' => 'ᴘᴍ',
-    'F1' => 'Thursday, 21 April 2016',
-    'F2' => 'Thursday, April 21, 2016',
-    'F3' => '2016/04/21 16:00:00',
-    'F4' => '2016/04/21 04:00:00 ᴘᴍ',
-    'F5' => '16:00',
-    'F6' => '04:00 ᴘᴍ',
+    'en_us' => 'Thursday, April 21, 2016',
+    'id_id' => 'Thursday, 21 April 2016',
+    'F1' => '2016/04/21 16:00:00',
+    'F2' => '2016/04/21 04:00:00 ᴘᴍ',
+    'F3' => '16:00',
+    'F4' => '04:00 ᴘᴍ',
 ]
 ~~~
 

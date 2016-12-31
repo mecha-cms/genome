@@ -90,13 +90,18 @@ class Page extends Genome {
         foreach (self::$data as $k => $v) {
             $meta[] = self::x($k) . self::$v[2] . self::x(s($v));
         }
-        return self::$v[0] . implode(N, $meta) . self::$v[1] . ($data ? N . N . $data : "");
+        return ($meta ? self::$v[0] . implode(N, $meta) . self::$v[1] : "") . ($data ? N . N . $data : "");
     }
 
     // Create data ...
-    public static function data($a) {
+    public static function data($a, $fn = null) {
         if (!is_array($a)) {
-            $a = ['content' => $a];
+            if (is_callable($fn)) {
+                self::$data[$a] = call_user_func($fn, self::$data);
+                $a = [];
+            } else {
+                $a = ['content' => $a];
+            }
         }
         Anemon::extend(self::$data, $a);
         foreach (self::$data as $k => $v) {
@@ -125,6 +130,8 @@ class Page extends Genome {
         $input = Path::D($input) . DS . Path::N($input);
         if (is_dir($input)) {
             $data[$key] = File::open($input . DS . $key . '.data')->read(false);
+        } else {
+            $data[$key] = false;
         }
         if ($data[$key] === false && file_exists(self::$path)) {
             self::open(self::$path)->apart();
@@ -175,11 +182,11 @@ class Page extends Genome {
     }
 
     public function __get($key) {
-        return array_key_exists($key, $this->lot) ? o($this->lot[$key]) : false;
+        return array_key_exists($key, $this->lot) ? o($this->lot[$key]) : "";
     }
 
     public function __toString() {
-        return json_encode($this->lot);
+        return $this->unite();
     }
 
 }

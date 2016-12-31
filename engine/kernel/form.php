@@ -11,7 +11,7 @@ class Form extends HTML {
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
-        } else if (strpos($name, '\.') === 0) { // escaped
+        } else if (strpos($name, '\\.') === 0) { // escaped
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
@@ -25,7 +25,7 @@ class Form extends HTML {
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
-        } else if (strpos($name, '\.') === 0) { // escaped
+        } else if (strpos($name, '\\.') === 0) { // escaped
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
@@ -43,7 +43,7 @@ class Form extends HTML {
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
-        } else if (strpos($name, '\.') === 0) { // escaped
+        } else if (strpos($name, '\\.') === 0) { // escaped
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
@@ -55,7 +55,7 @@ class Form extends HTML {
                 if (strpos($key, '.') === 0) {
                     $s['disabled'] = true;
                     $key = substr($key, 1);
-                } else if (strpos($key, '\.') === 0) { // escaped
+                } else if (strpos($key, '\\.') === 0) { // escaped
                     $key = substr($key, 1);
                 }
                 $s['label'] = $key;
@@ -65,7 +65,7 @@ class Form extends HTML {
                     if (strpos($k, '.') === 0) {
                         $s['disabled'] = true;
                         $k = substr($k, 1);
-                    } else if (strpos($k, '\.') === 0) { // escaped
+                    } else if (strpos($k, '\\.') === 0) { // escaped
                         $k = substr($k, 1);
                     }
                     $k = (string) $k;
@@ -82,7 +82,7 @@ class Form extends HTML {
                 if (strpos($key, '.') === 0) {
                     $s['disabled'] = true;
                     $key = substr($key, 1);
-                } else if (strpos($key, '\.') === 0) { // escaped
+                } else if (strpos($key, '\\.') === 0) { // escaped
                     $key = substr($key, 1);
                 }
                 $key = (string) $key;
@@ -102,7 +102,7 @@ class Form extends HTML {
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
-        } else if (strpos($name, '\.') === 0) { // escaped
+        } else if (strpos($name, '\\.') === 0) { // escaped
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;

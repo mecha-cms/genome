@@ -34,7 +34,7 @@ function __is_instance__($x) {
     return false;
 }
 
-function __is_anemon_a__($x) {
+function __is_anemon_assoc__($x) {
     $a = (array) $x;
     $count = count($a);
     return $count && array_keys($a) !== range(0, $count - 1);
@@ -93,7 +93,7 @@ function __format__($s = "", $x = '\n', $d = '#', $r = true) {
         '%i%', // any string number(s)
         '%f%', // any string number(s) includes float(s)
         '%b%', // any string boolean(s)
-         '%%', // any string includes `\n`
+       '%\*%', // any string includes `\n`
           X
     ], [
         '([^' . $x . ']+)' . $r,
@@ -865,7 +865,7 @@ function n($x, $t = DENT) {
 function o($a, $safe = true) {
     if (__is_anemon__($a)) {
         if ($safe) {
-            $a = __is_anemon_a__($a) ? (object) $a : $a;
+            $a = __is_anemon_assoc__($a) ? (object) $a : $a;
         } else {
             $a = (object) $a;
         }

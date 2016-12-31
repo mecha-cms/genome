@@ -9,6 +9,6 @@
     <footer></footer>
   </article>
   <?php endforeach; ?>
-  <p><?php echo $pager; ?></p>
+  <nav><?php echo $pager; ?></nav>
 </main>
 <?php Shield::get('footer'); ?>

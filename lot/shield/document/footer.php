@@ -1,3 +1,5 @@
-    <script src="<?php echo $url; ?>/lot/shield/<?php echo $config->shield; ?>/asset/js/<?php echo $config->shield; ?>.min.js"></script>
+    <footer>
+      <p>&#x00A9; <?php echo date('Y'); ?> &#x00B7; <a href="<?php echo $url; ?>"><?php echo $config->title; ?></a></p>
+    </footer>
   </body>
 </html>

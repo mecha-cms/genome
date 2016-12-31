@@ -1,7 +1,6 @@
 ---
 title: Class `Route`
 description: Do something if URL path matched with pattern.
-type: Markdown
 ...
 
 ### Patterns
@@ -11,7 +10,7 @@ Pattern | Description
 `%s%` | Matched with any but `/`
 `%i%` | Matched with any numbers.
 `%f%` | Matched with any numbers and floats.
-`%%` | Matched with any and `/`
+`%*%` | Matched with any and `/`
 `%[foo,bar,baz\,qux]%` | Matched with `foo`, `bar` and `baz,qux`
 `%[foo,bar,%i%]%` | Matched with `foo`, `bar` and any numbers.
 

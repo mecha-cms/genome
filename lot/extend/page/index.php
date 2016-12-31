@@ -1,21 +1,19 @@
 <?php
 
-Route::set(['%%/%i%', '%%', ""], function($path = "", $step = 1) use($config, $language, $url) {
+Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $language, $url) {
     $step = $step - 1; // 0-based index ...
-    $path_alt = $path === "" ? 'index' : $path;
+    $path_alt = $path === "" ? $config->slug : $path;
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
+    $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
     // Change vertical elevator into horizontal elevator
-    $elevator = [
+    $pager = [
         'direction' => [
             '-1' => 'previous',
             '1' => 'next'
         ],
         'union' => [
             '-2' => [
-                2 => [
-                    'class' => 'a',
-                    'rel' => null
-                ]
+                2 => ['rel' => null]
             ],
             '-1' => [
                 1 => '&#x25C0;',
@@ -31,17 +29,27 @@ Route::set(['%%/%i%', '%%', ""], function($path = "", $step = 1) use($config, $l
     Config::set('page.title', new Anemon([$config->title], ' &#x2013; '));
     if ($file = File::exist([$folder . '.page', $folder . '.archive'])) { // File does exist
         $page = new Page($file);
+        $chunk = $page->chunk($config->chunk);
+        $sort = $page->sort($config->sort);
         Seed::set('page', $page);
+        // Load user functions from the current shield folder if any
+        if ($fn = File::exist([$folder_shield . DS . 'index.php', $folder_shield . DS . 'index__.php'])) {
+            include $fn;
+        }
+        // Load user functions from the current page folder if any
+        if ($fn = File::exist([$folder . DS . 'index.php', $folder . DS . 'index__.php'])) {
+            include $fn;
+        }
         Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x2013; '));
-        if ($files = Get::pages($folder, [], 1, 'time', 'path')) {
-            foreach (Anemon::eat($files)->chunk($config->chunk, $step) as $file) {
+        if ($files = Get::pages($folder, [], $sort[0], $sort[1], 'path')) {
+            foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
                 $pages[] = new Page($file);
             }
             if (empty($pages)) {
                 Shield::abort(['204/' . $path_alt, '404/' . $path_alt, '204', '404']);
             }
             Seed::set([
-                'pager' => new Elevator($files, $config->chunk, $step, $url . '/' . $path, $elevator, 'pager'),
+                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $pager, 'pager'),
                 'pages' => $pages
             ]);
             Shield::attach('pages/' . $path_alt);

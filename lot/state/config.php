@@ -8,8 +8,10 @@ return [
     'languages' => ['en-us', 'id-id'],
     'title' => 'Mecha CMS',
     'description' => 'The site slogan.',
+    'slug' => 'index',
     'query' => [],
     'chunk' => 3,
+    'sort' => [-1, 'time'],
     'page' => [
         'time' => "",
         'kind' => [0],
@@ -18,7 +20,7 @@ return [
         'title' => "",
         'description' => "",
         'type' => "",
-        'author' => '@ta.tau.taufik',
+        'author' => '@ta-tau-taufik',
         'link' => null,
         'content' => ""
     ],

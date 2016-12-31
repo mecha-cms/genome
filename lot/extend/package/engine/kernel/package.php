@@ -88,11 +88,11 @@ class Package extends Genome {
                 foreach ($b as $o) {
                     if (is_dir($o)) {
                         $this->zip->addEmptyDir(str_replace($this->open . DS, $dir, $o . DS));
-                    } elseif (is_file($o)) {
+                    } else if (is_file($o)) {
                         $this->zip->addFromString(str_replace($this->open . DS, $dir, $o), file_get_contents($o));
                     }
                 }
-            } elseif (is_file($this->open)) {
+            } else if (is_file($this->open)) {
                 $this->zip->addFromString($dir . Path::B($this->open), file_get_contents($this->open));
             }
             $this->zip->close();
