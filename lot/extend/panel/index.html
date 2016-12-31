@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Test</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i|Roboto+Mono:400,400i,700,700i" rel="stylesheet">
+  <style>
+
+* {
+  margin:0;
+  padding:0;
+  font:inherit;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+}
+:focus {outline:0}
+::-moz-placeholder {
+  opacity:1;
+  color:#ccc;
+}
+:focus::-moz-placeholder {color:#ddd}
+a {text-decoration:none}
+html {
+  background:#fcfcfc;
+  font:normal normal 18px/1.5 "Roboto Condensed",Helmet,FreeSans,sans-serif;
+  color:#333;
+}
+p {margin:1rem 0 0}
+textarea {resize:vertical}
+.button,.input,.select,.textarea {
+  display:inline-block;
+  vertical-align:middle;
+  background:#fff;
+  border:1px solid #eee;
+  border-top-color:#ccc;
+  color:inherit;
+  padding:.5em 1em;
+  width:12em;
+  text-align:left;
+}
+.button::-moz-focus-inner,
+.input::-moz-focus-inner {
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+}
+.button {
+  width:auto;
+  text-align:center;
+  background:#89a;
+  color:#fff;
+  border:0;
+}
+.button,.select {cursor:pointer}
+.panel {
+  max-width:50em;
+  margin:5% auto;
+}
+.panel-editor-title {
+  font-size:200%;
+  padding:.25em;
+  position:relative;
+}
+.panel-editor-content {
+  background:#fff;
+  box-shadow:0 0 1px rgba(0,0,0,.2);
+  padding:1em;
+  position:relative;
+}
+.panel-editor-title input,
+.panel-editor-content textarea {
+  display:block;
+  width:100%;
+  height:auto;
+  background:0 0;
+  border:0;
+  outline:0;
+  font:inherit;
+  color:inherit;
+}
+.panel-editor-content textarea {
+  height:20em;
+}
+.panel-editor-config {
+  position:absolute;
+  top:0;
+  right:0;
+  width:2em;
+  height:2em;
+  line-height:2em;
+  text-align:center;
+  font-size:125%;
+}
+.panel-editor-config .panel-i {
+  display:block;
+  width:inherit;
+  height:inherit;
+  line-height:inherit;
+  text-align:inherit;
+}
+.panel-editor-config-panel {
+  position:absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+  background:inherit;
+  padding:inherit;
+  overflow:auto;
+}
+  
+  </style>
+  </head>
+  <body spellcheck="false">
+    <div class="panel">
+      <header class="panel-header">
+        <div class="panel-editor-title">
+          <input name="title" type="text" placeholder="Title Here">
+        </div>
+      </header>
+      <main>
+        <div class="panel-editor-content">
+          <textarea name="content" placeholder="Post content here&hellip;"></textarea>
+          <div class="panel-editor-config-panel">Hey!</div>
+          <a class="panel-editor-config" href="javascript:;"><i class="panel-i fa fa-cog" onclick="this.classList.toggle('fa-times-circle');"></i></a>
+        </div>
+      </main>
+      <footer>
+        <p>
+          <button class="button">Publish</button>
+          <button class="button">Save</button>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

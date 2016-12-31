@@ -1,17 +1,18 @@
 ---
 title: About
-description: WTF is Mecha?
+description: "WTF is Mecha?\n\n*[WTF]: What The Fuck"
 type: Markdown
 ...
 
 **Mecha** is a file–based CMS that is focused on the principle that a static website must be personal, portable, light and easy to be exported and backed up. However, this doesn’t mean that Mecha is powerless. Mecha has a fairly flexible set of API that you can use without having to make it bloated, keeping you happy focused on developing your own website, according to your personality.
 
-[Download](/) {.button}
+[Download](https://github.com/mecha-cms/mecha-genome) {.button}
 
 ### Features
 
  1. It is easy to write an article using [Markdown][link:article/markdown-syntax].
  2. Unlimited page childrens.
+ 3. etc.
 
 ### System Requirements
 

@@ -69,7 +69,7 @@ class Elevator extends Genome {
         $u = $this->config['union'];
         $d = array_flip($this->config['direction'])[$kin];
         if ($text || $text === "") {
-            $text = $text === true ? $u[$d][1] : $text;
+            if ($text !== true) $u[$d][1] = $text;
             return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
         }
         return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;

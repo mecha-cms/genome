@@ -111,5 +111,5 @@ function __from_entity__($input) {
     return html_entity_decode($input);
 }
 
-From::plug('dec', '__from_entity__');
-From::plug('hex', '__from_entity__');
+From::plug('html_dec', '__from_entity__');
+From::plug('html_hex', '__from_entity__');

@@ -2,12 +2,10 @@
 
 function do_markdown_parse(&$input) {
     $slot = new ParsedownExtraPlugin;
-    $slot->links = [];
-    $slot->table_class = 'border';
-    $slot->links_external_attr = [
-        'rel' => 'nofollow',
-        'target' => '_blank'
-    ];
+    $c = include __DIR__ . DS . 'lot' . DS . 'state' . DS . 'config.php';
+    foreach ($c as $cc => $ccc) {
+        $slot->{$cc} = $ccc;
+    }
     $input = $slot->text($input);
 }
 

@@ -19,6 +19,8 @@ foreach (g(PLUGIN . DS . 'lot' . DS . 'asset' . DS . '*', '{index__,index,__inde
 
 asort($plugins);
 
+extract($seeds);
+
 foreach ($plugins as $k => $v) {
     $f__ = PLUGIN . DS . 'lot' . DS . 'asset' . DS . $k . DS;
     $l__ = $f__ . 'lot' . DS . 'language' . DS;

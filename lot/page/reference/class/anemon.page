@@ -62,7 +62,7 @@ Result:
 ### Set
 
 ~~~ .code-sample.php
-Anemon::set($input, $key, $value = null);
+Anemon::set(&$input, $key, $value = null);
 ~~~
 
 Set or replace array value recursively:
@@ -94,7 +94,7 @@ $array = [
 ### Get
 
 ~~~ .code-sample.php
-Anemon::get($input, $key = null, $fail = false);
+Anemon::get(&$input, $key = null, $fail = false);
 ~~~
 
 Get array value recursively:
@@ -125,7 +125,7 @@ $test_2 = '#';
 ### Reset
 
 ~~~ .code-sample.php
-Anemon::reset($input, $key);
+Anemon::reset(&$input, $key);
 ~~~
 
 Remove array value recursively:
@@ -156,11 +156,11 @@ $array = [
 ### Extend and Concat
 
 ~~~ .code-sample.php
-Anemon::extend($input, $a[, $b[, $c[, ...]]]);
+Anemon::extend(&$input, $a[, $b[, $c[, ...]]]);
 ~~~
 
 ~~~ .code-sample.php
-Anemon::concat($input, $a[, $b[, $c[, ...]]]);
+Anemon::concat(&$input, $a[, $b[, $c[, ...]]]);
 ~~~
 
 Extend arrays:
