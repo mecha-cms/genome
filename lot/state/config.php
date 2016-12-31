@@ -20,7 +20,7 @@ return [
         'title' => "",
         'description' => "",
         'type' => "",
-        'author' => '@ta-tau-taufik',
+        'author' => '#ta-tau-taufik',
         'link' => null,
         'content' => ""
     ],
