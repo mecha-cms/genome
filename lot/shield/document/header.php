@@ -13,6 +13,7 @@
     <meta name="robots" content="noindex">
     <?php endif; ?>
     <title><?php echo To::text($config->page->title); ?></title>
+    <link href="<?php echo $url; ?>/favicon.ico" rel="shortcut icon">
     <?php $css = File::inspect(SHIELD . '/document/asset/css/document.min.css'); ?>
     <?php $t = $css['__update'] ? '?v=' . $css['__update'] : ""; ?>
     <link href="<?php echo $css['url'] . $t; ?>" rel="stylesheet">
