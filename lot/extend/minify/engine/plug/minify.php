@@ -33,13 +33,16 @@ function fn_minify_css($input, $comment = 2, $quote = 0) {
         }
         if ($part[0] === '"' && substr($part, -1) === '"' || $part[0] === "'" && substr($part, -1) === "'") {
             // Remove quote(s) where possible …
+            $q = $part[0];
             if (
                 $quote === 0 && (
-                    substr($prev, -4) === 'url(' && preg_match('#\burl\($#', $prev) || // <https://www.w3.org/TR/CSS2/syndata.html#uri>
-                    substr($prev, -1) === '=' && preg_match('#^[a-zA-Z_][\w-]*?$#', $part) // <https://www.w3.org/TR/CSS2/syndata.html#characters>
+                    // <https://www.w3.org/TR/CSS2/syndata.html#uri>
+                    substr($prev, -4) === 'url(' && preg_match('#\burl\($#', $prev) ||
+                    // <https://www.w3.org/TR/CSS2/syndata.html#characters>
+                    substr($prev, -1) === '=' && preg_match('#^' . $q . '[a-zA-Z_][\w-]*?' . $q . '$#', $part)
                 )
             ) {
-                $part = t($part, $part[0]); // trim quote(s)
+                $part = t($part, $q); // trim quote(s)
             }
             $output .= $part;
         } else {
