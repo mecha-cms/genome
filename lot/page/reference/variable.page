@@ -1,9 +1,9 @@
 ---
 title: Reserved Variables
-description: You should not redefine these PHP variables used by Mecha.
+description: You shouldn’t redefine these PHP variables.
 ...
 
-This is not mandatory, but it would be better if you don’t change the value.
+These variables are used by **Mecha**. This is not mandatory, but it would be better if you don’t change their values.
 
 ### `$config`
 
@@ -27,8 +27,12 @@ This variable is a list of the [`Page` class][link:class/page] instances.
 
 ### `$page`
 
-This variable is an instance of the [`Page` class][link:class/page].
+This variable is an instance of the [`Page` class][link:class/page] with current page path as the input.
 
 ### `$pager`
 
 This variable is an instance of the [`Elevator` class][link:class/elevator].
+
+### `$user`
+
+This variable is an instance of the [`User` class][link:extension/user] with default user ID as the input.

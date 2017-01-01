@@ -24,8 +24,7 @@ class Language extends Config {
     }
 
     public static function __callStatic($kin, $lot) {
-        $kin = '__i18n.' . $kin;
-        return parent::__callStatic($kin, $lot);
+        return call_user_func_array([new static, $kin], $lot);
     }
 
     public function __call($key, $lot) {
@@ -41,7 +40,7 @@ class Language extends Config {
     }
 
     public function __toString() {
-        return json_encode(parent::get('__i18n'));
+        return To::yaml(parent::get('__i18n'));
     }
 
     public function __invoke($fail = []) {

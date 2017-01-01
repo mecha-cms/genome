@@ -6,7 +6,7 @@ class State extends Genome {
         $s = STATE . DS . $kin . '.php';
         if ($state = File::open($s)->import()) {
             $state_alt = File::open(Path::D($s) . DS . Path::N($s) . '.txt')->unserialize();
-            $x = isset($lot[0]) ? (array) $lot[0] : [];
+            $x = array_merge(['shield' => ""], isset($lot[0]) ? (array) $lot[0] : []);
             $state = Anemon::extend($x, $state, $state_alt);
             $s = SHIELD . DS . $state['shield'] . DS . 'state' . DS . $kin . '.php';
             if ($state_alt = File::open($s)->import()) {

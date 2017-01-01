@@ -118,11 +118,11 @@ function __f2c__($x) {
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
 $protocol = $scheme . '://';
 $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : "");
-$sub = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
-$sub = $sub === '.' ? "" : trim($sub, '/');
-$url = rtrim($protocol . $host  . '/' . $sub, '/');
+$directory = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
+$directory = $directory === '.' ? "" : trim($directory, '/');
+$url = rtrim($protocol . $host  . '/' . $directory, '/');
 $path = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
-$path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $sub . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
+$path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $directory . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
 
 if ($path !== "") {
     array_shift($_GET);
@@ -136,9 +136,9 @@ $__url__ = [
     'protocol' => $protocol,
     'host' => $host,
     'port' => (int) $_SERVER['SERVER_PORT'],
-    'user' => null,
-    'pass' => null,
-    'sub' => $sub,
+    'user' => isset($_SESSION['url']['user']) ? $_SESSION['url']['user'] : null,
+    'pass' => isset($_SESSION['url']['pass']) ? $_SESSION['url']['pass'] : null,
+    'directory' => $directory,
     'url' => $url,
     'path' => $path,
     'query' => $query ? '?' . $query : "",

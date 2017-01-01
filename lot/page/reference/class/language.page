@@ -2,3 +2,29 @@
 title: Class `Language`
 description: Internationalization.
 ...
+
+### Constructor
+
+~~~ .code-sample.php
+Language();
+~~~
+
+Extract language files from the `lot\language` folder into object:
+
+~~~ .php
+$language = new Language;
+~~~
+
+Get language property:
+
+### Static Call
+
+~~~ .code-sample.php
+Language::{$property}($);
+~~~
+
+Get language property staticly:
+
+~~~ .php
+echo Language::home();
+~~~

@@ -1,6 +1,6 @@
 ---
 title: Class `Genome`
-description: Make class pluggable.
+description: Make classes becomes pluggable.
 ...
 
 This is an abstract class, so you need to extend this with a new class:

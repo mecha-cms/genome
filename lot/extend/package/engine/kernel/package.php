@@ -34,7 +34,7 @@ class Package extends Genome {
     }
 
     public static function take($files) {
-        return new Package($files);
+        return new static($files);
     }
 
     public function pack($target = null, $bucket = false) {

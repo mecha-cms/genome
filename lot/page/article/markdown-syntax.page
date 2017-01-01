@@ -1,6 +1,6 @@
 ---
 title: Markdown Formatting Guide
-description: Guides for using Markdown.
+description: Guides for using <strong>Markdown</strong>.
 type: HTML
 ...
 
@@ -28,11 +28,11 @@ __*bold-italic*__
 
 *__italic-bold__*
 
-_**italic-bold**_</code></pre><h3>Header</h3><p>Headers can be created by underlining the text with equal or dash sign (for first-level and second-level headers only):</p><pre><code class="markdown">Header Level 1
-==============
+_**italic-bold**_</code></pre><h3>Header</h3><p>Headers can be created by underlining the text with equal or dash sign (for first-level and second-level headers only):</p><pre><code class="markdown">Header 1
+========
 
-Header Level 2
---------------</code></pre><p>Any number of underlining <code>=</code>’s or <code>-</code>’s will work:</p><pre><code class="html">&lt;h1&gt;Header 1&lt;/h1&gt;
+Header 2
+--------</code></pre><p>Any number of underlining <code>=</code>’s or <code>-</code>’s will work:</p><pre><code class="html">&lt;h1&gt;Header 1&lt;/h1&gt;
 
 &lt;h2&gt;Header 2&lt;/h2&gt;</code></pre><p>Another syntax by using some leading <code>#</code> with the same amount as the header level:</p><pre><code class="markdown"># Header 1
 ## Header 2

@@ -83,7 +83,7 @@ class Anemon extends Genome {
     }
 
     public static function eat($array) {
-        return new Anemon($array);
+        return new static($array);
     }
 
     public function vomit($key = null, $fail = false) {

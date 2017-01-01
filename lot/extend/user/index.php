@@ -1,15 +1,15 @@
 <?php
 
-Hook::set('fire', function() use($config) {
-    $s = $config->page->author;
-    if (is_string($s) && strpos($s, User::ID) === 0) {
-        Config::set('page.author', new User(substr($s, 1)));
-    }
-}, 1);
-
-Hook::set('page.input', function($data) {
-    if (isset($data['author']) && is_string($data['author']) && strpos($data['author'], User::ID) === 0) {
-        $data['author'] = new User(substr($data['author'], 1));
+function do_user($data) {
+    global $config;
+    $s = isset($data['author']) ? $data['author'] : $config->page->author;
+    if (isset($s) && is_string($s) && strpos($s, User::ID) === 0) {
+        $user = new User(substr($s, 1));
+        $data['author'] = $user;
+        Seed::set('user', $user);
+        Config::set('page.author', $user);
     }
     return $data;
-}, 1);
+}
+
+Hook::set(['fire', 'page.input'], 'do_user', 1);

@@ -3,32 +3,32 @@ title: Constants
 description: The available constants.
 ...
 
-Constant | Description
--------- | -----------
-`DS` |
-`ROOT` |
-`DENT` |
-`S` |
-`T` |
-`N` |
-`X` |
-`SESSION` |
-`ENGINE` |
-`LOT` |
-`ASSET` |
-`EXTEND` |
-`FIELD` |
-`LANGUAGE` |
-`PAGE` |
-`SHIELD` |
-`STATE` |
-`PLUGIN` |
-`HTML_WISE_I` |
-`HTML_WISE_B` |
-`HTML_WISE` |
-`DATE_WISE` |
-`FONT_X` |
-`IMAGE_X` |
-`MEDIA_X` |
-`PACKAGE_X` |
-`SCRIPT_X` |
+Constant | Description | Example
+-------- | ----------- | -------
+`DS` | Return the directory separator. | `\`
+`ROOT` | Return the private file path without the trailing directory separator | `.\www`
+`DENT` | Return the standard indentation characters of HTML page. | <mark><code>&nbsp;&nbsp;</code></mark>
+`S` | Return a non–breaking space. | <mark><code>&nbsp;</code></mark>
+`T` | Return a tab character. | <mark><code>&Tab;</code></mark>
+`N` | Return a new line character. | <mark><code>&NewLine;</code></mark>
+`X` | Return a placeholder character. | <mark><code>&#x001A;</code></mark>
+`SESSION` | Return the custom `session_save_path` path. | `.\www\__session`
+`ENGINE` | Return the engine folder path. | `.\www\engine`
+`LOT` | Return the lot folder path. | `.\www\lot`
+`ASSET` | Return the asset folder path. | `.\www\lot\asset`
+`EXTEND` | Return the extension folder path. | `.\www\lot\extend`
+`FIELD` | Return the field folder path. | `.\www\lot\field`
+`LANGUAGE` | Return the language folder path. | `.\www\lot\language`
+`PAGE` | Return the page folder path. | `.\www\lot\page`
+`SHIELD` | Return the shield folder path. | `.\www\lot\shield`
+`STATE` | Return the state folder path. | `.\www\lot\state`
+`PLUGIN` | Return the plugin folder path. | `.\www\lot\extend\plugin`
+`HTML_WISE_I` | Return inline HTML tag names allowed to be written in the page editor. | `b,code,i,u`
+`HTML_WISE_B` | Return block HTML tag names allowed to be written in the page editor. | `blockquote,h1,h2,h3,h4,h5,h6,p,pre`
+`HTML_WISE` | Combination of `HTML_WISE_I` and `HTML_WISE_B` | `b,code,i,u,blockquote,h1,h2,h3,h4,h5,h6,p,pre`
+`DATE_WISE` | Return the sandard PHP data format string. | `Y-m-d H:i:s`
+`FONT_X` | Return font file extensions. | `eot,otf,svg,ttf,woff,woff2`
+`IMAGE_X` | Return image file extensions. | `bmp,cur,gif,ico,jpeg,jpg,png,svg`
+`MEDIA_X` | Return resource file extensions. | `3gp,avi,flv,mov,mp3,mp4,ogg,swf,wav`
+`PACKAGE_X` | Return package file extensions. | `gz,iso,rar,tar,zip,zipx`
+`SCRIPT_X` | Return plain text file extensions. | `css,html,js,log,php,txt,xml`
