@@ -11,6 +11,7 @@ class Minify extends Genome {
     const JS_PATTERN = "";
 
     const HTML = '<[!/]?[a-zA-Z\d:.-]+[\s\S]*?>';
+    // const HTML_ENTITY = '&(?:[\da-zA-Z]+|\#\d+|\#x[\da-fA-F]+);';
     const HTML_KEEP = '<pre(?:\s.*?)?>[\s\S]*?</pre>|<code(?:\s.*?)?>[\s\S]*?</code>|<script(?:\s.*?)?>[\s\S]*?</script>|<style(?:\s.*?)?>[\s\S]*?</style>|<textarea(?:\s.*?)?>[\s\S]*?</textarea>';
 
 }

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'element_suffix' => '>', // HTML5
     'abbreviations' => [
         'API' => 'Application Programming Interface',
         'AJAX' => 'Asynchronous JavaScript and XML',

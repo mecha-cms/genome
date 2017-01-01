@@ -18,6 +18,7 @@
     <?php $css = File::inspect(SHIELD . '/document/asset/css/document.min.css'); ?>
     <?php $t = $css['__update'] ? '?v=' . $css['__update'] : ""; ?>
     <link href="<?php echo $css['url'] . $t; ?>" rel="stylesheet">
+    <?php echo $page->css; ?>
   </head>
   <body>
     <header>

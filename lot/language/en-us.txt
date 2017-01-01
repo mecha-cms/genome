@@ -151,6 +151,9 @@ languages: Languages
 
 less: Less
 
+link: Link
+links: Links
+
 media: Media
 medias: Media
 

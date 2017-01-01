@@ -6,21 +6,35 @@ function fn_markdown_smart_internal_link($data) {
     }
     $content = $data['content'];
     if (strpos($content, '[link:') === false) return $data;
-    global $url;
+    global $language, $url;
     $links = "";
-    $content = preg_replace_callback('#(?:\[(.*?)\])?\[link:([a-z\d/-]+?)([?&\#].*?)?\]#', function($m) use(&$links, $url) {
+    $content = preg_replace_callback('#(?:\[(.*?)\])?\[link:(\.\./)*([a-z\d/-]+?)([?&\#].*?)?\]#', function($m) use(&$links, $language, $url) {
+        // Remove the hook immediately to prevent infinity function nesting level
+        // Because `Page::get()` normally will also trigger the `page.input` hook(s)
+        Hook::reset('page.input', 'fn_markdown_smart_internal_link');
         $pp = Path::D($url->path);
-        $pp = $pp ? '/' . $pp : "";
-        if (strpos($m[2], '/') === 0) {
-            $p = PAGE . $m[2];
-        } else {
-            $p = PAGE . $pp . '/' . $m[2];
+        if (!empty($m[2]) && ($i = substr_count($m[2], '../')) !== 0) {
+            $pp = Path::D($pp, $i);
+            $m[2] = str_replace('../', "", $m[2]);
         }
-        $m[3] = isset($m[3]) ? $m[3] : "";
-        $tt = Page::open(To::path($p) . '.page')->get('title', To::title(Path::B($m[2])));
-        $links .= "\n" . '[link:' . $m[2] . ']: ' . $url . $pp . '/' . To::url($m[2]) . $m[3] . ' "' . To::text($tt) . '"';
+        $pp = $pp ? '/' . $pp : "";
+        if (empty($m[2]) && strpos($m[3], '/') === 0) {
+            $p = PAGE . $m[3];
+        } else {
+            $p = PAGE . $pp . '/' . $m[3];
+        }
+        $m[4] = isset($m[4]) ? $m[4] : "";
+        $ff = To::path($p) . '.page';
+        if (!file_exists($ff)) {
+            return HTML::s('&#x26A0; ' . $language->_message_avail($language->link), [
+                'title' => $m[0],
+                'css' => ['color' => 'red']
+            ]);
+        }
+        $tt = Page::open($ff)->get('title', To::title(Path::B($m[2])));
+        $links .= "\n" . '[link:' . $m[3] . ']: ' . $url . $pp . '/' . To::url($m[3]) . $m[4] . ' "' . To::text($tt) . '"';
         if (empty($m[1])) {
-            return '[' . $tt . '][link:' . $m[2] . $m[3] . ']';
+            return '[' . $tt . '][link:' . $m[3] . $m[4] . ']';
         }
         return $m[0];
     }, $content) . "\n" . $links;

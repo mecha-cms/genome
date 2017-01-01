@@ -4,6 +4,8 @@ description: "WTF is Mecha?\n\n*[WTF]: What The Fuck"
 type: Markdown
 ...
 
+<p class="mecha-head"><span></span><span></span></p>
+
 **Mecha** is a file–based CMS that is focused on the principle that a static website must be personal, portable, light and easy to be exported and backed up. However, this doesn’t mean that Mecha is powerless. Mecha has a fairly flexible set of API that you can use without having to make it bloated, keeping you happy focused on developing your own website, according to your personality.
 
 [Download](https://github.com/mecha-cms/mecha-genome) {.button}

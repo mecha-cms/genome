@@ -74,9 +74,13 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         if ($fn = File::exist([$folder_shield . DS . 'index.php', $folder_shield . DS . 'index__.php'])) {
             include $fn;
         }
-        // Load user functions from the current page folder if any
-        if ($fn = File::exist([$folder . DS . 'index.php', $folder . DS . 'index__.php'])) {
-            include $fn;
+        // Load user functions from the current page folder if any, stacked from the parent page(s)
+        $s = PAGE;
+        foreach (explode('/', '/' . $path) as $ss) {
+            $s .= $ss ? DS . $ss : "";
+            if ($fn = File::exist([$s . DS . 'index.php', $s . DS . 'index__.php'])) {
+                include $fn;
+            }
         }
         $page = new Page($file);
         $chunk = $page->chunk($config->chunk);

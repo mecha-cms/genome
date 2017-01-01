@@ -1,0 +1,53 @@
+.mecha-head {
+  width:160px;
+  height:160px;
+  background:#000;
+  position:relative;
+}
+.mecha-head span {
+  display:block;
+  width:30px;
+  height:80px;
+  border:0 solid white;
+  border-width:10px 10px 0 0;
+  position:absolute;
+  bottom:0;
+  left:20px;
+}
+.mecha-head span + span {
+  left:auto;
+  right:20px;
+  border-width:10px 0 0 10px;
+}
+.mecha-head span:before {
+  content:"";
+  display:block;
+  width:34px;
+  height:4px;
+  background:#00a;
+  position:absolute;
+  top:-7px;
+  left:3px;
+  visibility:hidden;
+  opacity:0;
+  -webkit-transition:all 1s ease-out;
+  -moz-transition:all 1s ease-out;
+  -ms-transition:all 1s ease-out;
+  -o-transition:all 1s ease-out;
+  transition:all 1s ease-out;
+}
+.mecha-head span + span:before {left:-7px}
+.mecha-head:hover span:before {
+  visibility:visible;
+  opacity:1;
+}
+.mecha-head,
+.mecha-head *,
+.mecha-head:before,
+.mecha-head:after,
+.mecha-head *:before,
+.mecha-head *:after {
+  -webkit-box-sizing:padding-box;
+  -moz-box-sizing:padding-box;
+  box-sizing:padding-box;
+}

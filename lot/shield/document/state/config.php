@@ -7,6 +7,8 @@ return [
     'chunk' => 4,
     'sort' => [1, 'slug'],
     'page' => [
-        'type' => 'Markdown'
+        'type' => 'Markdown',
+        'css' => "",
+        'js' => ""
     ]
 ];
