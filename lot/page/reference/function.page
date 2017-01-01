@@ -5,7 +5,7 @@ description: Jump to `engine\ignite.php` file.
 
 ### Test
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __test__($a[, $b[, $c[, ...]]]);
 ~~~
 
@@ -17,7 +17,7 @@ __test__($foo, $bar, $baz);
 
 ### Format
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __format__($s, $x = '\n', $d = '#', $r = true);
 ~~~
 
@@ -52,7 +52,7 @@ $pattern = 'lorem ([^\n]+) ipsum (\d+) dolor \# sit amet';
 
 ### Is Anemon
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __is_anemon__($x);
 ~~~
 
@@ -60,7 +60,7 @@ Return `true` if `$x` is array or object.
 
 ### Is Instance
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __is_instance__($x);
 ~~~
 
@@ -68,7 +68,7 @@ Return `true` if `$x` is an instance of class.
 
 ### Is JSON
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __is_json__($x);
 ~~~
 
@@ -76,7 +76,7 @@ Return `true` if `$x` is a JSON string.
 
 ### Is Serialize
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __is_serialize__($x);
 ~~~
 
@@ -84,7 +84,7 @@ Return `true` if `$x` is a serialized string.
 
 ### Class to File
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __c2f__($x);
 ~~~
 
@@ -102,7 +102,7 @@ $test = 'foo.bar.baz-qux.abc.a-b-c';
 
 ### File to Class
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __f2c__($x);
 ~~~
 
@@ -120,7 +120,7 @@ $test = 'Foo\Bar\BazQux\Abc\ABC';
 
 ### URL
 
-~~~ .code-sample.php
+~~~ .xmp.php
 __url__($key = null, $fail = false);
 ~~~
 
@@ -170,7 +170,7 @@ $test_4 = 0;
 
 #### `a`
 
-~~~ .code-sample.php
+~~~ .xmp.php
 a($o, $safe = true);
 ~~~
 
@@ -235,7 +235,7 @@ $test = [
 
 #### `o`
 
-~~~ .code-sample.php
+~~~ .xmp.php
 o($a, $safe = true);
 ~~~
 

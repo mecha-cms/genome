@@ -5,7 +5,7 @@ description: Configuration getter and setter.
 
 ### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Config::set($key, $value = null);
 ~~~
 
@@ -44,7 +44,7 @@ $config->test = '#ok';
 
 ### Get
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Config::get($key = null, $fail = false);
 ~~~
 
@@ -84,7 +84,7 @@ __test__(Config::get());
 
 ### Reset
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Config::reset($key = null);
 ~~~
 

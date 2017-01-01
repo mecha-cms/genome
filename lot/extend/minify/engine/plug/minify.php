@@ -2,19 +2,19 @@
 
 
 /**
- * 0: remove comment(s)
- * 1: keep comment(s)
- * 2: remove comment(s) except special comment(s)
+ * `0`: Remove
+ * `1`: Keep
+ * `2`: Remove if/but/when …
  */
 
 function fn_minify($pattern, $input) {
-    return preg_split($pattern, $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+    return preg_split('#(' . implode('|', $pattern) . ')#', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 }
 
 function fn_minify_css($input, $comment = 2, $quote = 0) {
     if (!$input = trim($input)) return $input;
     $output = $prev = "";
-    foreach (fn_minify('#(' . Minify::CSS_COMMENT . '|' . Minify::STRING . ')#', $input) as $part) {
+    foreach (fn_minify([Minify::CSS_COMMENT, Minify::STRING], $input) as $part) {
         if (!trim($part)) continue;
         if ($comment !== 1 && strpos($part, '/*') === 0 && substr($part, -2) === '*/') {
             if (
@@ -63,7 +63,7 @@ function fn_minify_css_union($input) {
         // Fix case for `[bar="baz"]<space>.foo`, `*<space>.foo` and `@media<space>(foo: bar)<space>and<space>(baz: qux)` [^2]
         '#(\*|\])\s+(?=[\w\#.])#', '#\b\s+\(#', '#\)\s+\b#',
         // Minify HEX color code … [^3]
-        '#\#([\da-f])\1([\da-f])\2([\da-f])\3\b#i',
+        '#\#([a-f\d])\1([a-f\d])\2([a-f\d])\3\b#i',
         // Remove white–space(s) around punctuation(s) [^4]
         '#\s*([~!@*\(\)+=\{\}\[\]:;,>\/])\s*#',
         // Replace zero unit(s) with `0` [^5]
@@ -114,7 +114,7 @@ function fn_minify_css_union($input) {
 function fn_minify_html($input, $comment = 2, $quote = 1) {
     if (!$input = trim($input)) return $input;
     $output = "";
-    foreach (fn_minify('#(' . Minify::HTML_COMMENT . '|' . Minify::HTML_KEEP . '|' . Minify::HTML . ')#', $input) as $part) {
+    foreach (fn_minify([Minify::HTML_COMMENT, Minify::HTML_KEEP, Minify::HTML], $input) as $part) {
         if ($part !== ' ' && !trim($part) || $comment !== 1 && strpos($part, '<!--') === 0) {
             // Detect IE conditional comment(s) by its closing tag …
             if ($comment === 2 && substr($part, -12) === '<![endif]-->') {
@@ -128,7 +128,8 @@ function fn_minify_html($input, $comment = 2, $quote = 1) {
             $output .= preg_replace('#\s+#', ' ', $part);
         }
     }
-    return $output;
+    // Force space with `&#x0020;` and line–break with `&#x000A;`
+    return str_ireplace(['&#x0020;', '&#x20;', '&#x000A;', '&#xA;'], [' ', ' ', N, N], $output);
 }
 
 function fn_minify_html_union($input, $quote) {
@@ -180,7 +181,10 @@ function fn_minify_html_union_attr($input) {
 
 function fn_minify_js($input, $comment = 2) {
     if (!$input = trim($input)) return $input;
-    $output = $input; // TODO
+    foreach (fn_minify([Minify::CSS_COMMENT, Minify::JS_COMMENT, Minify::STRING, Minify::JS_PATTERN], $input) as $part) {
+        // TODO
+    }
+    $output = $input;
     return $output;
 }
 

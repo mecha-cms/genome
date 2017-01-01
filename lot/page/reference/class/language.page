@@ -5,7 +5,7 @@ description: Internationalization.
 
 ### Constructor
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Language();
 ~~~
 
@@ -19,7 +19,7 @@ Get language property:
 
 ### Static Call
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Language::{$property}($);
 ~~~
 

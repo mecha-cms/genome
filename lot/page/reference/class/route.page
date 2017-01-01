@@ -16,7 +16,7 @@ Pattern | Description
 
 ### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::set($id = null, $fn = null, $stack = null, $pattern = false);
 ~~~
 
@@ -46,7 +46,7 @@ Route::set('blog', function($slug = "", $step = 1) { … }, 10.3);
 
 ### Reset
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::reset($id);
 ~~~
 
@@ -64,7 +64,7 @@ Route::reset(['blog/%s%/%i%', 'blog/%s%']);
 
 ### Get
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::get($id = null, $fail = false);
 ~~~
 
@@ -104,7 +104,7 @@ false
 
 ### Pattern
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::pattern($pattern, $fn = false, $stack = null);
 ~~~
 
@@ -116,7 +116,7 @@ Route::pattern('#^blog\/([^\/]+)?\/(\d+)?$#', function($slug = "", $step = 1) { 
 
 ### Is
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::is($id, $fail = false, $pattern = false);
 ~~~
 
@@ -156,7 +156,7 @@ false
 
 ### Fire
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::fire($id = null, $lot = []);
 ~~~
 
@@ -174,7 +174,7 @@ Route::fire('blog/%s%/%i%', ['archive', 4]);
 
 ### Hook
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::hook($id, $fn = null, $stack = null, $pattern = false);
 ~~~
 
@@ -190,7 +190,7 @@ Route::hook('blog/%s%', 'my_hook_fn'); // ← default `$stack` value is `10`
 
 ### Hooked
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Route::hooked($id = null, $stack = null | $fn = null, $fail = false);
 ~~~
 

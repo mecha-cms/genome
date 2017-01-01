@@ -5,7 +5,7 @@ description: Array workers.
 
 ### Step
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::step($input, $NS = null);
 ~~~
 
@@ -27,7 +27,7 @@ $test = [
 
 ### Edge
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::edge($input, $min = null, $max = null);
 ~~~
 
@@ -61,7 +61,7 @@ Result:
 
 ### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::set(&$input, $key, $value = null);
 ~~~
 
@@ -93,7 +93,7 @@ $array = [
 
 ### Get
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::get(&$input, $key = null, $fail = false);
 ~~~
 
@@ -124,7 +124,7 @@ $test_2 = '#';
 
 ### Reset
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::reset(&$input, $key);
 ~~~
 
@@ -155,11 +155,11 @@ $array = [
 
 ### Extend and Concat
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::extend(&$input, $a[, $b[, $c[, ...]]]);
 ~~~
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::concat(&$input, $a[, $b[, $c[, ...]]]);
 ~~~
 
@@ -304,7 +304,7 @@ Anemon::eat($array); // …
 
 #### Vomit
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->vomit($key = null, $fail = false);
 ~~~
 
@@ -332,7 +332,7 @@ $test_3 = '#';
 
 #### Is
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->is($fn ($value, $key));
 ~~~
 
@@ -355,7 +355,7 @@ $test = [
 
 #### Not
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->not($fn ($value, $key));
 ~~~
 
@@ -378,7 +378,7 @@ $test = [
 
 #### Shake
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->shake($preserve_key = true);
 ~~~
 
@@ -547,7 +547,7 @@ $test_4 = [
 
 #### Chunk
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->chunk($chunk = 5, $index = null, $fail = []);
 ~~~
 
@@ -590,7 +590,7 @@ Anemon::walk($array); // …
 
 #### Next
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->next($skip = 0);
 ~~~
 
@@ -603,7 +603,7 @@ Anemon::walk($array)->next(1)->current(); // skip 1 item
 
 #### Previous
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->previous($skip = 0);
 ~~~
 
@@ -616,7 +616,7 @@ Anemon::walk($array)->previous(1)->current(); // skip 1 item
 
 #### To
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->to($index);
 ~~~
 
@@ -628,7 +628,7 @@ Anemon::walk($array)->to(1)->current();
 
 #### Before
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->before($value, $key = null);
 ~~~
 
@@ -663,7 +663,7 @@ $test_2 = [
 
 #### After
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->after($value, $key = null);
 ~~~
 
@@ -698,7 +698,7 @@ $test_2 = [
 
 #### Append
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->append($value, $key = null);
 ~~~
 
@@ -733,7 +733,7 @@ $test_2 = [
 
 #### Prepend
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->prepend($value, $key = null);
 ~~~
 
@@ -768,7 +768,7 @@ $test_2 = [
 
 #### First
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->first();
 ~~~
 
@@ -780,7 +780,7 @@ $test = Anemon::walk($array)->first();
 
 #### Last
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->last();
 ~~~
 
@@ -792,7 +792,7 @@ $test = Anemon::walk($array)->last();
 
 #### Count
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->count($deep = false);
 ~~~
 
@@ -804,7 +804,7 @@ $test = Anemon::walk($array)->count();
 
 #### Key
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->key($index, $fail = false);
 ~~~
 
@@ -816,7 +816,7 @@ $test = Anemon::walk($array)->key(1);
 
 #### Index
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->index($key, $fail = false);
 ~~~
 
@@ -828,7 +828,7 @@ $test = Anemon::walk($array)->index('foo');
 
 ### Alter
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon::alter($input, $replace = [], $fail = null);
 ~~~
 
@@ -854,7 +854,7 @@ $test = 2;
 
 ### Constructor
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Anemon($array = [], $separator = ', ');
 ~~~
 

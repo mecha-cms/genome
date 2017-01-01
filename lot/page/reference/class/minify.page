@@ -7,7 +7,7 @@ description: Remove white–spaces and unused comments in HTML, CSS and JavaScri
 
 ### HTML
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Minify::html($input, $comment = 2, $quote = 1);
 ~~~
 
@@ -33,7 +33,7 @@ echo Minify::html('<!DOCTYPE html>
 
 ### CSS
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Minify::css($input, $comment = 2, $quote = 0);
 ~~~
 
@@ -70,7 +70,7 @@ html {
 
 ### JS
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Minify::js($input, $comment = 2);
 ~~~
 

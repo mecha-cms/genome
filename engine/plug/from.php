@@ -19,7 +19,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     Anemon::extend($s, $c);
     $i = 0;
     $output = $data = [];
-    // Normalize white-space(s)
+    // Normalize white–space(s)
     $input = n($input);
     // Save `\: ` as `\x1A`
     $input = str_replace('\\' . $s[2], X, $input);
@@ -27,7 +27,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     foreach (explode($s[4], $input) as $li) {
         $dent = 0;
         $li = rtrim($li);
-        // Ignore comment and empty line-break
+        // Ignore comment and empty line–break
         if ($li === "" || strpos($li, '#') === 0) continue;
         while (substr($li, 0, $len) === $in) {
             $dent += 1;

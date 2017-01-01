@@ -5,7 +5,7 @@ description: Convert back to X from Y.
 
 ### JSON
 
-~~~ .code-sample.php
+~~~ .xmp.php
 From::json($input);
 ~~~
 
@@ -17,7 +17,7 @@ $test = From::json('{"foo":"bar"}');
 
 ### Base64
 
-~~~ .code-sample.php
+~~~ .xmp.php
 From::base64($input);
 ~~~
 
@@ -29,7 +29,7 @@ $test = From::base64('RHVhIGdhcmlzIHJlbCBpdHUgc2VwZXJ0aSBrYXUgZGFuIGFrdS4gSGFueW
 
 ### YAML
 
-~~~ .code-sample.php
+~~~ .xmp.php
 From::yaml($input, $c = [], $in = '  ');
 ~~~
 
@@ -41,7 +41,7 @@ $test = From::yaml('foo: bar');
 
 ### Decimal
 
-~~~ .code-sample.php
+~~~ .xmp.php
 From::html_dec($input);
 ~~~
 
@@ -53,7 +53,7 @@ $test = From::html_dec('&#73;&#32;&#10084;&#32;&#85;');
 
 ### Hexagonal
 
-~~~ .code-sample.php
+~~~ .xmp.php
 From::html_hex($input);
 ~~~
 

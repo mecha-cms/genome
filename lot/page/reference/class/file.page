@@ -17,7 +17,7 @@ File::$config = [
 
 ### Exist
 
-~~~ .code-sample.php
+~~~ .xmp.php
 File::exist($input, $fail = false);
 ~~~
 
@@ -57,7 +57,7 @@ if ($test = File::exist(['page-post-2016.php', 'page-post.php', 'page.php'], fal
 
 ### Inspect
 
-~~~ .code-sample.php
+~~~ .xmp.php
 File::inspect($input, $key = null, $fail = false);
 ~~~
 
@@ -99,7 +99,7 @@ $test_3 = false;
 
 ### Explore
 
-~~~ .code-sample.php
+~~~ .xmp.php
 File::explore($folder = ROOT, $deep = false, $flat = false, $fail = false);
 ~~~
 

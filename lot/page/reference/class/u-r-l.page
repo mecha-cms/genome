@@ -5,7 +5,7 @@ description: Extract current URL data.
 
 ### Long
 
-~~~ .code-sample.php
+~~~ .xmp.php
 URL::long($url, $root = true);
 ~~~
 
@@ -98,7 +98,7 @@ http://localhost/foo/bar
 
 ### Short
 
-~~~ .code-sample.php
+~~~ .xmp.php
 URL::short($url, $root = true);
 ~~~
 
@@ -209,7 +209,7 @@ http://foo
 
 #### Constructor
 
-~~~ .code-sample.php
+~~~ .xmp.php
 URL();
 ~~~
 

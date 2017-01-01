@@ -5,7 +5,7 @@ description: Working with folders.
 
 ### Exist
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Folder::exist($input, $fail = false);
 ~~~
 
@@ -45,7 +45,7 @@ if ($test = Folder::exist(['page-post-2016', 'page-post', 'page'], false)) {
 
 ### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Folder::set($input, $consent = 0777);
 ~~~
 

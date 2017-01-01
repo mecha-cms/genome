@@ -5,7 +5,7 @@ description: Function hooks.
 
 ### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Hook::set($id = null, $fn = null, $stack = null);
 ~~~
 
@@ -41,7 +41,7 @@ Hook::set('the_header', 'do_set_header', 1);
 
 ### Get
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Hook::get($id = null, $fail = false);
 ~~~
 
@@ -59,7 +59,7 @@ __test__(Hook::get('the_header'));
 
 ### Reset
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Hook::reset($id = null, $stack = null | $fn = null);
 ~~~
 
@@ -73,7 +73,7 @@ Hook::reset('the_header', 'do_set_header');
 
 ### Fire
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Hook::fire($id, $lot = null);
 ~~~
 
@@ -89,7 +89,7 @@ Hook::fire('the_header'); // → `<meta name="generator" content="Mecha">`
 
 #### Namespaces
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Hook::NS($id, $lot);
 ~~~
 

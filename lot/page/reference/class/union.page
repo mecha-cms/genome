@@ -5,7 +5,7 @@ description: Universal markup constructor.
 
 ### Constructor
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Union($union = []);
 ~~~
 
@@ -17,7 +17,7 @@ $union = new Union();
 
 #### Unite
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->unite($unit = 'html', $content = "", $data = [], $dent = 0);
 ~~~
 
@@ -50,7 +50,7 @@ $test_4 = '<input type="text">';
 
 #### Apart
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->apart($input, $eval = true);
 ~~~
 
@@ -167,7 +167,7 @@ false
 
 #### Begin
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->begin($unit = 'html', $data = [], $dent = 0);
 ~~~
 
@@ -192,7 +192,7 @@ Result:
 
 #### End
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->end($unit = null, $dent = null);
 ~~~
 
@@ -264,7 +264,7 @@ Result:
 
 #### Comments
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->__($content, $dent = 0, $block = N);
 ~~~
 
@@ -305,7 +305,7 @@ $test_4 = '  <!-- test comment -->';
 
 #### Create Custom Markup
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->union = [
     1 => [
         0 => ['<', '>', '/', '[\w:.-]+'],

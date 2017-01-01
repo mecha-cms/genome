@@ -5,7 +5,7 @@ description: Working with date and time.
 
 ### Time Zone
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Date::TZ($zone = null);
 ~~~
 
@@ -25,7 +25,7 @@ echo Date::TZ();
 
 ### Format
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->format($format = DATE_WISE);
 ~~~
 
@@ -59,7 +59,7 @@ Result:
 
 ### Extract
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->extract($key = null, $fail = false);
 ~~~
 
@@ -107,7 +107,7 @@ Result:
 
 #### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Date::set($key = null, $fn = null ($output, $language));
 ~~~
 
@@ -133,7 +133,7 @@ echo $date->my_format;
 
 #### Remove
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Date::reset($key = null);
 ~~~
 

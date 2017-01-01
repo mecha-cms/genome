@@ -15,7 +15,7 @@ class Blastula extends Genome {
 
 ### Plug
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Genome::plug($kin, $fn);
 ~~~
 
@@ -35,7 +35,7 @@ echo Blastula::birth('Mocha'); // → `Hello world! My name is Mocha.`
 
 ### Unplug
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Genome::unplug($kin);
 ~~~
 
@@ -53,7 +53,7 @@ Blastula::unplug();
 
 ### Kin
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Genome::kin($kin = null, $fail = false, $origin = false);
 ~~~
 

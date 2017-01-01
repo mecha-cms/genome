@@ -5,7 +5,7 @@ description: Persistent storage using sessions.
 
 ### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Session::set($key, $value = "");
 ~~~
 
@@ -17,7 +17,7 @@ Session::set('my_session', 'the value');
 
 ### Reset
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Session::reset($key = null);
 ~~~
 
@@ -41,7 +41,7 @@ Session::reset();
 
 ### Get
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Session::get($key = null, $fail = "");
 ~~~
 

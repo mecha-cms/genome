@@ -5,7 +5,7 @@ description: Working with pages.
 
 ### Open
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Page::open($path, $shift = "");
 ~~~
 
@@ -17,7 +17,7 @@ Page::open('path\to\file.page');
 
 ### Data
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->data($a, $fn = null);
 ~~~
 
@@ -64,7 +64,7 @@ Page::open('path\to\file.page')->data("");
 
 ### Unite
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Page::unite($input = null);
 ~~~
 
@@ -95,7 +95,7 @@ type: HTML
 
 ### Apart
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Page::apart($input = null);
 ~~~
 
@@ -137,7 +137,7 @@ $test = [
 
 ### Read
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->read($output = [], $NS = 'page');
 ~~~
 
@@ -151,7 +151,7 @@ $test = Page::open('path\to\file.page')->read([
 
 ### Get
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->get($key = null, $fail = "", $NS = 'page');
 ~~~
 
@@ -163,7 +163,7 @@ $test = Page::open('path\to\file.page')->get('title', 'Untitled');
 
 ### Save
 
-~~~ .code-sample.pgp
+~~~ .xmp.pgp
 ->save($consent = 0600);
 ~~~
 
@@ -175,7 +175,7 @@ Page::open('path\to\file.page')->data(['title' => 'New Title'])->save();
 
 ### Save To
 
-~~~ .code-sample.php
+~~~ .xmp.php
 ->saveTo($path, $consent = 0600);
 ~~~
 
@@ -193,7 +193,7 @@ Page::data([
 
 ### Constructor
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Page($input = null, $shift = "", $lot = [], $NS = 'page');
 ~~~
 

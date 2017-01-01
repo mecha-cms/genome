@@ -5,7 +5,7 @@ description: Persistent storage using cookies.
 
 ### Set
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Cookie::set($key, $value = "", $config = [] | $expire);
 ~~~
 
@@ -29,7 +29,7 @@ Cookie::set('my_cookie', 'the value', [
 
 ### Reset
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Cookie::reset($key = null);
 ~~~
 
@@ -53,7 +53,7 @@ Cookie::reset();
 
 ### Get
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Cookie::get($key = null, $fail = "");
 ~~~
 

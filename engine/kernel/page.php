@@ -6,9 +6,9 @@ class Page extends Genome {
     protected static $path = "";
     protected static $shift = "";
 
-    // 0: draft
-    // 1: page
-    // 2: archive
+    // `0`: draft
+    // `1`: page
+    // `2`: archive
     public static $states = ['draft', 'page', 'archive'];
     public static $i = ['time', 'kind', 'slug', 'state'];
 
@@ -20,7 +20,7 @@ class Page extends Genome {
         return str_replace(self::$v, self::$x, $s);
     }
 
-    // Un-Escape …
+    // Un–Escape …
     public static function v($s) {
         return str_replace(self::$x, self::$v, $s);
     }

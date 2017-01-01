@@ -5,7 +5,7 @@ description: HTML forms.
 
 ### Button
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Form::button($name = null, $value = null, $text = "", $attr = [], $dent = 0);
 ~~~
 
@@ -23,7 +23,7 @@ $test = '<button name="x" type="button" value="on">Activate</button>';
 
 ### Input
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Form::input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0);
 ~~~
 
@@ -41,7 +41,7 @@ $test = '<input name="x" type="url" value="test value" placeholder="http://">';
 
 ### Select
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Form::select($name = null, $option = [], $select = null, $attr = [], $dent = 0);
 ~~~
 
@@ -97,7 +97,7 @@ $test_2 = '<select name="o">
 
 ### Textarea
 
-~~~ .code-sample.php
+~~~ .xmp.php
 Form::textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0);
 ~~~
 
