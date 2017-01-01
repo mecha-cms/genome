@@ -1,10 +1,6 @@
 <?php
 
 
-// Need to include this plug manually ...
-require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'page.php';
-
-
 /**
  * Detect Page Type
  * ----------------

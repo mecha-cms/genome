@@ -1,6 +1,6 @@
 ---
 title: Page Extension
-description: This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder.
+description: This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$config` variable.
 ...
 
 ### Page
@@ -61,13 +61,15 @@ Most of the default data are just an empty string or `null`, which can also be t
     'type' => 'HTML',
     'link' => null,
     'content' => "",
-    'time' => File::T($path), // ← current file modification time will becomes the page date by default
+    'time' => File::T($path),
     'update' => File::T($path),
-    'kind' => [0], // ← default is `untagged`
+    'kind' => [0], // ← default is `0`
     'slug' => '--',
     'state' => 'page'
 ]
 ~~~
+
+> **Note:** Current file modification time will becomes the page date by default.
 
 A page file can also has a connection with a folder that is located in the same directory level, by setting the folder name with the same name as the page name, without the file extension (the page state).
 
@@ -169,3 +171,15 @@ lot\
      ├── dolor-sit.page
      └── no-no-no.page
 ~~~
+
+---
+
+### Properties
+
+ - `$config`
+   - `$config->type` → Return `page` on item page and `pages` on index page. Default is `404`.
+   - `$config->state` → Return the current page state. Default is `page`.
+
+### Hooks
+
+ - `elevator.pager` → Will affect the HTML output of the page’s pagination.
