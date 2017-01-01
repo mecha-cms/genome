@@ -169,7 +169,7 @@ class File extends Genome {
         return new static;
     }
 
-    // Save the `$data` to ...
+    // Save the `$data` to …
     public static function saveTo($input, $consent = null) {
         $input = To::path($input);
         if (!file_exists(Path::D($input))) {
@@ -199,7 +199,7 @@ class File extends Genome {
         return new static;
     }
 
-    // Move the file/folder to ...
+    // Move the file/folder to …
     public static function moveTo($target = ROOT) {
         if (file_exists(self::$path)) {
             $target = To::path($input);
@@ -215,7 +215,7 @@ class File extends Genome {
         return new static;
     }
 
-    // Copy the file/folder to ...
+    // Copy the file/folder to …
     public static function copyTo($target = ROOT, $s = '.%s') {
         $i = 1;
         if (file_exists(self::$path)) {
@@ -325,7 +325,7 @@ class File extends Genome {
         return $fail;
     }
 
-    // Convert file size to ...
+    // Convert file size to …
     public static function size($file, $unit = null, $prec = 2) {
         $size = is_numeric($file) ? $file : filesize($file);
         $size_base = log($size, 1024);

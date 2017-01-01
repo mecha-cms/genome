@@ -1,6 +1,7 @@
 <?php
 
-fn::plug('user', function($data) use($config) {
+function fn_user($data) {
+    global $config;
     $s = isset($data['author']) ? $data['author'] : $config->page->author;
     if (isset($s) && is_string($s) && strpos($s, User::ID) === 0) {
         $user = new User(substr($s, 1));
@@ -8,6 +9,6 @@ fn::plug('user', function($data) use($config) {
         Config::set('page.author', $user);
     }
     return $data;
-});
+}
 
-Hook::set(['fire', 'page.input'], 'fn::user', 1);
+Hook::set(['fire', 'page.input'], 'fn_user', 1);

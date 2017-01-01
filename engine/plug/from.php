@@ -44,7 +44,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         } else {
             $i = 0;
         }
-        // No `: ` ... fix it!
+        // No `: ` … fix it!
         if (strpos($li, $s[2]) === false) {
             $li = $li . $s[2] . $li;
         }
@@ -56,7 +56,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
             $part = explode($s[2], $li, 2);
         }
         $v = trim(isset($part[1]) ? $part[1] : "");
-        // Remove inline comment(s) ...
+        // Remove inline comment(s) …
         if ($v && strpos($v, '#') !== false) {
             if ($v[0] === '"' || $v[0] === "'") {
                 $vv = '/(' . implode('|', $q) . ')|\s*#.*/';

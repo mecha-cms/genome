@@ -4,7 +4,7 @@
  * Mecha · Content Management System (CMS)
  * =======================================
  *
- * © 2014 – 2016 Taufik Nurrohman
+ * © 2014 – 2017 Taufik Nurrohman
  *
  */
 

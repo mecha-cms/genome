@@ -36,7 +36,7 @@ if ($file = File::exist([
  */
 
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $language, $url) {
-    $step = $step - 1; // 0-based index ...
+    $step = $step - 1; // 0-based index …
     $path_alt = $path === "" ? $config->slug : $path;
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
@@ -69,7 +69,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $folder . '.archive', // `lot\page\page-slug.archive`
         $folder . DS . $name . '.page', // `lot\page\page-slug\page-slug.page`
         $folder . DS . $name . '.archive' // `lot\page\page-slug\page-slug.archive`
-    ])) { // File does exist, then ...
+    ])) { // File does exist, then …
         // Load user functions from the current shield folder if any
         if ($fn = File::exist([$folder_shield . DS . 'index.php', $folder_shield . DS . 'index__.php'])) {
             include $fn;

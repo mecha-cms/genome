@@ -1,0 +1,9 @@
+---
+title: Document
+description: A minimalist shield with no extension and plugin dependencies.
+author: Taufik Nurrohman
+type: HTML
+version: 1.0.0
+...
+
+<p>This was supposed to be the page content.</p>

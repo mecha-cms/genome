@@ -62,10 +62,41 @@ Remove page content:
 Page::open('path\to\file.page')->data("");
 ~~~
 
+### Unite
+
+~~~ .code-sample.php
+Page::unite($input = null);
+~~~
+
+Convert array input into page file content:
+
+~~~ .php
+$test = Page::unite([
+    'title' => 'Page Title',
+    'description' => 'Page description.',
+    'author' => 'Taufik Nurrohman',
+    'type' => 'HTML',
+    'content' => '<p>Page content.</p>'
+]);
+~~~
+
+Result:
+
+~~~ .yaml
+---
+title: Page Title
+description: Page description.
+author: Taufik Nurrohman
+type: HTML
+...
+
+<p>Page content.</p>
+~~~
+
 ### Apart
 
 ~~~ .code-sample.php
-->apart($input = null);
+Page::apart($input = null);
 ~~~
 
 Convert page file content into array:
@@ -132,7 +163,31 @@ $test = Page::open('path\to\file.page')->get('title', 'Untitled');
 
 ### Save
 
+~~~ .code-sample.pgp
+->save($consent = 0600);
+~~~
+
+Update page data:
+
+~~~ .php
+Page::open('path\to\file.page')->data(['title' => 'New Title'])->save();
+~~~
+
 ### Save To
+
+~~~ .code-sample.php
+->saveTo($path, $consent = 0600);
+~~~
+
+Create a new page:
+
+~~~ .php
+Page::data([
+    'title' => 'Page Title',
+    'type' => 'HTML',
+    'content' => '<p>Page content.</p>'
+])->saveTo('path\to\file.page');
+~~~
 
 ---
 

@@ -1,14 +1,17 @@
 <?php
 
+// normalize line–break
+$gpc = array(&$_GET, &$_POST, &$_REQUEST, &$_COOKIE);
+array_walk_recursive($gpc, function(&$value) {
+    $value = str_replace(array("\r\n", "\r"), "\n", $value);
+});
+
 d(ENGINE . DS . 'kernel', function($w, $n) {
     $f = ENGINE . DS . 'plug' . DS . $n . '.php';
     if (file_exists($f)) {
         require $f;
     }
 });
-
-// override–able function name
-class fn extends Genome {}
 
 File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X . ',' . MEDIA_X . ',' . PACKAGE_X . ',' . SCRIPT_X));
 
@@ -25,7 +28,7 @@ $seeds = [
 // set default date time zone
 Date::TZ($seeds['config']->TZ);
 
-// plant and extract ...
+// plant and extract …
 extract(Seed::set($seeds)->get(null, []));
 
 $extends = [];

@@ -687,13 +687,13 @@ _published: Unpublished
 
 message_avail: %s is available.
 
-# negation ...
+# negation …
 _message_avail: %s is not available.
 
 
 
 
-# testing ...
+# testing …
 
 a: aa
 b: bb

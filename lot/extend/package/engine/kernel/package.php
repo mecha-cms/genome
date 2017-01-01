@@ -60,7 +60,7 @@ class Package extends Genome {
                 $target .= DS . $package . '.zip';
             }
         }
-        // Delete the old package ...
+        // Delete the old package …
         File::open($old)->delete();
         if (!$this->zip->open($target, ZipArchive::CREATE)) {
             return false;

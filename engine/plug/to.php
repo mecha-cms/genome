@@ -44,7 +44,7 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
                 // Comment
                 } else if (strpos($v, '#') === 0) {
                     $t .= $T . trim($v) . $s[4];
-                // ...
+                // …
                 } else {
                     $t .= $T . ($line ? $s[3] : trim($k) . $s[2]) . $v . $s[4];
                 }
@@ -77,7 +77,7 @@ To::plug('snake', function($input) {
 });
 
 To::plug('html', function($input) {
-    return $input; // do nothing ...
+    return $input; // do nothing …
 });
 
 To::plug('html_encode', function($input) {

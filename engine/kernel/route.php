@@ -108,7 +108,7 @@ class Route extends Genome {
         } else {
             $id = URL::path();
             if (isset(self::$lot[1][$id])) {
-                // Loading cargo(s) ...
+                // Loading cargo(s) …
                 if (isset(self::$lot_o[1][$id])) {
                     $fn = Anemon::eat(self::$lot_o[1][$id])->sort(1, 'stack')->vomit();
                     foreach ($fn as $v) {
@@ -123,7 +123,7 @@ class Route extends Genome {
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path
                     if ($route = self::is($k, false, $v['is']['pattern'])) {
-                        // Loading hook(s) ...
+                        // Loading hook(s) …
                         if (isset(self::$lot_o[1][$k])) {
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort(1, 'stack')->vomit();
                             foreach ($fn as $f) {

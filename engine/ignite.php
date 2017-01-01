@@ -107,7 +107,7 @@ function __format__($s = "", $x = '\n', $d = '#', $r = true) {
 
 // Convert class name to file name
 function __c2f__($x) {
-    return str_replace(['\\-', '_-'], ['.', '_'], h(basename($x, '.' . pathinfo($x, PATHINFO_EXTENSION)), '-', '_\\'));
+    return str_replace(['\\-', '_-'], ['.', '_'], h($x, '-', '_\\'));
 }
 
 // Convert file name to class name
@@ -754,7 +754,7 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
 }
 
 // $s: directory path
-// $x: file extension or name pattern ... `txt`, `log,txt`, `foo/`
+// $x: file extension or name pattern … `txt`, `log,txt`, `foo/`
 // $q: filter by query
 // $o: order?
 // $h: include hidden file(s)?

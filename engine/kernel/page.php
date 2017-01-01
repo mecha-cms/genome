@@ -15,17 +15,17 @@ class Page extends Genome {
     public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
     public static $x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
 
-    // Escape ...
+    // Escape …
     public static function x($s) {
         return str_replace(self::$v, self::$x, $s);
     }
 
-    // Un-Escape ...
+    // Un-Escape …
     public static function v($s) {
         return str_replace(self::$x, self::$v, $s);
     }
 
-    // Open ...
+    // Open …
     public static function open($path, $shift = "") {
         self::$path = $path;
         self::$shift = $shift;
@@ -33,7 +33,24 @@ class Page extends Genome {
         return new static;
     }
 
-    // Apart ...
+    // Unite …
+    public static function unite($input = null) {
+        if (!isset($input)) {
+            $input = self::$data;
+        }
+        $meta = [];
+        $data = "";
+        if (isset($input['content'])) {
+            $data = $input['content'];
+            unset($input['content']);
+        }
+        foreach ($input as $k => $v) {
+            $meta[] = self::x($k) . self::$v[2] . self::x(s($v));
+        }
+        return ($meta ? self::$v[0] . implode(N, $meta) . self::$v[1] : "") . ($data ? N . N . $data : "");
+    }
+
+    // Apart …
     public static function apart($input = null) {
         global $config;
         $data = [];
@@ -51,12 +68,12 @@ class Page extends Genome {
             } else {
                 $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
                 $input = explode(self::$v[1] . N . N, $input, 2);
-                // Do data ...
+                // Do data …
                 foreach (explode(self::$v[4], $input[0]) as $v) {
                     $v = explode(self::$v[2], $v, 2);
                     $data[self::v($v[0])] = e(self::v(isset($v[1]) ? $v[1] : false));
                 }
-                // Do content ...
+                // Do content …
                 $data['content'] = trim(isset($input[1]) ? $input[1] : "");
             }
             $s = self::$path;
@@ -85,21 +102,7 @@ class Page extends Genome {
         return new static;
     }
 
-    // Unite ...
-    public static function unite() {
-        $meta = [];
-        $data = "";
-        if (isset(self::$data['content'])) {
-            $data = self::$data['content'];
-            unset(self::$data['content']);
-        }
-        foreach (self::$data as $k => $v) {
-            $meta[] = self::x($k) . self::$v[2] . self::x(s($v));
-        }
-        return ($meta ? self::$v[0] . implode(N, $meta) . self::$v[1] : "") . ($data ? N . N . $data : "");
-    }
-
-    // Create data ...
+    // Create data …
     public static function data($a, $fn = null) {
         if (!is_array($a)) {
             if (is_callable($fn)) {
@@ -118,7 +121,7 @@ class Page extends Genome {
 
     // Read all page propert(y|ies)
     public static function read($output = [], $NS = 'page') {
-        // Pre-defined page meta ...
+        // Pre-defined page data …
         if ($output) {
             foreach ($output as $k => $v) {
                 if (strpos($k, '__') !== 0 && !array_key_exists('__' . $k, $output)) {
@@ -126,7 +129,7 @@ class Page extends Genome {
                 }
             }
         }
-        // Load page meta ...
+        // Load page data …
         return self::_meta_hook(array_merge($output, self::$data), $output, $NS);
     }
 
@@ -182,8 +185,8 @@ class Page extends Genome {
     public function __call($key, $lot) {
         $fail = array_shift($lot) ?: false;
         $fail_alt = array_shift($lot) ?: false;
-        if (is_string($fail) && strpos($fail, 'fn::') === 0) {
-            return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
+        if (is_string($fail) && strpos($fail, '~') === 0) {
+            return call_user_func(substr($fail, 1), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         } else if ($fail instanceof \Closure) {
             return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         }
