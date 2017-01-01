@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Mecha -- Content Management System (CMS)
- * ========================================
+ * Mecha · Content Management System (CMS)
+ * =======================================
  *
- * Copyright (c) 2014-2016 Taufik Nurrohman
+ * © 2014 – 2016 Taufik Nurrohman
  *
  */
 
@@ -15,7 +15,8 @@ define('DENT', '  '); // Default HTML indent
 define('S', "\xA0"); // Non break space
 define('T', "\t"); // Tab
 define('N', "\n"); // Line break
-define('X', "\x1A"); // Placeholder text
+define('A', "\a"); // Beep!
+define('X', A); // Placeholder text
 
 define('SESSION', null);
 

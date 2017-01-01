@@ -1,16 +1,31 @@
 <?php
 
-function do_markdown_parse(&$input) {
-    $slot = new ParsedownExtraPlugin;
+$slot = new ParsedownExtraPlugin;
+
+fn::plug('markdown_parse', function($input) use($slot) {
     $c = include __DIR__ . DS . 'lot' . DS . 'state' . DS . 'config.php';
     foreach ($c as $cc => $ccc) {
         $slot->{$cc} = $ccc;
     }
-    $input = $slot->text($input);
-}
+    return $slot->text($input);
+});
+
+fn::plug('markdown_parse_i', function($input) {
+    $input = fn::markdown_parse($input);
+    return t($input, '<p>', '</p>');
+});
+
+fn::plug('markdown', function($data) {
+    if (isset($data['type']) && $data['type'] === 'Markdown') {
+        $data['title'] = fn::markdown_parse_i($data['title']);
+        $data['description'] = fn::markdown_parse($data['description']);
+        $data['content'] = fn::markdown_parse($data['content']);
+    }
+    return $data;
+});
 
 From::plug('markdown', function($input) {
-    do_markdown_parse($input);
+    fn::markdown_parse($input);
     return $input;
 });
 
@@ -18,18 +33,4 @@ To::plug('markdown', function($input) {
     return $input; // TODO
 });
 
-function do_markdown_parse_i(&$input) {
-    do_markdown_parse($input);
-    $input = t($input, '<p>', '</p>');
-}
-
-function do_markdown($data) {
-    if (isset($data['type']) && $data['type'] === 'Markdown') {
-        do_markdown_parse_i($data['title']);
-        do_markdown_parse($data['description']);
-        do_markdown_parse($data['content']);
-    }
-    return $data;
-}
-
-Hook::set('page.output', 'do_markdown', 1);
+Hook::set('page.output', 'fn::markdown', 1);

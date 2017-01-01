@@ -7,6 +7,9 @@ d(ENGINE . DS . 'kernel', function($w, $n) {
     }
 });
 
+// override–able function name
+class fn extends Genome {}
+
 File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X . ',' . MEDIA_X . ',' . PACKAGE_X . ',' . SCRIPT_X));
 
 Session::ignite();

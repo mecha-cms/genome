@@ -7,10 +7,11 @@ class User extends Genome {
     public static function read($id, $lot = [], $fail = false) {
         global $url;
         $user = ENGINE . DS . 'log' . DS . 'user';
+        $state = include Path::D(__DIR__, 2) . DS . 'lot' . DS . 'state' . DS . 'config.php';
         if ($path = File::exist($user . DS . $id . '.page')) {
-            return Page::open($path)->data('url', function($data) use($user, $id, $url) {
+            return Page::open($path)->data('url', function($data) use($user, $state, $id, $url) {
                 $s = str_replace([$user . DS, $user], "", Path::D($data['path']));
-                return $url . '/user/' . ($s ? '/' . $s : "") . $id;
+                return $url . '/' . $state['slug'] . '/' . ($s ? '/' . $s : "") . $id;
             })->read($lot, 'user');
         }
         return $fail;
@@ -28,7 +29,7 @@ class User extends Genome {
         $fail = array_shift($lot) ?: false;
         $fail_alt = array_shift($lot) ?: false;
         if (is_string($fail) && strpos($fail, 'fn::') === 0) {
-            return call_user_func(substr($fail, 4), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
+            return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         } else if ($fail instanceof \Closure) {
             return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         }

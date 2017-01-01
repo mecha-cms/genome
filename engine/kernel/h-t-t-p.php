@@ -76,21 +76,18 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function query(...$lot) {
-        $q = array_shift($lot);
-        $v = array_shift($lot);
-        if (!isset($q)) return __url__('query');
-        if (count($lot) === 2) {
-            $q = [$q => $v];
-        }
-        $q = !empty($q) ? array_replace_recursive($_GET, $q) : $_GET;
+    public static function query($query = null, $c = []) {
+        $cc = ['?', '&amp;', '='];
+        $cc = array_replace($cc, $c);
+        if (!isset($query)) return __url__('query');
+        $q = !empty($query) ? array_replace_recursive($_GET, $query) : $_GET;
         $output = [];
         foreach (self::_q($q, "") as $k => $v) {
             if ($v === false) continue;
-            $v = $v !== true ? '=' . urlencode(s($v)) : "";
+            $v = $v !== true ? $cc[2] . urlencode(s($v)) : "";
             $output[] = $k . $v;
         }
-        return !empty($output) ? '?' . implode('&amp;', $output) : "";
+        return !empty($output) ? $cc[0] . implode($cc[1], $output) : "";
     }
 
     public static function _q($a, $k) {

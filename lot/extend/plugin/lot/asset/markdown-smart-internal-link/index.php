@@ -1,6 +1,6 @@
 <?php
 
-function do_markdown_smart_internal_link($data) {
+fn::plug('markdown_smart_internal_link', function($data) {
     if (!isset($data['content']) || !isset($data['type']) || $data['type'] !== 'Markdown') {
         return $data;
     }
@@ -26,6 +26,6 @@ function do_markdown_smart_internal_link($data) {
     }, $content) . "\n" . $links;
     $data['content'] = $content;
     return $data;
-}
+});
 
-Hook::set('page.input', 'do_markdown_smart_internal_link');
+Hook::set('page.input', 'fn::markdown_smart_internal_link');

@@ -32,7 +32,3 @@ This variable is an instance of the [`Page` class][link:class/page] with current
 ### `$pager`
 
 This variable is an instance of the [`Elevator` class][link:class/elevator].
-
-### `$user`
-
-This variable is an instance of the [`User` class][link:extension/user] with default user ID as the input.

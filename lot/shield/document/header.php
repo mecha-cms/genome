@@ -12,6 +12,7 @@
     <!-- Prevent search engines from indexing a page with `archive` state -->
     <meta name="robots" content="noindex">
     <?php endif; ?>
+    <meta name="author" content="<?php echo $page->author; ?>">
     <title><?php echo To::text($config->page->title); ?></title>
     <link href="<?php echo $url; ?>/favicon.ico" rel="shortcut icon">
     <?php $css = File::inspect(SHIELD . '/document/asset/css/document.min.css'); ?>

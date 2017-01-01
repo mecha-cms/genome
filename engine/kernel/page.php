@@ -40,9 +40,12 @@ class Page extends Genome {
         if (!isset($input)) {
             $input = self::$path;
         }
-        if (is_file($input)) {
-            $data = Get::page($input);
-            $input = n(file_get_contents($input));
+        if (is_string($input) || is_file($input)) {
+            if (is_file($input)) {
+                $data = Get::page($input);
+                $input = file_get_contents($input);
+            }
+            $input = n($input);
             if (strpos($input, self::$v[0]) !== 0) {
                 $data['content'] = self::v($input);
             } else {
@@ -65,6 +68,8 @@ class Page extends Genome {
                     $data[$a] = e($b);
                 }
             }
+        } else if (__is_anemon__($input)) {
+            $data = a($input); // should be an array input
         }
         if (!array_key_exists('time', $data) && isset($data['update'])) {
             $data['time'] = $data['update'];
@@ -126,11 +131,15 @@ class Page extends Genome {
     }
 
     // Read specific page property
-    public static function get($key, $fail = "", $NS = 'page') {
+    public static function get($key = null, $fail = "", $NS = 'page') {
+        if (!isset($key)) {
+            $data = self::$data;
+            return self::_meta_hook($data, $data, $NS);
+        }
         $data = Get::page($input = self::$path);
         $input = Path::D($input) . DS . Path::N($input);
-        if (is_dir($input)) {
-            $data[$key] = File::open($input . DS . $key . '.data')->read(false);
+        if ($input === DS || is_dir($input)) {
+            $data[$key] = File::open($input . DS . $key . '.data')->read(array_key_exists($key, self::$data) ? self::$data[$key] : false);
         } else {
             $data[$key] = false;
         }
@@ -174,7 +183,7 @@ class Page extends Genome {
         $fail = array_shift($lot) ?: false;
         $fail_alt = array_shift($lot) ?: false;
         if (is_string($fail) && strpos($fail, 'fn::') === 0) {
-            return call_user_func(substr($fail, 4), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
+            return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         } else if ($fail instanceof \Closure) {
             return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
         }

@@ -1,5 +1,7 @@
 <?php
 
+$time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time();
+
 return [
     'charset' => 'utf-8',
     'direction' => 'ltr',
@@ -14,8 +16,8 @@ return [
     'sort' => [-1, 'time'],
     'page' => [
         'path' => "",
-        'time' => "",
-        'update' => "",
+        'time' => $time,
+        'update' => $time,
         'kind' => [0],
         'slug' => '--',
         'state' => 'page',

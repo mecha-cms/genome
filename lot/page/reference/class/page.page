@@ -5,13 +5,130 @@ description: Working with pages.
 
 ### Open
 
+~~~ .code-sample.php
+Page::open($path, $shift = "");
+~~~
+
+Initialize by opening a page file:
+
+~~~ .php
+Page::open('path\to\file.page');
+~~~
+
 ### Data
+
+~~~ .code-sample.php
+->data($a, $fn = null);
+~~~
+
+Set page headers:
+
+~~~ .php
+Page::open('path\to\file.page')->data([
+    'title' => 'Page Title',
+    'description' => 'Page description.',
+    'author' => 'Taufik Nurrohman',
+    'type' => 'HTML'
+]);
+~~~
+
+~~~ .php
+Page::open('path\to\file.page')->data('title', function($data) {
+    return $data['author']; // ← set `author` value as the `title`
+});
+~~~
+
+Set page content:
+
+~~~ .php
+Page::open('path\to\file.page')->data('<p>Page content.</p>');
+~~~
+
+Remove `title` data:
+
+~~~ .php
+Page::open('path\to\file.page')->data(['title' => false]);
+~~~
+
+Set `title` data as `false`:
+
+~~~ .php
+Page::open('path\to\file.page')->data(['title' => 'false']);
+~~~
+
+Remove page content:
+
+~~~ .php
+Page::open('path\to\file.page')->data("");
+~~~
 
 ### Apart
 
+~~~ .code-sample.php
+->apart($input = null);
+~~~
+
+Convert page file content into array:
+
+~~~ .php
+$test = Page::apart('---
+title: Page Title
+description: Page description.
+author: Taufik Nurrohman
+type: HTML
+...
+
+<p>Page content.</p>')->get();
+~~~
+
+Result:
+
+~~~ .php
+$test = [
+    'path' => "",
+    'time' => 1483259587,
+    'update' => 1483259587,
+    'kind' => [0],
+    'slug' => '--',
+    'state' => 'page',
+    'title' => 'Page Title',
+    'description' => 'Page description.',
+    'type' => 'HTML',
+    'author' => 'Taufik Nurrohman',
+    'link' => null,
+    'content' => '<p>Page content.</p>',
+    'url' => 'http://localhost/--',
+    'date' => Date::__set_state([
+        'date' => 1483259587
+    ])
+];
+~~~
+
 ### Read
 
+~~~ .code-sample.php
+->read($output = [], $NS = 'page');
+~~~
+
+Read page file as array and add a `link` property with value `http://example.com` if missing:
+
+~~~ .php
+$test = Page::open('path\to\file.page')->read([
+    'link' => 'http://example.com'
+]);
+~~~
+
 ### Get
+
+~~~ .code-sample.php
+->get($key = null, $fail = "", $NS = 'page');
+~~~
+
+Get `title` property from a page if available, otherwise, return `Untitled`:
+
+~~~ .php
+$test = Page::open('path\to\file.page')->get('title', 'Untitled');
+~~~
 
 ### Save
 
