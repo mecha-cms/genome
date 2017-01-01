@@ -1,5 +1,38 @@
 <?php
 
+
+/**
+ * Detect Page Type
+ * ----------------
+ */
+
+$path = $url->path;
+$path_array = explode('/', $path);
+
+$config->type = '404'; // default is `404`
+if ($path === "" || $path === $config->slug) {
+    $config->type = "";
+}
+$n = Path::B($path);
+$folder = PAGE . DS . $path;
+if (File::exist([
+    $folder . '.page',
+    $folder . '.archive',
+    $folder . DS . $n . DS . '.page',
+    $folder . DS . $n . DS . '.archive'
+])) {
+    $config->type = 'page';
+    if (!File::exist($folder . DS . $n . '.page') && Get::pages($folder, 'page')) {
+        $config->type = 'pages';
+    }
+}
+
+
+/**
+ * Universal Route Definition
+ * --------------------------
+ */
+
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $language, $url) {
     $step = $step - 1; // 0-based index ...
     $path_alt = $path === "" ? $config->slug : $path;

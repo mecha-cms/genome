@@ -134,7 +134,6 @@ class Shield extends Genome {
         $s = explode(Anemon::NS, $path);
         $s = array_pop($s);
         $s = is_numeric($s) ? $s : '404';
-        Config::set('type', $s);
         HTTP::status((int) $s);
         self::attach($path, $fail, $buffer);
     }

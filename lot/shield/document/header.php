@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="<?php echo $config->direction; ?>">
+<html dir="<?php echo $config->direction; ?>" class="<?php echo $config->type; ?>">
   <head>
     <meta charset="<?php echo $config->charset; ?>">
     <meta name="viewport" content="width=device-width">

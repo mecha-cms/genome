@@ -11,14 +11,17 @@ class Is extends Genome {
     }
 
     // @ditto
-    public static function these(...$input) {
-        self::$bucket = count((array) $input) === 1 ? (array) a($input) : $input;
+    public static function these($input) {
+        if ($input instanceof Anemon) {
+            $input = explode(X, $input->join(X));
+        }
+        self::$bucket = $input;
         return new static;
     }
 
     // Check if `self::$bucket` contains `$s`
     public static function has($s, $all = false, $x = X) {
-        $input = $x . implode($x . self::$bucket) . $x;
+        $input = $x . implode($x, self::$bucket) . $x;
         if (is_array($s)) {
             if (!$all) {
                 foreach ($s as $v) {
