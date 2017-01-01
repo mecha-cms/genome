@@ -1,6 +1,10 @@
 <?php
 
 
+// Need to include this plug manually ...
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'page.php';
+
+
 /**
  * Detect Page Type
  * ----------------
@@ -10,19 +14,21 @@ $path = $url->path;
 $path_array = explode('/', $path);
 
 $config->type = '404'; // default is `404`
+$config->state = 'page'; // default is `page`
 if ($path === "" || $path === $config->slug) {
     $config->type = "";
 }
-$n = Path::B($path);
+$n = DS . Path::B($path);
 $folder = PAGE . DS . $path;
-if (File::exist([
+if ($file = File::exist([
     $folder . '.page',
     $folder . '.archive',
-    $folder . DS . $n . DS . '.page',
-    $folder . DS . $n . DS . '.archive'
+    $folder . $n . '.page',
+    $folder . $n . '.archive'
 ])) {
     $config->type = 'page';
-    if (!File::exist($folder . DS . $n . '.page') && Get::pages($folder, 'page')) {
+    $config->state = Path::X($file);
+    if (!File::exist($folder . $n . '.page') && Get::pages($folder, 'page')) {
         $config->type = 'pages';
     }
 }

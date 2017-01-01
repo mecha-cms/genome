@@ -25,17 +25,12 @@ class Page extends Genome {
         return str_replace(self::$x, self::$v, $s);
     }
 
+    // Open ...
     public static function open($path, $shift = "") {
         self::$path = $path;
         self::$shift = $shift;
         self::apart();
         return new static;
-    }
-
-    public static function is($key = null, $all = false) {
-        global $config;
-        if (!isset($key)) return $config->type;
-        return Is::these($config->type)->has($key, $all);
     }
 
     // Apart ...

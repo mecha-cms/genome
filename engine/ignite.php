@@ -107,12 +107,12 @@ function __format__($s = "", $x = '\n', $d = '#', $r = true) {
 
 // Convert class name to file name
 function __c2f__($x) {
-    return str_replace(['\\-', '_-'], ['.', '_'], h($x, '-', '_\\'));
+    return str_replace(['\\-', '_-'], ['.', '_'], h(basename($x, '.' . pathinfo($x, PATHINFO_EXTENSION)), '-', '_\\'));
 }
 
 // Convert file name to class name
 function __f2c__($x) {
-    return p(str_replace('.', '\\', $x), "", '_\\');
+    return p(str_replace('.', '\\', basename($x, '.' . pathinfo($x, PATHINFO_EXTENSION))), "", '_\\');
 }
 
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
