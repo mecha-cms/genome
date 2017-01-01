@@ -177,7 +177,7 @@ lot\
 ### Properties
 
  - `$config`
-   - `$config->type` → Return `page` on item page and `pages` on index page. Default is `404`.
+   - `$config->type` → Return an empty string on home page, `page` on item page and `pages` on index page. Default is `404`.
    - `$config->state` → Return the current page state. Default is `page`.
 
 ### Hooks

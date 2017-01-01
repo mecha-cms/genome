@@ -689,9 +689,11 @@ _published: Unpublished
 #. -------
 
 message_avail: %s is available.
+message_exist: %s already exists.
 
 # negation …
 _message_avail: %s is not available.
+_message_exist: %s does not exist.
 
 
 
