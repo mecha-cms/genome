@@ -16,7 +16,7 @@ class Folder extends File {
     }
 
     public static function exist($input, $fail = false) {
-        $file = parent::exist($input);
+        $file = parent::exist(rtrim($input, DS . '/'));
         return $file && is_dir($file) ? $file : $fail;
     }
 

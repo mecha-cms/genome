@@ -26,8 +26,10 @@ Set a new route:
 Route::set('blog/%i%', function($step = 1) {
     // here, `$step` will return `4` if we are in `http://localhost/blog/4`
     // and will return `1` if we are in `http://localhost/blog`
-}); // ← default `$stack` value is `10`
+});
 ~~~
+
+> **Note:** Default `$stack` value is `10`.
 
 Set multiple routes:
 
@@ -185,8 +187,10 @@ function my_route_hook_fn($slug = "") {
     $_POST['foo'] = 'bar';
 }
 
-Route::hook('blog/%s%', 'my_hook_fn'); // ← default `$stack` value is `10`
+Route::hook('blog/%s%', 'my_hook_fn');
 ~~~
+
+> **Note:** Default `$stack` value is `10`.
 
 ### Hooked
 

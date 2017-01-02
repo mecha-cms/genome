@@ -29,7 +29,7 @@ $seeds = [
 Date::TZ($seeds['config']->TZ);
 
 // plant and extract …
-extract(Seed::set($seeds)->get(null, []));
+extract(Lot::set($seeds)->get(null, []));
 
 $extends = [];
 foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {

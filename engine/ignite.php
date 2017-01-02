@@ -112,7 +112,7 @@ function __c2f__($x) {
 
 // Convert file name to class name
 function __f2c__($x) {
-    return p(str_replace('.', '\\', basename($x, '.' . pathinfo($x, PATHINFO_EXTENSION))), "", '_\\');
+    return p(str_replace('.', '\\', pathinfo($x, PATHINFO_FILENAME)), "", '_\\');
 }
 
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
@@ -798,7 +798,7 @@ function g($s = ROOT, $x = '*', $q = "", $o = true, $h = true) {
         }
     } else {
         foreach ($g as $k => $v) {
-            $s = basename($v, '.' . pathinfo($v, PATHINFO_EXTENSION));
+            $s = pathinfo($v, PATHINFO_FILENAME);
             if (strpos($s, $q) !== false) {
                 $O[] = $v;
             }

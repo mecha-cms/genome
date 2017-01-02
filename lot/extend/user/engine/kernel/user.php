@@ -7,7 +7,7 @@ class User extends Genome {
     public static function read($id, $lot = [], $fail = false) {
         global $url;
         $user = ENGINE . DS . 'log' . DS . 'user';
-        $state = include Path::D(__DIR__, 2) . DS . 'lot' . DS . 'state' . DS . 'config.php';
+        $state = Extend::state(Path::D(__DIR__, 2));
         if ($path = File::exist($user . DS . $id . '.page')) {
             return Page::open($path)->data('url', function($data) use($user, $state, $id, $url) {
                 $s = str_replace([$user . DS, $user], "", Path::D($data['path']));

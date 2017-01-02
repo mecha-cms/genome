@@ -32,11 +32,10 @@ function fn_markdown_smart_internal_link($data) {
             ]);
         }
         $tt = Page::open($ff)->get('title', To::title(Path::B($m[2])));
-        $links .= "\n" . '[link:' . $m[3] . ']: ' . $url . $pp . '/' . To::url($m[3]) . $m[4] . ' "' . To::text($tt) . '"';
-        if (empty($m[1])) {
-            return '[' . $tt . '][link:' . $m[3] . $m[4] . ']';
-        }
-        return $m[0];
+        $ii = md5($m[3] . $m[4]) . '-' . str_replace('.', '-', microtime(true)); // Unique ID
+        $links .= "\n" . '[link:' . $ii . ']: ' . $url . $pp . '/' . To::url($m[3]) . $m[4] . ' "' . To::text($tt) . '"';
+        if (empty($m[1])) $m[1] = $tt;
+        return '[' . $m[1] . '][link:' . $ii . ']';
     }, $content) . "\n" . $links;
     $data['content'] = $content;
     return $data;

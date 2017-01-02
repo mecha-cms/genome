@@ -12,11 +12,10 @@ define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', rtrim(__DIR__, DS));
 
 define('DENT', '  '); // Default HTML indent
+define('N', "\n"); // Line break
 define('S', "\xA0"); // Non break space
 define('T', "\t"); // Tab
-define('N', "\n"); // Line break
-define('A', "\a"); // Beep!
-define('X', A); // Placeholder text
+define('X', "\x1A"); // Placeholder text
 
 define('SESSION', null);
 

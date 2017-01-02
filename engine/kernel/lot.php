@@ -1,6 +1,6 @@
 <?php
 
-class Seed extends Genome {
+class Lot extends Genome {
 
     public static $config = ['scope' => 'seed'];
 

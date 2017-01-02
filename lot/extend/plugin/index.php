@@ -2,8 +2,13 @@
 
 define('PLUGIN', __DIR__);
 
+// Force to load the `Plugin` class immediately …
+if (!class_exists('Plugin')) {
+    require PLUGIN . DS . 'engine' . DS . 'kernel' . DS . 'plugin.php';
+}
+
 $plugins = [];
-$seeds = Seed::get(null, []);
+$seeds = Lot::get(null, []);
 foreach (g(PLUGIN . DS . 'lot' . DS . 'asset' . DS . '*', '{index__,index,__index}.php') as $v) {
     $d = Path::D($v);
     $n = Path::N($v);
@@ -28,7 +33,7 @@ foreach ($plugins as $k => $v) {
         Language::set(From::yaml($l__ . $config->language . '.txt'));
         require $inc;
     }
-    if ($config->page_type === false) {
+    if ($config->type === false) {
         if ($inc = File::exist($f__ . '__index.php')) {
             Language::set(From::yaml($l__ . '__' . $config->language . '.txt'));
             require $inc;

@@ -63,7 +63,7 @@ Most of the default data are just an empty string or `null`, which can also be t
     'content' => "",
     'time' => File::T($path),
     'update' => File::T($path),
-    'kind' => [0], // ← default is `0`
+    'kind' => [0], ← default is `0`
     'slug' => '--',
     'state' => 'page'
 ]

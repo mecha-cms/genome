@@ -1,8 +1,8 @@
 <?php
 
 function fn_markdown_parse(&$input, $parser) {
-    $c = include __DIR__ . DS . 'lot' . DS . 'state' . DS . 'config.php';
-    foreach ($c as $k => $v) {
+    $state = Plugin::state(__DIR__);
+    foreach ($state as $k => $v) {
         $parser->{$k} = $v;
     }
     $input = $parser->text($input);

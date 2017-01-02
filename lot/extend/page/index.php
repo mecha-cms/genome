@@ -61,7 +61,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         ]
     ];
     $pages = $page = [];
-    Seed::set('page', new Page($page));
+    Lot::set('page', new Page($page));
     Config::set('page.title', new Anemon([$config->title], ' &#x2E31; '));
     $name = Path::B($folder);
     if ($file = File::exist([
@@ -85,7 +85,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $page = new Page($file);
         $chunk = $page->chunk($config->chunk);
         $sort = $page->sort($config->sort);
-        Seed::set('page', $page);
+        Lot::set('page', $page);
         Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x2E31; '));
         if (
             !File::exist($folder . DS . $name . '.page') &&
@@ -97,7 +97,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             if (empty($pages)) {
                 Shield::abort(['204/' . $path_alt, '404/' . $path_alt, '204', '404']);
             }
-            Seed::set([
+            Lot::set([
                 'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $pager, 'pager'),
                 'pages' => $pages
             ]);

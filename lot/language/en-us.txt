@@ -11,7 +11,7 @@
 action: Action
 actions: Actions
 
-anon: Anonymous
+anonymous: Anonymous
 
 archive: Archive
 archives: Archives

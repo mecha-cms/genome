@@ -1,0 +1,58 @@
+---
+title: Class `Plugin`
+description: Working with plugins.
+...
+
+> **Info:** This class is located in `lot\extend\plugin\engine\kernel` folder.
+
+### Version
+
+~~~ .xmp.php
+Plugin::version($id, $v = null);
+~~~
+
+Return the `version` property of `about.page` file in the current plugin folder or `0.0.0`:
+
+~~~ .php
+$test = Plugin::version('markdown');
+~~~
+
+### Info
+
+~~~ .xmp.php
+Plugin::info($id);
+~~~
+
+Return a page object of `about.page` file in the current plugin folder:
+
+~~~ .php
+$info = Plugin::info('markdown');
+~~~
+
+### Exist
+
+~~~ .xmp.php
+Plugin::exist($input, $fail = false);
+~~~
+
+Return the folder path of current plugin folder if exists:
+
+~~~ .php
+if ($path = Plugin::exist('markdown')) {
+    // do something with `$path` …
+}
+~~~
+
+### State
+
+~~~ .xmp.php
+Plugin::state($id, $key = null, $fail = false);
+~~~
+
+Return the stored plugin states if any, otherwise, return `$fail`:
+
+~~~ .php
+$state = Plugin::state('markdown');
+~~~
+
+[connect:../extension/plugin]
