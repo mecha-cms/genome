@@ -55,17 +55,15 @@ $test_1 = Form::select('o', [
 ], 1);
 
 $test_2 = Form::select('o', [
-    [
-        'Color' => [
-            '0.0' => 'red',
-            '0.1' => 'green',
-            '0.2' => 'blue'
-        ],
-        'Size' => [
-            '1.0' => 'small',
-            '1.1' => 'medium',
-            '1.2' => 'large'
-        ]
+    'Color' => [
+        '0.0' => 'red',
+        '0.1' => 'green',
+        '0.2' => 'blue'
+    ],
+    'Size' => [
+        '1.0' => 'small',
+        '1.1' => 'medium',
+        '1.2' => 'large'
     ]
 ], '1.1');
 ~~~
@@ -113,7 +111,7 @@ Result:
 $test = '<textarea name="x" placeholder="some text…">test value</textarea>';
 ~~~
 
-> All strings in the text area content and HTML attributes will be HTML encoded.
+> **Note:** All strings in the text area content and HTML attributes will be HTML encoded.
 
 > To disable the form field, prepend a `.` to the form name. For `<select>` elements, to disable some option fields, prepend a `.` to the array key in the option list.
 >

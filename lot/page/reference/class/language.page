@@ -20,11 +20,21 @@ Get language property:
 ### Static Call
 
 ~~~ .xmp.php
-Language::{$property}($);
+Language::{$property}($x = "");
 ~~~
 
 Get language property staticly:
 
 ~~~ .php
 echo Language::home();
+~~~
+
+Get language property dynamicly:
+
+~~~ .php
+echo $language->home;
+~~~
+
+~~~ .php
+echo $language->home();
 ~~~
