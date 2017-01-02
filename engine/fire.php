@@ -38,14 +38,16 @@ foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {
 
 asort($extends);
 
-r(EXTEND, array_keys($extends), function($f) use($seeds) {
-    extract($seeds);
-    $i18n = Path::D($f) . DS . 'lot' . DS . 'language';
+$extends = array_keys($extends);
+
+foreach ($extends as $extend) {
+    $f = EXTEND . DS . Path::D($extend);
+    $i18n = $f . DS . 'lot' . DS . 'language';
     if (!$l = File::exist($i18n . DS . $config->language . '.txt')) {
         $l = $i18n . DS . 'en-us.txt';
     }
     Language::set(From::yaml($l));
-    $f = Path::D($f) . DS . 'engine';
+    $f = $f . DS . 'engine';
     d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
         $f .= DS . 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
@@ -53,7 +55,9 @@ r(EXTEND, array_keys($extends), function($f) use($seeds) {
             require $f;
         }
     }, $seeds);
-}, $seeds);
+}
+
+r(EXTEND, $extends, null, $seeds);
 
 r(SHIELD . DS . $config->shield, '{index__,index,__index}.php', function($f) use($seeds) {
     $f = Path::D($f) . DS . 'engine';

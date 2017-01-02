@@ -25,18 +25,20 @@ abstract class Genome {
     // Add new method with `Genome::plug('foo')`
     public static function plug($kin, $fn) {
         self::$_[1][static::class][$kin . self::$_suffix] = $fn;
+        return true;
     }
 
     // Remove the added method with `Genome::unplug('foo')`
     public static function unplug($kin = null) {
-        if (!isset($kin)) {
-            self::$_ = [];
-        } else {
+        if (isset($kin)) {
             $c = static::class;
             $kin .= self::$_suffix;
             self::$_[0][$c][$kin] = 1;
             unset(self::$_[1][$c][$kin]);
+        } else {
+            self::$_ = [];
         }
+        return true;
     }
 
     // Call the added method with `Genome::foo()`

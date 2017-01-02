@@ -6,7 +6,7 @@ class Hook extends Genome {
 
     public static function set($id = null, $fn = null, $stack = null) {
         $c = static::class;
-        $stack = $stack ?: 10;
+        $stack = isset($stack) ? $stack : 10;
         if (!is_array($id)) {
             if (!isset(self::$lot[1][$c][$id])) {
                 self::$lot[1][$c][$id] = [];
@@ -27,7 +27,7 @@ class Hook extends Genome {
         if (!is_array($id)) {
             $c = static::class;
             if (isset($id)) {
-                self::$lot[0][$c][$id][$stack ?: 10] = isset(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : 1;
+                self::$lot[0][$c][$id][isset($stack) ? $stack : 10] = isset(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : 1;
                 if (isset(self::$lot[1][$c][$id])) {
                     if (isset($stack)) {
                         foreach (self::$lot[1][$c][$id] as $k => $v) {
@@ -57,10 +57,10 @@ class Hook extends Genome {
 
     public static function get($id = null, $fail = false) {
         $c = static::class;
-        if (!isset($id)) {
-            return !empty(self::$lot[1][$c]) ? self::$lot[1][$c] : $fail;
+        if (isset($id)) {
+            return !empty(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : $fail;
         }
-        return !empty(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : $fail;
+        return !empty(self::$lot[1][$c]) ? self::$lot[1][$c] : $fail;
     }
 
     public static function fire($id, $lot = null) {

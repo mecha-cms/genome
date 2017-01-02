@@ -1,7 +1,14 @@
 <?php
 
+$state = Plugin::state(__DIR__);
+
+Lot::set([
+    'state' => $state,
+    'parser' => new ParsedownExtraPlugin
+], __DIR__);
+
 function fn_markdown_parse(&$input, $parser) {
-    $state = Plugin::state(__DIR__);
+    extract(Lot::get(null, [], __DIR__));
     foreach ($state as $k => $v) {
         $parser->{$k} = $v;
     }
@@ -9,8 +16,8 @@ function fn_markdown_parse(&$input, $parser) {
 }
 
 function fn_markdown($data) {
+    extract(Lot::get(null, [], __DIR__));
     if (isset($data['type']) && $data['type'] === 'Markdown') {
-        $parser = new ParsedownExtraPlugin;
         fn_markdown_parse($data['title'], $parser);
         fn_markdown_parse($data['description'], $parser);
         fn_markdown_parse($data['content'], $parser);

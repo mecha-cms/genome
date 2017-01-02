@@ -8,7 +8,7 @@ class Extend extends Genome {
 
     public static function info($id) {
         global $config, $language;
-        // Check whether the localized "about" file is available
+        // Check whether the localized “about” file is available
         $f = EXTEND . DS . $id . DS;
         if (!$info = File::exist($f . 'about.' . $config->language . '.txt')) {
             $info = $f . 'about.txt';

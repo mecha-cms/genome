@@ -46,9 +46,7 @@ class Package extends Genome {
             $package = Path::N($this->open);
         }
         // Handling for `Package::take('foo/bar')->pack()`
-        if (!isset($target)) {
-            $target = Path::D($root) . DS . $package . '.zip';
-        } else {
+        if (isset($target)) {
             $target = To::path($target);
             // Handling for `Package::take('foo/bar')->pack('package.zip')`
             if (strpos($target, DS) === false) {
@@ -59,6 +57,8 @@ class Package extends Genome {
             if (is_dir($target)) {
                 $target .= DS . $package . '.zip';
             }
+        } else {
+            $target = Path::D($root) . DS . $package . '.zip';
         }
         // Delete the old package …
         File::open($old)->delete();
@@ -102,10 +102,10 @@ class Package extends Genome {
     }
 
     public function extractTo($target, $bucket = false) {
-        if (!isset($target)) {
-            $target = Path::D($this->open);
-        } else {
+        if (isset($target)) {
             $target = To::path($target);
+        } else {
+            $target = Path::D($this->open);
         }
         // Handling for `Package::take('file.zip')->extractTo('foo/bar', true)`
         if ($bucket === true) {

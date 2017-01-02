@@ -42,15 +42,7 @@ class Cookie extends Genome {
     }
 
     public static function reset($key = null) {
-        if (!isset($key)) {
-            $_COOKIE = [];
-            foreach (explode(';', isset($_SERVER['HTTP_COOKIE']) ? $_SERVER['HTTP_COOKIE'] : "") as $v) {
-                $c = explode('=', $v, 2);
-                $n = trim($c[0]);
-                setcookie($n, null, -1);
-                setcookie($n, null, -1, '/');
-            }
-        } else {
+        if (isset($key)) {
             if (strpos($key, Anemon::NS) !== false) {
                 $a = explode(Anemon::NS, $key);
                 if (isset($_COOKIE[$a[0]])) {
@@ -67,6 +59,14 @@ class Cookie extends Genome {
                 unset($_COOKIE[$key]);
                 setcookie($key, null, -1);
                 setcookie($key, null, -1, '/');
+            }
+        } else {
+            $_COOKIE = [];
+            foreach (explode(';', isset($_SERVER['HTTP_COOKIE']) ? $_SERVER['HTTP_COOKIE'] : "") as $v) {
+                $c = explode('=', $v, 2);
+                $n = trim($c[0]);
+                setcookie($n, null, -1);
+                setcookie($n, null, -1, '/');
             }
         }
     }

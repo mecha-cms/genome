@@ -38,7 +38,7 @@ class Shield extends Genome {
     public static function info($id = null) {
         global $config, $language;
         $id = $id ?: $config->shield;
-        // Check whether the localized "about" file is available
+        // Check whether the localized “about” file is available
         $f = SHIELD . DS . $id . DS;
         if (!$info = File::exist($f . 'about.' . $config->language . '.txt')) {
             $info = $f . 'about.txt';

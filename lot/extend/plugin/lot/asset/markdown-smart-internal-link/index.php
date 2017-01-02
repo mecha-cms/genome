@@ -8,7 +8,7 @@ function fn_markdown_smart_internal_link($data) {
     if (strpos($content, '[link:') === false) return $data;
     global $language, $url;
     $links = "";
-    $content = preg_replace_callback('#(?:\[(.*?)\])?\[link:(\.\./)*([a-z\d/-]+?)([?&\#].*?)?\]#', function($m) use(&$links, $language, $url) {
+    $content = preg_replace_callback('#(?:\[(.*?)\])?\[link:((?:\.{2}/)*)([a-z\d/-]+?)([?&\#].*?)?\]#', function($m) use(&$links, $language, $url) {
         // Remove the hook immediately to prevent infinity function nesting level
         // Because `Page::get()` normally will also trigger the `page.input` hook(s)
         Hook::reset('page.input', 'fn_markdown_smart_internal_link');

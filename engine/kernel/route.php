@@ -16,7 +16,7 @@ class Route extends Genome {
             if (!isset(self::$lot[0][$v])) {
                 self::$lot[1][$v] = [
                     'fn' => $fn,
-                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) ?: 10)) + $i),
+                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== null ? end($stack) : 10)) + $i),
                     'is' => ['pattern' => $pattern]
                 ];
                 $i += .1;
@@ -36,7 +36,7 @@ class Route extends Genome {
 
     public static function hook($id, $fn = null, $stack = null, $pattern = false) {
         $id = URL::short($id, false);
-        $stack = $stack ?: 10;
+        $stack = isset($stack) ? $stack : 10;
         if (!isset(self::$lot_o[1][$id])) {
             self::$lot_o[1][$id] = [];
         }
@@ -74,10 +74,10 @@ class Route extends Genome {
     }
 
     public static function get($id = null, $fail = false) {
-        if (!isset($id)) {
-            return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
+        if (isset($id)) {
+            return isset(self::$lot[1][$id]) ? self::$lot[1][$id] : $fail;
         }
-        return isset(self::$lot[1][$id]) ? self::$lot[1][$id] : $fail;
+        return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
     }
 
     public static function hooked($id = null, $stack = null, $fail = false) {

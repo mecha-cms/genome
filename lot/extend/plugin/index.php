@@ -2,11 +2,6 @@
 
 define('PLUGIN', __DIR__);
 
-// Force to load the `Plugin` class immediately …
-if (!class_exists('Plugin')) {
-    require PLUGIN . DS . 'engine' . DS . 'kernel' . DS . 'plugin.php';
-}
-
 $plugins = [];
 $seeds = Lot::get(null, []);
 foreach (g(PLUGIN . DS . 'lot' . DS . 'asset' . DS . '*', '{index__,index,__index}.php') as $v) {

@@ -15,11 +15,11 @@ class Request extends Genome {
 
     public static function any($kind, $key = null, $fail = "") {
         $data = self::alter($kind);
-        if (!isset($key)) {
-            return e(!empty($data) ? $data : $fail);
+        if (isset($key)) {
+            $o = e(Anemon::get($data, $key, $fail));
+            return $o === 0 || !empty($o) ? $o : $fail;
         }
-        $o = e(Anemon::get($data, $key, $fail));
-        return $o === 0 || !empty($o) ? $o : $fail;
+        return e(!empty($data) ? $data : $fail);
     }
 
     public static function get($key, $fail = "") {
