@@ -347,46 +347,46 @@ years: Years
 
 above: Above
 ago: Ago
-ago__: %s Ago
+ago__: %{0}% Ago
 all: All
-all__: All %s
+all__: All %{0}%
 as: As
 begin: Begin
 both: Both
-both__: Both %s
+both__: Both %{0}%
 bottom: Bottom
 by: By
-by__: By %s
+by__: By %{0}%
 current: Current
-current__: Current %s
+current__: Current %{0}%
 end: End
 finish: Finish
 first: First
-first__: First %s
+first__: First %{0}%
 from: From
 in: In
 last: Last
-last__: Last %s
+last__: Last %{0}%
 left: Left
 next: Next
-next__: Next %s
+next__: Next %{0}%
 none: None
 not: Not
-not__: Not %s
+not__: Not %{0}%
 of: Of
 on: On
 previous: Previous
-previous__: Previous %s
+previous__: Previous %{0}%
 right: Right
 start: Start
 to: To
 today: Today
 tomorrow: Tomorrow
-tomorrow__: Tomorrow %s
+tomorrow__: Tomorrow %{0}%
 top: Top
 under: Under
 yesterday: Yesterday
-yesterday__: Yesterday %s
+yesterday__: Yesterday %{0}%
 
 
 #. Action
@@ -688,12 +688,12 @@ _published: Unpublished
 #. Message
 #. -------
 
-message_avail: %s is available.
-message_exist: %s already exists.
+message_avail: %{0}% is available.
+message_exist: %{0}% already exists.
 
 # negation …
-_message_avail: %s is not available.
-_message_exist: %s does not exist.
+_message_avail: %{0}% is not available.
+_message_exist: %{0}% does not exist.
 
 
 

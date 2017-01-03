@@ -9,11 +9,25 @@ description: Internationalization.
 Language();
 ~~~
 
-Extract language files from the `lot\language` folder into object:
+Get language files from the `lot\language` folder then convert it into object:
 
 ~~~ .php
 $language = new Language;
 ~~~
+
+#### Set
+
+~~~ .xmp.php
+$language->foo = 'bar';
+~~~
+
+~~~ .xmp.php
+Language::set('foo', 'bar');
+~~~
+
+#### Get
+
+
 
 Get language property:
 

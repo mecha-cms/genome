@@ -6,15 +6,9 @@ class Request extends Genome {
         'session' => ['request' => 'mecha.request']
     ];
 
-    protected static function alter($kind) {
-        return Anemon::alter(strtolower($kind), [
-            'get' => isset($_GET) ? $_GET : [],
-            'post' => isset($_POST) ? $_POST : []
-        ], []);
-    }
-
-    public static function any($kind, $key = null, $fail = "") {
-        $data = self::alter($kind);
+    public static function any($id, $key = null, $fail = "") {
+        $data = $GLOBALS['_' . strtoupper($id)];
+        $data = isset($data) ? $data : [];
         if (isset($key)) {
             $o = e(Anemon::get($data, $key, $fail));
             return $o === 0 || !empty($o) ? $o : $fail;
@@ -22,17 +16,19 @@ class Request extends Genome {
         return e(!empty($data) ? $data : $fail);
     }
 
+    // `GET` request
     public static function get($key, $fail = "") {
-        return self::any('get', $key, $fail);
+        return self::any(__METHOD__, $key, $fail);
     }
 
+    // `POST` request
     public static function post($key, $fail = "") {
-        return self::any('post', $key, $fail);
+        return self::any(__METHOD__, $key, $fail);
     }
 
     // save state
-    public static function save($kind, $k = null, $v = "") {
-        $data = self::alter($kind);
+    public static function save($id, $k = null, $v = "") {
+        $data = self::any($id);
         if (!is_array($k)) {
             $k = [$k => $v];
         }
@@ -43,8 +39,12 @@ class Request extends Genome {
     // restore state
     public static function restore($k = null, $fail = "") {
         $memo = Session::get(self::$config['session']['request'], []);
-        self::delete($k);
-        return isset($k) ? Anemon::get($memo, $k, $fail) : $memo;
+        if (isset($k)) {
+            self::delete($k);
+            return Anemon::get($memo, $k, $fail);
+        }
+        self::delete();
+        return $memo;
     }
 
     // delete state

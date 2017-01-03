@@ -143,8 +143,8 @@ class File extends Genome {
     }
 
     // Export value to a PHP file
-    public static function export($data, $format = '<?php return %s;') {
-        self::$content = sprintf($format, z($data));
+    public static function export($data, $format = '<?php return %{0}%;') {
+        self::$content = __replace__($format, z($data));
         return new static;
     }
 
@@ -216,7 +216,7 @@ class File extends Genome {
     }
 
     // Copy the file/folder to …
-    public static function copyTo($target = ROOT, $s = '.%s') {
+    public static function copyTo($target = ROOT, $s = '.%{0}%') {
         $i = 1;
         if (file_exists(self::$path)) {
             foreach ((array) $target as $v) {
@@ -235,7 +235,7 @@ class File extends Genome {
                     copy(self::$path, $v);
                     $i = 1;
                 } else {
-                    $v = preg_replace('#\.([a-z\d]+)$#', sprintf($s, $i) . '.$1', $v);
+                    $v = preg_replace('#\.([a-z\d]+)$#', __replace__($s, $i) . '.$1', $v);
                     copy(self::$path, $v);
                     ++$i;
                 }

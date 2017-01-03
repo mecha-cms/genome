@@ -8,15 +8,15 @@ class Message extends Genome {
     public static $config = [
         'message' => [
             0 => 'p',
-            1 => '$2$s',
+            1 => '%{1}%',
             2 => [
-                'classes' => ['container', 'block', 'message', 'message-%1$s']
+                'classes' => ['container', 'block', 'message', 'message-%{0}%']
             ],
             3 => 1 // dent
         ],
         'messages' => [
             0 => 'div',
-            1 => '%1$s',
+            1 => '%{0}%',
             2 => [
                 'classes' => ['container', 'block', 'messages', 'p']
             ]
@@ -32,7 +32,7 @@ class Message extends Genome {
         if ($count === 1) {
             self::set('default', $kin);
         } else {
-            Session::set(self::$id, Session::get(self::$id, "") . sprintf(call_user_func_array('HTML::unite', self::$config['message']), $kin, $text));
+            Session::set(self::$id, Session::get(self::$id, "") . __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, $text]));
         }
         return new static;
     }
@@ -47,7 +47,7 @@ class Message extends Genome {
     }
 
     public static function get($session_x = true) {
-        $output = Session::get(self::$id, "") !== "" ? sprintf(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : "";
+        $output = Session::get(self::$id, "") !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : "";
         if ($session_x) self::reset();
         return $output;
     }

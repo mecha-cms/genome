@@ -18,7 +18,7 @@ __test__($foo, $bar, $baz);
 ### Format
 
 ~~~ .xmp.php
-__format__($s, $x = '\n', $d = '#', $r = true);
+__format__($s, $x = "\n", $d = '#', $r = true);
 ~~~
 
 Create regular expression pattern from a string contains some [wildcards](https://en.wikipedia.org/wiki/Wildcard_character "Wildcard Characters – Wikipedia"):
@@ -49,6 +49,14 @@ This function will return a regular expression string without the delimiters:
 ~~~ .php
 $pattern = 'lorem ([^\n]+) ipsum (\d+) dolor \# sit amet';
 ~~~
+
+### Replace
+
+~~~ .xmp.php
+__replace__($s, $x = "\n", $r = true);
+~~~
+
+TODO
 
 ### Is Anemon
 

@@ -78,7 +78,7 @@ function __test__(...$a) {
     }
 }
 
-function __format__($s = "", $x = '\n', $d = '#', $r = true) {
+function __format__($s, $x = "\n", $d = '#', $r = true) {
     if (!$s || strpos($s, '%') === false) return $s;
     $r = $r ? "" : '?';
     // group: `%{foo,bar,baz}%`
@@ -103,6 +103,20 @@ function __format__($s = "", $x = '\n', $d = '#', $r = true) {
         '([\s\S]+)' . $r,
         ','
     ], x($s, $d)); // return a regular expression string without the delimiter(s)
+}
+
+function __replace__($s, $a = [], $x = "\n", $r = true) {
+    if (!$s || strpos($s, '%') === false) return $s;
+    $a = (array) $a;
+    foreach ($a as $k => $v) {
+        $v = s($v);
+        if (strpos($s, '%{' . $k . '}%') !== false) {
+            $s = str_replace('%{' . $k . '}%', $v, $s);
+            continue;
+        }
+        // TODO: replace pattern(s) as in `__format__` function
+    }
+    return $s;
 }
 
 // Convert class name to file name

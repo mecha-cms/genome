@@ -8,13 +8,9 @@ By default, a block syntax can be defined as follow. It uses `‌[‌[‌` and `
  - Void blocks → `‌[‌[block]‌]‌` or `‌[‌[‌block‌/‌]‌]‌`
  - Container blocks → `‌[‌[‌block‌]‌]content[‌[‌/‌block‌]‌]`
 
-Block attributes syntax are the same as normal HTML attributes syntax.
+Block attributes syntax are same with normal HTML attributes syntax.
 
 Blocks are configurable. Even, you can create your own block markup by editing the configuration file. Go to `lot\extend\block\lot\state\config.php` then search for the `union` part that looks like this:
-
-~~~ .xmp.no-highlight
-[‌[‌block‌]‌]content[‌[‌/‌block‌]‌]
-~~~
 
 ~~~ .php
 1 => [
@@ -25,9 +21,12 @@ Blocks are configurable. Even, you can create your own block markup by editing t
 ]
 ~~~
 
-The `0` parts are configuration for the block tags. The `1` parts are configuration for the block tags’ attributes. The `2` parts are for the block comments markup. The `3` parts are for the escape marker.
+ - The `0` parts are configuration for the block tags.
+ - The `1` parts are configuration for the block tags’ attributes.
+ - The `2` parts are for the block comments markup.
+ - The `3` parts are for the escape marker.
 
-The following is an example of configuring block patterns as regular HTML (custom HTML tags):
+Following is an example of configuring block patterns as regular HTML (custom HTML tags):
 
 ~~~ .xmp.no-highlight
 <‌block‌>content<‌/‌block‌>

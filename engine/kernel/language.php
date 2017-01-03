@@ -2,25 +2,25 @@
 
 class Language extends Config {
 
-    public static function set($a, $b = null) {
-        if (!__is_anemon__($a)) {
-            return parent::set('__i18n.' . $a, $b);
+    public static function set($key, $value = null) {
+        if (!__is_anemon__($key)) {
+            return parent::set('__i18n.' . $key, $value);
         }
-        foreach ($a as $k => $v) {
-            $aa['__i18n.' . $k] = $v;
+        foreach ($key as $k => $v) {
+            $keys['__i18n.' . $k] = $v;
         }
-        return parent::set(isset($aa) ? $aa : [], $b);
+        return parent::set(isset($keys) ? $keys : [], $value);
     }
 
-    public static function get($k = null, $a = [], $fail = null) {
-        $a = array_merge($a, [""]);
-        $fail = $fail ?: $k;
-        if (!isset($k)) return parent::get('__i18n', $fail);
-        $s = parent::get('__i18n.' . $k, $fail);
-        if (strpos($s, '%') !== 0 && u($a[0]) !== $a[0]) {
-            $a[0] = l($a[0]);
+    public static function get($key = null, $vars = [], $fail = null) {
+        $vars = array_merge($vars, [""]);
+        $fail = $fail ?: $key;
+        if (!isset($key)) return parent::get('__i18n', $fail);
+        $s = parent::get('__i18n.' . $key, $fail);
+        if (strpos($s, '%') !== 0 && u($vars[0]) !== $vars[0]) {
+            $vars[0] = l($vars[0]);
         }
-        return vsprintf($s, $a);
+        return __replace__($s, $vars);
     }
 
     public static function __callStatic($kin, $lot) {
@@ -28,7 +28,7 @@ class Language extends Config {
     }
 
     public function __call($key, $lot) {
-        return vsprintf(parent::get('__i18n.' . $key, $key), array_merge($lot, [""]));
+        return __replace__(parent::get('__i18n.' . $key, $key), array_merge($lot, [""]));
     }
 
     public function __get($key) {
