@@ -28,7 +28,7 @@ Lorem ipsum [‌[‌mark‌]‌]dolor[‌[‌/‌mark‌]‌] `‌[‌[‌mark�
 … into this:
 
 ~~~ .php
-Lorem ipsum <‌mark‌>dolor<‌/‌mark‌> `‌<‌mark‌>‌`sit`‌<‌/‌mark‌>‌` amet.
+Lorem ipsum <‌mark‌>dolor<‌/‌mark‌> [‌[‌mark‌]‌]sit[‌[‌/‌mark‌]‌] amet.
 ~~~
 
 ### Get
