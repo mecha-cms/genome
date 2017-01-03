@@ -25,7 +25,7 @@ Constant | Description | Example
 `HTML_WISE_I` | Return inline HTML tag names allowed to be written in the page editor. | `b,code,i,u`
 `HTML_WISE_B` | Return block HTML tag names allowed to be written in the page editor. | `h1,h2,h3,h4,h5,h6,p`
 `HTML_WISE` | Combination of `HTML_WISE_I` and `HTML_WISE_B` | `b,code,i,u,h1,h2,h3,h4,h5,h6,p`
-`DATE_WISE` | Return the sandard PHP data format string. | `Y-m-d H:i:s`
+`DATE_WISE` | Return the sandard PHP date format string. | `Y-m-d H:i:s`
 `FONT_X` | Return font file extensions. | `eot,otf,svg,ttf,woff,woff2`
 `IMAGE_X` | Return image file extensions. | `bmp,cur,gif,ico,jpeg,jpg,png,svg`
 `MEDIA_X` | Return resource file extensions. | `3gp,avi,flv,mov,mp3,mp4,ogg,swf,wav`
