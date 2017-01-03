@@ -11,7 +11,7 @@ Constant | Description | Example
 `S` | Return a non–breaking space. | <mark><code>&nbsp;</code></mark>
 `T` | Return a tab character. | `\t`
 `N` | Return a new line character. | `\n`
-`A` | Return a placeholder character. | ␚
+`X` | Return a placeholder character. | ␚
 `SESSION` | Return the custom `session_save_path` path. | `.\www\__session`
 `ENGINE` | Return the engine folder path. | `.\www\engine`
 `LOT` | Return the lot folder path. | `.\www\lot`
