@@ -12,9 +12,9 @@ function fn_minify($pattern, $input) {
 }
 
 function fn_minify_css($input, $comment = 2, $quote = 2) {
-    if (!is_string($input) || !$input = trim($input)) return $input;
+    if (!is_string($input) || !$input = n(trim($input))) return $input;
     $output = $prev = "";
-    foreach (fn_minify([Minify::CSS_COMMENT, Minify::STRING], $input) as $part) {
+    foreach (fn_minify([Minify::COMMENT_CSS, Minify::STRING], $input) as $part) {
         if (!trim($part)) continue;
         if ($comment !== 1 && strpos($part, '/*') === 0 && substr($part, -2) === '*/') {
             if (
@@ -115,9 +115,10 @@ function fn_minify_css_union($input) {
 }
 
 function fn_minify_html($input, $comment = 2, $quote = 1) {
-    if (!is_string($input) || !$input = trim($input)) return $input;
+    if (!is_string($input) || !$input = n(trim($input))) return $input;
     $output = "";
-    foreach (fn_minify([Minify::HTML_COMMENT, Minify::HTML_KEEP, Minify::HTML], $input) as $part) {
+    foreach (fn_minify([Minify::COMMENT_HTML, Minify::HTML_KEEP, Minify::HTML], $input) as $part) {
+        if ($part === "\n") continue;
         if ($part !== ' ' && !trim($part) || $comment !== 1 && strpos($part, '<!--') === 0) {
             // Detect IE conditional comment(s) by its closing tag …
             if ($comment === 2 && substr($part, -12) === '<![endif]-->') {
@@ -183,9 +184,9 @@ function fn_minify_html_union_attr($input) {
 }
 
 function fn_minify_js($input, $comment = 2, $quote = 2) {
-    if (!is_string($input) || !$input = trim($input)) return $input;
+    if (!is_string($input) || !$input = n(trim($input))) return $input;
     $output = $prev = "";
-    foreach (fn_minify([Minify::CSS_COMMENT, Minify::STRING, Minify::JS_COMMENT, Minify::JS_PATTERN], $input) as $part) {
+    foreach (fn_minify([Minify::COMMENT_CSS, Minify::STRING, Minify::COMMENT_JS, Minify::PATTERN_JS], $input) as $part) {
         if (!trim($part)) continue;
         if ($comment !== 1 && (
             substr($part, 0, 2) === '//' || // Remove inline comment(s)

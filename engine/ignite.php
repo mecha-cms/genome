@@ -871,8 +871,8 @@ function l($x) {
 
 function m() {}
 
-function n($x, $t = DENT) {
-    // Tab to 2 space(s), line–break to `\n`
+function n($x, $t = '    ') {
+    // Tab to 4 space(s), line–break to `\n`
     return str_replace(["\t", "\r\n", "\r"], [$t, N, N], $x);
 }
 

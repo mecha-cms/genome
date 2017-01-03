@@ -22,7 +22,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     $i = 0;
     $output = $data = [];
     // Normalize white–space(s)
-    $input = n($input);
+    $input = n($input, $in);
     // Save `\: ` as `\x1A`
     $input = str_replace('\\' . $s[2], X, $input);
     $len = strlen($in);
