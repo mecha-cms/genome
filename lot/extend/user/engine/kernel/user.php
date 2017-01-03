@@ -2,7 +2,7 @@
 
 class User extends Genome {
 
-    const ID = '#';
+    const ID = '@';
 
     public static function read($id, $lot = [], $fail = false) {
         global $url;

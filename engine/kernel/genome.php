@@ -44,7 +44,7 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot) {
         $c = static::class;
-        $kin_ = ($kin .= self::$_suffix);
+        $kin_ = $kin . self::$_suffix;
         if (method_exists($c, $kin_)) {
             return call_user_func_array('self::' . $kin_, $lot);
         }

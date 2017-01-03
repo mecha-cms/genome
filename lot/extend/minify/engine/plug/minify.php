@@ -142,13 +142,33 @@ function fn_minify_html_union($input, $quote) {
         strpos($input, "\n") === false &&
         strpos($input, "\t") === false
     ) return $input;
-    return preg_replace_callback('#<\s*([^\/\s]+)\s*(?:>|(\s[^<>]+?)\s*>)#', function($m) use($quote) {
+    $url = new URL;
+    return preg_replace_callback('#<\s*([^\/\s]+)\s*(?:>|(\s[^<>]+?)\s*>)#', function($m) use($quote, $url) {
         if (isset($m[2])) {
-            // Minify inline CSS declaration(s)
+            // Minify inline CSS(s)
             if (stripos($m[2], ' style=') !== false) {
                 $m[2] = preg_replace_callback('#( style=)([\'"]?)(.*?)\2#i', function($m) {
                     return $m[1] . $m[2] . fn_minify_css($m[3]) . $m[2];
                 }, $m[2]);
+            }
+            // Minify URL(s)
+            if (strpos($m[2], '://') !== false) {
+                $host = $url->protocol . $url->host;
+                $m[2] = str_replace([
+                    $host . '/',
+                    $host . '?',
+                    $host . '&',
+                    $host . '#',
+                    $host . '"',
+                    $host . "'"
+                ], [
+                    '/',
+                    '?',
+                    '&',
+                    '#',
+                    '"',
+                    "'"
+                ], $m[2]);
             }
             $a = 'a(sync|uto(focus|play))|c(hecked|ontrols)|d(efer|isabled)|hidden|ismap|loop|multiple|open|re(adonly|quired)|s((cop|elect)ed|pellcheck)';
             $a = '<' . $m[1] . preg_replace([

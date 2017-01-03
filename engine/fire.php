@@ -1,9 +1,9 @@
 <?php
 
 // normalize line–break
-$gpc = array(&$_GET, &$_POST, &$_REQUEST, &$_COOKIE);
-array_walk_recursive($gpc, function(&$value) {
-    $value = str_replace(array("\r\n", "\r"), "\n", $value);
+$vars = [&$_GET, &$_POST, &$_REQUEST, &$_COOKIE];
+array_walk_recursive($vars, function(&$v) {
+    $v = str_replace(["\r\n", "\r"], "\n", $v);
 });
 
 d(ENGINE . DS . 'kernel', function($w, $n) {
@@ -18,18 +18,21 @@ File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X .
 Session::ignite();
 Config::ignite();
 
+$url = new URL;
+
 $seeds = [
     'config' => new Config,
     'date' => new Date,
     'language' => new Language,
-    'url' => new URL
+    'url' => $url,
+    'u_r_l' => $url
 ];
-
-// set default date time zone
-Date::zone($seeds['config']->zone);
 
 // plant and extract …
 extract(Lot::set($seeds)->get(null, []));
+
+// set default date time zone
+Date::zone($config->zone);
 
 $extends = [];
 foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {

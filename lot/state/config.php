@@ -5,9 +5,7 @@ $time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time();
 return [
     'zone' => 'Asia/Jakarta',
     'direction' => 'ltr',
-    'directions' => ['ltr', 'rtl'],
     'language' => 'en-us',
-    'languages' => ['en-us', 'id-id'],
     'charset' => 'utf-8',
     'title' => 'Site Title',
     'description' => 'Site description.',
@@ -25,10 +23,9 @@ return [
         'title' => "",
         'description' => "",
         'type' => "",
-        'author' => '#ta-tau-taufik',
+        'author' => '@ta-tau-taufik',
         'link' => null,
         'content' => ""
     ],
-    'shield' => 'document',
-    'shields' => ['document', 'journal']
+    'shield' => 'document'
 ];
