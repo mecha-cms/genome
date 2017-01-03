@@ -3,11 +3,12 @@
 $time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time();
 
 return [
-    'charset' => 'utf-8',
+    'zone' => 'Asia/Jakarta',
     'direction' => 'ltr',
     'directions' => ['ltr', 'rtl'],
     'language' => 'en-us',
     'languages' => ['en-us', 'id-id'],
+    'charset' => 'utf-8',
     'title' => 'Site Title',
     'description' => 'Site description.',
     'slug' => 'index',
@@ -29,6 +30,5 @@ return [
         'content' => ""
     ],
     'shield' => 'document',
-    'shields' => ['document', 'journal'],
-    'TZ' => 'Asia/Jakarta'
+    'shields' => ['document', 'journal']
 ];

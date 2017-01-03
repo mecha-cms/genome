@@ -6,13 +6,13 @@ description: Working with date and time.
 ### Time Zone
 
 ~~~ .xmp.php
-Date::TZ($zone = null);
+Date::zone($zone = null);
 ~~~
 
 Set default date time zone:
 
 ~~~ .php
-Date::TZ('Asia/Jakarta');
+Date::zone('Asia/Jakarta');
 ~~~
 
 Find the complete list of time zones supported by PHP [here](http://php.net/manual/en/timezones.php "List of Supported Timezones").
@@ -20,7 +20,7 @@ Find the complete list of time zones supported by PHP [here](http://php.net/manu
 Get the current time zone:
 
 ~~~ .php
-echo Date::TZ();
+echo Date::zone();
 ~~~
 
 ### Format

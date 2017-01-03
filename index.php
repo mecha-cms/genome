@@ -23,7 +23,10 @@ define('ENGINE', ROOT . DS . 'engine');
 define('LOT', ROOT . DS . 'lot');
 
 foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
-    define(strtoupper(str_replace(array('-', '.'), array('_', '__'), basename($lot))), $lot);
+    $s = strtoupper(str_replace(['-', '.'], ['_', '__'], basename($lot)));
+    if (!defined($s)) {
+        define($s, $lot);
+    }
 }
 
 // Common HTML tag(s) allowed to be written in the form field
@@ -39,7 +42,7 @@ define('FONT_X', 'eot,otf,svg,ttf,woff,woff2');
 define('IMAGE_X', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');
 define('MEDIA_X', '3gp,avi,flv,mkv,mov,mp3,mp4,m4a,m4v,ogg,swf,wav,wma');
 define('PACKAGE_X', 'gz,iso,rar,tar,zip,zipx');
-define('SCRIPT_X', 'archive,cache,css,data,draft,html,js,json,log,php,post,txt,xml');
+define('SCRIPT_X', 'archive,cache,css,data,draft,html,js,json,log,page,php,stack,txt,xml');
 
 require ENGINE . DS . 'ignite.php';
 require ENGINE . DS . 'fire.php';

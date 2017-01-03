@@ -2,29 +2,29 @@
 
 class Date extends Genome {
 
-    public static $TZ = false;
-    public static $formats = [];
+    public static $zone = false;
+    public static $format = [];
 
-    public static function TZ($zone = null) {
-        if (!isset($zone)) return self::$TZ;
-        self::$TZ = $zone;
+    public static function zone($zone = null) {
+        if (!isset($zone)) return self::$zone;
+        self::$zone = $zone;
         return date_default_timezone_set($zone);
     }
 
     public static function set($key = null, $fn = null) {
         if (isset($key)) {
-            self::$formats[$key] = $fn;
+            self::$format[$key] = $fn;
         }
-        return self::$formats;
+        return self::$format;
     }
 
     public static function reset($key = null) {
         if (isset($key)) {
-            unset(self::$formats[$key]);
+            unset(self::$format[$key]);
         } else {
-            self::$formats = [];
+            self::$format = [];
         }
-        return self::$formats;
+        return self::$format;
     }
 
     protected $date = "";
@@ -43,7 +43,7 @@ class Date extends Genome {
     }
 
     public function extract($key = null, $fail = false) {
-        global $config, $language;
+        global $language;
         $months_long = $language->months_long;
         $days_long = $language->days_long;
         $months_short = $language->months_short;
@@ -92,8 +92,8 @@ class Date extends Genome {
             'F3' => $hour_24 . ':' . $minute,
             'F4' => $hour_12 . ':' . $minute . ' ' . $AM_PM
         ];
-        if (!empty(self::$formats)) {
-            foreach (self::$formats as $k => $v) {
+        if (!empty(self::$format)) {
+            foreach (self::$format as $k => $v) {
                 if (!is_callable($v)) continue;
                 $output[$k] = call_user_func($v, $output, $language);
             }
@@ -102,7 +102,7 @@ class Date extends Genome {
     }
 
     public function ago($key = null, $fail = false, $compact = true) {
-        $language = new Language;
+        global $language;
         $date = new DateTime();
         $date->setTimestamp((int) $this->format('U'));
         $interval = $date->diff(new DateTime('now'));

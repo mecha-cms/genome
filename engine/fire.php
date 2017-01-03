@@ -26,7 +26,7 @@ $seeds = [
 ];
 
 // set default date time zone
-Date::TZ($seeds['config']->TZ);
+Date::zone($seeds['config']->zone);
 
 // plant and extract …
 extract(Lot::set($seeds)->get(null, []));
