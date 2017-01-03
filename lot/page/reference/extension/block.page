@@ -42,7 +42,7 @@ The following is an example of configuring block patterns as regular HTML (custo
 ]
 ~~~
 
-As [**WordPress**](https://developer.wordpress.org/reference/functions/do_shortcode "do_shortcode() | Function | WordPress Developer Resources") _shortcodes_:
+As [WordPress](https://developer.wordpress.org/reference/functions/do_shortcode "do_shortcode() | Function | WordPress Developer Resources") _shortcodes_:
 
 ~~~ .xmp.no-highlight
 [‌block‌]content[‌/‌block‌]
@@ -53,6 +53,21 @@ As [**WordPress**](https://developer.wordpress.org/reference/functions/do_shortc
     0 => ['[‌', '‌]', '‌/‌'],
     1 => ['=', '"', '"', ' '],
     2 => ['[‌!--', '--‌]'],
+    3 => ['`', '`']
+]
+~~~
+
+As [Twig](http://twig.sensiolabs.org/doc/tags/embed.html "embed - Documentation - Twig - The flexible, fast, and secure PHP template engine") embed code:
+
+~~~ .xmp.no-highlight
+{‌%‌ block ‌%‌}content{‌%‌ endblock ‌%‌}
+~~~
+
+~~~ .php
+1 => [
+    0 => ['{‌%‌ ', ' ‌%‌}', '‌end‌'],
+    1 => ['=', '"', '"', ' '],
+    2 => ['{‌# ', ' #‌}'],
     3 => ['`', '`']
 ]
 ~~~
