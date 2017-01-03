@@ -132,7 +132,9 @@ To::plug('anemon', function($input) {
 });
 
 To::plug('yaml', function(...$lot) {
-    if (!__is_anemon__($lot[0])) return s($lot[0]);
+    if (!__is_anemon__($lot[0])) {
+        return s($lot[0]);
+    }
     if (Is::path($lot[0], true)) {
         $lot[0] = include $lot[0];
     }

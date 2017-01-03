@@ -12,7 +12,9 @@ From::plug('base64', function($input) {
 });
 
 function __from_yaml__($input, $c = [], $in = '  ') {
-    if (!is_string($input)) return a($input);
+    if (!is_string($input)) {
+        return a($input);
+    }
     if (!trim($input)) return [];
     $s = Page::$v;
     $q = ['"(?:[^"\\\]|\\\.)*"', '\'(?:[^\'\\\]|\\\.)*\''];
@@ -98,7 +100,9 @@ function __from_yaml__($input, $c = [], $in = '  ') {
 }
 
 From::plug('yaml', function(...$lot) {
-    if (__is_anemon__($lot[0])) return a($lot[0]);
+    if (__is_anemon__($lot[0])) {
+        return a($lot[0]);
+    }
     if (Is::path($lot[0], true)) {
         $lot[0] = file_get_contents($lot[0]);
     }

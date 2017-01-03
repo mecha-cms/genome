@@ -4,6 +4,7 @@ $state = Extend::state(__DIR__);
 
 Lot::set([
     'ue' => $state['union'][1][0],
+    'ux' => $state['union'][1][3],
     'uid' => uniqid()
 ], __DIR__);
 
@@ -29,10 +30,10 @@ function fn_block_x($data) {
         return $data;
     }
     $content = $data['content'];
-    if (strpos($content, '`' . $ue[0]) === false) {
+    if (strpos($content, $ux[0] . $ue[0]) === false) {
         return $data;
     }
-    $data['content'] = str_replace(['`' . $ue[0], $ue[1] . '`'], [X . $uid, $uid . X], $content);
+    $data['content'] = str_replace([$ux[0] . $ue[0], $ue[1] . $ux[1]], [X . $uid, $uid . X], $content);
     return $data;
 }
 

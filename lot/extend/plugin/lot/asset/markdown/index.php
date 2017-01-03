@@ -4,23 +4,22 @@ $state = Plugin::state(__DIR__);
 
 Lot::set([
     'state' => $state,
-    'parser' => new ParsedownExtraPlugin
+    'slot' => new ParsedownExtraPlugin
 ], __DIR__);
 
-function fn_markdown_parse(&$input, $parser) {
+function fn_markdown_parse(&$input) {
     extract(Lot::get(null, [], __DIR__));
     foreach ($state as $k => $v) {
-        $parser->{$k} = $v;
+        $slot->{$k} = $v;
     }
-    $input = $parser->text($input);
+    $input = $slot->text($input);
 }
 
 function fn_markdown($data) {
-    extract(Lot::get(null, [], __DIR__));
     if (isset($data['type']) && $data['type'] === 'Markdown') {
-        fn_markdown_parse($data['title'], $parser);
-        fn_markdown_parse($data['description'], $parser);
-        fn_markdown_parse($data['content'], $parser);
+        fn_markdown_parse($data['title']);
+        fn_markdown_parse($data['description']);
+        fn_markdown_parse($data['content']);
         $data['title'] = t($data['title'], '<p>', '</p>');
     }
     return $data;

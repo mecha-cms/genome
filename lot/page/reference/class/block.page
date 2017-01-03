@@ -22,13 +22,13 @@ Block::set('mark', function($content) {
 The code above will parse this page content:
 
 ~~~ .php
-Lorem ipsum [[mark]]dolor[[/mark]] `‌[[mark]]‌`sit`‌[[/mark]]‌` amet.
+Lorem ipsum [‌[‌mark‌]‌]dolor[‌[‌/‌mark‌]‌] `‌[‌[‌mark‌]‌]‌`sit`‌[‌[‌/‌mark‌]‌]‌` amet.
 ~~~
 
 … into this:
 
 ~~~ .php
-Lorem ipsum <mark>dolor</mark> `‌<mark>‌`sit`‌</mark>‌` amet.
+Lorem ipsum <‌mark‌>dolor<‌/‌mark‌> `‌<‌mark‌>‌`sit`‌<‌/‌mark‌>‌` amet.
 ~~~
 
 ### Get
@@ -80,13 +80,13 @@ Block::set('mark', function($content) {
 The code above will parse this page content:
 
 ~~~ .php
-Lorem [[mark]]ipsum[[/mark]] [[mark color="#f00"]]dolor[[/mark]] `‌[[mark]]‌`sit`‌[[/mark]]‌` `‌[[mark color="#f00"]]‌`amet`‌[[/mark]]‌`.
+Lorem [‌[‌mark‌]‌]ipsum[‌[‌/‌mark‌]‌] [‌[‌mark color="#f00"‌]‌]dolor[‌[‌/‌mark‌]‌] `‌[‌[‌mark‌]‌]‌`sit`‌[‌[‌/‌mark‌]‌]‌` `‌[‌[‌mark color="#f00"‌]‌]‌`amet`‌[‌[‌/‌mark‌]‌]‌`.
 ~~~
 
 … into this:
 
 ~~~ .php
-Lorem <mark>ipsum</mark> <mark style="background-color:#f00;">dolor</mark> [[mark]]sit[[/mark]] [[mark color="#f00"]]amet[[/mark]].
+Lorem <‌mark‌>ipsum<‌/‌mark‌> <‌mark style="background-color:#f00;"‌>dolor<‌/‌mark‌> [‌[‌mark‌]‌]sit[‌[‌/‌mark‌]‌] [‌[‌mark color="#f00"‌]‌]amet[‌[‌/‌mark‌]‌].
 ~~~
 
 [connect:../extension/block]

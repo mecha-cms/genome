@@ -178,14 +178,14 @@ kind: [1,2,3,11]
 >      │   └── time.data
 >      └── page-slug.page
 > ~~~
-
-> **Info:** The default [shield][link:shield] uses `slug` to set the `$key` value in the `sort()` method of [`Anemon` class][link:../reference/class/anemon#reference:order], and they are sorted ascending. To sort the page listing descending by time, go to `lot\shield\document\state\config.php` then replace the `sort` value like this:
 >
-> ~~~ .php
-> return [
->     // sort descending by the `time` field
->     'sort' => [-1, 'time']
-> ];
-> ~~~
+> > **Info:** The default [shield][link:shield] uses `slug` to set the `$key` value in the `sort()` method of [`Anemon` class][link:../reference/class/anemon#reference:order], and they are sorted ascending. To sort the page listing descending by time, go to `lot\shield\document\state\config.php` then replace the `sort` value like this:
+> >
+> > ~~~ .php
+> > return [
+> >     // sort descending by the `time` field
+> >     'sort' => [-1, 'time']
+> > ];
+> > ~~~
 
 _To be continued…_

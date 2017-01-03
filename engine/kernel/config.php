@@ -9,7 +9,7 @@ class Config extends Genome {
         if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.txt')) {
             $f = LANGUAGE . DS . 'en-us.txt';
         }
-        $a['__i18n'] = From::yaml(File::open($f)->read(""));
+        $a['__i18n'] = From::yaml($f);
         return (self::$bucket = $a);
     }
 

@@ -43,16 +43,19 @@ class Block extends Genome {
             return $content;
         }
         // no `[[id]]` and `[[id/]]` character(s) found, skip …
-        if (strpos($content, $ueo . $id . $uec) === false && strpos($content, $ueo . $id . $ues . $uec) === false) {
+        if (
+            strpos($content, $ueo . $id . $uec) === false &&
+            strpos($content, $ueo . $id . $ues . $uec) === false
+        ) {
             return $content;
         }
-        // `[[id]]content[[/id]]`
         $id_end = explode(Anemon::NS, $id)[0];
         $id_end = $strict ? $id_end : $id_end . '(?:' . $a_x . '[^' . $a_x . $uas_x . ']+)*';
-        $block = $ueo_x . $id . '(' . $uas_x . '.*?)?' . $uec_x . '[\s\S]*?' . $ueo_x . $ues_x . $id_end . $uec_x;
+        // `[[id]]content[[/id]]`
+        $a = $ueo_x . $id . '(' . $uas_x . '.*?)?' . $uec_x . '[\s\S]*?' . $ueo_x . $ues_x . $id_end . $uec_x;
         // `[[id]]` or `[[id/]]`
-        $void = $ueo_x . $id . '(' . $uas_x . '.*?)?' . $ues_x . $uec_x;
-        return preg_replace_callback($d . $block . '|' . $void . $d, function($m) use($state, $fn) {
+        $b = $ueo_x . $id . '(' . $uas_x . '.*?)?' . $ues_x . $uec_x;
+        return preg_replace_callback($d . $a . '|' . $b . $d, function($m) use($state, $fn) {
             $data = (new Union($state['union']))->apart($m[0]);
             array_shift($data); // remove “node name” data
             return call_user_func_array($fn, $data);
