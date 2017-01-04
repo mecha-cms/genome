@@ -64,8 +64,7 @@ class Date extends Genome {
         $month_short = $months_short[(int) $month - 1];
         $day_long = $days_long[(int) $d];
         $day_short = $days_short[(int) $d];
-        $a = ['am' => "ᴀᴍ", 'pm' => "ᴘᴍ"];
-        $AM_PM = $a[strtolower($AM_PM)];
+        $AM_PM = strtoupper($AM_PM);
         $output = [
             'W3C' => $this->format('c'),
             'GMT' => $this->GMT(DATE_WISE),
@@ -135,10 +134,16 @@ class Date extends Genome {
         return $this->extract($key);
     }
 
-    public function __set($key, $value = null) {}
+    public function __set($key, $value = null) {
+        return $this->set($key, $value);
+    }
+
+    public function __unset($key) {
+        return $this->reset($key);
+    }
 
     public function __toString() {
-        return date(DATE_WISE, $this->date);
+        return $this->__invoke();
     }
 
     public function __invoke($format = DATE_WISE) {

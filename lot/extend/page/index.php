@@ -62,7 +62,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     ];
     $pages = $page = [];
     Lot::set('page', new Page($page));
-    Config::set('page.title', new Anemon([$config->title], ' &#x2E31; '));
+    Config::set('page.title', new Anemon([$config->title], ' &#x00B7; '));
     $name = Path::B($folder);
     if ($file = File::exist([
         $folder . '.page', // `lot\page\page-slug.page`
@@ -86,7 +86,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $chunk = $page->chunk($config->chunk);
         $sort = $page->sort($config->sort);
         Lot::set('page', $page);
-        Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x2E31; '));
+        Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x00B7; '));
         if (
             !File::exist($folder . DS . $name . '.page') &&
             ($files = Get::pages($folder, 'page', $sort[0], $sort[1], 'path'))
