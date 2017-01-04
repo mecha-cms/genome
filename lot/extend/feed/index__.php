@@ -17,7 +17,7 @@ Route::hook('%*%', function($path) use($config, $url) {
     $p = explode('/', $path);
     $path = rtrim(PAGE . DS . Path::D($path), DS);
     $state = Extend::state(__DIR__);
-    if (end($p) === $state['slug'] && $page = File::exist([
+    if (end($p) === $state['slug']['rss'] && $page = File::exist([
         $path . '.page',
         $path . DS . Path::B($path) . '.page',
         $path . DS . $config->slug . '.page',
