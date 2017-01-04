@@ -87,13 +87,13 @@ mark {
   display:block;
   width:100%;
 }
-.footnotes {
+.notes {
   margin-left:2.5%;
   margin-top:5%;
 }
-.footnotes hr {display:none}
-.footnotes ol {font-size:80%}
-.footnotes ol p {margin-top:.25em}
+.notes hr {display:none}
+.notes ol {font-size:80%}
+.notes ol p {margin-top:.25em}
 .xmp {background:#fed}
 html {
   background:#fff;
@@ -147,11 +147,12 @@ pre code {
   word-wrap:break-word;
   font-style:normal;
 }
-table {
+.table {
   border-collapse:collapse;
   width:100%;
 }
-td,th {
+.table td,
+.table th {
   vertical-align:top;
   text-align:left;
   border:1px solid;

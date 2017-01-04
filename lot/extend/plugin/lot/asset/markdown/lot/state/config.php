@@ -31,6 +31,8 @@ return [
         'rel' => 'nofollow',
         'target' => '_blank'
     ],
-    'table_class' => 'border',
-    'table_align_class' => 'text-%s'
+    'table_class' => 'table',
+    'footnote_class' => 'notes',
+    'table_align_class' => 'text-%s',
+    'footnote_back_link_text' => '&#x25B4;&#xFE0E;'
 ];
