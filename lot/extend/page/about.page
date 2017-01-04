@@ -1,0 +1,10 @@
+---
+title: Pages
+description: Add basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder.
+author: Taufik Nurrohman
+version: 1.0.0
+...
+
+This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$config` variable.
+
+<!-- block:donate -->

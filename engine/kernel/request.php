@@ -18,12 +18,12 @@ class Request extends Genome {
 
     // `GET` request
     public static function get($key, $fail = "") {
-        return self::any(__METHOD__, $key, $fail);
+        return self::any('get', $key, $fail);
     }
 
     // `POST` request
     public static function post($key, $fail = "") {
-        return self::any(__METHOD__, $key, $fail);
+        return self::any('post', $key, $fail);
     }
 
     // save state

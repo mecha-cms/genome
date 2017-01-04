@@ -8,7 +8,7 @@ By default, a block syntax can be defined as follow. It uses `‌[‌[‌` and `
  - Void blocks → `‌[‌[block]‌]‌` or `‌[‌[‌block‌/‌]‌]‌`
  - Container blocks → `‌[‌[‌block‌]‌]content[‌[‌/‌block‌]‌]`
 
-Block attributes syntax are same with normal HTML attributes syntax.
+Block attributes syntax is exactly the same as HTML attributes syntax.
 
 Blocks are configurable. Even, you can create your own block markup by editing the configuration file. Go to `lot\extend\block\lot\state\config.php` then search for the `union` part that looks like this:
 
