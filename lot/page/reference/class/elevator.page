@@ -44,11 +44,11 @@ $elevator = new Elevator([0, 1, 2, 3, 4, 5, 6, 7], 3, 0, 'foo/bar', [
     'union' => [
         // previous link
         '-1' => [
-            1 => '&#x25C0;&#xFE0E;' // union content
+            1 => '&#x25C0;' // union content
         ],
         // next link
         '1' => [
-            1 => '&#x25B6;&#xFE0E;'
+            1 => '&#x25B6;'
         ]
     ]
 ]);
