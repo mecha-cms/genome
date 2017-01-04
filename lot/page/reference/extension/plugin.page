@@ -1,6 +1,0 @@
----
-title: Plugin Extension
-description: A lower priority extensions.
-...
-
-[connect:../class/plugin]

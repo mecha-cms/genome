@@ -54,12 +54,16 @@ class URL extends Genome {
         }
     }
 
+    public function __set($key, $value = null) {
+        $this->{$key} = $value;
+    }
+
     public function __get($key) {
         return isset($this->{$key}) ? $this->{$key} : "";
     }
 
-    public function __set($key, $value = null) {
-        $this->{$key} = $value;
+    public function __unset($key) {
+        unset($this->{$key});
     }
 
     public function __toString() {

@@ -1,8 +1,0 @@
----
-title: Minify Extension
-description: Remove white–spaces and unused comments in HTML, CSS and JavaScript files.
-...
-
-There should be a `config.php` file in the `lot\state` folder of this extension. It contains some configuration data about the minifier.
-
-[connect:../class/minify]

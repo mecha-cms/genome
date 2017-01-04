@@ -61,7 +61,10 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         ]
     ];
     $pages = $page = [];
-    Lot::set('page', new Page($page));
+    Lot::set([
+        'pager' => null,
+        'page' => new Page($page)
+    ]);
     Config::set('page.title', new Anemon([$config->title], ' &#x00B7; '));
     $name = Path::B($folder);
     if ($file = File::exist([

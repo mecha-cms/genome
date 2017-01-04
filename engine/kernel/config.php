@@ -86,12 +86,16 @@ class Config extends Genome {
         return self::get($key, $fail);
     }
 
+    public function __set($key, $value = null) {
+        return self::set($key, $value);
+    }
+
     public function __get($key) {
         return self::get($key);
     }
 
-    public function __set($key, $value = null) {
-        return self::set($key, $value);
+    public function __unset($key) {
+        return self::reset($key);
     }
 
     public function __toString() {

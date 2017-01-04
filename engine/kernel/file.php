@@ -175,9 +175,10 @@ class File extends Genome {
         if (!file_exists(Path::D($input))) {
             mkdir(Path::D($input), 0777, true);
         }
-        if (file_exists($input) && ($hand = fopen($input, 'w'))) {
-            fwrite($hand, self::$content);
-            fclose($hand);
+        $r = fopen($input, 'w');
+        if (file_exists($input) && $r !== false) {
+            fwrite($r, self::$content);
+            fclose($r);
             if (isset($consent)) {
                 chmod($input, $consent);
             }

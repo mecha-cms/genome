@@ -4,7 +4,9 @@ class Get extends Genome {
 
     public static function page($path, $key = null, $fail = false) {
         if (!file_exists($path)) return false;
+        global $config;
         $i = Page::$i;
+        $o = a($config->page);
         $slug = Path::N($path);
         $time = date(DATE_WISE, File::T($path));
         $state = Path::X($path);
@@ -17,6 +19,7 @@ class Get extends Genome {
             'slug' => $slug,
             'state' => $state
         ];
+        $output = Anemon::extend($o, $output);
         $fields = Path::D($path) . DS . Path::N($path);
         if (is_dir($fields)) {
             foreach (g($fields, '{' . implode(',', $i) . '}.data', "", false) as $v) {
@@ -24,12 +27,12 @@ class Get extends Genome {
                 $v = file_get_contents($v);
                 if ($n === $i[0]) {
                     $v = (new Date($v))->format();
-                } else if ($n === $i[1]) {
+                } else if ($n === $i[1] && strpos($v, '[') === false) {
                     $v = e(explode(',', $v));
                 } else if ($n === $i[3]) {
                     $v = isset(Page::$states[$v]) ? Page::$states[$v] : $v;
                 }
-                $output[$n] = $v;
+                $output[$n] = e($v);
             }
         }
         $output['id'] = (string) date('U', strtotime($output['time']));

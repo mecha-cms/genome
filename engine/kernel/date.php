@@ -130,12 +130,12 @@ class Date extends Genome {
         return $date_GMT->format($format);
     }
 
-    public function __get($key) {
-        return $this->extract($key);
-    }
-
     public function __set($key, $value = null) {
         return $this->set($key, $value);
+    }
+
+    public function __get($key) {
+        return $this->extract($key);
     }
 
     public function __unset($key) {

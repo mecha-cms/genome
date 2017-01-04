@@ -201,6 +201,10 @@ class Page extends Genome {
         return array_key_exists($key, $this->lot) ? o($this->lot[$key]) : "";
     }
 
+    public function __unset($key) {
+        unset($this->lot[$key]);
+    }
+
     public function __toString() {
         return $this->unite();
     }

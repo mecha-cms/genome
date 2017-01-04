@@ -31,12 +31,16 @@ class Language extends Config {
         return __replace__(parent::get('__i18n.' . $key, $key), array_merge($lot, [""]));
     }
 
+    public function __set($key, $value = null) {
+        return parent::set('__i18n.' . $key, $value);
+    }
+
     public function __get($key) {
         return parent::get('__i18n.' . $key, $key);
     }
 
-    public function __set($key, $value = null) {
-        return parent::set('__i18n.' . $key, $value);
+    public function __unset($key) {
+        return parent::reset('__i18n.' . $key);
     }
 
     public function __toString() {

@@ -34,6 +34,9 @@ extract(Lot::set($seeds)->get(null, []));
 // set default date time zone
 Date::zone($config->zone);
 
+// set default page type as ``
+$config->type = "";
+
 $extends = [];
 foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {
     $extends[str_replace(EXTEND . DS, "", $v)] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);

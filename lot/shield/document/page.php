@@ -3,7 +3,7 @@
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
-      <p><strong><?php echo $language->author; ?>:</strong> <?php echo $page->author; ?></p>
+      <p><strong><?php echo $language->author; ?>:</strong> <?php echo $page->author; ?> &middot; <?php echo $page->view(0); ?></p>
     </header>
     <section>
       <blockquote><?php echo $page->description; ?></blockquote>

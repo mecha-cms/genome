@@ -2,31 +2,31 @@
 
 class Lot extends Genome {
 
-    public static function set($k, $v = null, $scope = null) {
-        if (__is_anemon__($k)) {
-            $scope = '.' . md5($v ?: static::class);
-            foreach ($k as $kk => $vv) {
-                $GLOBALS[$scope][$kk] = $vv;
+    public static function set($key, $value = null, $scope = null) {
+        if (__is_anemon__($key)) {
+            $scope = '.' . md5($value ?: static::class);
+            foreach ($key as $k => $v) {
+                $GLOBALS[$scope][$k] = $v;
             }
         } else {
-            $GLOBALS['.' . md5($scope ?: static::class)][$k] = $v;
+            $GLOBALS['.' . md5($scope ?: static::class)][$key] = $value;
         }
         return new static;
     }
 
-    public static function get($k = null, $fail = false, $scope = null) {
+    public static function get($key = null, $fail = false, $scope = null) {
         $scope = '.' . md5($scope ?: static::class);
-        $v = isset($GLOBALS[$scope]) ? $GLOBALS[$scope] : [];
-        if (isset($k)) {
-            return array_key_exists($k, $v) ? $v[$k] : $fail;
+        $data = isset($GLOBALS[$scope]) ? $GLOBALS[$scope] : [];
+        if (isset($key)) {
+            return array_key_exists($key, $data) ? $data[$key] : $fail;
         }
-        return isset($v) ? $v : $fail;
+        return isset($data) ? $data : $fail;
     }
 
-    public static function reset($k = null, $scope = null) {
+    public static function reset($key = null, $scope = null) {
         $scope = '.' . md5($scope ?: static::class);
-        if (isset($k)) {
-            unset($GLOBALS[$scope][$k]);
+        if (isset($key)) {
+            unset($GLOBALS[$scope][$key]);
         } else {
             $GLOBALS[$scope] = [];
         }
