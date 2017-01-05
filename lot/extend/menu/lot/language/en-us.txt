@@ -1,5 +1,0 @@
-menu: Menu
-menus: Menus
-
-navigation: Navigation
-navigations: Navigations
