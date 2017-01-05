@@ -1,4 +1,0 @@
-<main>
-  <article>
-  </article>
-</main>
