@@ -4,7 +4,7 @@ class Get extends Genome {
 
     public static function page($path, $key = null, $fail = false) {
         if (!file_exists($path)) return false;
-        global $config;
+        extract(Lot::get(null, []));
         $i = Page::$i;
         $o = a($config->page);
         $slug = Path::N($path);
@@ -28,14 +28,16 @@ class Get extends Genome {
                 if ($n === $i[0]) {
                     $v = (new Date($v))->format();
                 } else if ($n === $i[1] && strpos($v, '[') === false) {
-                    $v = e(explode(',', $v));
+                    $v = e(explode(',', str_replace(' ', "", $v)));
                 } else if ($n === $i[3]) {
                     $v = isset(Page::$states[$v]) ? Page::$states[$v] : $v;
                 }
                 $output[$n] = e($v);
             }
         }
-        $output['id'] = (string) date('U', strtotime($output['time']));
+        if (!array_key_exists('id', $output)) {
+            $output['id'] = (string) date('U', strtotime($output['time']));
+        }
         return !isset($key) ? $output : (array_key_exists($key, $output) ? $output[$key] : $fail);
     }
 

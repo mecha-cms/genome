@@ -108,7 +108,7 @@ class Route extends Genome {
                 return true;
             }
         } else {
-            global $url;
+            extract(Lot::get(null, []));
             $id = $url->path;
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s) …

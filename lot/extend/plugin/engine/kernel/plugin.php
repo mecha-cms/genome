@@ -3,7 +3,7 @@
 class Plugin extends Extend {
 
     public static function info($id) {
-        global $config, $language;
+        extract(Lot::get(null, []));
         // Check whether the localized “about” file is available
         $f = PLUGIN . DS . 'lot' . DS . 'asset' . DS . $id . DS;
         if (!$info = File::exist($f . 'about.' . $config->language . '.txt')) {
@@ -27,7 +27,7 @@ class Plugin extends Extend {
         $id = basename(array_shift($lot));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
-        $folder = array_shift($lot) ?: PLUGIN . DS . 'lot' . DS . 'asset';
+        $folder = (is_array($key) ? $fail : array_shift($lot)) ?: PLUGIN . DS . 'lot' . DS . 'asset';
         return parent::state($id, $key, $fail, $folder);
     }
 

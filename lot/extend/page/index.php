@@ -108,4 +108,4 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         }
         Shield::attach('page/' . $path_alt);
     }
-});
+}, 20);

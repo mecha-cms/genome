@@ -43,7 +43,7 @@ class Date extends Genome {
     }
 
     public function extract($key = null, $fail = false) {
-        global $language;
+        extract(Lot::get(null, []));
         $months_long = $language->months_long;
         $days_long = $language->days_long;
         $months_short = $language->months_short;
@@ -101,7 +101,7 @@ class Date extends Genome {
     }
 
     public function ago($key = null, $fail = false, $compact = true) {
-        global $language;
+        extract(Lot::get(null, []));
         $date = new DateTime();
         $date->setTimestamp((int) $this->format('U'));
         $interval = $date->diff(new DateTime('now'));

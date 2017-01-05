@@ -7,7 +7,7 @@ class Extend extends Genome {
     }
 
     public static function info($id) {
-        global $config, $language;
+        extract(Lot::get(null, []));
         // Check whether the localized “about” file is available
         $f = EXTEND . DS . $id . DS;
         if (!$info = File::exist($f . 'about.' . $config->language . '.txt')) {
@@ -31,12 +31,15 @@ class Extend extends Genome {
         $id = basename(array_shift($lot));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
-        $folder = array_shift($lot) ?: EXTEND;
+        $folder = (is_array($key) ? $fail : array_shift($lot)) ?: EXTEND;
         $state = $folder . DS . $id . DS . 'lot' . DS . 'state' . DS . 'config.php';
         if (!file_exists($state)) {
-            return $fail;
+            return is_array($key) ? $key : $fail;
         }
         $state = include $state;
+        if (is_array($key)) {
+            return array_replace_recursive($key, $state);
+        }
         return isset($key) ? (array_key_exists($key, $state) ? $state[$key] : $fail) : $state;
     }
 

@@ -3,10 +3,12 @@
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
-      <p><strong><?php echo $language->author; ?>:</strong> <?php echo $page->author; ?> &middot; <?php echo $page->view(0); ?></p>
+      <p><strong><?php echo $language->author; ?>:</strong> <?php echo $page->author; ?></p>
     </header>
     <section>
+      <?php if ($page->description): ?>
       <blockquote><?php echo $page->description; ?></blockquote>
+      <?php endif; ?>
       <?php echo $page->content; ?>
     </section>
     <footer>

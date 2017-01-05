@@ -52,7 +52,7 @@ class Page extends Genome {
 
     // Apart …
     public static function apart($input = null) {
-        global $config;
+        extract(Lot::get(null, []));
         $data = [];
         if (!isset($input)) {
             $input = self::$path;
@@ -91,7 +91,8 @@ class Page extends Genome {
         if (!array_key_exists('time', $data) && isset($data['update'])) {
             $data['time'] = $data['update'];
         }
-        $data = Anemon::extend($config->page, $data);
+        $o = a($config->page);
+        $data = Anemon::extend($o, $data);
         $shift = self::$shift;
         $url = __url__();
         $url_r = PAGE . ($shift ? DS . $shift : "");
