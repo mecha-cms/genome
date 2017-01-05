@@ -18,12 +18,16 @@ File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X .
 Session::ignite();
 Config::ignite();
 
+$config = new Config;
+$date = new Date;
+$language = new Language;
 $url = new URL;
 
 $seeds = [
-    'config' => new Config,
-    'date' => new Date,
-    'language' => new Language,
+    'config' => $config,
+    'date' => $date,
+    'language' => $language,
+    'site' => $config,
     'url' => $url,
     'u_r_l' => $url
 ];

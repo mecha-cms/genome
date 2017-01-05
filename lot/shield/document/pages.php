@@ -1,4 +1,4 @@
-<?php Shield::get('header'); ?>
+<?php Shield::get('top'); ?>
 <main>
   <?php foreach ($pages as $page): ?>
   <article id="page-<?php echo $page->id; ?>">
@@ -11,4 +11,4 @@
   <?php endforeach; ?>
   <nav><?php echo $pager; ?></nav>
 </main>
-<?php Shield::get('footer'); ?>
+<?php Shield::get('bottom'); ?>
