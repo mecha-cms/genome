@@ -5,12 +5,7 @@ class Config extends Genome {
     protected static $bucket = [];
 
     public static function ignite(...$lot) {
-        $a = State::config();
-        if (!$f = File::exist(LANGUAGE . DS . $a['language'] . '.txt')) {
-            $f = LANGUAGE . DS . 'en-us.txt';
-        }
-        $a['__i18n'] = From::yaml($f);
-        return (self::$bucket = $a);
+        return (self::$bucket = State::config());
     }
 
     public static function set($key, $value = null) {
@@ -24,7 +19,8 @@ class Config extends Genome {
                 Anemon::set($cargo, $k, $v);
             }
         }
-        return Anemon::extend(self::$bucket, $cargo);
+        Anemon::extend(self::$bucket, $cargo);
+        return new static;
     }
 
     public static function get($key = null, $fail = false) {
@@ -53,7 +49,7 @@ class Config extends Genome {
     }
 
     public static function merge(...$lot) {
-        return call_user_func_array('self::set', $lot);
+        return call_user_func('self::set', ...$lot);
     }
 
     public static function __callStatic($kin, $lot) {

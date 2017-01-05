@@ -17,6 +17,7 @@ File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X .
 
 Session::ignite();
 Config::ignite();
+Language::ignite();
 
 $config = new Config;
 $date = new Date;
