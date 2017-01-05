@@ -137,6 +137,7 @@ class Union extends Genome {
             1 => null, // `$.innerHTML`
             2 => []    // `$.attributes`
         ];
+        if ($u0 && strpos($input, $u0) === false) return false;
         if (!preg_match('/^\s*' . $u0 . '(' . $u[3] . ')(?:' . $d3 . '*' . $u2 . '?' . $u1 . '|(' . $d3 . '+.*?)' . $d3 . '*' . $u2 . '?' . $u1 . ')(([\s\S]*?)' . $u0 . $u2 . '\1' . $u1 . ')?\s*$/s', $input, $m)) return false;
         $output[0] = $m[1];
         $output[1] = isset($m[4]) ? $m[4] : false;
