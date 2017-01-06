@@ -115,11 +115,14 @@ figure,
 form,
 h1,h2,h3,h4,h5,h6,
 hr,nav,ol,p,pre,table,ul {margin:1rem 0 0}
+ol,ul,dd {margin-left:2em}
 ol ol,
 ol ul,
 ul ol,
-ul ul {margin-top:0}
-ol,ul,dd {margin-left:2em}
+ul ul {
+  margin-top:0;
+  margin-left:1em;
+}
 ul li {list-style:square}
 hr {
   color:inherit;
