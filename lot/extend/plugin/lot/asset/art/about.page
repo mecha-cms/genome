@@ -5,7 +5,7 @@ author: Taufik Nurrohman
 version: 1.0.0
 ...
 
-To enable this feature, add `css.data` and `js.data` files to a folder that is named with the same name as the page slug and stored in the same directory level. The example below makes `css.data` and `js.data` affect the appearance of ` [[url]]/blog-page ` page:
+To enable this feature, add `css.data` and `js.data` files to a folder that is named with the same name as the page slug and stored in the same directory level:
 
 ~~~ .no-highlight
 lot\
