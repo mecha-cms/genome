@@ -76,7 +76,7 @@ class Asset extends Genome {
         if (isset($path)) {
             $s = self::$lot[$kin][1][$path];
             if (!isset($s)) {
-                self::set($kin, $path, $stack);
+                self::set($kin, $path);
             }
             return is_callable($fn) ? call_user_func($fn, $s, $path, $attr, $stack) : ($s['path'] ? file_get_contents($s['path']) : "");
         }
@@ -85,7 +85,7 @@ class Asset extends Genome {
             $html = "";
             if (is_callable($fn)) {
                 foreach ($assets as $k => $v) {
-                    $html .= call_user_func($fn, $v, $k, $attr, $stack) . N;
+                    $html .= call_user_func($fn, $v, $k, $attr) . N;
                 }
             } else {
                 foreach ($assets as $k => $v) {
