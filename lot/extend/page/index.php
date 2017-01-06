@@ -73,11 +73,11 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $folder . DS . $name . '.page', // `lot\page\page-slug\page-slug.page`
         $folder . DS . $name . '.archive' // `lot\page\page-slug\page-slug.archive`
     ])) { // File does exist, then …
-        // Load user functions from the current shield folder if any
+        // Load user function(s) from the current shield folder if any
         if ($fn = File::exist([$folder_shield . DS . 'index.php', $folder_shield . DS . 'index__.php'])) {
             include $fn;
         }
-        // Load user functions from the current page folder if any, stacked from the parent page(s)
+        // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $s = PAGE;
         foreach (explode('/', '/' . $path) as $ss) {
             $s .= $ss ? DS . $ss : "";
@@ -90,21 +90,23 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $sort = $page->sort($config->sort);
         Lot::set('page', $page);
         Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x00B7; '));
-        if (
-            !File::exist($folder . DS . $name . '.page') &&
-            ($files = Get::pages($folder, 'page', $sort[0], $sort[1], 'path'))
-        ) {
-            foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
-                $pages[] = new Page($file);
+        $parent = Path::D($path);
+        if (!File::exist($folder . DS . $name . '.' . $page->state)) {
+            if ($files = Get::pages($folder, 'page', $sort[0], $sort[1], 'path')) {
+                foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
+                    $pages[] = new Page($file);
+                }
+                if (empty($pages)) {
+                    Shield::abort(['204/' . $path_alt, '404/' . $path_alt, '204', '404']);
+                }
+                Lot::set([
+                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $pager, 'pager'),
+                    'pages' => $pages
+                ]);
+                Shield::attach('pages/' . $path_alt);
+            } else if ($name === Path::B($parent) && File::exist($folder . '.' . $page->state)) {
+                Guardian::kick($parent);  // Redirect to parent page if user tries to access the placeholder page …
             }
-            if (empty($pages)) {
-                Shield::abort(['204/' . $path_alt, '404/' . $path_alt, '204', '404']);
-            }
-            Lot::set([
-                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $pager, 'pager'),
-                'pages' => $pages
-            ]);
-            Shield::attach('pages/' . $path_alt);
         }
         Shield::attach('page/' . $path_alt);
     }

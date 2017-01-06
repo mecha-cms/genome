@@ -49,7 +49,7 @@ abstract class Genome {
             return call_user_func_array('self::' . $kin_, $lot);
         }
         if (!isset(self::$_[1][$c][$kin_])) {
-            echo 'Method <code>' . $c . '::' . $kin . '()</code> does not exist.';
+            echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
             return false;
         }
         return call_user_func_array(self::$_[1][$c][$kin_], $lot);

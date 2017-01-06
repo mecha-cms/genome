@@ -18,7 +18,7 @@ class URL extends Genome {
             strpos($url, '#') !== 0 &&
             strpos($url, 'javascript:') !== 0
         ) {
-            return trim(($root && $b ? $a['protocol'] . $a['host'] : $a['url']) . '/' . ltrim(self::_fix($url), '/'), '/');
+            return trim(($root && $b ? $a['protocol'] . $a['host'] : $a['url']) . '/' . self::_fix($url), '/');
         }
         return self::_fix($url);
     }
