@@ -140,7 +140,7 @@ class Page extends Genome {
             $data = self::$data;
             return self::_meta_hook($data, $data, $NS);
         }
-        $data = Get::page($input = self::$path);
+        $data = Get::page($input = self::$path, null, [], $key);
         $input = Path::D($input) . DS . Path::N($input);
         if ($input === DS || is_dir($input)) {
             $data[$key] = File::open($input . DS . $key . '.data')->read(array_key_exists($key, self::$data) ? self::$data[$key] : false);

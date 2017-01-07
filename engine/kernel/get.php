@@ -2,10 +2,23 @@
 
 class Get extends Genome {
 
-    public static function page($path, $key = null, $fail = false) {
+    protected function _fix($v, $n = null) {
+        $i = Page::$i;
+        $n = $n ?: Path::N($v);
+        $v = file_get_contents($v);
+        if ($n === $i[0]) {
+            $v = (new Date($v))->format();
+        } else if ($n === $i[1] && strpos($v, '[') === false) {
+            $v = explode(',', str_replace(' ', "", $v));
+        } else if ($n === $i[3]) {
+            $v = isset(Page::$states[$v]) ? Page::$states[$v] : $v;
+        }
+        return $v;
+    }
+
+    public static function page($path, $key = null, $fail = false, $for = null) {
         if (!file_exists($path)) return false;
         extract(Lot::get(null, []));
-        $i = Page::$i;
         $o = a($config->page);
         $slug = Path::N($path);
         $time = date(DATE_WISE, File::T($path));
@@ -20,19 +33,15 @@ class Get extends Genome {
             'state' => $state
         ];
         $output = Anemon::extend($o, $output);
-        $fields = Path::D($path) . DS . Path::N($path);
+        $fields = Path::D($path) . DS . $slug;
         if (is_dir($fields)) {
-            foreach (g($fields, '{' . implode(',', $i) . '}.data', "", false) as $v) {
-                $n = Path::N($v);
-                $v = file_get_contents($v);
-                if ($n === $i[0]) {
-                    $v = (new Date($v))->format();
-                } else if ($n === $i[1] && strpos($v, '[') === false) {
-                    $v = e(explode(',', str_replace(' ', "", $v)));
-                } else if ($n === $i[3]) {
-                    $v = isset(Page::$states[$v]) ? Page::$states[$v] : $v;
+            if (empty($for) && $for !== '0') {
+                foreach (g($fields, $for . '.data', "", false) as $v) {
+                    $n = Path::N($v);
+                    $output[$n] = e(self::_fix($v, $n));
                 }
-                $output[$n] = e($v);
+            } else if ($v = File::exist($fields . DS . $for . '.data')) {
+                $output[$for] = e(self::_fix($v));
             }
         }
         if (!array_key_exists('id', $output)) {
@@ -48,7 +57,7 @@ class Get extends Genome {
         $output = [];
         if ($input = g($folder, $state, "", false)) {
             foreach ($input as $v) {
-                $output[] = self::page($v);
+                $output[] = self::page($v, null, false, $by);
             }
             $output = $oo = Anemon::eat($output)->sort($sort, $by)->vomit();
             if (isset($key)) {
