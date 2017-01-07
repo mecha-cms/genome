@@ -154,7 +154,7 @@ class Page extends Genome {
                 $data[$key] = $fail;
             }
         }
-        $output = self::_meta_hook($data, $data, $NS)[$key];
+        $output = e(self::_meta_hook($data, $data, $NS)[$key]);
         return $output !== false ? $output : $fail;
     }
 

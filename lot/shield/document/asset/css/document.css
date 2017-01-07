@@ -226,6 +226,7 @@ header {margin-bottom:5%}
 article + nav,
 footer,
 main + nav {margin-top:5%}
+main + nav {text-align:center}
 body > footer {overflow:hidden}
 body > footer,
 body > header,

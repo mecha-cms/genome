@@ -270,7 +270,7 @@ class Anemon extends Genome {
     // Get position by array key
     public function index($key, $fail = false) {
         $search = array_search($key, array_keys($this->bucket));
-        return $search ? $search : $fail;
+        return isset($search) ? $search : $fail;
     }
 
     // Generate chunk(s) of array

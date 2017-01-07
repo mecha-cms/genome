@@ -38,16 +38,28 @@ class Elevator extends Genome {
         $c = Hook::NS(strtolower(static::class) . Anemon::NS . 'union', Anemon::extend($this->config, $config), $this->config);
         $d = $c['direction'];
         extract(Lot::get(null, []));
-        $input = Anemon::eat($input)->chunk($chunk);
+        if (isset($chunk)) {
+            $input = Anemon::eat($input)->chunk($chunk);
+        }
         if ($path === true) {
             $path = $url->current;
         }
         $path = rtrim($path, '/');
-        $this->bucket = [
-            $d['-1'] => !empty($input[$index - 1]) ? $path . '/' . $index : null,
-            $d['0'] => $path !== $url->current ? $path : null,
-            $d['1'] => !empty($input[$index + 1]) ? $path . '/' . ($index + 2) : null
-        ];
+        if (!isset($chunk)) {
+            $i = array_search($index, $input);
+            $i = isset($i) ? $i : 0;
+            $this->bucket = [
+                $d['-1'] => isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null,
+                $d['0'] => $path !== $url->current ? $path : null,
+                $d['1'] => isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] : null
+            ];
+        } else {
+            $this->bucket = [
+                $d['-1'] => isset($input[$index - 1]) ? $path . '/' . $index : null,
+                $d['0'] => $path !== $url->current ? $path : null,
+                $d['1'] => isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null
+            ];
+        }
         $this->config = $c;
         $this->NS = $NS ? Anemon::NS . $NS : "";
     }

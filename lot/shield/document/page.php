@@ -17,4 +17,5 @@
     </footer>
   </article>
 </main>
+<nav><?php echo $pager; ?></nav>
 <?php Shield::get('bottom'); ?>

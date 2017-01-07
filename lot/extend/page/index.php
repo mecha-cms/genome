@@ -40,6 +40,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     $path_alt = $path === "" ? $config->slug : $path;
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
+    $name = Path::B($folder);
     // Change vertical elevator into horizontal elevator
     $pager = [
         'direction' => [
@@ -62,11 +63,10 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     ];
     $pages = $page = [];
     Lot::set([
-        'pager' => null,
-        'page' => new Page($page)
+        'pager' => new Elevator([]),
+        'page' => new Page([])
     ]);
     Config::set('page.title', new Anemon([$config->title], ' &#x00B7; '));
-    $name = Path::B($folder);
     if ($file = File::exist([
         $folder . '.page', // `lot\page\page-slug.page`
         $folder . '.archive', // `lot\page\page-slug.archive`
@@ -86,11 +86,28 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             }
         }
         $page = new Page($file);
-        $chunk = $page->chunk($config->chunk);
         $sort = $page->sort($config->sort);
-        Lot::set('page', $page);
+        $chunk = $page->chunk($config->chunk);
+        // Create elevator for single page mode
+        $folder_parent = Path::D($folder);
+        $path_parent = Path::D($path);
+        $name_parent = Path::B($folder_parent);
+        if ($file_parent = File::exist([
+            $folder_parent . '.page',
+            $folder_parent . '.archive',
+            $folder_parent . DS . $name_parent . '.page',
+            $folder_parent . DS . $name_parent . '.archive'
+        ])) {
+            $sort_parent = Page::open($file_parent)->get('sort', $config->sort);
+            $files_parent = Get::pages($folder_parent, 'page', $sort_parent[0], $sort_parent[1], 'slug');
+        } else {
+            $files_parent = [];
+        }
+        Lot::set([
+            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $pager, 'pager'),
+            'page' => $page
+        ]);
         Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x00B7; '));
-        $parent = Path::D($path);
         if (!File::exist($folder . DS . $name . '.' . $page->state)) {
             if ($files = Get::pages($folder, 'page', $sort[0], $sort[1], 'path')) {
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
@@ -104,8 +121,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                     'pages' => $pages
                 ]);
                 Shield::attach('pages/' . $path_alt);
-            } else if ($name === Path::B($parent) && File::exist($folder . '.' . $page->state)) {
-                Guardian::kick($parent);  // Redirect to parent page if user tries to access the placeholder page …
+            } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {
+                Guardian::kick($path_parent);  // Redirect to parent page if user tries to access the placeholder page …
             }
         }
         Shield::attach('page/' . $path_alt);
