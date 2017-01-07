@@ -17,5 +17,7 @@
     </footer>
   </article>
 </main>
+<?php if (strpos($url->path, '/') !== false): ?>
 <nav><?php echo $pager; ?></nav>
+<?php endif; ?>
 <?php Shield::get('bottom'); ?>
