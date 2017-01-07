@@ -1,5 +1,18 @@
 <?php
 
+// enable/disable debug mode
+ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
+if (DEBUG) {
+    error_reporting(E_ALL | E_STRICT);
+    ini_set('display_errors', true);
+    ini_set('display_startup_errors', true);
+    ini_set('html_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', false);
+    ini_set('display_startup_errors', false);
+}
+
 // normalize line–break
 $vars = [&$_GET, &$_POST, &$_REQUEST, &$_COOKIE];
 array_walk_recursive($vars, function(&$v) {
