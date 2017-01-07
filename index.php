@@ -18,6 +18,7 @@ define('T', "\t"); // Tab
 define('X', "\x1A"); // Placeholder text
 
 define('SESSION', null);
+define('DEBUG', false); // Change to `true` to enable debug mode
 
 define('ENGINE', ROOT . DS . 'engine');
 define('LOT', ROOT . DS . 'lot');

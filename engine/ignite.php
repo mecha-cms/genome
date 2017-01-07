@@ -174,7 +174,7 @@ function __url__($key = null, $fail = false) {
 // e: evaluate string to their appropriate data type
 // f: filter/sanitize string
 // g: advance PHP `glob` function
-// h: convert text to snake case with `-` (hyphen) as separator by default
+// h: convert text to snake case with `-` (hyphen) as the default separator
 // i: include file(s) with callback
 // j:
 // k:

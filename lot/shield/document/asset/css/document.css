@@ -48,6 +48,14 @@ b,dt,h1,h2,h3,h4,h5,h6,strong,th {font-weight:bold}
 caption,em,figcaption,i,var {font-style:italic}
 ins,u {text-decoration:underline}
 del,s {text-decoration:line-through}
+kbd {
+  display:inline-block;
+  vertical-align:middle;
+  font-size:80%;
+  line-height:1.5em;
+  padding:0 .5em;
+  cursor:pointer;
+}
 mark {
   background:#ff0;
   color:inherit;
@@ -73,7 +81,6 @@ mark {
 .input,.select,.textarea {
   background:#eef;
   color:inherit;
-  box-shadow:inset 0 0 2px rgba(0,0,0,.4);
 }
 .button::-moz-focus-inner,
 .input::-moz-focus-inner {
@@ -97,7 +104,6 @@ mark {
   background:none;
   border:0;
   padding:0;
-  box-shadow:none;
   cursor:pointer;
 }
 .input[type="range"] {width:12em}
@@ -119,6 +125,29 @@ mark {
   display:block;
   width:100%;
 }
+.inline,
+.inline-block {
+  display:inline;
+  width:auto;
+}
+.inline-block {display:inline-block}
+.align-left {
+  float:left;
+  margin-right:.5em;
+}
+.align-right {
+  float:right;
+  margin-left:.5em;
+}
+.align-center {
+  display:block;
+  margin-right:auto;
+  margin-left:auto;
+}
+.text-left {text-align:left}
+.text-right {text-align:right}
+.text-center {text-align:center}
+.text-justify {text-align:justify}
 .notes {
   margin-left:2.5%;
   margin-top:5%;

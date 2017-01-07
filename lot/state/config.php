@@ -9,6 +9,7 @@ return [
     'charset' => 'utf-8',
     'title' => 'Site Title',
     'description' => 'Site description.',
+    'type' => "", // default page type is ``
     'slug' => 'index',
     'query' => [],
     'chunk' => 3,
@@ -22,8 +23,8 @@ return [
         'state' => 'page',
         'title' => "",
         'description' => "",
-        'type' => "",
         'author' => "",
+        'type' => 'HTML',
         'link' => null,
         'content' => ""
     ],

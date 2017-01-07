@@ -13,7 +13,7 @@ The Markdown syntax allows you to write text naturally and format it without usi
 
 In your page headers, add a `type` property with a value set as `Markdown`:
 
-~~~ .no-highlight
+~~~ .yaml
 ---
 title: Page Title
 description: Page description.

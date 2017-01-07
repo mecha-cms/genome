@@ -32,7 +32,7 @@ return [
         'target' => '_blank'
     ],
     'table_class' => 'table',
+	'table_align_class' => 'text-%s',
     'footnote_class' => 'notes',
-    'table_align_class' => 'text-%s',
     'footnote_back_link_text' => '&#x25B4;'
 ];
