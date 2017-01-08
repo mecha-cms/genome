@@ -43,9 +43,6 @@ class Union extends Genome {
     ];
 
     public function __construct($union = []) {
-        Hook::set('union.union', function($data) {
-            return $data;
-        });
         $this->union = Hook::NS(strtolower(static::class) . Anemon::NS . 'union', [[array_replace_recursive($this->union, $union)]]);
     }
 
@@ -138,7 +135,8 @@ class Union extends Genome {
             1 => null, // `$.innerHTML`
             2 => []    // `$.attributes`
         ];
-        $s = '/^' . $u0 . '(' . $u[3] . ')(' . $d3 . '.*?)?(?:' . $d3 . '*' . $u2 . $u1 . '|' . $u1 . '(?:([\s\S]*?)(' . $u0 . $u2 . '\1' . $u1 . '))?)$/s';
+        $s = '/^' . $u0 . '(' . $u[3] . ')(' . $d3 . '.*?)?(?:' . $u2 . $u1 . '|' . $u1 . '(?:([\s\S]*?)(' . $u0 . $u2 . '\1' . $u1 . '))?)$/s';
+        // must starts with `<` and ends with `>`
         if ($u[0] && $u[1] && substr($input, 0, strlen($u[0])) === $u[0] && substr($input, -strlen($u[1])) === $u[1]) {
             // does not match with pattern, abort!
             if (!preg_match($s, $input, $m)) {
@@ -158,7 +156,6 @@ class Union extends Genome {
             }
             return $output;
         }
-        // not starts with `<` and not ends with `>`, abort!
         return false;
     }
 
