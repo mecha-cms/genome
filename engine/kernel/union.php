@@ -125,33 +125,41 @@ class Union extends Genome {
         $d = $this->union[1][1];
         $x_u = isset($this->union[0][0]) ? $this->union[0][0] : [];
         $x_d = isset($this->union[0][1]) ? $this->union[0][1] : [];
-        $u0 = isset($x_u[0]) ? $x_u[0] : x($u[0]);
-        $u1 = isset($x_u[1]) ? $x_u[1] : x($u[1]);
-        $u2 = isset($x_u[2]) ? $x_u[2] : x($u[2]);
-        $d0 = isset($x_d[0]) ? $x_d[0] : x($d[0]);
-        $d1 = isset($x_d[1]) ? $x_d[1] : x($d[1]);
-        $d2 = isset($x_d[2]) ? $x_d[2] : x($d[2]);
-        $d3 = isset($x_d[3]) ? $x_d[3] : x($d[3]);
+        $u0 = isset($x_u[0]) ? $x_u[0] : x($u[0]); // `[[`
+        $u1 = isset($x_u[1]) ? $x_u[1] : x($u[1]); // `]]`
+        $u2 = isset($x_u[2]) ? $x_u[2] : x($u[2]); // `/`
+        $d0 = isset($x_d[0]) ? $x_d[0] : x($d[0]); // `=`
+        $d1 = isset($x_d[1]) ? $x_d[1] : x($d[1]); // `"`
+        $d2 = isset($x_d[2]) ? $x_d[2] : x($d[2]); // `"`
+        $d3 = isset($x_d[3]) ? $x_d[3] : x($d[3]); // ` `
+        $input = trim($input);
         $output = [
             0 => null, // `$.nodeName`
             1 => null, // `$.innerHTML`
             2 => []    // `$.attributes`
         ];
-        if ($u0 && strpos($input, $u0) === false) return false;
-        if (!preg_match('/^\s*' . $u0 . '(' . $u[3] . ')(?:' . $d3 . '*' . $u2 . '?' . $u1 . '|(' . $d3 . '+.*?)' . $d3 . '*' . $u2 . '?' . $u1 . ')(([\s\S]*?)' . $u0 . $u2 . '\1' . $u1 . ')?\s*$/s', $input, $m)) return false;
-        $output[0] = $m[1];
-        $output[1] = isset($m[4]) ? $m[4] : false;
-        if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '([\s\S]*?)' . $d2 . ')?/s', $m[2], $mm)) {
-            foreach ($mm[1] as $k => $v) {
-                $s = To::html_decode($mm[2][$k]);
-                $s = $eval ? e($s) : $s;
-                if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
-                    $s = $v;
-                }
-                $output[2][$v] = $s;
+        $s = '/^' . $u0 . '(' . $u[3] . ')(' . $d3 . '.+?)?(?:' . $d3 . '*' . $u2 . $u1 . '|' . $u1 . '(?:(?!' . $u0 . $u2 . '\1' . $u1 . ')([\s\S]*?)(' . $u0 . $u2 . '\1' . $u1 . '))?)$/s';
+        if ($u[0] && $u[1] && substr($input, 0, strlen($u[0])) === $u[0] && substr($input, -strlen($u[1])) === $u[1]) {
+            // does not match with pattern, abort!
+            if (!preg_match($s, $input, $m)) {
+                return false;
             }
+            $output[0] = $m[1];
+            $output[1] = isset($m[4]) ? $m[3] : false;
+            if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '([\s\S]*?)' . $d2 . ')?/s', $m[2], $mm)) {
+                foreach ($mm[1] as $k => $v) {
+                    $s = To::html_decode($mm[2][$k]);
+                    $s = $eval ? e($s) : $s;
+                    if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
+                        $s = $v;
+                    }
+                    $output[2][$v] = $s;
+                }
+            }
+            return $output;
         }
-        return $output;
+        // not starts with `<` and not ends with `>`, abort!
+        return false;
     }
 
     // Union comment
