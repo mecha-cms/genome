@@ -93,11 +93,13 @@ class Page extends Genome {
         }
         $o = a($config->page);
         $data = Anemon::extend($o, $data);
-        $shift = self::$shift;
-        $url = __url__();
-        $url_r = PAGE . ($shift ? DS . $shift : "");
-        $url_path = To::url(str_replace([$url_r . DS, $url_r], "", Path::D($data['path'])));
-        $data['url'] = $url['url'] . ($url_path ? '/' . $url_path : "") . '/' . $data['slug'];
+        if (!file_exists($input . DS . 'url.data')) {
+            $shift = self::$shift;
+            $url = __url__();
+            $url_r = PAGE . ($shift ? DS . $shift : "");
+            $url_path = To::url(str_replace([$url_r . DS, $url_r], "", Path::D($data['path'])));
+            $data['url'] = $url['url'] . ($url_path ? '/' . $url_path : "") . '/' . $data['slug'];
+        }
         $data['date'] = new Date($data['time']);
         self::$data = $data;
         return new static;
