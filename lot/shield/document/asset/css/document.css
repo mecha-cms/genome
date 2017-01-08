@@ -74,9 +74,6 @@ mark {
   line-height:1.75em;
   padding:0 .5em;
   text-align:left;
-  -webkit-user-select:none;
-  -moz-user-select:none;
-  user-select:none;
 }
 .input,.select,.textarea {
   background:#eef;
@@ -94,6 +91,9 @@ mark {
   width:auto;
   padding-right:.5em;
   padding-left:.5em;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  user-select:none;
 }
 .input[type="checkbox"],
 .input[type="color"],
@@ -133,11 +133,15 @@ mark {
 .inline-block {display:inline-block}
 .align-left {
   float:left;
-  margin-right:.5em;
+  margin-top:.5em;
+  margin-right:1.5em;
+  margin-bottom:.5em;
 }
 .align-right {
   float:right;
-  margin-left:.5em;
+  margin-top:.5em;
+  margin-bottom:.5em;
+  margin-left:1.5em;
 }
 .align-center {
   display:block;
