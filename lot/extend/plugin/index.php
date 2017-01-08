@@ -4,7 +4,7 @@ define('PLUGIN', __DIR__);
 
 $plugins = [];
 $seeds = Lot::get(null, []);
-foreach (g(PLUGIN . DS . 'lot' . DS . 'asset' . DS . '*', '{index__,index,__index}.php') as $v) {
+foreach (g(PLUGIN . DS . 'lot' . DS . 'worker' . DS . '*', '{index__,index,__index}.php') as $v) {
     $d = Path::D($v);
     $n = Path::N($v);
     d($d . DS . 'engine' . DS . 'kernel', function($w, $n) use($d, $seeds) {
@@ -22,7 +22,7 @@ asort($plugins);
 extract($seeds);
 
 foreach ($plugins as $k => $v) {
-    $f__ = PLUGIN . DS . 'lot' . DS . 'asset' . DS . $k . DS;
+    $f__ = PLUGIN . DS . 'lot' . DS . 'worker' . DS . $k . DS;
     $l__ = $f__ . 'lot' . DS . 'language' . DS;
     // back–end and front–end
     if ($i18n = File::exist($l__ . $config->language . '.txt')) {

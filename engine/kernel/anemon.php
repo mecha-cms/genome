@@ -127,7 +127,7 @@ class Anemon extends Genome {
         return $this;
     }
 
-    // Sort array value: `1` for "asc" and `-1` for "desc"
+    // Sort array value: `1` for “asc” and `-1` for “desc”
     public function sort($order = 1, $key = null, $preserve_key = false, $null = X) {
         if (isset($key)) {
             $before = $after = [];
