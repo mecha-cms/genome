@@ -46,8 +46,13 @@ abbr {
 abbr[title]:hover {border-bottom-color:inherit}
 b,dt,h1,h2,h3,h4,h5,h6,strong,th {font-weight:bold}
 caption,em,figcaption,i,var {font-style:italic}
+caption,figcaption {text-align:center}
 ins,u {text-decoration:underline}
 del,s {text-decoration:line-through}
+img {
+  max-width:100%;
+  height:auto;
+}
 kbd {
   display:inline-block;
   vertical-align:middle;
@@ -133,15 +138,15 @@ mark {
 .inline-block {display:inline-block}
 .align-left {
   float:left;
-  margin-top:.5em;
-  margin-right:1.5em;
-  margin-bottom:.5em;
+  margin-top:.5rem;
+  margin-right:1.5rem;
+  margin-bottom:.5rem;
 }
 .align-right {
   float:right;
-  margin-top:.5em;
-  margin-bottom:.5em;
-  margin-left:1.5em;
+  margin-top:.5rem;
+  margin-bottom:.5rem;
+  margin-left:1.5rem;
 }
 .align-center {
   display:block;
@@ -219,6 +224,7 @@ pre code {
   border-collapse:collapse;
   width:100%;
 }
+.table caption {margin-bottom:1rem}
 .table td,
 .table th {
   vertical-align:top;
@@ -264,10 +270,12 @@ sup {top:-.5em}
 
 @media (max-width:800px) {
   html {font-size:15px}
-    img {
-      max-width:100%;
-      height:auto;
-    }
+  .align-left,
+  .align-right {
+    float:none;
+    display:block;
+    margin:1rem auto 0;
+  }
 }
 @media (min-width:501px) {
   body > footer p {
