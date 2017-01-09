@@ -27,9 +27,18 @@ class Page extends Genome {
 
     // Open …
     public static function open($path, $shift = "") {
+        self::close();
         self::$path = $path;
         self::$shift = $shift;
         self::apart();
+        return new static;
+    }
+
+    // Close …
+    protected static function close() {
+        self::$data = [];
+        self::$path = "";
+        self::$shift = "";
         return new static;
     }
 
@@ -124,6 +133,7 @@ class Page extends Genome {
 
     // Read all page propert(y|ies)
     public static function read($output = [], $NS = 'page') {
+        $data = self::$data;
         // Pre-defined page data …
         if ($output) {
             foreach ($output as $k => $v) {
@@ -133,7 +143,7 @@ class Page extends Genome {
             }
         }
         // Load page data …
-        return self::_meta_hook(array_merge($output, self::$data), $output, $NS);
+        return self::close()->_meta_hook(array_merge($output, $data), $output, $NS);
     }
 
     // Read specific page property
@@ -167,7 +177,9 @@ class Page extends Genome {
     }
 
     public static function saveTo($path, $consent = 0600) {
-        File::open($path)->write(self::unite())->save($consent);
+        $unite = self::unite();
+        self::close();
+        File::write($unite)->saveTo($path, $consent);
     }
 
     public static function save($consent = 0600) {

@@ -113,7 +113,7 @@ mark {
   height:1.75em;
 }
 .textarea {
-  height:6em;
+  min-height:6em;
   resize:vertical;
 }
 .button:focus,

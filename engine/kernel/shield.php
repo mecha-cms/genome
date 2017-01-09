@@ -12,7 +12,7 @@ class Shield extends Genome {
         if (isset($key)) {
             return Anemon::get(self::$lot, $key, $fail);
         }
-        return self::$lot;
+        return !empty(self::$lot) ? self::$lot : $fail;
     }
 
     protected static function X($input) {
@@ -25,8 +25,11 @@ class Shield extends Genome {
         // Full path, be quick!
         if (is_string($input) && strpos($input, ROOT) === 0) {
             return File::exist(self::X($input), $fail);
+        } else if (is_string($input)) {
+            $input = str_replace(DS, '/', $input);
         }
         $input = Anemon::step($input, '/');
+        array_unshift($input, str_replace('/', '.', $input[0]));
         foreach ($input as $k => $v) {
             $v = To::path($v);
             $input[$k] = self::X(SHIELD . DS . $config->shield . DS . trim($v, DS));
@@ -53,17 +56,17 @@ class Shield extends Genome {
     }
 
     public static function get($input, $fail = false, $buffer = true) {
-        extract(Lot::get(null, []));
         if ($path__ = self::path($input, $fail)) {
             $G = ['source' => $input];
             $NS = strtolower(static::class) . Anemon::NS . 'get' . Anemon::NS;
-            $lot__ = self::lot();
+            $lot__ = self::lot(null, []);
             $path__ = Hook::NS($NS . 'path', $path__);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";
             // Begin shield part
             Hook::NS($NS . 'lot' . Anemon::NS . 'before', [null, $G, $G]);
+            extract(Lot::get(null, []));
             extract(Hook::NS($NS . 'lot', $lot__));
             Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
@@ -88,17 +91,17 @@ class Shield extends Genome {
     }
 
     public static function attach($input, $fail = false, $buffer = true) {
-        extract(Lot::get(null, []));
         $path__ = self::path($input, $fail);
         $G = ['source' => $input];
         $NS = strtolower(static::class) . Anemon::NS;
-        $lot__ = self::lot();
+        $lot__ = self::lot(null, []);
         $path__ = Hook::NS($NS . 'path', $path__);
         $G['lot'] = $lot__;
         $G['path'] = $path__;
         $out = "";
         // Begin shield
         Hook::NS($NS . 'lot' . Anemon::NS . 'before', [null, $G, $G]);
+        extract(Lot::get(null, []));
         extract(Hook::NS($NS . 'lot', $lot__));
         Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
         Hook::NS($NS . 'before', [null, $G, $G]);

@@ -338,18 +338,4 @@ class File extends Genome {
         return $output < 0 ? Language::unknown() : trim($output . ' ' . $x[$u]);
     }
 
-    public static function set($input, $data, $consent = null) {
-        return self::write($data)->saveTo($input, $consent);
-    }
-
-    /*
-    public static function get($input, $fail = false) {
-        return self::exist($input, $fail);
-    }
-    */
-
-    public static function reset($input) {
-        return self::open($input)->delete();
-    }
-
 }

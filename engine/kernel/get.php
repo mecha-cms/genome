@@ -2,7 +2,7 @@
 
 class Get extends Genome {
 
-    protected function _fix($v, $n = null) {
+    protected static function _fix($v, $n = null) {
         $i = Page::$i;
         $n = $n ?: Path::N($v);
         $v = file_get_contents($v);

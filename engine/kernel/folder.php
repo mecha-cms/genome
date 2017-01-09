@@ -20,8 +20,4 @@ class Folder extends File {
         return $file && is_dir($file) ? $file : $fail;
     }
 
-    public static function get($input, $fail = false) {
-        return self::exist($input, $fail);
-    }
-
 }

@@ -6,24 +6,24 @@ class Request extends Genome {
         'session' => ['request' => 'mecha.request']
     ];
 
-    public static function any($id, $key = null, $fail = "") {
+    public static function any($id, $key = null, $fail = "", $eval = true) {
         $data = $GLOBALS['_' . strtoupper($id)];
         $data = isset($data) ? $data : [];
         if (isset($key)) {
-            $o = e(Anemon::get($data, $key, $fail));
-            return $o === 0 || !empty($o) ? $o : $fail;
+            $o = $eval ? e(Anemon::get($data, $key, $fail)) : $data;
+            return $o === 0 || $o === '0' || !empty($o) ? $o : $fail;
         }
-        return e(!empty($data) ? $data : $fail);
+        return !empty($data) ? ($eval ? e($data) : $data) : $fail;
     }
 
     // `GET` request
-    public static function get($key, $fail = "") {
-        return self::any('get', $key, $fail);
+    public static function get($key, $fail = "", $eval = true) {
+        return self::any('get', $key, $fail, $eval);
     }
 
     // `POST` request
-    public static function post($key, $fail = "") {
-        return self::any('post', $key, $fail);
+    public static function post($key, $fail = "", $eval = true) {
+        return self::any('post', $key, $fail, $eval);
     }
 
     // save state
