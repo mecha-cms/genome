@@ -33,6 +33,5 @@ return [
     ],
     'table_class' => 'table',
 	'table_align_class' => 'text-%s',
-    'footnote_class' => 'notes',
-    'footnote_back_link_text' => '&#x25B4;'
+    'footnote_class' => 'notes'
 ];
