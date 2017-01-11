@@ -2,210 +2,40 @@
 
 class Page extends Genome {
 
-    protected static $data = [];
-    protected static $path = "";
-    protected static $shift = "";
+    public $lot = [];
+    public $lot_alt = [];
 
-    // `0`: draft
-    // `1`: page
-    // `2`: archive
-    public static $states = ['draft', 'page', 'archive'];
-    public static $i = ['time', 'kind', 'slug', 'state'];
+    private $prefix = "";
 
-    public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
-    public static $x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
-
-    // Escape …
-    public static function x($s) {
-        return str_replace(self::$v, self::$x, $s);
-    }
-
-    // Un–Escape …
-    public static function v($s) {
-        return str_replace(self::$x, self::$v, $s);
-    }
-
-    // Open …
-    public static function open($path, $shift = "") {
-        self::close();
-        self::$path = $path;
-        self::$shift = $shift;
-        self::apart();
-        return new static;
-    }
-
-    // Close …
-    protected static function close() {
-        self::$data = [];
-        self::$path = "";
-        self::$shift = "";
-        return new static;
-    }
-
-    // Unite …
-    public static function unite($input = null) {
-        if (!isset($input)) {
-            $input = self::$data;
-        }
-        $meta = [];
-        $data = "";
-        if (isset($input['content'])) {
-            $data = $input['content'];
-            unset($input['content']);
-        }
-        foreach ($input as $k => $v) {
-            $meta[] = self::x($k) . self::$v[2] . self::x(s($v));
-        }
-        return ($meta ? self::$v[0] . implode(N, $meta) . self::$v[1] : "") . ($data ? N . N . $data : "");
-    }
-
-    // Apart …
-    public static function apart($input = null) {
+    public function __construct($input = null, $lot = [], $NS = 'page') {
         extract(Lot::get(null, []));
-        $data = [];
-        if (!isset($input)) {
-            $input = self::$path;
-        }
-        if (is_string($input) || is_file($input)) {
-            if (is_file($input)) {
-                $data = Get::page($input);
-                $input = file_get_contents($input);
-            }
-            $input = n($input);
-            if (strpos($input, self::$v[0]) !== 0) {
-                $data['content'] = self::v($input);
-            } else {
-                $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
-                $input = explode(self::$v[1] . N . N, $input, 2);
-                // Do data …
-                foreach (explode(self::$v[4], $input[0]) as $v) {
-                    $v = explode(self::$v[2], $v, 2);
-                    $data[self::v($v[0])] = e(self::v(isset($v[1]) ? $v[1] : false));
-                }
-                // Do content …
-                $data['content'] = trim(isset($input[1]) ? $input[1] : "");
-            }
-            $s = self::$path;
-            $input = Path::D($s) . DS . Path::N($s);
-            if (is_dir($input)) {
-                foreach (g($input, 'data') as $v) { // get all `*.data` file(s) from a folder
-                    $a = Path::N($v);
-                    $b = file_get_contents($v);
-                    $data[$a] = e($b);
-                }
-            }
-        } else if (__is_anemon__($input)) {
-            $data = a($input); // should be an array input
-        }
-        if (!array_key_exists('time', $data) && isset($data['update'])) {
-            $data['time'] = $data['update'];
-        }
-        $o = a($config->page);
-        $data = Anemon::extend($o, $data);
-        if (!file_exists($input . DS . 'url.data')) {
-            $shift = self::$shift;
-            $url = __url__();
-            $url_r = PAGE . ($shift ? DS . $shift : "");
-            $url_path = To::url(str_replace([$url_r . DS, $url_r], "", Path::D($data['path'])));
-            $data['url'] = $url['url'] . ($url_path ? '/' . $url_path : "") . '/' . $data['slug'];
-        }
-        $data['date'] = new Date($data['time']);
-        self::$data = $data;
-        return new static;
-    }
-
-    // Create data …
-    public static function data($a, $fn = null) {
-        if (!is_array($a)) {
-            if (is_callable($fn)) {
-                self::$data[$a] = call_user_func($fn, self::$data);
-                $a = [];
-            } else {
-                $a = ['content' => $a];
-            }
-        }
-        Anemon::extend(self::$data, $a);
-        foreach (self::$data as $k => $v) {
-            if ($v === false) unset(self::$data[$k]);
-        }
-        return new static;
-    }
-
-    // Read all page propert(y|ies)
-    public static function read($output = [], $NS = 'page') {
-        $data = self::$data;
-        // Pre-defined page data …
-        if ($output) {
-            foreach ($output as $k => $v) {
-                if (strpos($k, '__') !== 0 && !array_key_exists('__' . $k, $output)) {
-                    $output['__' . $k] = $v;
-                }
-            }
-        }
-        // Load page data …
-        return self::close()->_meta_hook(array_merge($output, $data), $output, $NS);
-    }
-
-    // Read specific page property
-    public static function get($key = null, $fail = "", $NS = 'page') {
-        if (!isset($key)) {
-            $data = self::$data;
-            return self::_meta_hook($data, $data, $NS);
-        }
-        $data = Get::page($input = self::$path, null, [], $key);
-        $input = Path::D($input) . DS . Path::N($input);
-        if ($input === DS || is_dir($input)) {
-            $data[$key] = File::open($input . DS . $key . '.data')->read(array_key_exists($key, self::$data) ? self::$data[$key] : false);
-        } else {
-            $data[$key] = false;
-        }
-        if ($data[$key] === false && file_exists(self::$path)) {
-            self::open(self::$path);
-            Anemon::extend($data, self::$data);
-            if (!array_key_exists($key, $data) || $data[$key] !== '0' && empty($data[$key])) {
-                $data[$key] = $fail;
-            }
-        }
-        $output = e(self::_meta_hook($data, $data, $NS)[$key]);
-        return $output !== false ? $output : $fail;
-    }
-
-    protected static function _meta_hook($input, $lot, $NS) {
-        $input = Hook::NS($NS . Anemon::NS . 'input', [$input, $lot]);
-        $output = Hook::NS($NS . Anemon::NS . 'output', [$input, $lot]);
-        return $output;
-    }
-
-    public static function saveTo($path, $consent = 0600) {
-        $unite = self::unite();
-        self::close();
-        File::write($unite)->saveTo($path, $consent);
-    }
-
-    public static function save($consent = 0600) {
-        return self::saveTo(self::$path, $consent);
-    }
-
-    protected $lot = [];
-
-    public function __construct($input = null, $shift = "", $lot = [], $NS = 'page') {
         if ($input) {
-            if (!__is_anemon__($input)) {
-                $input = self::open($input, $shift)->read($lot, $NS);
-            }
-            $this->lot = $input;
+            $t = is_file($input) ? filemtime($input) : time();
+            $date = date(DATE_WISE, $t);
+            $this->prefix = $NS . Anemon::NS;
+            $this->lot = ['path' => $input];
+            $this->lot_alt = array_replace(a($config->page), $lot, [
+                'time' => $date,
+                'update' => $date,
+                'kind' => [0],
+                'slug' => Path::N($input),
+                'state' => Path::X($input),
+                'id' => (string) $t,
+                'url' => To::url($input)
+            ]);
         }
     }
 
     public function __call($key, $lot) {
-        $fail = array_shift($lot) ?: false;
-        $fail_alt = array_shift($lot) ?: false;
+        $fail = array_shift($lot);
+        $fail_alt = array_shift($lot);
+        $x = $this->__get($key);
         if (is_string($fail) && strpos($fail, '~') === 0) {
-            return call_user_func(substr($fail, 1), array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
+            return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
         } else if ($fail instanceof \Closure) {
-            return call_user_func($fail, array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail_alt);
+            return call_user_func($fail, $x !== null ? $x : $fail_alt);
         }
-        return array_key_exists($key, $this->lot) ? o($this->lot[$key]) : $fail;
+        return $x !== null ? $x : $fail;
     }
 
     public function __set($key, $value = null) {
@@ -213,15 +43,120 @@ class Page extends Genome {
     }
 
     public function __get($key) {
-        return array_key_exists($key, $this->lot) ? o($this->lot[$key]) : "";
-    }
-
-    public function __unset($key) {
-        unset($this->lot[$key]);
+        if (!array_key_exists($key, $this->lot)) {
+            if ($data = File::open(Path::F($this->lot['path']) . DS . $key . '.data')->get()) {
+                $this->lot[$key] = e($data);
+            } else if ($page = File::open($this->lot['path'])->read()) {
+                $this->lot = array_replace($this->lot, $this->lot_alt, e(self::apart($page)));
+            }
+            if (!array_key_exists($key, $this->lot)) {
+                $this->lot[$key] = array_key_exists($key, $this->lot_alt) ? e($this->lot_alt[$key]) : null;
+            }
+        }
+        return $this->_hook($key, $this->lot[$key]);
     }
 
     public function __toString() {
-        return $this->unite();
+        return file_get_contents(self::$path);
+    }
+
+    protected function _hook($key, $input) {
+        return Hook::NS($this->prefix . $key, [$input, $this->lot]);
+    }
+
+    public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
+    public static $x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
+
+    public static function v($s) {
+        return str_replace(self::$x, self::$v, $s);
+    }
+
+    public static function x($s) {
+        return str_replace(self::$v, self::$x, $s);
+    }
+
+    public static function apart($input) {
+        $input = n($input);
+        $data = [];
+        if (strpos($input, self::$v[0]) !== 0) {
+            $data['content'] = self::v($input);
+        } else {
+            $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
+            $input = explode(self::$v[1] . N . N, $input, 2);
+            // Do data …
+            foreach (explode(self::$v[4], $input[0]) as $v) {
+                $v = explode(self::$v[2], $v, 2);
+                $data[self::v($v[0])] = e(self::v(isset($v[1]) ? $v[1] : false));
+            }
+            // Do content …
+            $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");
+        }
+        return $data;
+    }
+
+    public static function unite($input) {
+        $data = [];
+        $content = "";
+        if (isset($input['content'])) {
+            $content = $input['content'];
+            unset($data['content']);
+        }
+        foreach ($input as $k => $v) {
+            $data[] = self::x($k) . self::$v[2] . self::x(s($v));
+        }
+        return ($data ? self::$v[0] . implode(N, $data) . self::$v[1] : "") . ($content ? N . N . $content : "");
+    }
+
+    protected static $data = [];
+
+    public static function open($path) {
+        self::$data = ['path' => $path];
+        return new static($path);
+    }
+
+    public static function data($input, $fn = null) {
+        if (!is_array($input)) {
+            if (is_callable($fn)) {
+                self::$data[$input] = call_user_func($fn, self::$data);
+                $input = [];
+            } else {
+                $input = ['content' => $input];
+            }
+        }
+        self::$data = array_replace(self::$data, $input);
+        foreach (self::$data as $k => $v) {
+            if ($v === false) unset(self::$data[$k]);
+        }
+        return new static;
+    }
+
+    public static function read($output = [], $NS = 'page') {
+        $page = new static(self::$data['path'], [], $NS);
+        $o = [];
+        foreach ($output as $k => $v) {
+            $o[$k] = $page->{$k}($v);
+        }
+        return $o;
+    }
+
+    public static function get($key, $fail = null, $NS = 'page') {
+        if (is_array($key)) {
+            $output = [];
+            $page = new static(self::$data['path'], [], $NS);
+            foreach ($key as $k => $v) {
+                $output[$k] = $page->{$k}($v);
+            }
+            return $output;
+        }
+        return (new static(self::$data['path'], [], $NS))->{$key}($fail);
+    }
+
+    public static function saveTo($path, $consent = 0600) {
+        File::write(self::unite(self::$data))->saveTo($path, $consent);
+    }
+
+    public static function save($consent = 0600) {
+        return self::saveTo(self::$path, $consent);
     }
 
 }

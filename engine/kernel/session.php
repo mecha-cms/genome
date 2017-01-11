@@ -16,7 +16,7 @@ class Session extends Genome {
         Anemon::set($_SESSION, $key, $value);
     }
 
-    public static function get($key = null, $fail = "") {
+    public static function get($key = null, $fail = null) {
         if (!isset($key)) return $_SESSION;
         return Anemon::get($_SESSION, $key, $fail);
     }

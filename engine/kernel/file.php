@@ -105,7 +105,7 @@ class File extends Genome {
     }
 
     // Print the file content
-    public static function read($fail = "") {
+    public static function read($fail = null) {
         return file_exists(self::$path) ? file_get_contents(self::$path) : $fail;
     }
 

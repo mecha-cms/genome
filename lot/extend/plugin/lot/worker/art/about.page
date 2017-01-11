@@ -2,7 +2,7 @@
 title: Art Direction
 description: Create unique design for each blog posts by adding special CSS and JavaScript files.
 author: Taufik Nurrohman
-version: 1.0.0
+version: 1.0.1
 ...
 
 To enable this feature, add `css.data` and `js.data` files to a folder that is named with the same name as the page slug and stored in the same directory level:

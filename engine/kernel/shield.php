@@ -45,7 +45,7 @@ class Shield extends Genome {
         if (!$info = File::exist($f . 'about.' . $config->language . '.txt')) {
             $info = $f . 'about.txt';
         }
-        return new Page($info, "", [
+        return new Page($info, [
             'id' => Folder::exist($f) ? $id : null,
             'title' => To::title($id),
             'author' => $language->anonymous,

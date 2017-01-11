@@ -297,7 +297,7 @@ class Anemon extends Genome {
     }
 
     public function __get($key) {
-        return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : false;
+        return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : null;
     }
 
     public function __unset($key) {

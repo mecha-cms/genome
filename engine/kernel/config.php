@@ -87,7 +87,7 @@ class Config extends Genome {
     }
 
     public function __get($key) {
-        return self::get($key);
+        return self::get($key, null);
     }
 
     public function __unset($key) {

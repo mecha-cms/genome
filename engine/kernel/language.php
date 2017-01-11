@@ -45,6 +45,12 @@ class Language extends Config {
         return call_user_func_array([new static, $kin], $lot);
     }
 
+    public function __construct($input = []) {
+        if ($input) {
+            self::set(From::yaml($input));
+        }
+    }
+
     public function __call($key, $lot) {
         return __replace__(parent::get('__' . static::class . '.' . $key, $key), array_merge($lot, [""]));
     }

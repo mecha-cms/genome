@@ -1,10 +1,7 @@
 <?php
 
-
-/**
- * Detect Page Type
- * ----------------
- */
+// Require the plug manually …
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 
 $path = $url->path;
 $path_array = explode('/', $path);
@@ -29,14 +26,15 @@ if ($file = File::exist([
     }
 }
 
+function fn_page_url($url, $lot) {
+    $path = Path::F($lot['path'], PAGE);
+    return rtrim(__url__('url') . '/' . To::url($path), '/');
+}
 
-/**
- * Universal Route Definition
- * --------------------------
- */
+Hook::set('page.url', 'fn_page_url', 1);
 
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $language, $url) {
-    $step = $step - 1; // 0-based index …
+    $step = $step - 1; // 0–based index …
     $path_alt = $path === "" ? $config->slug : $path;
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
@@ -61,11 +59,11 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             ]
         ]
     ];
-    $pages = $page = [];
     Lot::set([
-        'pager' => new Elevator([]),
+        'pager' => new Elevator([], 1, $step, '/', $pager, 'pager'),
         'page' => new Page([])
     ]);
+    $pages = $page = [];
     Config::set('page.title', new Anemon([$config->title], ' &#x00B7; '));
     if ($file = File::exist([
         $folder . '.page', // `lot\page\page-slug.page`
@@ -74,16 +72,14 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $folder . DS . $name . '.archive' // `lot\page\page-slug\page-slug.archive`
     ])) { // File does exist, then …
         // Load user function(s) from the current shield folder if any
-        if ($fn = File::exist([$folder_shield . DS . 'index.php', $folder_shield . DS . 'index__.php'])) {
-            include $fn;
-        }
+        if ($fn = File::exist($folder_shield . DS . 'index.php')) include $fn;
+        if ($fn = File::exist($folder_shield . DS . 'index__.php')) include $fn;
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $s = PAGE;
         foreach (explode('/', '/' . $path) as $ss) {
             $s .= $ss ? DS . $ss : "";
-            if ($fn = File::exist([$s . DS . 'index.php', $s . DS . 'index__.php'])) {
-                include $fn;
-            }
+            if ($fn = File::exist($s . DS . 'index.php')) include $fn;
+            if ($fn = File::exist($s . DS . 'index__.php')) include $fn;
         }
         $page = new Page($file);
         $sort = $page->sort($config->sort);

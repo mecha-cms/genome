@@ -4,33 +4,32 @@ $state = Plugin::state(__DIR__);
 
 Lot::set([
     'state' => $state,
-    'slot' => new ParsedownExtraPlugin
+    'x' => new ParsedownExtraPlugin
 ], __DIR__);
 
-function fn_markdown_parse(&$input) {
+function fn_markdown($input, $lot) {
+    if (!isset($lot['type']) || $lot['type'] !== 'Markdown') {
+        return $input;
+    }
     extract(Lot::get(null, [], __DIR__));
     foreach ($state as $k => $v) {
-        $slot->{$k} = $v;
+        $x->{$k} = $v;
     }
-    $input = $slot->text($input);
+    return $x->text($input);
 }
 
-function fn_markdown($data) {
-    if (isset($data['type']) && $data['type'] === 'Markdown') {
-        fn_markdown_parse($data['title']);
-        fn_markdown_parse($data['description']);
-        fn_markdown_parse($data['content']);
-        $data['title'] = t($data['title'], '<p>', '</p>');
-    }
-    return $data;
+function fn_markdown_span($input, $lot = []) {
+    if (!isset($lot)) return $input;
+    return t(fn_markdown($input, $lot), '<p>', '</p>');
 }
 
 From::plug('markdown', function($input) {
-    return fn_markdown(['content' => $input])['content'];
+    return fn_markdown($input, ['type' => 'Markdown']);
 });
 
 To::plug('markdown', function($input) {
     return $input; // TODO
 });
 
-Hook::set('page.output', 'fn_markdown', 1);
+Hook::set('page.title', 'fn_markdown_span', 1);
+Hook::set(['page.description', 'page.content'], 'fn_markdown', 1);

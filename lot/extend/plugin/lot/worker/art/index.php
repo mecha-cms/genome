@@ -1,15 +1,19 @@
 <?php
 
-function fn_art($data) {
-    // Add `<style>` tag(s) if it is not there
-    if (!empty($data['css']) && stripos($data['css'], '</style>') === false) {
-        $data['css'] = '<style media="screen">' . N . trim($data['css']) . N . '</style>';
+function fn_art_css($content) {
+    $content = trim($content);
+    if ($content && stripos($content, '</style>') === false) {
+        return '<style media="screen">' . N . $content . N . '</style>';
     }
-    // Add `<script>` tag(s) if it is not there
-    if (!empty($data['js']) && stripos($data['js'], '</script>') === false) {
-        $data['js'] = '<script>' . N . trim($data['js']) . N . '</script>';
+    return $content;
+}
+
+function fn_art_js($content) {
+    $content = trim($content);
+    if ($content && stripos($content, '</script>') === false) {
+        return '<script>' . N . $content . N . '</script>';
     }
-    return $data;
+    return $content;
 }
 
 function fn_art_set($content) {
@@ -21,5 +25,6 @@ function fn_art_set($content) {
     return $content;
 }
 
-Hook::set('page.output', 'fn_art');
+Hook::set('page.css', 'fn_art_css');
+Hook::set('page.js', 'fn_art_js');
 Hook::set('shield.output', 'fn_art_set');

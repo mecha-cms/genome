@@ -59,7 +59,7 @@ class URL extends Genome {
     }
 
     public function __get($key) {
-        return isset($this->{$key}) ? $this->{$key} : "";
+        return isset($this->{$key}) ? $this->{$key} : null;
     }
 
     public function __unset($key) {

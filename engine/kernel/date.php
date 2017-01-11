@@ -135,7 +135,7 @@ class Date extends Genome {
     }
 
     public function __get($key) {
-        return $this->extract($key);
+        return $this->extract($key, null);
     }
 
     public function __unset($key) {

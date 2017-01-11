@@ -6,7 +6,7 @@ class Request extends Genome {
         'session' => ['request' => 'mecha.request']
     ];
 
-    public static function any($id, $key = null, $fail = "", $eval = true) {
+    public static function any($id, $key = null, $fail = null, $eval = true) {
         $data = $GLOBALS['_' . strtoupper($id)];
         $data = isset($data) ? $data : [];
         if (isset($key)) {
@@ -17,12 +17,12 @@ class Request extends Genome {
     }
 
     // `GET` request
-    public static function get($key, $fail = "", $eval = true) {
+    public static function get($key, $fail = null, $eval = true) {
         return self::any('get', $key, $fail, $eval);
     }
 
     // `POST` request
-    public static function post($key, $fail = "", $eval = true) {
+    public static function post($key, $fail = null, $eval = true) {
         return self::any('post', $key, $fail, $eval);
     }
 
@@ -37,7 +37,7 @@ class Request extends Genome {
     }
 
     // restore state
-    public static function restore($k = null, $fail = "") {
+    public static function restore($k = null, $fail = null) {
         $memo = Session::get(self::$config['session']['request'], []);
         if (isset($k)) {
             self::delete($k);

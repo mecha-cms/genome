@@ -34,7 +34,7 @@ class Cookie extends Genome {
         call_user_func_array('setcookie', $cc);
     }
 
-    public static function get($key = null, $fail = "") {
+    public static function get($key = null, $fail = null) {
         $c = isset($_COOKIE) ? e($_COOKIE) : $fail;
         if (!isset($key)) return $c;
         $v = Anemon::get($c, $key, $fail);

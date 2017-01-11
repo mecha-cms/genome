@@ -53,7 +53,7 @@ extract(Lot::set($seeds)->get(null, []));
 Date::zone($config->zone);
 
 $extends = [];
-foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {
+foreach (g(EXTEND . DS . '*', '{index__,index}.php') as $v) {
     $extends[str_replace(EXTEND . DS, "", $v)] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
 }
 
@@ -80,7 +80,7 @@ foreach ($extends as $extend) {
 
 r(EXTEND, $extends, null, $seeds);
 
-r(SHIELD . DS . $config->shield, '{index__,index,__index}.php', function($f) use($seeds) {
+r(SHIELD . DS . $config->shield, '{index__,index}.php', function($f) use($seeds) {
     $f = Path::D($f) . DS . 'engine';
     d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
         $f .= DS . 'plug' . DS . $n . '.php';
