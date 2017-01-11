@@ -10,7 +10,7 @@ class Page extends Genome {
     public function __construct($input = null, $lot = [], $NS = 'page') {
         extract(Lot::get(null, []));
         if ($input) {
-            $t = is_file($input) ? filemtime($input) : time();
+            $t = File::T($input, time());
             $date = date(DATE_WISE, $t);
             $this->prefix = $NS . Anemon::NS;
             $this->lot = ['path' => $input];
@@ -57,7 +57,7 @@ class Page extends Genome {
     }
 
     public function __toString() {
-        return file_get_contents(self::$path);
+        return file_get_contents(self::$data['path']);
     }
 
     protected function _hook($key, $input) {
@@ -156,7 +156,7 @@ class Page extends Genome {
     }
 
     public static function save($consent = 0600) {
-        return self::saveTo(self::$path, $consent);
+        return self::saveTo(self::$data['path'], $consent);
     }
 
 }
