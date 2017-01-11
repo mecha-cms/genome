@@ -61,7 +61,7 @@ class Page extends Genome {
     }
 
     protected function _hook($key, $input) {
-        return Hook::NS($this->prefix . $key, [$input, $this->lot]);
+        return Hook::NS($this->prefix . $key, [is_array($input) ? [$input] : $input, $this->lot]);
     }
 
     public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
