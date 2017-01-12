@@ -10,6 +10,9 @@
       <blockquote><?php echo $page->description; ?></blockquote>
       <?php endif; ?>
       <?php echo $page->content; ?>
+      <?php if ($page->link): ?>
+      <p><a href="<?php echo $page->link; ?>" rel="nofollow" target="_blank"><?php echo $language->link; ?> &#x21E2;</a></p>
+      <?php endif; ?>
     </section>
     <footer>
       <?php $update = new Date($page->update); ?>
