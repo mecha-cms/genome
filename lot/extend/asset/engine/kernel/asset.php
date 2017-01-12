@@ -74,11 +74,18 @@ class Asset extends Genome {
             self::$lot[$kin][1] = [];
         }
         if (isset($path)) {
-            $s = self::$lot[$kin][1][$path];
-            if (!isset($s)) {
-                self::set($kin, $path);
+            if (!self::get($path)) {
+                self::set($path);
             }
-            return is_callable($fn) ? call_user_func($fn, $s, $path, $attr, $stack) : ($s['path'] ? file_get_contents($s['path']) : "");
+            $s = self::get($path, [
+                'path' => null,
+                'url' => null,
+                'id' => null,
+                'stack' => null
+            ]);
+            $html = is_callable($fn) ? call_user_func($fn, $s, $path, $attr) : ($s['path'] ? file_get_contents($s['path']) : "");
+            self::reset($path);
+            return $html;
         }
         if (isset(self::$lot[$kin][1])) {
             $assets = Anemon::eat(self::$lot[$kin][1])->sort(1, 'stack', true)->vomit();
