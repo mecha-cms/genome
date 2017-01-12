@@ -28,7 +28,7 @@ if ($file = File::exist([
 
 function fn_page_url($url, $lot) {
     $path = Path::F($lot['path'], PAGE);
-    return rtrim(__url__('url') . '/' . To::url($path), '/');
+    return rtrim(__url__('url') . '/' . ltrim(To::url($path), '/'), '/');
 }
 
 Hook::set('page.url', 'fn_page_url', 1);
