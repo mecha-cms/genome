@@ -3,6 +3,11 @@
 // Require the plug manually …
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 
+// Store page state to registry …
+if ($state = Extend::state(__DIR__)) {
+    Config::extend($state);
+}
+
 $path = $url->path;
 $path_array = explode('/', $path);
 
@@ -33,9 +38,13 @@ function fn_page_url($url, $lot) {
 
 Hook::set('page.url', 'fn_page_url', 1);
 
-Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $language, $url) {
+Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
+    extract(Lot::get(null, []));
+    if ($path === $site->slug) {
+        Guardian::kick(""); // Redirect to home page …
+    }
     $step = $step - 1; // 0–based index …
-    $path_alt = $path === "" ? $config->slug : $path;
+    $path_alt = ltrim($path === "" ? $site->slug : $path, '/');
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
     $name = Path::B($folder);
@@ -61,10 +70,10 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     ];
     Lot::set([
         'pager' => new Elevator([], 1, $step, '/', $pager, 'pager'),
-        'page' => new Page([])
+        'page' => new Page()
     ]);
     $pages = $page = [];
-    Config::set('page.title', new Anemon([$config->title], ' &#x00B7; '));
+    Config::set('page.title', new Anemon([$site->title], ' &#x00B7; '));
     if ($file = File::exist([
         $folder . '.page', // `lot\page\page-slug.page`
         $folder . '.archive', // `lot\page\page-slug.archive`
@@ -103,7 +112,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $pager, 'pager'),
             'page' => $page
         ]);
-        Config::set('page.title', new Anemon([$page->title, $config->title], ' &#x00B7; '));
+        Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         if (!File::exist($folder . DS . $name . '.' . $page->state)) {
             if ($files = Get::pages($folder, 'page', $sort[0], $sort[1], 'path')) {
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {

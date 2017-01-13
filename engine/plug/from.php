@@ -7,9 +7,7 @@ From::plug('json', function($input) {
     return o(json_decode($input, true));
 });
 
-From::plug('base64', function($input) {
-    return base64_decode($input);
-});
+From::plug('base64', 'base64_decode');
 
 function __from_yaml__($input, $c = [], $in = '  ') {
     if (!is_string($input)) {
@@ -111,9 +109,5 @@ From::plug('yaml', function(...$lot) {
     return call_user_func_array('__from_yaml__', $lot);
 });
 
-function __from_entity__($input) {
-    return html_entity_decode($input);
-}
-
-From::plug('html_dec', '__from_entity__');
-From::plug('html_hex', '__from_entity__');
+From::plug('html_dec', 'html_entity_decode');
+From::plug('html_hex', 'html_entity_decode');

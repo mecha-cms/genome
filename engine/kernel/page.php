@@ -9,21 +9,19 @@ class Page extends Genome {
 
     public function __construct($input = null, $lot = [], $NS = 'page') {
         extract(Lot::get(null, []));
-        if ($input) {
-            $t = File::T($input, time());
-            $date = date(DATE_WISE, $t);
-            $this->prefix = $NS . Anemon::NS;
-            $this->lot = ['path' => $input];
-            $this->lot_alt = array_replace(a($config->page), $lot, [
-                'time' => $date,
-                'update' => $date,
-                'kind' => [0],
-                'slug' => Path::N($input),
-                'state' => Path::X($input),
-                'id' => (string) $t,
-                'url' => To::url($input)
-            ]);
-        }
+        $t = File::T($input, time());
+        $date = date(DATE_WISE, $t);
+        $this->lot_alt = array_replace(a($config->page), $lot, [
+            'time' => $date,
+            'update' => $date,
+            'kind' => [0],
+            'slug' => Path::N($input),
+            'state' => Path::X($input),
+            'id' => (string) $t,
+            'url' => To::url($input)
+        ]);
+        $this->prefix = $NS . Anemon::NS;
+        $this->lot = is_array($input) ? $input : ['path' => $input];
     }
 
     public function __call($key, $lot) {
@@ -44,10 +42,12 @@ class Page extends Genome {
 
     public function __get($key) {
         if (!array_key_exists($key, $this->lot)) {
-            if ($data = File::open(Path::F($this->lot['path']) . DS . $key . '.data')->get()) {
-                $this->lot[$key] = e($data);
-            } else if ($page = File::open($this->lot['path'])->read()) {
-                $this->lot = array_replace($this->lot, $this->lot_alt, e(self::apart($page)));
+            if (isset($this->lot['path'])) {
+                if ($data = File::open(Path::F($this->lot['path']) . DS . $key . '.data')->get()) {
+                    $this->lot[$key] = e($data);
+                } else if ($page = File::open($this->lot['path'])->read()) {
+                    $this->lot = array_replace($this->lot, $this->lot_alt, e(self::apart($page)));
+                }
             }
             if (!array_key_exists($key, $this->lot)) {
                 $this->lot[$key] = array_key_exists($key, $this->lot_alt) ? e($this->lot_alt[$key]) : null;

@@ -80,13 +80,8 @@ To::plug('html', function($input) {
     return $input; // do nothing …
 });
 
-To::plug('html_encode', function($input) {
-    return htmlspecialchars($input);
-});
-
-To::plug('html_decode', function($input) {
-    return htmlspecialchars_decode($input);
-});
+To::plug('html_encode', 'htmlspecialchars');
+To::plug('html_decode', 'htmlspecialchars_decode');
 
 To::plug('html_dec', function($input, $z = false) {
     $output = "";
@@ -108,21 +103,10 @@ To::plug('html_hex', function($input, $z = false) {
     return $output;
 });
 
-To::plug('url_encode', function($input) {
-    return urlencode($input);
-});
-
-To::plug('url_decode', function($input) {
-    return urldecode($input);
-});
-
-To::plug('base64', function($input) {
-    return base64_encode($input);
-});
-
-To::plug('json', function($input) {
-    return json_encode($input);
-});
+To::plug('url_encode', 'urlencode');
+To::plug('url_decode', 'urldecode');
+To::plug('base64', 'base64_encode');
+To::plug('json', 'json_encode');
 
 To::plug('anemon', function($input) {
     if (__is_anemon__($input)) {

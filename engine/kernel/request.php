@@ -16,6 +16,14 @@ class Request extends Genome {
         return !empty($data) ? ($eval ? e($data) : $data) : $fail;
     }
 
+    public static function is($x = null) {
+        $s = strtoupper($_SERVER['REQUEST_METHOD']);
+        if (is_string($x)) {
+            return strtoupper($x) === $s;
+        }
+        return $s;
+    }
+
     // `GET` request
     public static function get($key, $fail = null, $eval = true) {
         return self::any('get', $key, $fail, $eval);

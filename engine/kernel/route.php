@@ -11,8 +11,6 @@ class Route extends Genome {
         $stack = (array) $stack;
         foreach ($id as $k => $v) {
             $v = URL::short($v, false);
-            // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
-            $v = str_replace('../', "", urldecode($v));
             if (!isset(self::$lot[0][$v])) {
                 self::$lot[1][$v] = [
                     'fn' => $fn,
@@ -102,14 +100,15 @@ class Route extends Genome {
 
     public static function fire($id = null, $lot = []) {
         if (isset($id)) {
-            $id = URL::short($id, false);
+            // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
+            $id = str_replace('../', "", urldecode(URL::short($id, false)));
             if (isset(self::$lot[1][$id])) {
                 call_user_func_array(self::$lot[1][$id]['fn'], $lot);
                 return true;
             }
         } else {
             extract(Lot::get(null, []));
-            $id = $url->path;
+            $id = str_replace('../', "", urldecode($url->path));
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s) …
                 if (isset(self::$lot_o[1][$id])) {

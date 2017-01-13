@@ -48,8 +48,10 @@ class Config extends Genome {
         return new static;
     }
 
-    public static function merge(...$lot) {
-        return call_user_func('self::set', ...$lot);
+    public static function extend(...$lot) {
+        self::set(...$lot);
+        Anemon::extend(self::$bucket, State::config());
+        return new static;
     }
 
     public static function __callStatic($kin, $lot) {

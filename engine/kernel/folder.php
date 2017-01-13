@@ -20,4 +20,15 @@ class Folder extends File {
         return $file && is_dir($file) ? $file : $fail;
     }
 
+    public static function size($folder, $unit = null, $prec = 2) {
+        if (!is_dir($folder)) return false;
+        $pool = 0;
+        foreach (parent::explore($folder, true, true, []) as $k => $v) {
+            if ($v === 1) {
+                $pool += filesize($k);
+            }
+        }
+        return parent::size($pool, $unit, $prec);
+    }
+
 }

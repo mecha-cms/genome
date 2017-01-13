@@ -70,7 +70,7 @@ class Shield extends Genome {
             extract(Hook::NS($NS . 'lot', $lot__));
             Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
-            $state = self::state($config->shield, []);
+            $state = o(self::state($config->shield, []));
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
                     $content = Hook::NS($NS . 'input', [$content, $path__]);
@@ -105,7 +105,7 @@ class Shield extends Genome {
         extract(Hook::NS($NS . 'lot', $lot__));
         Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
         Hook::NS($NS . 'before', [null, $G, $G]);
-        $state = self::state($config->shield, []);
+        $state = o(self::state($config->shield, []));
         if ($path__) {
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
@@ -118,6 +118,8 @@ class Shield extends Genome {
             } else {
                 require $path__;
             }
+        } else {
+            Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
         }
         $G['content'] = $out;
         // Reset shield lot
