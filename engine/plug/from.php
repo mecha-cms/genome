@@ -101,8 +101,8 @@ From::plug('yaml', function(...$lot) {
     if (__is_anemon__($lot[0])) {
         return a($lot[0]);
     }
-    if (Is::path($lot[0], true)) {
-        $lot[0] = file_get_contents($lot[0]);
+    if (Is::path($lot[0])) {
+        $lot[0] = file_exists($lot[0]) ? file_get_contents($lot[0]) : "";
     }
     $s = Page::$v;
     $lot[0] = str_replace([X . $s[0], $s[1] . X, X], "", X . $lot[0] . X);

@@ -100,15 +100,14 @@ class Route extends Genome {
 
     public static function fire($id = null, $lot = []) {
         if (isset($id)) {
-            // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
-            $id = str_replace('../', "", urldecode(URL::short($id, false)));
+            $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
                 call_user_func_array(self::$lot[1][$id]['fn'], $lot);
                 return true;
             }
         } else {
             extract(Lot::get(null, []));
-            $id = str_replace('../', "", urldecode($url->path));
+            $id = $url->path;
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s) …
                 if (isset(self::$lot_o[1][$id])) {

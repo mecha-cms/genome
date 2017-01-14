@@ -3,9 +3,9 @@
 class Elevator extends Genome {
 
     public $config = [
-        // `-1`: previous
-        //  `0`: current
-        //  `1`: next
+        // -1: previous
+        //  0: current
+        //  1: next
         'direction' => [
             '-1' => 'up',
             '0' => "",

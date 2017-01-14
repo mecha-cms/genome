@@ -1,8 +1,7 @@
 <?php
 
 return [
-    'type' => "", // default page type is ``
     'path' => 'index',
-    'chunk' => 3,
+    'chunk' => 5,
     'sort' => [-1, 'time']
 ];

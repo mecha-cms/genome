@@ -11,23 +11,26 @@ if ($state = Extend::state(__DIR__)) {
 $path = $url->path;
 $path_array = explode('/', $path);
 
-$config->type = '404'; // default is `404`
-$config->state = 'page'; // default is `page`
-if ($path === "" || $path === $config->path) {
-    $config->type = "";
+$site->type = '404'; // default is `404`
+$site->state = 'page'; // default is `page`
+
+if ($path === "" || $path === $site->path) {
+    $site->type = ""; // default is ``
 }
+
 $n = DS . Path::B($path);
 $folder = PAGE . DS . $path;
+
 if ($file = File::exist([
     $folder . '.page',
     $folder . '.archive',
     $folder . $n . '.page',
     $folder . $n . '.archive'
 ])) {
-    $config->type = 'page';
-    $config->state = Path::X($file);
+    $site->type = 'page';
+    $site->state = Path::X($file);
     if (!File::exist($folder . $n . '.page') && Get::pages($folder, 'page')) {
-        $config->type = 'pages';
+        $site->type = 'pages';
     }
 }
 
@@ -40,6 +43,8 @@ Hook::set('page.url', 'fn_page_url', 1);
 
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
     extract(Lot::get(null, []));
+    // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
+    $path = str_replace('../', "", urldecode($path));
     if ($path === $site->path) {
         Guardian::kick(""); // Redirect to home page …
     }
@@ -48,11 +53,11 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
     $name = Path::B($folder);
-    // Change vertical elevator into horizontal elevator
-    $pager = [
+    // Horizontal elevator …
+    $elevator = [
         'direction' => [
             '-1' => 'previous',
-            '1' => 'next'
+             '1' => 'next'
         ],
         'union' => [
             '-2' => [
@@ -62,15 +67,15 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
                 1 => '&#x25C0;',
                 2 => ['rel' => 'prev']
             ],
-            '1' => [
+             '1' => [
                 1 => '&#x25B6;',
                 2 => ['rel' => 'next']
             ]
         ]
     ];
     Lot::set([
-        'pager' => new Elevator([], 1, $step, '/', $pager, 'pager'),
-        'page' => new Page()
+        'pager' => new Elevator([], 1, $step, '/', $elevator, 'pager'),
+        'page' => new Page
     ]);
     $pages = $page = [];
     Config::set('page.title', new Anemon([$site->title], ' &#x00B7; '));
@@ -91,8 +96,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
             if ($fn = File::exist($s . DS . 'index__.php')) include $fn;
         }
         $page = new Page($file);
-        $sort = $page->sort($config->sort);
-        $chunk = $page->chunk($config->chunk);
+        $sort = $page->sort($site->sort);
+        $chunk = $page->chunk($site->chunk);
         // Create elevator for single page mode
         $folder_parent = Path::D($folder);
         $path_parent = Path::D($path);
@@ -103,18 +108,18 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
             $folder_parent . DS . $name_parent . '.page',
             $folder_parent . DS . $name_parent . '.archive'
         ])) {
-            $sort_parent = Page::open($file_parent)->get('sort', $config->sort);
-            $files_parent = Get::pages($folder_parent, 'page', $sort_parent[0], $sort_parent[1], 'slug');
+            $sort_parent = Page::open($file_parent)->get('sort', $site->sort);
+            $files_parent = fn_get_pages($folder_parent, 'page', $sort_parent[0], $sort_parent[1], 'slug');
         } else {
             $files_parent = [];
         }
         Lot::set([
-            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $pager, 'pager'),
+            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, 'pager'),
             'page' => $page
         ]);
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         if (!File::exist($folder . DS . $name . '.' . $page->state)) {
-            if ($files = Get::pages($folder, 'page', $sort[0], $sort[1], 'path')) {
+            if ($files = fn_get_pages($folder, 'page', $sort[0], $sort[1], 'path')) {
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
                     $pages[] = new Page($file);
                 }
@@ -122,7 +127,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
                     Shield::abort(['204/' . $path_alt, '404/' . $path_alt, '204', '404']);
                 }
                 Lot::set([
-                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $pager, 'pager'),
+                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, 'pager'),
                     'pages' => $pages
                 ]);
                 Shield::attach('pages/' . $path_alt);

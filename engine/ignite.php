@@ -980,10 +980,10 @@ function w($x, $c = [], $n = false) {
         $c = '<' . implode('><', $c) . '>';
         return preg_replace($n ? '# +#' : '#\s+#', ' ', trim(strip_tags($x, $c)));
     }
-    // 1. Replace `+` to ` `
-    // 2. Replace `-` to ` `
-    // 3. Replace `-----` to ` - `
-    // 4. Replace `---` to `-`
+    // [1]. Replace `+` to ` `
+    // [2]. Replace `-` to ` `
+    // [3]. Replace `-----` to ` - `
+    // [4]. Replace `---` to `-`
     return preg_replace([
         '#^(\.|_{2})|(\.|_{2})$#', // remove `.` and `__` prefix/suffix in file name
         '#-{5}#',

@@ -1,10 +1,10 @@
 <?php
 
-class Language extends Config {
+class Language extends Genome {
 
     public static function ignite(...$lot) {
         $id = '__' . static::class;
-        $language = parent::get('language');
+        $language = Config::get('language');
         $cache = str_replace(ROOT, CACHE, LANGUAGE) . DS . $language . '.php';
         $x = File::open($cache)->import([0, []]);
         $i18n = File::exist([LANGUAGE . DS . $language . '.txt', LANGUAGE . DS . 'en-us.txt']);
@@ -13,28 +13,28 @@ class Language extends Config {
             $x = [$t, From::yaml($i18n)];
             File::export($x)->saveTo($cache);
         }
-        return parent::set($id, $x[1])->get($id);
+        return Config::set($id, $x[1])->get($id);
     }
 
     public static function set($key, $value = null) {
         $id = '__' . static::class . '.';
         if (!__is_anemon__($key)) {
-            return parent::set($id . $key, $value);
+            return Config::set($id . $key, $value);
         }
         foreach ($key as $k => $v) {
             $keys[$id . $k] = $v;
         }
-        return parent::set(isset($keys) ? $keys : [], $value);
+        return Config::set(isset($keys) ? $keys : [], $value);
     }
 
-    public static function get($key = null, $vars = [], $fail = null) {
+    public static function get($key = null, $vars = [], $fail = false) {
         $vars = array_merge($vars, [""]);
         $fail = $fail ?: $key;
         $id = '__' . static::class;
         if (!isset($key)) {
-            return parent::get($id, $fail);
+            return Config::get($id, $fail);
         }
-        $s = parent::get($id . '.' . $key, $fail);
+        $s = Config::get($id . '.' . $key, $fail);
         if (strpos($s, '%') !== 0 && u($vars[0]) !== $vars[0]) {
             $vars[0] = l($vars[0]);
         }
@@ -52,27 +52,27 @@ class Language extends Config {
     }
 
     public function __call($key, $lot) {
-        return __replace__(parent::get('__' . static::class . '.' . $key, $key), array_merge($lot, [""]));
+        return __replace__(Config::get('__' . static::class . '.' . $key, $key), array_merge($lot, [""]));
     }
 
     public function __set($key, $value = null) {
-        return parent::set('__' . static::class . '.' . $key, $value);
+        return Config::set('__' . static::class . '.' . $key, $value);
     }
 
     public function __get($key) {
-        return parent::get('__' . static::class . '.' . $key, $key);
+        return Config::get('__' . static::class . '.' . $key, $key);
     }
 
     public function __unset($key) {
-        return parent::reset('__' . static::class . '.' . $key);
+        return Config::reset('__' . static::class . '.' . $key);
     }
 
     public function __toString() {
-        return To::yaml(parent::get('__' . static::class));
+        return To::yaml(Config::get('__' . static::class));
     }
 
     public function __invoke($fail = []) {
-        return parent::get('__' . static::class, o($fail));
+        return Config::get('__' . static::class, o($fail));
     }
 
 }
