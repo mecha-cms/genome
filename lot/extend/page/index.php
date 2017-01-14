@@ -13,7 +13,7 @@ $path_array = explode('/', $path);
 
 $config->type = '404'; // default is `404`
 $config->state = 'page'; // default is `page`
-if ($path === "" || $path === $config->slug) {
+if ($path === "" || $path === $config->path) {
     $config->type = "";
 }
 $n = DS . Path::B($path);
@@ -40,11 +40,11 @@ Hook::set('page.url', 'fn_page_url', 1);
 
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
     extract(Lot::get(null, []));
-    if ($path === $site->slug) {
+    if ($path === $site->path) {
         Guardian::kick(""); // Redirect to home page …
     }
     $step = $step - 1; // 0–based index …
-    $path_alt = ltrim($path === "" ? $site->slug : $path, '/');
+    $path_alt = ltrim($path === "" ? $site->path : $path, '/');
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
     $name = Path::B($folder);

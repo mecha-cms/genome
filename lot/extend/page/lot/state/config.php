@@ -2,7 +2,7 @@
 
 return [
     'type' => "", // default page type is ``
-    'slug' => 'index',
+    'path' => 'index',
     'chunk' => 3,
     'sort' => [-1, 'time']
 ];
