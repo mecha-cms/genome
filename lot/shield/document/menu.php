@@ -8,7 +8,7 @@
   </li><!--
   <?php if ($menus = Get::pages(PAGE, 'page', 1, 'slug', 'slug')): ?>
     <?php foreach ($menus as $menu): ?>
-    <?php if ($menu === $site->slug) continue; ?>
+    <?php if ($menu === $site->path) continue; ?>
     <?php
 
     $p = Page::open(PAGE . DS . $menu . '.page')->get([
