@@ -8,13 +8,6 @@ class Shield extends Genome {
         return Mecha::version($v, self::info($id)->version('0.0.0'));
     }
 
-    public static function lot($key = null, $fail = false) {
-        if (isset($key)) {
-            return Anemon::get(self::$lot, $key, $fail);
-        }
-        return !empty(self::$lot) ? self::$lot : $fail;
-    }
-
     protected static function X($input) {
         $x = substr($input, -4) !== '.php' ? '.php' : "";
         return $input . $x;
@@ -57,20 +50,20 @@ class Shield extends Genome {
 
     public static function get($input, $fail = false, $buffer = true) {
         if ($path__ = self::path($input, $fail)) {
+            global $config;
             $G = ['source' => $input];
             $NS = strtolower(static::class) . Anemon::NS . 'get' . Anemon::NS;
-            $lot__ = self::lot(null, []);
+            $lot__ = Lot::get(null, []);
             $path__ = Hook::NS($NS . 'path', $path__);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";
             // Begin shield part
             Hook::NS($NS . 'lot' . Anemon::NS . 'before', [null, $G, $G]);
-            extract(Lot::get(null, []));
+            $state = o(self::state($config->shield, []));
             extract(Hook::NS($NS . 'lot', $lot__));
             Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
-            $state = o(self::state($config->shield, []));
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
                     $content = Hook::NS($NS . 'input', [$content, $path__]);
@@ -91,22 +84,21 @@ class Shield extends Genome {
     }
 
     public static function attach($input, $fail = false, $buffer = true) {
-        $path__ = self::path($input, $fail);
-        $G = ['source' => $input];
-        $NS = strtolower(static::class) . Anemon::NS;
-        $lot__ = self::lot(null, []);
-        $path__ = Hook::NS($NS . 'path', $path__);
-        $G['lot'] = $lot__;
-        $G['path'] = $path__;
-        $out = "";
-        // Begin shield
-        Hook::NS($NS . 'lot' . Anemon::NS . 'before', [null, $G, $G]);
-        extract(Lot::get(null, []));
-        extract(Hook::NS($NS . 'lot', $lot__));
-        Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
-        Hook::NS($NS . 'before', [null, $G, $G]);
-        $state = o(self::state($config->shield, []));
-        if ($path__) {
+        if ($path__ = self::path($input, $fail)) {
+            global $config;
+            $G = ['source' => $input];
+            $NS = strtolower(static::class) . Anemon::NS;
+            $lot__ = Lot::get(null, []);
+            $path__ = Hook::NS($NS . 'path', $path__);
+            $G['lot'] = $lot__;
+            $G['path'] = $path__;
+            $out = "";
+            // Begin shield
+            Hook::NS($NS . 'lot' . Anemon::NS . 'before', [null, $G, $G]);
+            $state = o(self::state($config->shield, []));
+            extract(Hook::NS($NS . 'lot', $lot__));
+            Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
+            Hook::NS($NS . 'before', [null, $G, $G]);
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
                     $content = Hook::NS($NS . 'input', [$content, $path__]);
@@ -118,15 +110,15 @@ class Shield extends Genome {
             } else {
                 require $path__;
             }
+            $G['content'] = $out;
+            // Reset shield lot
+            self::$lot = [];
+            // End shield
+            Hook::NS($NS . 'after', [null, $G, $G]);
+            exit;
         } else {
             Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
         }
-        $G['content'] = $out;
-        // Reset shield lot
-        self::$lot = [];
-        // End shield
-        Hook::NS($NS . 'after', [null, $G, $G]);
-        exit;
     }
 
     public static function abort($code = '404', $fail = false, $buffer = true) {
