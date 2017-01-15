@@ -30,12 +30,18 @@ File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X .
 
 Session::ignite();
 Config::ignite();
-Language::ignite();
 
 $config = new Config;
+$url = new URL;
+
+// set default date time zone
+Date::zone($config->zone);
+
+// must be set after date time zone set
+Language::ignite();
+
 $date = new Date;
 $language = new Language;
-$url = new URL;
 
 $seeds = [
     'config' => $config,
@@ -48,9 +54,6 @@ $seeds = [
 
 // plant and extract …
 extract(Lot::set($seeds)->get(null, []));
-
-// set default date time zone
-Date::zone($config->zone);
 
 $extends = [];
 foreach (g(EXTEND . DS . '*', '{index__,index}.php') as $v) {

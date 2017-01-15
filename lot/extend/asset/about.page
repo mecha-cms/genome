@@ -2,6 +2,7 @@
 title: Assets
 description: Add, remove, append, prepend and replace asset files from/to the HTML output without touching the shield files.
 author: Taufik Nurrohman
+type: Markdown
 version: 1.0.2
 ...
 

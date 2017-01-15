@@ -7,10 +7,12 @@ class Language extends Genome {
         $language = Config::get('language');
         $cache = str_replace(ROOT, CACHE, LANGUAGE) . DS . $language . '.php';
         $x = File::open($cache)->import([0, []]);
-        $i18n = File::exist([LANGUAGE . DS . $language . '.txt', LANGUAGE . DS . 'en-us.txt']);
-        $t = File::T($i18n);
-        if ($t > $x[0]) {
-            $x = [$t, From::yaml($i18n)];
+        $i18n = File::exist([LANGUAGE . DS . $language . '.page', LANGUAGE . DS . 'en-us.page'], null);
+        $t = File::T($i18n, -1);
+        $i18n = new Page($i18n, [], 'language');
+        if ($x[0] === 0 || $t > $x[0]) {
+            $s = 'From::' . l($i18n->type);
+            $x = [$t, is_callable($s) ? call_user_func($s, $i18n->content) : $i18n->content];
             File::export($x)->saveTo($cache);
         }
         return Config::set($id, $x[1])->get($id);

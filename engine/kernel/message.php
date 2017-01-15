@@ -27,12 +27,14 @@ class Message extends Genome {
         $count = count($lot);
         $kin = array_shift($lot);
         $text = array_shift($lot);
-        $s = array_shift($lot) ?? "";
-        $text = Language::get(__c2f__(static::class) . '_' . $kin . '_' . $text, (array) $s);
+        $s = array_shift($lot) ?: "";
+        $i = __c2f__(static::class) . '_' . $kin . '_' . $text;
+        $o = Language::get($i, (array) $s);
+        $o = $o === $i ? $text : $o;
         if ($count === 1) {
             self::set('default', $kin);
         } else {
-            Session::set(self::$id, Session::get(self::$id, "") . __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, $text]));
+            Session::set(self::$id, Session::get(self::$id, "") . __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, $o]));
         }
         return new static;
     }

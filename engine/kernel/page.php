@@ -8,10 +8,9 @@ class Page extends Genome {
     private $prefix = "";
 
     public function __construct($input = null, $lot = [], $NS = 'page') {
-        extract(Lot::get(null, []));
         $t = File::T($input, time());
         $date = date(DATE_WISE, $t);
-        $this->lot_alt = array_replace(a($config->page), $lot, [
+        $this->lot_alt = array_replace(a(Config::get('page', [])), $lot, [
             'time' => $date,
             'update' => $date,
             'kind' => [0],
@@ -21,7 +20,7 @@ class Page extends Genome {
             'url' => To::url($input)
         ]);
         $this->prefix = $NS . Anemon::NS;
-        $this->lot = is_array($input) ? $input : ['path' => $input];
+        $this->lot = is_array($input) ? $input : array_replace($lot, ['path' => $input]);
     }
 
     public function __call($key, $lot) {

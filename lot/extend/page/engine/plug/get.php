@@ -46,7 +46,7 @@ function fn_get_page($path, $key = null, $fail = false, $for = null) {
     return !isset($key) ? $output : (array_key_exists($key, $output) ? $output[$key] : $fail);
 }
 
-function fn_get_pages($folder = PAGE, $state = 'page', $sort = 1, $by = 'time', $key = null) {
+function fn_get_pages($folder = PAGE, $state = 'page', $sort = -1, $by = 'time', $key = null) {
     $output = [];
     if ($input = g($folder, $state, "", false)) {
         foreach ($input as $v) {

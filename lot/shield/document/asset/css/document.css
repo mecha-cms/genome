@@ -67,7 +67,7 @@ mark {
   background:#ff0;
   color:inherit;
 }
-article,aside,footer,header,nav,section {display:block}
+article,aside,footer,header,main,nav,section {display:block}
 .button,
 .input,
 .select,
@@ -196,7 +196,7 @@ ul ul {
   margin-top:0;
   margin-left:1em;
 }
-ul li {list-style:square}
+ul {list-style:square}
 hr {
   color:inherit;
   height:auto;

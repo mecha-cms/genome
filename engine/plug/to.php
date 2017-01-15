@@ -125,6 +125,12 @@ To::plug('yaml', function(...$lot) {
     return call_user_func_array('__to_yaml__', $lot);
 });
 
+To::plug('snippet', function($input, $html = true, $count = 200, $tail = '&#x2026;') {
+    $s = w($input, $html ? explode(',', HTML_WISE_I) : []);
+    $t = function_exists('mb_strlen') ? mb_strlen($s) : strlen($s);
+    return (function_exists('mb_substr') ? mb_substr($s, 0, $count) : substr($s, 0, $count)) . ($t > $count ? $tail : "");
+});
+
 To::safe('file.name', function($input) {
     return f($input, '-', true, '\w.');
 });

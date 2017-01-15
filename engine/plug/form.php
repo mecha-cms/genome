@@ -2,7 +2,7 @@
 
 // `<input type="hidden">`
 Form::plug('hidden', function($name = null, $value = null, $attr = [], $dent = 0) {
-    return Form::input('hidden', $name, $value, null, $attr, $dent);
+    return Form::input($name, 'hidden', $value, null, $attr, $dent);
 });
 
 // `<input type="file">`

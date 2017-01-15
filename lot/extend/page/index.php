@@ -34,7 +34,7 @@ if ($file = File::exist([
     }
 }
 
-function fn_page_url($url, $lot) {
+function fn_page_url($content, $lot) {
     $path = Path::F($lot['path'], PAGE);
     return rtrim(__url__('url') . '/' . ltrim(To::url($path), '/'), '/');
 }

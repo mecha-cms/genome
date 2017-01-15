@@ -2,6 +2,7 @@
 title: Pages
 description: Add basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder.
 author: Taufik Nurrohman
+type: Markdown
 version: 1.0.4
 ...
 

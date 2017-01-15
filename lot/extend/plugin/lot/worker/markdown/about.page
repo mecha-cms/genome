@@ -2,6 +2,7 @@
 title: Markdown Parser
 description: Convert Markdown syntax to HTML.
 author: Taufik Nurrohman
+type: Markdown
 version: 2.0.1
 ...
 

@@ -866,27 +866,10 @@ CodeMirror.defineMIME("text/x-markdown", "markdown");
 });
 
 
-(function($, win, doc) {
-    if (typeof $.Form.editor['form.main']['content'] === "undefined") return;
-    if ($.Form.lot['form.main']['type'].value === 'Markdown') {
-        $.Form.editor['form.main']['content'].setOption('mode', 'text/x-markdown');
-        $.Form.editor['form.main']['content'].setOption('extraKeys', {
-            'Enter': 'newlineAndIndentContinueMarkdownList',
-            'Ctrl-B': function(cm) {
-                var s = cm.getSelection(),
-                    t = s.slice(0, 2) === '**' && s.slice(-2) === '**';
-                cm.replaceSelection(t ? s.slice(2, -2) : '**' + s + '**', 'around');
-            },
-            'Ctrl-I': function(cm) {
-                var s = cm.getSelection(),
-                    t = s.slice(0, 1) === '_' && s.slice(-1) === '_';
-                cm.replaceSelection(t ? s.slice(1, -1) : '_' + s + '_', 'around');
-            },
-            'Ctrl-K': function(cm) {
-                var s = cm.getSelection(),
-                    t = s.slice(0, 1) === '`' && s.slice(-1) === '`';
-                cm.replaceSelection(t ? s.slice(1, -1) : '`' + s + '`', 'around');
-            }
-        });
-    }
+(function ($, win, doc) {
+    if (typeof $.Form.editor['form.main'].content === "undefined") return;
+    $.Form.editor['form.main'].content.setOption('mode', 'text/x-markdown');
+    $.Form.editor['form.main'].content.setOption('extraKeys', {
+        'Enter': 'newlineAndIndentContinueMarkdownList'
+    });
 })(Panel, window, document);

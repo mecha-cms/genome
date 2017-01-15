@@ -79,7 +79,7 @@ class File extends Genome {
 
     // Open a file
     public static function open($input) {
-        self::$path = To::path($input);
+        self::$path = self::exist($input);
         self::$content = "";
         return new static;
     }
@@ -106,14 +106,14 @@ class File extends Genome {
 
     // Print the file content
     public static function read($fail = null) {
-        return file_exists(self::$path) ? file_get_contents(self::$path) : $fail;
+        return self::$path !== false ? file_get_contents(self::$path) : $fail;
     }
 
     // Print the file content line by line
     public static function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
         $output = "";
-        if (file_exists(self::$path) && ($hand = fopen(self::$path, 'r'))) {
+        if (self::$path !== false && ($hand = fopen(self::$path, 'r'))) {
             while (($chunk = fgets($hand, $ch)) !== false) {
                 $output .= $chunk;
                 if (
@@ -138,7 +138,7 @@ class File extends Genome {
 
     // Import the exported PHP file
     public static function import($fail = []) {
-        if (!file_exists(self::$path)) return $fail;
+        if (self::$path === false) return $fail;
         return include self::$path;
     }
 
@@ -156,7 +156,7 @@ class File extends Genome {
 
     // Unserialize the serialized `$data` to output
     public static function unserialize($fail = []) {
-        if (file_exists(self::$path)) {
+        if (self::$path !== false) {
             $data = file_get_contents(self::$path);
             return __is_serialize__($data) ? unserialize($data) : $fail;
         }
@@ -189,7 +189,7 @@ class File extends Genome {
 
     // Rename the file/folder
     public static function renameTo($name) {
-        if (file_exists(self::$path)) {
+        if (self::$path !== false) {
             $a = Path::B(self::$path);
             $b = Path::D(self::$path) . DS;
             if ($name !== $a) {
@@ -202,7 +202,7 @@ class File extends Genome {
 
     // Move the file/folder to …
     public static function moveTo($target = ROOT) {
-        if (file_exists(self::$path)) {
+        if (self::$path !== false) {
             $target = To::path($input);
             if (is_dir($target) && is_file(self::$path)) {
                 $target .= DS . Path::B(self::$path);
@@ -219,7 +219,7 @@ class File extends Genome {
     // Copy the file/folder to …
     public static function copyTo($target = ROOT, $s = '.%{0}%') {
         $i = 1;
-        if (file_exists(self::$path)) {
+        if (self::$path !== false) {
             foreach ((array) $target as $v) {
                 $v = To::path($input);
                 if (is_dir($v)) {
@@ -248,7 +248,7 @@ class File extends Genome {
 
     // Delete the file
     public static function delete() {
-        if (file_exists(self::$path)) {
+        if (self::$path !== false) {
             if (is_dir(self::$path)) {
                 $a = new RecursiveDirectoryIterator(self::$path, FilesystemIterator::SKIP_DOTS);
                 $b = new RecursiveIteratorIterator($a, RecursiveIteratorIterator::CHILD_FIRST);
@@ -273,7 +273,9 @@ class File extends Genome {
 
     // Set file permission
     public static function consent($consent) {
-        chmod(self::$path, $consent);
+        if (self::$path !== false) {
+            chmod(self::$path, $consent);
+        }
         return new static;
     }
 

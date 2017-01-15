@@ -31,9 +31,9 @@ class Asset extends Genome {
 
     public static function set($path, $stack = null) {
         $i = 0;
-        $x = Path::X($path);
         $stack = (array) $stack;
         foreach ((array) $path as $k => $v) {
+            $x = Path::X($v);
             if (!isset(self::$lot[$x][0][$v])) {
                 self::$lot[$x][1][$v] = [
                     'path' => self::path($v),

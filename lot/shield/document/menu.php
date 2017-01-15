@@ -19,7 +19,7 @@
 
     ?>
     --><li>
-      <?php if ($url->path === $menu || strpos('/' . $url->path . '/', '/' . $menu . '/') === 0): ?>
+      <?php if ($url->path === $menu || strpos($url->path . '/', $menu . '/') === 0): ?>
       <span><?php echo $p['title']; ?></span>
       <?php else: ?>
       <a href="<?php echo $p['link'] ?: $p['url']; ?>"><?php echo $p['title']; ?></a>

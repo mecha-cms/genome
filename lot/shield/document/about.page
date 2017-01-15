@@ -2,8 +2,8 @@
 title: Document
 description: A minimal shield with minimal extension and plugin dependencies.
 author: Taufik Nurrohman
-type: HTML
+type: Markdown
 version: 1.0.0
 ...
 
-<p>This was supposed to be the page content.</p>
+This was supposed to be the page content.
