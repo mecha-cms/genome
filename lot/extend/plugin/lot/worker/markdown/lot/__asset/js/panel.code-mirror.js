@@ -867,9 +867,10 @@ CodeMirror.defineMIME("text/x-markdown", "markdown");
 
 
 (function ($, win, doc) {
-    if (typeof $.Form.editor['form.main'].content === "undefined") return;
-    $.Form.editor['form.main'].content.setOption('mode', 'text/x-markdown');
-    $.Form.editor['form.main'].content.setOption('extraKeys', {
+    if ($.is.x($.Form.editor['form.main'].content)) return;
+    var editor = $.Form.editor['form.main'].content;
+    editor.setOption('mode', 'text/x-markdown');
+    editor.setOption('extraKeys', {
         'Enter': 'newlineAndIndentContinueMarkdownList'
     });
 })(Panel, window, document);

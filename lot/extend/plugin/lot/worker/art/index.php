@@ -17,7 +17,9 @@ function fn_art_js($content) {
 }
 
 function fn_art_set($content) {
-    extract(Lot::get(null, []));
+    if (!$page = Lot::get('page')) {
+        return $content;
+    }
     // Append custom CSS before `</head>` …
     $content = str_ireplace('</head>', $page->css . '</head>', $content);
     // Append custom JS before `</body>` …

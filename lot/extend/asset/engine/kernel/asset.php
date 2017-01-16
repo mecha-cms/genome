@@ -5,7 +5,7 @@ class Asset extends Genome {
     public static $lot = [];
 
     public static function path($path, $fail = false) {
-        extract(Lot::get(null, []));
+        global $config, $url;
         if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
             // External URL, nothing to check …
             if (strpos($path, '://' . $url->host) === false && strpos($path, '//' . $url->host) !== 0) {
@@ -39,7 +39,7 @@ class Asset extends Genome {
                     'path' => self::path($v),
                     'url' => self::url($v),
                     'id' => $v,
-                    'stack' => (float) (isset($stack[$k]) ? $stack[$k] : (end($stack) !== null ? end($stack) : 10) + $i)
+                    'stack' => (float) (isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10) + $i)
                 ];
                 $i += .1;
             }

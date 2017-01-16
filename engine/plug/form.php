@@ -16,8 +16,8 @@ Form::plug('checkbox', function($name = null, $value = null, $check = false, $te
     if ($value === true) {
         $value = 'true';
     }
-    $text = $text ? '&nbsp;<span>' . To::text($text, explode(',', HTML_WISE_I)) . '</span>' : "";
-    return Form::dent($dent) . '<label>' . Form::input($name, 'checkbox', $value, null, Anemon::extend($attr_o, $attr)) . $text . '</label>';
+    $text = $text ? '&#x0020;' . HTML::span(To::text($text, explode(',', HTML_WISE_I))) : "";
+    return Form::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, Anemon::extend($attr_o, $attr)) . $text);
 });
 
 // `<input type="radio">`
@@ -32,8 +32,8 @@ Form::plug('radio', function($name = null, $options = [], $select = null, $attr 
         }
         $k = (string) $k;
         $attr_o['checked'] = $select === $key || $select === '.' . $key ? true : null;
-        $v = $v ? '&nbsp;<span>' . To::text($value, explode(',', HTML_WISE_I)) . '</span>' : "";
-        $output[] = Form::dent($dent) . '<label>' . Form::input($name, 'radio', $k, null, Anemon::extend($attr_o, $attr)) . $v . '</label>';
+        $v = $v ? '&#x0020;' . HTML::span(To::text($value, explode(',', HTML_WISE_I))) : "";
+        $output[] = Form::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, Anemon::extend($attr_o, $attr)) . $v);
     }
     return implode(HTML::br(), $output);
 });

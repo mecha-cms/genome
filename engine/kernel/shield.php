@@ -14,7 +14,7 @@ class Shield extends Genome {
     }
 
     public static function path($input, $fail = false) {
-        extract(Lot::get(null, []));
+        global $config;
         // Full path, be quick!
         if (is_string($input) && strpos($input, ROOT) === 0) {
             return File::exist(self::X($input), $fail);

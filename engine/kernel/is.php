@@ -10,7 +10,7 @@ class Is extends Genome {
         return new static;
     }
 
-    // @ditto
+    // --ditto
     public static function these($input) {
         if ($input instanceof Anemon) {
             $input = explode(X, $input->join(X));

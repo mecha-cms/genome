@@ -14,7 +14,7 @@ class Route extends Genome {
             if (!isset(self::$lot[0][$v])) {
                 self::$lot[1][$v] = [
                     'fn' => $fn,
-                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== null ? end($stack) : 10)) + $i),
+                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10)) + $i),
                     'is' => ['pattern' => $pattern]
                 ];
                 $i += .1;
@@ -106,7 +106,7 @@ class Route extends Genome {
                 return true;
             }
         } else {
-            extract(Lot::get(null, []));
+            global $url;
             $id = $url->path;
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s) …

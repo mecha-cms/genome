@@ -157,8 +157,8 @@ keywords: Keywords
 key_word: Key Word
 key_words: Key Words
 
-kin: Sibling
-kins: Siblings
+kin: Kin
+kins: Kin
 
 kind: Kind
 kinds: Kinds
@@ -170,6 +170,9 @@ less: Less
 
 link: Link
 links: Links
+
+locale: Locale
+locales: Locales
 
 media: Media
 medias: Media
@@ -278,6 +281,9 @@ settings: Settings
 
 shield: Shield
 shields: Shields
+
+sibling: Sibling
+siblings: Siblings
 
 site: Site
 sites: Sites

@@ -43,7 +43,7 @@ class Date extends Genome {
     }
 
     public function extract($key = null, $fail = false) {
-        extract(Lot::get(null, []));
+        global $language;
         $months_long = $language->months_long;
         $days_long = $language->days_long;
         $months_short = $language->months_short;

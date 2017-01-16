@@ -7,16 +7,16 @@ class Elevator extends Genome {
         //  0: current
         //  1: next
         'direction' => [
-            '-1' => 'up',
+           '-1' => 'up',
             '0' => "",
             '1' => 'down'
         ],
         'union' => [
-            '-2' => [ // not active
+           '-2' => [ // not active
                 0 => 'span',
                 2 => ['href' => null]
             ],
-            '-1' => [
+           '-1' => [
                 0 => 'a',
                 1 => '&#x25B2;'
             ],
@@ -35,9 +35,11 @@ class Elevator extends Genome {
     protected $NS = "";
 
     public function __construct($input, $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
-        $c = Hook::NS(strtolower(static::class) . Anemon::NS . 'union', Anemon::extend($this->config, $config), $this->config);
+        $s = Anemon::NS;
+        $key = strtolower(static::class) . $s . $NS;
+        $c = Hook::NS($key, Anemon::extend($this->config, $config), $this->config);
         $d = $c['direction'];
-        extract(Lot::get(null, []));
+        global $url;
         if (isset($chunk)) {
             $input = Anemon::eat($input)->chunk($chunk);
         }
@@ -48,20 +50,17 @@ class Elevator extends Genome {
         if (!isset($chunk)) {
             $i = array_search($index, $input);
             $i = isset($i) ? $i : 0;
-            $this->bucket = [
-                $d['-1'] => isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null,
-                $d['0'] => $path !== $url->current ? $path : null,
-                $d['1'] => isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] : null
-            ];
+            if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null;
+            if ($d['0'] !== false) $this->bucket[$d['0']] = $path !== $url->current ? $path : null;
+            if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] : null;
         } else {
-            $this->bucket = [
-                $d['-1'] => isset($input[$index - 1]) ? $path . '/' . $index : null,
-                $d['0'] => $path !== $url->current ? $path : null,
-                $d['1'] => isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null
-            ];
+            if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$index - 1]) ? $path . '/' . $index : null;
+            if ($d['0'] !== false) $this->bucket[$d['0']] = $path !== $url->current ? $path : null;
+            if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
         $this->config = $c;
-        $this->NS = $NS ? Anemon::NS . $NS : "";
+        $this->NS = $NS;
+        $this->bucket = Hook::NS($key . $s . 'links', [$this->bucket]);
     }
 
     protected function _unite($input, $alt = ['span']) {
@@ -77,8 +76,8 @@ class Elevator extends Genome {
     public function __call($kin, $lot) {
         $text = array_shift($lot);
         $u = $this->config['union'];
-        $d = array_flip($this->config['direction'])[$kin];
-        if ($text || $text === "") {
+        $d = array_search($kin, $this->config['direction']);
+        if ($d !== false && ($text || $text === "")) {
             if ($text !== true) $u[$d][1] = $text;
             return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
         }
@@ -86,12 +85,16 @@ class Elevator extends Genome {
     }
 
     public function __toString() {
-        extract(Lot::get(null, []));
+        global $language;
         $c = $this->config;
         $d = $c['direction'];
         $u = $c['union'];
-        $html = $this->{$d['-1']}(true) . ' ' . $this->{$d['0']}(true) . ' ' . $this->{$d['1']}(true);
-        return Hook::NS(strtolower(static::class) . $this->NS, [$html, $language, $this->bucket]);
+        $html = [];
+        if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
+        if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
+        if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
+        $s = Anemon::NS;
+        return Hook::NS(strtolower(static::class) . $s . $this->NS . $s . 'unit', [implode(' ', $html), $language, $this->bucket]);
     }
 
 }

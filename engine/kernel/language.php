@@ -11,8 +11,8 @@ class Language extends Genome {
         $t = File::T($i18n, -1);
         $i18n = new Page($i18n, [], 'language');
         if ($x[0] === 0 || $t > $x[0]) {
-            $s = 'From::' . l($i18n->type);
-            $x = [$t, is_callable($s) ? call_user_func($s, $i18n->content) : $i18n->content];
+            $fn = 'From::' . l($i18n->type);
+            $x = [$t, is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content];
             File::export($x)->saveTo($cache);
         }
         return Config::set($id, $x[1])->get($id);

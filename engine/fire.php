@@ -67,10 +67,14 @@ $extends = array_keys($extends);
 foreach ($extends as $extend) {
     $f = EXTEND . DS . Path::D($extend);
     $i18n = $f . DS . 'lot' . DS . 'language';
-    if (!$l = File::exist($i18n . DS . $config->language . '.txt')) {
-        $l = $i18n . DS . 'en-us.txt';
+    if (!$l = File::exist($i18n . DS . $config->language . '.page')) {
+        $l = $i18n . DS . 'en-us.page';
     }
-    Language::set(From::yaml($l));
+    if (file_exists($l)) {
+        $i18n = new Page($l, [], 'language');
+        $fn = 'From::' . l($i18n->type);
+        Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
+    }
     $f = $f . DS . 'engine';
     d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
         $f .= DS . 'plug' . DS . $n . '.php';

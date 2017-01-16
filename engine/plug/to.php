@@ -7,7 +7,7 @@ To::plug('url', function($input) use($url) {
     $input = str_replace([ROOT, DS, '\\', $s], [$url['url'], '/', '/', $url['url']], $input);
     // Fix broken external URL `http://://example.com`, `http:////example.com`
     $input = str_replace(['://://', ':////'], '://', $input);
-    // @ditto `http:example.com`
+    // --ditto `http:example.com`
     if (strpos($input, $url['scheme'] . ':') === 0 && strpos($input, $url['protocol']) !== 0) {
         $input = str_replace(X . $url['scheme'] . ':', $url['protocol'], X . $input);
     }

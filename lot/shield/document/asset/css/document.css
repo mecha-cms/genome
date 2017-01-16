@@ -14,23 +14,23 @@
 }
 ::-webkit-input-placeholder {
   color:inherit;
-  opacity:.6;
+  opacity:.5;
 }
 ::-moz-placeholder {
   color:inherit;
-  opacity:.6;
+  opacity:.5;
 }
 :-moz-placeholder {
   color:inherit;
-  opacity:.6;
+  opacity:.5;
 }
 :-ms-input-placeholder {
   color:inherit;
-  opacity:.6;
+  opacity:.5;
 }
 :placeholder {
   color:inherit;
-  opacity:.6;
+  opacity:.5;
 }
 :focus {outline:0}
 a {

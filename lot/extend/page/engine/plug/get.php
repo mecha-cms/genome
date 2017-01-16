@@ -1,6 +1,6 @@
 <?php
 
-// Hard–coded field key whose the value must be standardized: `time`, `kind`, `slug`, `state`
+// Hard–coded field key(s) which the value must be standardized: `time`, `kind`, `slug`, `state`
 function _fn_get_page_worker($v, $n = null) {
     $n = $n ?: Path::N($v);
     $v = file_get_contents($v);
@@ -19,7 +19,6 @@ function _fn_get_page_worker($v, $n = null) {
 
 function fn_get_page($path, $key = null, $fail = false, $for = null) {
     if (!file_exists($path)) return false;
-    extract(Lot::get(null, []));
     $date = date(DATE_WISE, File::T($path, time()));
     $o = [
         'path' => $path,
