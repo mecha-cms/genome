@@ -6,8 +6,8 @@ class Plugin extends Extend {
         global $config, $language;
         // Check whether the localized “about” file is available
         $f = PLUGIN . DS . 'lot' . DS . 'worker' . DS . $id . DS;
-        if (!$info = File::exist($f . 'about.' . $config->language . '.txt')) {
-            $info = $f . 'about.txt';
+        if (!$info = File::exist($f . 'about.' . $config->language . '.page')) {
+            $info = $f . 'about.page';
         }
         return new Page($info, [
             'id' => Folder::exist($f) ? $id : null,

@@ -35,14 +35,13 @@ class Shield extends Genome {
         $id = $id ?: $config->shield;
         // Check whether the localized “about” file is available
         $f = SHIELD . DS . $id . DS;
-        if (!$info = File::exist($f . 'about.' . $config->language . '.txt')) {
-            $info = $f . 'about.txt';
+        if (!$info = File::exist($f . 'about.' . $config->language . '.page')) {
+            $info = $f . 'about.page';
         }
         return new Page($info, [
             'id' => Folder::exist($f) ? $id : null,
             'title' => To::title($id),
             'author' => $language->anonymous,
-            'type' => 'HTML',
             'version' => '0.0.0',
             'content' => $language->_message_avail($language->description)
         ], strtolower(static::class));
