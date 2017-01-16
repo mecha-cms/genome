@@ -870,7 +870,7 @@ CodeMirror.defineMIME("text/x-markdown", "markdown");
     if ($.is.x($.Form.editor['form.main'].content)) return;
     var editor = $.Form.editor['form.main'].content;
     editor.setOption('mode', 'text/x-markdown');
-    editor.setOption('extraKeys', {
+    editor.addKeyMap({
         'Enter': 'newlineAndIndentContinueMarkdownList'
     });
 })(Panel, window, document);

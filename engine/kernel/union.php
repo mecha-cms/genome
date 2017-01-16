@@ -71,6 +71,18 @@ class Union extends Genome {
         $u = $this->union[1][1];
         $unit = $unit ? Anemon::NS . $unit : "";
         $array = Hook::NS($c . Anemon::NS . 'bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
+        // HTML5 `data-*` attribute
+        foreach ($a as $k => $v) {
+            if ($k === 'data') {
+                foreach ($v as $kk => $vv) {
+                    if (!isset($vv)) continue;
+                    $a['data-' . $kk] = __is_anemon__($vv) ? json_encode($vv) : $vv;
+                }
+                unset($a['data']);
+                break;
+            }
+        }
+        // Normal process …
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
             if (__is_anemon__($v)) {
@@ -78,13 +90,6 @@ class Union extends Genome {
                 if ($k === 'classes') {
                     $k = 'class';
                     $v = implode(' ', array_unique($v));
-                // HTML5 `data-*` attribute
-                } else if ($k === 'data') {
-                    foreach ($v as $kk => $vv) {
-                        if (!isset($vv)) continue;
-                        $a['data-' . $kk] = __is_anemon__($vv) ? json_encode($vv) : $vv;
-                    }
-                    unset($a['data']);
                 // Inline CSS via `css` attribute
                 } else if ($k === 'css') {
                     $css = "";

@@ -43,7 +43,7 @@ define('FONT_X', 'eot,otf,svg,ttf,woff,woff2');
 define('IMAGE_X', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');
 define('MEDIA_X', '3gp,avi,flv,mkv,mov,mp3,mp4,m4a,m4v,ogg,swf,wav,wma');
 define('PACKAGE_X', 'gz,iso,rar,tar,zip,zipx');
-define('SCRIPT_X', 'archive,cache,css,data,draft,htaccess,html,js,json,log,page,php,stack,trash,txt,xml');
+define('SCRIPT_X', 'archive,cache,css,data,draft,htaccess,html,js,json,log,page,php,stack,trash,txt,xml,yaml,yml');
 
 require ENGINE . DS . 'ignite.php';
 require ENGINE . DS . 'fire.php';
