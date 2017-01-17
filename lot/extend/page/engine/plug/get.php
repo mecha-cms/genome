@@ -45,13 +45,14 @@ function fn_get_page($path, $key = null, $fail = false, $for = null) {
     return !isset($key) ? $output : (array_key_exists($key, $output) ? $output[$key] : $fail);
 }
 
-function fn_get_pages($folder = PAGE, $state = 'page', $sort = -1, $by = 'time', $key = null) {
+function fn_get_pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = null) {
     $output = [];
+    $by = is_array($sort) && isset($sort[1]) ? $sort[1] : null;
     if ($input = g($folder, $state, "", false)) {
         foreach ($input as $v) {
             $output[] = fn_get_page($v, null, false, $by);
         }
-        $output = $o = Anemon::eat($output)->sort($sort, $by)->vomit();
+        $output = $o = Anemon::eat($output)->sort($sort)->vomit();
         if (isset($key)) {
             $o = [];
             foreach ($output as $v) {

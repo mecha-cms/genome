@@ -128,20 +128,20 @@ class Anemon extends Genome {
     }
 
     // Sort array value: `1` for “asc” and `-1` for “desc”
-    public function sort($order = 1, $key = null, $preserve_key = false, $null = X) {
-        if (isset($key)) {
+    public function sort($sort = 1, $preserve_key = false) {
+        if (is_array($sort) && isset($sort[1])) {
             $before = $after = [];
             if (!empty($this->bucket)) {
                 foreach ($this->bucket as $k => $v) {
                     $v = (array) $v;
-                    if (array_key_exists($key, $v)) {
-                        $before[$k] = $v[$key];
-                    } else if ($null !== X) {
-                        $before[$k] = $null;
-                        $this->bucket[$k][$key] = $null;
+                    if (array_key_exists($sort[1], $v)) {
+                        $before[$k] = $v[$sort[1]];
+                    } else if (!is_bool($preserve_key)) {
+                        $before[$k] = (string) $preserve_key;
+                        $this->bucket[$k][$sort[1]] = (string) $preserve_key;
                     }
                 }
-                $order === -1 ? arsort($before) : asort($before);
+                $sort[0] === -1 ? arsort($before) : asort($before);
                 foreach ($before as $k => $v) {
                     $after[$k] = $this->bucket[$k];
                 }
@@ -149,10 +149,13 @@ class Anemon extends Genome {
             $this->bucket = $after;
             unset($before, $after);
         } else {
+            if (is_array($sort)) {
+                $sort = $sort[0];
+            }
             $this->bucket = (array) $this->bucket;
-            $order === -1 ? arsort($this->bucket) : asort($this->bucket);
+            $sort === -1 ? arsort($this->bucket) : asort($this->bucket);
         }
-        if (!$preserve_key) {
+        if ($preserve_key === false) {
             $this->bucket = array_values($this->bucket);
         }
         return $this;

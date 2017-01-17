@@ -14,8 +14,8 @@ $path_array = explode('/', $path);
 $site->type = '404'; // default is `404`
 $site->state = 'page'; // default is `page`
 
-if ($path === "" || $path === $site->path) {
-    $site->type = ""; // default is ``
+if (!$path || $path === $site->path) {
+    $site->type = ""; // home page type is ``
 }
 
 $n = DS . Path::B($path);
@@ -109,8 +109,12 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             $folder_parent . DS . $name_parent . '.page',
             $folder_parent . DS . $name_parent . '.archive'
         ])) {
-            $sort_parent = Page::open($file_parent)->get('sort', $site->sort);
-            $files_parent = fn_get_pages($folder_parent, 'page', $sort_parent[0], $sort_parent[1], 'slug');
+            $page_parent = new Page($file_parent);
+            $sort_parent = $page_parent->sort($site->sort);
+            $files_parent = fn_get_pages($folder_parent, 'page', $sort_parent, 'slug');
+            // Inherit parent’s `sort` and `chunk` property where possible
+            if ($page_parent->sort) $sort = $page_parent->sort;
+            if ($page_parent->chunk) $chunk = $page_parent->chunk;
         } else {
             $files_parent = [];
         }
@@ -120,7 +124,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         ]);
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         if (!File::exist($folder . DS . $name . '.' . $page->state)) {
-            if ($files = fn_get_pages($folder, 'page', $sort[0], $sort[1], 'path')) {
+            if ($files = fn_get_pages($folder, 'page', $sort, 'path')) {
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
                     $pages[] = new Page($file);
                 }

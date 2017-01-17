@@ -111,7 +111,7 @@ class Route extends Genome {
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s) …
                 if (isset(self::$lot_o[1][$id])) {
-                    $fn = Anemon::eat(self::$lot_o[1][$id])->sort(1, 'stack')->vomit();
+                    $fn = Anemon::eat(self::$lot_o[1][$id])->sort([1, 'stack'])->vomit();
                     foreach ($fn as $v) {
                         call_user_func_array($v['fn'], $lot);
                     }
@@ -120,13 +120,13 @@ class Route extends Genome {
                 call_user_func_array(self::$lot[1][$id]['fn'], $lot);
                 return true;
             } else {
-                $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort(1, 'stack', true)->vomit();
+                $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort([1, 'stack'], true)->vomit();
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path
                     if ($route = self::is($k, false, $v['is']['pattern'])) {
                         // Loading hook(s) …
                         if (isset(self::$lot_o[1][$k])) {
-                            $fn = Anemon::eat(self::$lot_o[1][$k])->sort(1, 'stack')->vomit();
+                            $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack'])->vomit();
                             foreach ($fn as $f) {
                                 call_user_func_array($f['fn'], $route['lot']);
                             }
