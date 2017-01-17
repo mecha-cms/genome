@@ -111,7 +111,9 @@ class Form extends HTML {
         // to aid the user with data entry when the control has no value. A hint could be a sample
         // value or a brief description of the expected format. The attribute, if specified, must
         // have a value that contains no “LF” (U+000A) or “CR” (U+000D) character(s).
-        $placeholder = explode("\n", n($placeholder), 2)[0];
+        if (isset($placeholder)) {
+            $placeholder = explode("\n", n($placeholder), 2)[0];
+        }
         $attr_o['placeholder'] = $placeholder;
         return self::unite('textarea', self::x($value), Anemon::extend($attr_o, $attr), $dent);
     }

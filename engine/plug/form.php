@@ -31,8 +31,8 @@ Form::plug('radio', function($name = null, $options = [], $select = null, $attr 
             $k = substr($k, 1);
         }
         $k = (string) $k;
-        $attr_o['checked'] = $select === $key || $select === '.' . $key ? true : null;
-        $v = $v ? '&#x0020;' . HTML::span(To::text($value, explode(',', HTML_WISE_I))) : "";
+        $attr_o['checked'] = $select === $k || $select === '.' . $k ? true : null;
+        $v = $v ? '&#x0020;' . HTML::span(To::text($v, explode(',', HTML_WISE_I))) : "";
         $output[] = Form::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, Anemon::extend($attr_o, $attr)) . $v);
     }
     return implode(HTML::br(), $output);

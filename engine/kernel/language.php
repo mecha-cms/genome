@@ -37,10 +37,13 @@ class Language extends Genome {
             return Config::get($id, $fail);
         }
         $s = Config::get($id . '.' . $key, $fail);
-        if (strpos($s, '%') !== 0 && u($vars[0]) !== $vars[0]) {
-            $vars[0] = l($vars[0]);
+        if (is_string($s)) {
+            if (strpos($s, '%') !== 0 && u($vars[0]) !== $vars[0]) {
+                $vars[0] = l($vars[0]);
+            }
+            return __replace__($s, $vars);
         }
-        return __replace__($s, $vars);
+        return $s;
     }
 
     public static function __callStatic($kin, $lot) {
