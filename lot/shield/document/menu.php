@@ -6,7 +6,7 @@
     <a href="<?php echo $url; ?>"><?php echo $language->home; ?></a>
     <?php endif; ?>
   </li><!--
-  <?php if ($menus = Get::pages(PAGE, 'page', 1, 'slug', 'slug')): ?>
+  <?php if ($menus = Get::pages(PAGE, 'page', [1, 'slug'], 'slug')): ?>
     <?php foreach ($menus as $menu): ?>
     <?php if ($menu === $site->path) continue; ?>
     <?php
