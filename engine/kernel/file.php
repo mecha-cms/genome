@@ -283,7 +283,7 @@ class File extends Genome {
     public static function upload($file, $target = ROOT, $fn = null, $fail = false) {
         $target = To::path($input);
         // Create a safe file name
-        $file['name'] = To::safe('file.name', $file['name']);
+        $file['name'] = To::file($file['name']);
         $x = Path::X($file['name']);
         $e = Language::message_file_upload();
         // Something goes wrong
@@ -308,7 +308,7 @@ class File extends Genome {
                 Message::error('file_size.1', self::size($file['size']));
             }
         }
-        if (!Message::errors()) {
+        if (!Message::$x) {
             // Destination not found
             if (!file_exists($target)) Folder::set($target);
             // Move the upload(ed) file to the destination folder

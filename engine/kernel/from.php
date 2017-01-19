@@ -1,3 +1,3 @@
 <?php
 
-class From extends To {}
+class From extends Genome {}

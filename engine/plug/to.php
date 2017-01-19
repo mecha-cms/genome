@@ -72,6 +72,11 @@ To::plug('title', function($input) {
 
 To::plug('slug', 'h');
 
+To::plug('key', function($input, $low = true) {
+    $s = f($input, '_', $low);
+    return is_numeric($s[0]) ? '_' . $s : $s;
+});
+
 To::plug('snake', function($input) {
     return h($input, '_');
 });
@@ -131,15 +136,10 @@ To::plug('snippet', function($input, $html = true, $count = 200, $tail = '&#x202
     return (function_exists('mb_substr') ? mb_substr($s, 0, $count) : substr($s, 0, $count)) . ($t > $count ? $tail : "");
 });
 
-To::safe('file.name', function($input) {
+To::plug('file', function($input) {
     return f($input, '-', true, '\w.');
 });
 
-To::safe('folder.name', function($input) {
+To::plug('folder', function($input) {
     return f($input, '-', true, '\w');
-});
-
-To::safe('key', function($input, $low = true) {
-    $s = f($input, '_', $low);
-    return is_numeric($s[0]) ? '_' . $s : $s;
 });

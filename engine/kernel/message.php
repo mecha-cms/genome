@@ -44,10 +44,6 @@ class Message extends Genome {
         if ($error_x) self::$x = 0;
     }
 
-    public static function errors($fail = false) {
-        return self::$x > 0 ? self::$x : $fail;
-    }
-
     public static function get($session_x = true) {
         $output = Session::get(self::$id, "") !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : "";
         if ($session_x) self::reset();

@@ -300,6 +300,9 @@ slugs: Slugs
 sound: Sound
 sounds: Sounds
 
+source: Source
+sources: Sources
+
 spam: Spam
 spams: Spams
 
