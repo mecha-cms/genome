@@ -38,6 +38,14 @@ Form::plug('radio', function($name = null, $options = [], $select = null, $attr 
     return implode(HTML::br(), $output);
 });
 
+// `<button type="(reset|submit)">`
+foreach (['reset', 'submit'] as $unit) {
+    Form::plug($unit, function($name = null, $value = null, $text = "", $attr = [], $dent = 0) use($unit) {
+        $attr['type'] = $unit;
+        return Form::button($name, $value, $text, $attr, $dent);
+    });
+}
+
 // `<input type="(color|date|email|number|password|range|search|tel|text|url)">`
 foreach (['color', 'date', 'email', 'number', 'password', 'range', 'search', 'tel', 'text', 'url'] as $unit) {
     Form::plug($unit, function($name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) use($unit) {
