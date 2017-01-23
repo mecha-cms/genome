@@ -46,9 +46,22 @@ foreach (['reset', 'submit'] as $unit) {
     });
 }
 
-// `<input type="(color|date|email|number|password|range|search|tel|text|url)">`
+// `<input type="(color|date|email|number|password|search|tel|text|url)">`
 foreach (['color', 'date', 'email', 'number', 'password', 'range', 'search', 'tel', 'text', 'url'] as $unit) {
     Form::plug($unit, function($name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) use($unit) {
         return Form::input($name, $unit, $value, $placeholder, $attr, $dent);
     });
 }
+
+// `<input type="range">`
+Form::plug('range', function($name = null, $value = [0, 0, 1], $attr = [], $dent = 0) {
+    if (is_array($value)) {
+        if (!array_key_exists('min', $attr)) {
+            $attr['min'] = $value[0];
+        }
+        if (!array_key_exists('max', $attr)) {
+            $attr['max'] = $value[2];
+        }
+    }
+    return Form::input($name, 'range', is_array($value) ? $value[1] : $value, null, $attr, $dent);
+});
