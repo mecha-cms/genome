@@ -12,7 +12,7 @@ class Session extends Genome {
         return !session_id() ? session_start() : true;
     }
 
-    public static function set($key, $value = "") {
+    public static function set($key, $value = null) {
         Anemon::set($_SESSION, $key, $value);
     }
 

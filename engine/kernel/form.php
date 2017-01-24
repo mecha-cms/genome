@@ -29,7 +29,7 @@ class Form extends HTML {
             $name = substr($name, 1);
         }
         $attr_o['name'] = $name;
-        $attr_o['value'] = self::x($value);
+        $attr_o['value'] = self::x(Request::restore('post', $name, $value));
         $attr_o['placeholder'] = $placeholder;
         $attr_o['type'] = $type;
         return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);
@@ -39,13 +39,13 @@ class Form extends HTML {
     public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
         $attr_o = [];
-        $select = (string) $select;
         if (strpos($name, '.') === 0) {
             $attr_o['disabled'] = true;
             $name = substr($name, 1);
         } else if (strpos($name, '\\.') === 0) { // escaped
             $name = substr($name, 1);
         }
+        $select = (string) Request::restore('post', $name, $select);
         $attr_o['name'] = $name;
         Anemon::extend($attr_o, $attr);
         foreach ($option as $key => $value) {
@@ -115,7 +115,7 @@ class Form extends HTML {
             $placeholder = explode("\n", n($placeholder), 2)[0];
         }
         $attr_o['placeholder'] = $placeholder;
-        return self::unite('textarea', self::x($value), Anemon::extend($attr_o, $attr), $dent);
+        return self::unite('textarea', self::x(Request::restore('post', $name, $value)), Anemon::extend($attr_o, $attr), $dent);
     }
 
 }

@@ -41,7 +41,7 @@ class Anemon extends Genome {
             }
             $input =& $input[$key];
         }
-        $input[array_shift($keys)] = $value;
+        return ($input[array_shift($keys)] = $value);
     }
 
     // Get array value recursively
@@ -58,9 +58,12 @@ class Anemon extends Genome {
     }
 
     // Remove array value recursively
-    public static function reset(&$input, $key) {
+    public static function reset(&$input, $key = null) {
+        if ($key === null) {
+            return ($input = []);
+        }
         $keys = explode(self::NS, $key);
-        while (count($key) > 1) {
+        while (count($keys) > 1) {
             $key = array_shift($keys);
             if (array_key_exists($key, $input)) {
                 $input =& $input[$key];
@@ -69,6 +72,7 @@ class Anemon extends Genome {
         if (is_array($input) && array_key_exists($value = array_shift($keys), $input)) {
             unset($input[$value]);
         }
+        return $input;
     }
 
     // Extend two array

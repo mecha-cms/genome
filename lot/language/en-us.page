@@ -474,8 +474,8 @@ closeing: Closing
 closeed: Closed
 
 create: Create
-creating: Creating
-created: Created
+createing: Creating
+createed: Created
 
 compose: Compose
 composeing: Composing
@@ -495,11 +495,15 @@ decreaseed: Decreased
 
 delete: Delete
 deleteing: Deleting
-deleted: Deleted
+deleteed: Deleted
 
 disable: Disable
 disableing: Disabling
 disableed: Disabled
+
+do: Do
+doing: Doing
+doed: Done
 
 download: Download
 downloading: Downloading
@@ -635,6 +639,10 @@ requireed: Required
 reset: Reset
 reseting: Reseting
 reseted: Reseted
+
+restore: Restore
+restoreing: Restoring
+restoreed: Restored
 
 save: Save
 saveing: Saving

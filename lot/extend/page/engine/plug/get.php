@@ -28,9 +28,9 @@ function fn_get_page($path, $key = null, $fail = false, $for = null) {
         'slug' => Path::N($path),
         'state' => Path::X($path)
     ];
-    $output = Page::open($path, [], 'page')->get($for !== null ? array_replace([
+    $output = Page::open($path, array_replace([
         $for => null
-    ], $o) : $o);
+    ], $o))->get($o);
     $data = Path::F($path);
     if (is_dir($data)) {
         if ($for === null) {

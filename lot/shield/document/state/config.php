@@ -1,5 +1,3 @@
 <?php
 
-return [
-    'sort' => [1, 'slug']
-];
+return ['sort' => [1, 'slug']];

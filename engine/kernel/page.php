@@ -20,7 +20,7 @@ class Page extends Genome {
             'url' => To::url($input)
         ]);
         $this->prefix = $NS . Anemon::NS;
-        $this->lot = is_array($input) ? $input : array_replace($lot, ['path' => $input]);
+        $this->lot = array_replace($lot, is_array($input) ? $input : ['path' => $input]);
     }
 
     public function __call($key, $lot) {
@@ -108,12 +108,12 @@ class Page extends Genome {
 
     protected static $data = [];
 
-    public static function open($path) {
+    public static function open($path, $lot = [], $NS = 'page') {
         self::$data = ['path' => $path];
-        return new static($path);
+        return new static($path, $lot, $NS);
     }
 
-    public static function data($input, $fn = null) {
+    public static function data($input, $fn = null, $NS = 'page') {
         if (!is_array($input)) {
             if (is_callable($fn)) {
                 self::$data[$input] = call_user_func($fn, self::$data);
@@ -122,32 +122,23 @@ class Page extends Genome {
                 $input = ['content' => $input];
             }
         }
-        self::$data = array_replace(self::$data, $input);
-        foreach (self::$data as $k => $v) {
-            if ($v === false) unset(self::$data[$k]);
+        self::$data = $data = array_replace(self::$data, $input);
+        foreach ($data as $k => $v) {
+            if ($v === false) unset(self::$data[$k], $data[$k]);
         }
-        return new static;
+        unset($data['path']);
+        return new static(null, $data, $NS);
     }
 
-    public static function read($output = [], $NS = 'page') {
-        $page = new static(self::$data['path'], [], $NS);
-        $o = [];
-        foreach ($output as $k => $v) {
-            $o[$k] = $page->{$k}($v);
-        }
-        return $o;
-    }
-
-    public static function get($key, $fail = null, $NS = 'page') {
+    public function get($key, $fail = null, $NS = 'page') {
         if (is_array($key)) {
             $output = [];
-            $page = new static(self::$data['path'], [], $NS);
             foreach ($key as $k => $v) {
-                $output[$k] = $page->{$k}($v);
+                $output[$k] = $this->{$k}($v);
             }
             return $output;
         }
-        return (new static(self::$data['path'], [], $NS))->{$key}($fail);
+        return $this->{$key}($fail);
     }
 
     public static function saveTo($path, $consent = 0600) {
