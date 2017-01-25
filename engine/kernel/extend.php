@@ -8,18 +8,19 @@ class Extend extends Genome {
 
     public static function info($id) {
         global $config, $language;
-        // Check whether the localized “about” file is available
         $f = EXTEND . DS . $id . DS;
-        if (!$info = File::exist($f . 'about.' . $config->language . '.page')) {
-            $info = $f . 'about.page';
-        }
-        return new Page($info, [
+        return new Page(File::exist([
+            // Check whether the localized “about” file is available
+            $f . 'about.' . $config->language . '.page',
+            // Use the default “about” file if available
+            $f . 'about.page'
+        ], null), [
             'id' => Folder::exist($f) ? $id : null,
             'title' => To::title($id),
             'author' => $language->anonymous,
             'version' => '0.0.0',
             'content' => $language->_message_avail($language->description)
-        ], strtolower(static::class));
+        ], __c2f__(static::class));
     }
 
     public static function exist($input, $fail = false) {

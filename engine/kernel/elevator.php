@@ -36,7 +36,7 @@ class Elevator extends Genome {
 
     public function __construct($input, $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
         $s = Anemon::NS;
-        $key = strtolower(static::class) . $s . $NS;
+        $key = __c2f__(static::class) . $s . $NS;
         $c = Hook::NS($key, Anemon::extend($this->config, $config), $this->config);
         $d = $c['direction'];
         global $url;
@@ -94,7 +94,7 @@ class Elevator extends Genome {
         if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
         if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
         $s = Anemon::NS;
-        return Hook::NS(strtolower(static::class) . $s . $this->NS . $s . 'unit', [implode(' ', $html), $language, $this->bucket]);
+        return Hook::NS(__c2f__(static::class) . $s . $this->NS . $s . 'unit', [implode(' ', $html), $language, $this->bucket]);
     }
 
 }

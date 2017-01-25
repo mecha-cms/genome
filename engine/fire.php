@@ -1,13 +1,13 @@
 <?php
 
-// enable/disable debug mode
+// enable/disable debug mode (default is `null`)
 ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
-if (DEBUG) {
+if (DEBUG === true) {
     error_reporting(E_ALL | E_STRICT);
     ini_set('display_errors', true);
     ini_set('display_startup_errors', true);
     ini_set('html_errors', 1);
-} else {
+} else if (DEBUG === false) {
     error_reporting(0);
     ini_set('display_errors', false);
     ini_set('display_startup_errors', false);

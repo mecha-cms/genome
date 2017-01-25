@@ -29,16 +29,15 @@ class Language extends Genome {
         return Config::set(isset($keys) ? $keys : [], $value);
     }
 
-    public static function get($key = null, $vars = [], $fail = false) {
-        $vars = array_merge($vars, [""]);
-        $fail = $fail ?: $key;
+    public static function get($key = null, $vars = [], $preserve_case = false) {
+        $vars = array_merge((array) $vars, [""]);
+        $fail = $key;
         $id = '__' . static::class;
         if (!isset($key)) {
             return Config::get($id, $fail);
         }
         $s = Config::get($id . '.' . $key, $fail);
         if (is_string($s)) {
-            if (strpos($s, '%') !== 0 && u($vars[0]) !== $vars[0]) {
                 $vars[0] = l($vars[0]);
             }
             return __replace__($s, $vars);
@@ -57,11 +56,11 @@ class Language extends Genome {
     }
 
     public function __call($key, $lot) {
-        return __replace__(Config::get('__' . static::class . '.' . $key, $key), array_merge($lot, [""]));
+        return self::get($key, array_shift($lot), array_shift($lot) ?: false);
     }
 
     public function __set($key, $value = null) {
-        return Config::set('__' . static::class . '.' . $key, $value);
+        return self::set($key, $value);
     }
 
     public function __get($key) {

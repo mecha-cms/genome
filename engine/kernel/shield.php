@@ -24,6 +24,8 @@ class Shield extends Genome {
         $input = Anemon::step($input, '/');
         array_unshift($input, str_replace('/', '.', $input[0]));
         foreach ($input as $k => $v) {
+            // Full path, skip!
+            if (strpos($v, ROOT) === 0) continue;
             $v = To::path($v);
             $input[$k] = self::X(SHIELD . DS . $config->shield . DS . trim($v, DS));
         }
@@ -31,37 +33,38 @@ class Shield extends Genome {
     }
 
     public static function info($id = null) {
-        extract(Lot::get(null, []));
+        global $config, $language;
         $id = $id ?: $config->shield;
-        // Check whether the localized “about” file is available
         $f = SHIELD . DS . $id . DS;
-        if (!$info = File::exist($f . 'about.' . $config->language . '.page')) {
-            $info = $f . 'about.page';
-        }
-        return new Page($info, [
+        return new Page(File::exist([
+            // Check whether the localized “about” file is available
+            $f . 'about.' . $config->language . '.page',
+            // Use the default “about” file if available
+            $f . 'about.page'
+        ], null), [
             'id' => Folder::exist($f) ? $id : null,
             'title' => To::title($id),
             'author' => $language->anonymous,
             'version' => '0.0.0',
             'content' => $language->_message_avail($language->description)
-        ], strtolower(static::class));
+        ], __c2f__(static::class));
     }
 
     public static function get($input, $fail = false, $buffer = true) {
-        if ($path__ = self::path($input, $fail)) {
+        $s = Anemon::NS;
+        $NS = __c2f__(static::class) . $s . 'get' . $s;
+        if ($path__ = Hook::NS($NS . 'path', self::path($input, $fail))) {
             global $config;
             $G = ['source' => $input];
-            $NS = strtolower(static::class) . Anemon::NS . 'get' . Anemon::NS;
             $lot__ = Lot::get(null, []);
-            $path__ = Hook::NS($NS . 'path', $path__);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";
             // Begin shield part
-            Hook::NS($NS . 'lot' . Anemon::NS . 'before', [null, $G, $G]);
+            Hook::NS($NS . 'lot' . $s . 'before', [null, $G, $G]);
             $state = o(self::state($config->shield, []));
             extract(Hook::NS($NS . 'lot', $lot__));
-            Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
+            Hook::NS($NS . 'lot' . $s . 'after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
@@ -86,17 +89,18 @@ class Shield extends Genome {
         if ($path__ = self::path($input, $fail)) {
             global $config;
             $G = ['source' => $input];
-            $NS = strtolower(static::class) . Anemon::NS;
+            $s = Anemon::NS;
+            $NS = __c2f__(static::class) . $s;
             $lot__ = Lot::get(null, []);
             $path__ = Hook::NS($NS . 'path', $path__);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";
             // Begin shield
-            Hook::NS($NS . 'lot' . Anemon::NS . 'before', [null, $G, $G]);
+            Hook::NS($NS . 'lot' . $s . 'before', [null, $G, $G]);
             $state = o(self::state($config->shield, []));
             extract(Hook::NS($NS . 'lot', $lot__));
-            Hook::NS($NS . 'lot' . Anemon::NS . 'after', [null, $G, $G]);
+            Hook::NS($NS . 'lot' . $s . 'after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {

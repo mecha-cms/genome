@@ -66,7 +66,9 @@ class Request extends Genome {
         $id = strtoupper($id);
         $data = self::any($id, null, []);
         if (isset($key)) {
-            $key = [$key => $value];
+            if (!is_array($key)) {
+                $key = [$key => $value];
+            }
         } else {
             $key = $data;
         }

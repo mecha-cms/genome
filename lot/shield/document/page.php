@@ -1,4 +1,4 @@
-<?php Shield::get('top'); ?>
+<?php Shield::get('header'); ?>
 <main>
   <article id="page-<?php echo $page->id; ?>">
     <header>
@@ -23,4 +23,4 @@
 <?php if (strpos($url->path, '/') !== false): ?>
 <nav><?php echo $pager; ?></nav>
 <?php endif; ?>
-<?php Shield::get('bottom'); ?>
+<?php Shield::get('footer'); ?>

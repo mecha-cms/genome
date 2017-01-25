@@ -142,6 +142,7 @@ class Page extends Genome {
     }
 
     public static function saveTo($path, $consent = 0600) {
+        unset(self::$data['path']);
         File::write(self::unite(self::$data))->saveTo($path, $consent);
     }
 

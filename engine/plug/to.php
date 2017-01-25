@@ -62,10 +62,8 @@ To::plug('text', 'w');
 
 To::plug('title', function($input) {
     $input = w($input);
-    if (function_exists('mb_strtoupper')) {
-        return preg_replace_callback('#(^|[^a-z\d])(\p{Ll})#u', function($m) {
-            return $m[1] . mb_strtoupper($m[2]);
-        }, $input);
+    if (function_exists('mb_convert_case')) {
+        return mb_convert_case($input, MB_CASE_TITLE);
     }
     return ucwords($input);
 });
@@ -128,6 +126,14 @@ To::plug('yaml', function(...$lot) {
         $lot[0] = include $lot[0];
     }
     return call_user_func_array('__to_yaml__', $lot);
+});
+
+To::plug('sentence', function($input, $tail = '.') {
+    $input = trim($input);
+    if (function_exists('mb_convert_case')) {
+        return mb_strtoupper(mb_substr($input, 0, 1)) . mb_strtolower(mb_substr($input, 1)) . $tail;
+    }
+    return ucfirst(strtolower($input)) . $tail;
 });
 
 To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) {
