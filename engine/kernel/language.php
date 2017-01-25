@@ -38,6 +38,7 @@ class Language extends Genome {
         }
         $s = Config::get($id . '.' . $key, $fail);
         if (is_string($s)) {
+            if (!$preserve_case && strpos($s, '%') !== 0 && u($vars[0]) !== $vars[0]) {
                 $vars[0] = l($vars[0]);
             }
             return __replace__($s, $vars);

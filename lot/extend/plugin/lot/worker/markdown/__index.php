@@ -1,6 +1,6 @@
 <?php
 
-Panel::set('page.types.Markdown', 'Markdown');
+Panel::set('f.types.Markdown', 'Markdown');
 
 Hook::set('shield.before', function() {
     if ($__page = Lot::get('__page')) {
