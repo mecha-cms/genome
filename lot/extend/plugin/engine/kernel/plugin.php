@@ -4,18 +4,19 @@ class Plugin extends Extend {
 
     public static function info($id) {
         global $config, $language;
-        // Check whether the localized “about” file is available
-        $f = PLUGIN . DS . 'lot' . DS . 'worker' . DS . $id . DS;
-        if (!$info = File::exist($f . 'about.' . $config->language . '.page')) {
-            $info = $f . 'about.page';
-        }
-        return new Page($info, [
+        $f = PLUGIN . DS . $id . DS;
+        return new Page(File::exist([
+            // Check whether the localized “about” file is available
+            $f . 'about.' . $config->language . '.page',
+            // Use the default “about” file if available
+            $f . 'about.page'
+        ], null), [
             'id' => Folder::exist($f) ? $id : null,
             'title' => To::title($id),
             'author' => $language->anonymous,
             'version' => '0.0.0',
             'content' => $language->_message_avail($language->description)
-        ], strtolower(static::class));
+        ], __c2f__(static::class));
     }
 
     public static function exist($input, $fail = false) {
@@ -26,7 +27,7 @@ class Plugin extends Extend {
         $id = basename(array_shift($lot));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
-        $folder = (is_array($key) ? $fail : array_shift($lot)) ?: PLUGIN . DS . 'lot' . DS . 'worker';
+        $folder = (is_array($key) ? $fail : array_shift($lot)) ?: PLUGIN;
         return parent::state($id, $key, $fail, $folder);
     }
 

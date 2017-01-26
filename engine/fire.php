@@ -1,6 +1,6 @@
 <?php
 
-// enable/disable debug mode (default is `null`)
+// Enable/disable debug mode (default is `null`)
 ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
 if (DEBUG === true) {
     error_reporting(E_ALL | E_STRICT);
@@ -13,7 +13,7 @@ if (DEBUG === true) {
     ini_set('display_startup_errors', false);
 }
 
-// normalize line–break
+// Normalize line–break
 $vars = [&$_GET, &$_POST, &$_REQUEST, &$_COOKIE];
 array_walk_recursive($vars, function(&$v) {
     $v = str_replace(["\r\n", "\r"], "\n", $v);
@@ -34,10 +34,10 @@ Config::ignite();
 $config = new Config;
 $url = new URL;
 
-// set default date time zone
+// Set default date time zone
 Date::zone($config->zone);
 
-// must be set after date time zone set
+// Must be set after date time zone set
 Language::ignite();
 
 $date = new Date;
@@ -52,32 +52,30 @@ $seeds = [
     'u_r_l' => $url
 ];
 
-// plant and extract …
-extract(Lot::set($seeds)->get(null, []));
+// Plant…
+Lot::set($seeds);
 
 $extends = [];
 foreach (g(EXTEND . DS . '*', '{index__,index}.php') as $v) {
-    $extends[str_replace(EXTEND . DS, "", $v)] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
+    $extends[$v] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
 }
 
 asort($extends);
-
-$extends = array_keys($extends);
-
-foreach ($extends as $extend) {
-    $f = EXTEND . DS . Path::D($extend);
-    $i18n = $f . DS . 'lot' . DS . 'language';
-    if (!$l = File::exist($i18n . DS . $config->language . '.page')) {
-        $l = $i18n . DS . 'en-us.page';
-    }
-    if (file_exists($l)) {
+extract($seeds);
+foreach ($extends as $k => $v) {
+    $f = Path::D($k) . DS;
+    $i18n = $f . 'lot' . DS . 'language' . DS;
+    if ($l = File::exist([
+        $i18n . $config->language . '.page',
+        $i18n . 'en-us.page'
+    ])) {
         $i18n = new Page($l, [], 'language');
         $fn = 'From::' . l($i18n->type);
         Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
     }
-    $f = $f . DS . 'engine';
-    d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
-        $f .= DS . 'plug' . DS . $n . '.php';
+    $f .= 'engine' . DS;
+    d($f . 'kernel', function($w, $n) use($f, $seeds) {
+        $f .= 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
             extract($seeds);
             require $f;
@@ -85,18 +83,12 @@ foreach ($extends as $extend) {
     }, $seeds);
 }
 
-r(EXTEND, $extends, null, $seeds);
+foreach (array_keys($extends) as $v) require $v;
 
-r(SHIELD . DS . $config->shield, '{index__,index}.php', function($f) use($seeds) {
-    $f = Path::D($f) . DS . 'engine';
-    d($f . DS . 'kernel', function($w, $n) use($f, $seeds) {
-        $f .= DS . 'plug' . DS . $n . '.php';
-        if (file_exists($f)) {
-            extract($seeds);
-            require $f;
-        }
-    }, $seeds);
-}, $seeds);
+// Load user function(s) from the current shield folder if any
+$folder_shield = SHIELD . DS . $config->shield . DS;
+if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
+if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
 function do_fire() {
     Route::fire();

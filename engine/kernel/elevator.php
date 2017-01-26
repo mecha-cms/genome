@@ -35,8 +35,7 @@ class Elevator extends Genome {
     protected $NS = "";
 
     public function __construct($input, $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
-        $s = Anemon::NS;
-        $key = __c2f__(static::class) . $s . $NS;
+        $key = __c2f__(static::class) . '.' . $NS;
         $c = Hook::NS($key, Anemon::extend($this->config, $config), $this->config);
         $d = $c['direction'];
         global $url;
@@ -60,7 +59,7 @@ class Elevator extends Genome {
         }
         $this->config = $c;
         $this->NS = $NS;
-        $this->bucket = Hook::NS($key . $s . 'links', [$this->bucket]);
+        $this->bucket = Hook::NS($key . '.links', [$this->bucket]);
     }
 
     protected function _unite($input, $alt = ['span']) {
@@ -93,8 +92,7 @@ class Elevator extends Genome {
         if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
         if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
         if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
-        $s = Anemon::NS;
-        return Hook::NS(__c2f__(static::class) . $s . $this->NS . $s . 'unit', [implode(' ', $html), $language, $this->bucket]);
+        return Hook::NS(__c2f__(static::class) . '.' . $this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
     }
 
 }

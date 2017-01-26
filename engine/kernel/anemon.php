@@ -6,11 +6,9 @@ class Anemon extends Genome {
     protected $separator = "";
     protected $i = 0;
 
-    const NS = '.';
-
     // Create list of namespace step(s)
     public static function step($input, $NS = null) {
-        $NS = $NS ?: self::NS;
+        $NS = $NS ?: '.';
         if (is_string($input) && strpos($input, $NS) !== false) {
             $input = explode($NS, trim($input, $NS));
             $a = array_shift($input);
@@ -33,7 +31,7 @@ class Anemon extends Genome {
 
     // Set array value recursively
     public static function set(&$input, $key, $value = null) {
-        $keys = explode(self::NS, $key);
+        $keys = explode('.', $key);
         while (count($keys) > 1) {
             $key = array_shift($keys);
             if (!array_key_exists($key, $input)) {
@@ -47,7 +45,7 @@ class Anemon extends Genome {
     // Get array value recursively
     public static function get(&$input, $key = null, $fail = false) {
         if (!isset($key)) return $input;
-        $keys = explode(self::NS, $key);
+        $keys = explode('.', $key);
         foreach ($keys as $value) {
             if (!is_array($input) || !array_key_exists($value, $input)) {
                 return $fail;
@@ -62,7 +60,7 @@ class Anemon extends Genome {
         if ($key === null) {
             return ($input = []);
         }
-        $keys = explode(self::NS, $key);
+        $keys = explode('.', $key);
         while (count($keys) > 1) {
             $key = array_shift($keys);
             if (array_key_exists($key, $input)) {

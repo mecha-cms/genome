@@ -88,7 +88,7 @@ class Hook extends Genome {
     }
 
     public static function NS(...$lot) {
-        if (strpos($lot[0], Anemon::NS) !== false) {
+        if (strpos($lot[0], '.') !== false) {
             foreach (Anemon::step($lot[0]) as $v) {
                 $lot[0] = $v;
                 $lot[1] = call_user_func_array('self::fire', $lot);

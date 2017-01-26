@@ -51,8 +51,7 @@ class Shield extends Genome {
     }
 
     public static function get($input, $fail = false, $buffer = true) {
-        $s = Anemon::NS;
-        $NS = __c2f__(static::class) . $s . 'get' . $s;
+        $NS = __c2f__(static::class) . '.get.';
         if ($path__ = Hook::NS($NS . 'path', self::path($input, $fail))) {
             global $config;
             $G = ['source' => $input];
@@ -61,10 +60,10 @@ class Shield extends Genome {
             $G['path'] = $path__;
             $out = "";
             // Begin shield part
-            Hook::NS($NS . 'lot' . $s . 'before', [null, $G, $G]);
+            Hook::NS($NS . 'lot.before', [null, $G, $G]);
             $state = o(self::state($config->shield, []));
             extract(Hook::NS($NS . 'lot', $lot__));
-            Hook::NS($NS . 'lot' . $s . 'after', [null, $G, $G]);
+            Hook::NS($NS . 'lot.after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
@@ -89,18 +88,17 @@ class Shield extends Genome {
         if ($path__ = self::path($input, $fail)) {
             global $config;
             $G = ['source' => $input];
-            $s = Anemon::NS;
-            $NS = __c2f__(static::class) . $s;
+            $NS = __c2f__(static::class) . '.';
             $lot__ = Lot::get(null, []);
             $path__ = Hook::NS($NS . 'path', $path__);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";
             // Begin shield
-            Hook::NS($NS . 'lot' . $s . 'before', [null, $G, $G]);
+            Hook::NS($NS . 'lot.before', [null, $G, $G]);
             $state = o(self::state($config->shield, []));
             extract(Hook::NS($NS . 'lot', $lot__));
-            Hook::NS($NS . 'lot' . $s . 'after', [null, $G, $G]);
+            Hook::NS($NS . 'lot.after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
             if ($buffer) {
                 ob_start(function($content) use($path__, $NS, &$out) {
@@ -126,7 +124,7 @@ class Shield extends Genome {
 
     public static function abort($code = '404', $fail = false, $buffer = true) {
         $path = self::path($code);
-        $s = explode(Anemon::NS, $path);
+        $s = explode('.', $path);
         $s = array_pop($s);
         $s = is_numeric($s) ? $s : '404';
         HTTP::status((int) $s);

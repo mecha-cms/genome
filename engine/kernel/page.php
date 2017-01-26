@@ -19,7 +19,7 @@ class Page extends Genome {
             'id' => (string) $t,
             'url' => To::url($input)
         ]);
-        $this->prefix = $NS . Anemon::NS;
+        $this->prefix = $NS . '.';
         $this->lot = array_replace($lot, is_array($input) ? $input : ['path' => $input]);
     }
 
@@ -98,7 +98,7 @@ class Page extends Genome {
         $content = "";
         if (isset($input['content'])) {
             $content = $input['content'];
-            unset($data['content']);
+            unset($input['content']);
         }
         foreach ($input as $k => $v) {
             $data[] = self::x($k) . self::$v[2] . self::x(s($v));

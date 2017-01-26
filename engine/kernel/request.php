@@ -72,7 +72,7 @@ class Request extends Genome {
         } else {
             $key = $data;
         }
-        $s = self::$config['session']['request'] . Anemon::NS . $id;
+        $s = self::$config['session']['request'] . '.' . $id;
         $cache = Session::get($s, []);
         Session::set($s, Anemon::extend($cache, $key));
         return new static;
@@ -81,7 +81,7 @@ class Request extends Genome {
     // restore state
     public static function restore($id, $key = null, $fail = null) {
         $id = strtoupper($id);
-        $cache = Session::get(self::$config['session']['request'] . Anemon::NS . $id, []);
+        $cache = Session::get(self::$config['session']['request'] . '.' . $id, []);
         if (isset($key)) {
             self::delete($id, $key);
             return Anemon::get($cache, $key, $fail);
@@ -93,7 +93,7 @@ class Request extends Genome {
     // delete state
     public static function delete($id, $key = null) {
         $id = strtoupper($id);
-        Session::reset(self::$config['session']['request'] . Anemon::NS . $id . (isset($key) ? Anemon::NS . $key : ""));
+        Session::reset(self::$config['session']['request'] . '.' . $id . (isset($key) ? '.' . $key : ""));
         return new static;
     }
 

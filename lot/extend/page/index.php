@@ -50,7 +50,6 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     $step = $step - 1; // 0–based index …
     $path_alt = ltrim($path === "" ? $site->path : $path, '/');
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
-    $folder_shield = rtrim(SHIELD . DS . To::path($config->shield), DS);
     $name = Path::B($folder);
     // Horizontal elevator …
     $elevator = [
@@ -86,9 +85,6 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $folder . DS . $name . '.page', // `lot\page\page-slug\page-slug.page`
         $folder . DS . $name . '.archive' // `lot\page\page-slug\page-slug.archive`
     ])) { // File does exist, then …
-        // Load user function(s) from the current shield folder if any
-        if ($fn = File::exist($folder_shield . DS . 'index.php')) include $fn;
-        if ($fn = File::exist($folder_shield . DS . 'index__.php')) include $fn;
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $s = PAGE;
         foreach (explode('/', '/' . $path) as $ss) {
