@@ -217,15 +217,15 @@ function c($x, $s = "", $X = "") {
     }, $x), $s, false, 'a-zA-Z\d' . x($X));
 }
 
-function d($f, $fn = null, $s = []) {
-    spl_autoload_register(function($w) use($f, $fn, $s) {
+function d($f, $fn = null, $s__ = []) {
+    spl_autoload_register(function($w) use($f, $fn, $s__) {
         $n = __c2f__($w);
         $f = $f . DS . $n . '.php';
         if (file_exists($f)) {
-            if ($s) extract($s);
+            if ($s__) extract($s__);
             require $f;
             if (is_callable($fn)) {
-                call_user_func($fn, $w, $n, $s);
+                call_user_func($fn, $w, $n, $s__);
             }
         }
     });
@@ -829,7 +829,7 @@ function h($x, $s = '-', $X = "") {
     }, $x), $s, true, 'a-zA-Z\d' . x($X));
 }
 
-function i($a, $b = [], $fn = [null, null], $s = []) {
+function i($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
     }
@@ -838,25 +838,25 @@ function i($a, $b = [], $fn = [null, null], $s = []) {
     }
     if (__is_anemon__($b)) {
         foreach ($b as $v) {
-            if ($s) extract($s);
+            if ($s__) extract($s__);
             $v = $a . DS . $v;
             if (is_callable($fn[0])) { // before
-                call_user_func($fn[0], $v, $s);
+                call_user_func($fn[0], $v, $s__);
             }
             include $v;
             if (is_callable($fn[1])) { // after
-                call_user_func($fn[1], $v, $s);
+                call_user_func($fn[1], $v, $s__);
             }
         }
     } else {
         foreach (g($a, $b) as $v) {
-            if ($s) extract($s);
+            if ($s__) extract($s__);
             if (is_callable($fn[0])) { // before
-                call_user_func($fn[0], $v, $s);
+                call_user_func($fn[0], $v, $s__);
             }
             include $v;
             if (is_callable($fn[1])) { // after
-                call_user_func($fn[1], $v, $s);
+                call_user_func($fn[1], $v, $s__);
             }
         }
     }
@@ -906,7 +906,7 @@ function q($x, $deep = false) {
     return count($x);
 }
 
-function r($a, $b = [], $fn = [null, null], $s = []) {
+function r($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
     }
@@ -915,25 +915,25 @@ function r($a, $b = [], $fn = [null, null], $s = []) {
     }
     if (__is_anemon__($b)) {
         foreach ($b as $v) {
-            if ($s) extract($s);
+            if ($s__) extract($s__);
             $v = $a . DS . $v;
             if (is_callable($fn[0])) { // before
-                call_user_func($fn[0], $v, $s);
+                call_user_func($fn[0], $v, $s__);
             }
             require $v;
             if (is_callable($fn[1])) { // after
-                call_user_func($fn[1], $v, $s);
+                call_user_func($fn[1], $v, $s__);
             }
         }
     } else {
         foreach (g($a, $b) as $v) {
-            if ($s) extract($s);
+            if ($s__) extract($s__);
             if (is_callable($fn[0])) { // before
-                call_user_func($fn[0], $v, $s);
+                call_user_func($fn[0], $v, $s__);
             }
             require $v;
             if (is_callable($fn[1])) { // after
-                call_user_func($fn[1], $v, $s);
+                call_user_func($fn[1], $v, $s__);
             }
         }
     }

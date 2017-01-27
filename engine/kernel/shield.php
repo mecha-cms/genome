@@ -4,10 +4,6 @@ class Shield extends Genome {
 
     public static $lot = [];
 
-    public static function version($id, $v = null) {
-        return Mecha::version($v, self::info($id)->version('0.0.0'));
-    }
-
     protected static function X($input) {
         $x = substr($input, -4) !== '.php' ? '.php' : "";
         return $input . $x;
@@ -30,24 +26,6 @@ class Shield extends Genome {
             $input[$k] = self::X(SHIELD . DS . $config->shield . DS . trim($v, DS));
         }
         return File::exist($input, $fail);
-    }
-
-    public static function info($id = null) {
-        global $config, $language;
-        $id = $id ?: $config->shield;
-        $f = SHIELD . DS . $id . DS;
-        return new Page(File::exist([
-            // Check whether the localized “about” file is available
-            $f . 'about.' . $config->language . '.page',
-            // Use the default “about” file if available
-            $f . 'about.page'
-        ], null), [
-            'id' => Folder::exist($f) ? $id : null,
-            'title' => To::title($id),
-            'author' => $language->anonymous,
-            'version' => '0.0.0',
-            'content' => $language->_message_avail($language->description)
-        ], __c2f__(static::class));
     }
 
     public static function get($input, $fail = false, $buffer = true) {
