@@ -56,7 +56,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
             $part = explode($s[2], $li, 2);
         }
         $v = trim(isset($part[1]) ? $part[1] : "");
-        // Remove inline comment(s) …
+        // Remove inline comment(s)…
         if ($v && strpos($v, '#') !== false) {
             if ($v[0] === '"' || $v[0] === "'") {
                 $vv = '/(' . implode('|', $q) . ')|\s*#.*/';

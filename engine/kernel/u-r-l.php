@@ -8,7 +8,7 @@ class URL extends Genome {
         $b = false;
         if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
             $url = ltrim($url, '/');
-            $b = true; // relative to the root domain
+            $b = true; // Relative to the root domain
         }
         if (
             strpos($url, '://') === false &&
@@ -26,7 +26,7 @@ class URL extends Genome {
     public static function short($url, $root = true) {
         $a = __url__();
         if (strpos($url, '//') === 0 && strpos($url, '//' . $a['host']) !== 0) {
-            return $url; // ignore external URL
+            return $url; // Ignore external URL
         }
         $url = X . $url;
         if ($root) {
@@ -35,9 +35,19 @@ class URL extends Genome {
         return ltrim(str_replace([X . $a['url'], X . '//' . rtrim($a['host'] . '/' . $a['directory'], '/'), X], "", $url), '/');
     }
 
+    // Initial URL (without the page offset)
+    public static function I($url) {
+        if (strpos($url, ROOT) === 0) {
+            $url = To::url($url);
+        }
+        return rtrim($url, '/0123456789');
+    }
+
     protected static function _fix($s) {
         return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $s);
     }
+
+    protected $lot = [];
 
     public static function __callStatic($kin, $lot) {
         $a = __url__();
@@ -49,25 +59,23 @@ class URL extends Genome {
     }
 
     public function __construct() {
-        foreach (__url__() as $k => $v) {
-            $this->{$k} = $v;
-        }
+        $this->lot = __url__();
     }
 
     public function __set($key, $value = null) {
-        $this->{$key} = $value;
+        $this->lot[$key] = $value;
     }
 
     public function __get($key) {
-        return isset($this->{$key}) ? $this->{$key} : null;
+        return isset($this->lot[$key]) ? $this->lot[$key] : null;
     }
 
     public function __unset($key) {
-        unset($this->{$key});
+        unset($this->lot[$key]);
     }
 
     public function __toString() {
-        return $this->url;
+        return $this->lot['url'];
     }
 
 }

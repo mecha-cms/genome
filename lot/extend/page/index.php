@@ -1,9 +1,9 @@
 <?php
 
-// Require the plug manually …
+// Require the plug manually…
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 
-// Store page state to registry …
+// Store page state to registry…
 if ($state = Extend::state(__DIR__)) {
     Config::extend($state);
 }
@@ -45,13 +45,13 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
     if ($path === $site->path) {
-        Guardian::kick(""); // Redirect to home page …
+        Guardian::kick(""); // Redirect to home page…
     }
-    $step = $step - 1; // 0–based index …
+    $step = $step - 1; // 0–based index…
     $path_alt = ltrim($path === "" ? $site->path : $path, '/');
     $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
     $name = Path::B($folder);
-    // Horizontal elevator …
+    // Horizontal elevator…
     $elevator = [
         'direction' => [
            '-1' => 'previous',
@@ -71,7 +71,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             ]
         ]
     ];
-    // Placeholder …
+    // Placeholder…
     Lot::set([
         'pager' => new Elevator([], 1, 0, true, $elevator, $site->type),
         'page' => new Page
@@ -133,7 +133,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 ]);
                 Shield::attach('pages/' . $path_alt);
             } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {
-                Guardian::kick($path_parent);  // Redirect to parent page if user tries to access the placeholder page …
+                Guardian::kick($path_parent);  // Redirect to parent page if user tries to access the placeholder page…
             }
         }
         Shield::attach('page/' . $path_alt);

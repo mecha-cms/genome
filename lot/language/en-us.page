@@ -1,10 +1,10 @@
 ---
 title: English
 description: American English, also called United States English or U.S. English, is the set of varieties of the English language native to the United States.
-author: Taufik Nurrohman
 type: YAML
 version: 2.0.0
 ...
+
 
 #. Property
 #. --------
@@ -266,6 +266,9 @@ profiles: Profiles
 
 property: Property
 propertys: Properties
+
+query: Query
+querys: Queries
 
 reply: Reply
 replys: Replies
@@ -573,6 +576,10 @@ log_in: Log In
 log_ining: Logging In
 log_ined: Logged In
 
+log_out: Log Out
+log_outing: Logging Out
+log_outed: Logged Out
+
 manage: Manage
 manageing: Managing
 manageed: Managed
@@ -717,10 +724,6 @@ _load: Unload
 _loading: Unloading
 _loaded: Unloaded
 
-_log_in: Log Out
-_log_ining: Logging Out
-_log_ined: Logged Out
-
 _publish: Unpublish
 _publishing: Unpublishing
 _published: Unpublished
@@ -732,7 +735,7 @@ _published: Unpublished
 message_avail: %{0}% is available.
 message_exist: %{0}% already exists.
 
-# negation …
+# negation…
 _message_avail: %{0}% is not available.
 _message_exist: %{0}% does not exist.
 

@@ -63,10 +63,10 @@ class Hook extends Genome {
         return !empty(self::$lot[1][$c]) ? self::$lot[1][$c] : $fail;
     }
 
-    public static function fire($id, $lot = null) {
+    public static function fire($id, array $lot = []) {
         $c = static::class;
-        if (!is_array($lot) || !array_key_exists(0, $lot)) {
-            $lot = [$lot];
+        if (!array_key_exists(0, $lot)) {
+            $lot = [$lot]; // :(
         }
         if (!is_array($id)) {
             if (!isset(self::$lot[1][$c][$id])) {
@@ -91,9 +91,9 @@ class Hook extends Genome {
         if (strpos($lot[0], '.') !== false) {
             foreach (Anemon::step($lot[0]) as $v) {
                 $lot[0] = $v;
-                $lot[1] = call_user_func_array('self::fire', $lot);
+                $lot[1] = [call_user_func_array('self::fire', $lot)];
             }
-            return $lot[1];
+            return $lot[1][0];
         }
         return call_user_func_array('self::fire', $lot);
     }

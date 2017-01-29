@@ -56,7 +56,7 @@ class Union extends Genome {
     protected $unit = [];
     protected $dent = [];
 
-    // Indent …
+    // Indent…
     public static function dent($i) {
         return is_numeric($i) ? str_repeat(DENT, (int) $i) : $i;
     }
@@ -67,11 +67,11 @@ class Union extends Genome {
         return To::html_encode($v);
     }
 
-    // Build union attribute(s) …
+    // Build union attribute(s)…
     public function bond($a, $unit = "") {
         if (!is_array($a)) {
             $data = trim((string) $a);
-            return strlen($data) ? ' ' . $data : ""; // no hook(s) applied …
+            return strlen($data) ? ' ' . $data : ""; // no hook(s) applied…
         }
         $output = "";
         $c = $this->NS;
@@ -118,7 +118,7 @@ class Union extends Genome {
     // Base union constructor
     public function unite($unit = 'html', $content = "", $data = [], $dent = 0) {
         if (is_array($content)) {
-            $content = N . call_user_func_array([$this, __METHOD__], array_merge($content, $dent + 1)) . N;
+            $content = N . call_user_func_array([$this, __FUNCTION__], array_merge($content, $dent + 1)) . N;
         }
         $dent = self::dent($dent);
         $c = $this->NS;

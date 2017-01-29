@@ -13,7 +13,6 @@ class Page extends Genome {
         $this->lot_alt = array_replace(a(Config::get('page', [])), $lot, [
             'time' => $date,
             'update' => $date,
-            'kind' => [0],
             'slug' => Path::N($input),
             'state' => Path::X($input),
             'id' => (string) $t,
@@ -52,15 +51,11 @@ class Page extends Genome {
                 $this->lot[$key] = array_key_exists($key, $this->lot_alt) ? e($this->lot_alt[$key]) : null;
             }
         }
-        return $this->_hook($key, $this->lot[$key]);
+        return Hook::NS($this->prefix . $key, [$this->lot[$key], $this->lot]);
     }
 
     public function __toString() {
         return file_get_contents(self::$data['path']);
-    }
-
-    protected function _hook($key, $input) {
-        return Hook::NS($this->prefix . $key, [is_array($input) ? [$input] : $input, $this->lot]);
     }
 
     public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
@@ -82,12 +77,12 @@ class Page extends Genome {
         } else {
             $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
             $input = explode(self::$v[1] . N . N, $input, 2);
-            // Do data …
+            // Do data…
             foreach (explode(self::$v[4], $input[0]) as $v) {
                 $v = explode(self::$v[2], $v, 2);
                 $data[self::v($v[0])] = e(self::v(isset($v[1]) ? $v[1] : false));
             }
-            // Do content …
+            // Do content…
             $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");
         }
         return $data;
@@ -101,7 +96,11 @@ class Page extends Genome {
             unset($input['content']);
         }
         foreach ($input as $k => $v) {
-            $data[] = self::x($k) . self::$v[2] . self::x(s($v));
+            $v = self::x(s($v));
+            if ($v && strpos($v, "\n") !== false) {
+                $v = json_encode($v); // contains line–break
+            }
+            $data[] = self::x($k) . self::$v[2] . $v;
         }
         return ($data ? self::$v[0] . implode(N, $data) . self::$v[1] : "") . ($content ? N . N . $content : "");
     }

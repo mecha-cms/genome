@@ -2,18 +2,22 @@
 
 HTML::plug('a', function($content = "", $href = null, $target = null, $attr = [], $dent = 0) {
     $attr_o = [
-        'href' => URL::long(str_replace('&amp;', '&', $href)),
+        'href' => $href,
         'target' => $target === true ? '_blank' : ($target === false ? null : $target)
     ];
-    return HTML::unite('a', $content, Anemon::extend($attr_o, $attr), $dent);
+    $attr = Anemon::extend($attr_o, $attr);
+    $attr['href'] = URL::long(str_replace('&amp;', '&', $attr['href']));
+    return HTML::unite('a', $content, $attr, $dent);
 });
 
 HTML::plug('img', function($src = null, $alt = null, $attr = [], $dent = 0) {
     $attr_o = [
-        'src' => URL::long(str_replace('&amp;', '&', $src)),
+        'src' => $src,
         'alt' => !isset($alt) ? "" : $alt
     ];
-    return HTML::unite('img', false, Anemon::extend($attr_o, $attr), $dent);
+    $attr = Anemon::extend($attr_o, $attr);
+    $attr['src'] = URL::long(str_replace('&amp;', '&', $attr['src']));
+    return HTML::unite('img', false, $attr, $dent);
 });
 
 foreach (['br', 'hr'] as $unit) {

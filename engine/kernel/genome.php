@@ -5,7 +5,7 @@ abstract class Genome {
     // Static method name’s suffix
     public static $_suffix = '__';
 
-    // Method(s) …
+    // Method(s)…
     public static $_ = [];
 
     // Show the added method(s)

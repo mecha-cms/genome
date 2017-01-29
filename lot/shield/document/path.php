@@ -9,8 +9,10 @@ $c = "";
 
 while ($d = array_shift($a)) {
     $c .= '/' . $d;
+    $f = PAGE . DS . $c . '.' . $config->state;
+    if (!file_exists($f)) continue;
     $d = is_numeric($d) ? __replace__($format[0], $language->page . ' ' . $d) : To::title($d);
-    $d = Page::open(PAGE . DS . $c . '.' . $config->state)->get('title', $d);
+    $d = Page::open($f)->get('title', $d);
     $b .= ' / ' . __replace__($format['/' . $path === $c ? 0 : 1], [$d, $url . $c]);
 }
 

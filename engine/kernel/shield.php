@@ -30,7 +30,7 @@ class Shield extends Genome {
 
     public static function get($input, $fail = false, $buffer = true) {
         $NS = __c2f__(static::class) . '.get.';
-        if ($path__ = Hook::NS($NS . 'path', self::path($input, $fail))) {
+        if ($path__ = Hook::NS($NS . 'path', [self::path($input, $fail)])) {
             global $config;
             $G = ['source' => $input];
             $lot__ = Lot::get(null, []);
@@ -68,14 +68,14 @@ class Shield extends Genome {
             $G = ['source' => $input];
             $NS = __c2f__(static::class) . '.';
             $lot__ = Lot::get(null, []);
-            $path__ = Hook::NS($NS . 'path', $path__);
+            $path__ = Hook::NS($NS . 'path', [$path__]);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";
             // Begin shield
             Hook::NS($NS . 'lot.before', [null, $G, $G]);
             $state = o(self::state($config->shield, []));
-            extract(Hook::NS($NS . 'lot', $lot__));
+            extract(Hook::NS($NS . 'lot', [$lot__]));
             Hook::NS($NS . 'lot.after', [null, $G, $G]);
             Hook::NS($NS . 'before', [null, $G, $G]);
             if ($buffer) {

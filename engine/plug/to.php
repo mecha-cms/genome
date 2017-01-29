@@ -1,6 +1,7 @@
 <?php
 
 $url = __url__();
+$x_mb_string = extension_loaded('mbstring');
 
 To::plug('url', function($input) use($url) {
     $s = str_replace(DS, '/', ROOT);
@@ -60,9 +61,9 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
 
 To::plug('text', 'w');
 
-To::plug('title', function($input) {
+To::plug('title', function($input) use($x_mb_string) {
     $input = w($input);
-    if (function_exists('mb_convert_case')) {
+    if ($x_mb_string) {
         return mb_convert_case($input, MB_CASE_TITLE);
     }
     return ucwords($input);
@@ -80,7 +81,7 @@ To::plug('snake', function($input) {
 });
 
 To::plug('html', function($input) {
-    return $input; // do nothing …
+    return $input; // do nothing…
 });
 
 To::plug('html_encode', 'htmlspecialchars');
@@ -128,21 +129,21 @@ To::plug('yaml', function(...$lot) {
     return call_user_func_array('__to_yaml__', $lot);
 });
 
-To::plug('sentence', function($input, $tail = '.') {
+To::plug('sentence', function($input, $tail = '.') use($x_mb_string) {
     $input = trim($input);
-    if (function_exists('mb_convert_case')) {
+    if ($x_mb_string) {
         return mb_strtoupper(mb_substr($input, 0, 1)) . mb_strtolower(mb_substr($input, 1)) . $tail;
     }
     return ucfirst(strtolower($input)) . $tail;
 });
 
-To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) {
+To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($x_mb_string) {
     $s = w($input, $html ? explode(',', HTML_WISE_I) : []);
-    $t = function_exists('mb_strlen') ? mb_strlen($s) : strlen($s);
+    $t = $x_mb_string ? mb_strlen($s) : strlen($s);
     if (is_int($x)) {
         $x = [$x, ""];
     }
-    return (function_exists('mb_substr') ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0])) . ($t > $x[0] ? $x[1] : "");
+    return ($x_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0])) . ($t > $x[0] ? $x[1] : "");
 });
 
 To::plug('file', function($input) {

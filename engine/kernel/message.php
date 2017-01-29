@@ -53,15 +53,15 @@ class Message extends Genome {
 
     public static function send($from, $to, $subject, $message) {
         if (Is::void($to) || !Is::email($to)) return false;
-        $meta  = 'MIME-Version: 1.0' . N;
-        $meta .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
-        $meta .= 'From: ' . $from . N;
-        $meta .= 'Reply-To: ' . $from . N;
-        $meta .= 'Return-Path: ' . $from . N;
-        $meta .= 'X-Mailer: PHP/' . phpversion();
-        $s = __c2f__(static::class) . ':' . __METHOD__;
-        $meta = Hook::NS($s . '.meta', $meta);
-        $data = Hook::NS($s . '.data', $message);
+        $lot  = 'MIME-Version: 1.0' . N;
+        $lot .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
+        $lot .= 'From: ' . $from . N;
+        $lot .= 'Reply-To: ' . $from . N;
+        $lot .= 'Return-Path: ' . $from . N;
+        $lot .= 'X-Mailer: PHP/' . phpversion();
+        $s = __c2f__(static::class) . '.' . __FUNCTION__;
+        $lot = Hook::NS($s . '.data', [$meta]);
+        $data = Hook::NS($s . '.content', [$message]);
         return mail($to, $subject, $data, $meta);
     }
 

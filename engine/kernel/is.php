@@ -4,7 +4,7 @@ class Is extends Genome {
 
     protected static $bucket = [];
 
-    // Initialize …
+    // Initialize…
     public static function this($input) {
         self::$bucket = $input;
         return new static;

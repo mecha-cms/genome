@@ -2,23 +2,33 @@
 
 class Path extends Genome {
 
-    public static function B($path, $step = 1, $s = DS) {
-        if (($s !== DS && $s !== '/') || $step > 1) {
-            $p = explode($s, $path);
-            return implode($s, array_slice($p, $step * -1));
+    public static function B($path, $step = 1, $s = null) {
+        if (isset($s)) {
+            $path = str_replace($s, DS, $path);
+        } else {
+            if ($step === 1) {
+                return basename($path);
+            }
+            $s = DS;
         }
-        return basename($path);
+        $p = explode(DS, $path);
+        return implode($s, array_slice($p, $step * -1));
     }
 
-    public static function D($path, $step = 1, $s = DS) {
-        if (($s !== DS && $s !== '/') || $step > 1) {
-            $p = explode($s, $path);
-            for ($i = 0; $i < $step; ++$i) {
-                array_pop($p);
-            }
-            return implode($s, $p);
+    public static function D($path, $step = 1, $s = null) {
+        if (isset($s)) {
+            $path = str_replace([DS, $s], [X, DS], $path);
+        } else if ($step === 1) {
+            return dirname($path) === '.' ? "" : dirname($path);
         }
-        return dirname($path) === '.' ? "" : dirname($path);
+        while ($step > 0) {
+            $path = dirname($path);
+            --$step;
+        }
+        if (isset($s)) {
+            $path = str_replace([DS, X], [$s, DS], $path);
+        }
+        return $path === '.' ? "" : $path;
     }
 
     public static function N($path, $x = false) {

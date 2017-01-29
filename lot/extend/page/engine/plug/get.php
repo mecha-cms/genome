@@ -1,18 +1,13 @@
 <?php
 
-// Hard–coded field key(s) which the value must be standardized: `time`, `kind`, `slug`, `state`
+// Hard–coded data key(s) which the value must be standardized: `time`, `slug`
 function _fn_get_page_worker($v, $n = null) {
     $n = $n ?: Path::N($v);
     $v = file_get_contents($v);
     if ($n === 'time') {
         $v = (new Date($v))->format();
-    } else if ($n === 'kind' && strpos($v, '[') === false) {
-        $v = explode(',', str_replace(' ', "", $v));
     } else if ($n === 'slug') {
         $v = h($v);
-    } else if ($n === 'state') {
-        $states = ['draft', 'page', 'archive'];
-        $v = isset($states[$v]) ? $states[$v] : $v;
     }
     return $v;
 }
@@ -24,7 +19,6 @@ function fn_get_page($path, $key = null, $fail = false, $for = null) {
         'path' => $path,
         'time' => $date,
         'update' => $date,
-        'kind' => [0],
         'slug' => Path::N($path),
         'state' => Path::X($path)
     ];

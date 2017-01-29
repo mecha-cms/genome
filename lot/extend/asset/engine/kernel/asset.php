@@ -7,7 +7,7 @@ class Asset extends Genome {
     public static function path($path, $fail = false) {
         global $config, $url;
         if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
-            // External URL, nothing to check …
+            // External URL, nothing to check…
             if (strpos($path, '://' . $url->host) === false && strpos($path, '//' . $url->host) !== 0) {
                 return $fail;
             }

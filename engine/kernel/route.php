@@ -33,16 +33,20 @@ class Route extends Genome {
     }
 
     public static function hook($id, $fn = null, $stack = null, $pattern = false) {
-        $id = URL::short($id, false);
-        $stack = isset($stack) ? $stack : 10;
-        if (!isset(self::$lot_o[1][$id])) {
-            self::$lot_o[1][$id] = [];
+        $i = 0;
+        $id = (array) $id;
+        $stack = (array) $stack;
+        foreach ($id as $k => $v) {
+            $v = URL::short($v, false);
+            if (!isset(self::$lot_o[0][$v])) {
+                self::$lot_o[1][$v][] = [
+                    'fn' => $fn,
+                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10)) + $i),
+                    'is' => ['pattern' => $pattern]
+                ];
+                $i += .1;
+            }
         }
-        self::$lot_o[1][$id][] = [
-            'fn' => $fn,
-            'stack' => (float) $stack,
-            'is' => ['pattern' => $pattern]
-        ];
         return true;
     }
 
@@ -109,7 +113,7 @@ class Route extends Genome {
             global $url;
             $id = $url->path;
             if (isset(self::$lot[1][$id])) {
-                // Loading cargo(s) …
+                // Loading cargo(s)…
                 if (isset(self::$lot_o[1][$id])) {
                     $fn = Anemon::eat(self::$lot_o[1][$id])->sort([1, 'stack'])->vomit();
                     foreach ($fn as $v) {
@@ -122,9 +126,9 @@ class Route extends Genome {
             } else {
                 $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort([1, 'stack'], true)->vomit();
                 foreach ($routes as $k => $v) {
-                    // If matched with the URL path
+                    // If matched with the URL path, then …
                     if ($route = self::is($k, false, $v['is']['pattern'])) {
-                        // Loading hook(s) …
+                        // Loading hook(s)…
                         if (isset(self::$lot_o[1][$k])) {
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack'])->vomit();
                             foreach ($fn as $f) {
