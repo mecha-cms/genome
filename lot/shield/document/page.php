@@ -1,5 +1,6 @@
 <?php Shield::get('header'); ?>
 <main>
+  <?php echo $message; ?>
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
