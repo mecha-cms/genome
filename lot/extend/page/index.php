@@ -45,7 +45,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
     if ($path === $site->path) {
-        Message::info('kick', [$url->current]);
+        Message::info('kick', '<code>' . $url->current . '</code>');
         Guardian::kick(""); // Redirect to home page…
     }
     $step = $step - 1; // 0–based index…
@@ -138,7 +138,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 ]);
                 Shield::attach('pages/' . $path_alt);
             } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {
-                Message::info('kick', [$url->current]);
+                Message::info('kick', '<code>' . $url->current . '</code>');
                 Guardian::kick($path_parent);  // Redirect to parent page if user tries to access the placeholder page…
             }
         }

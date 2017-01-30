@@ -9,4 +9,4 @@ pages: Pages
 #. Message
 #. -------
 
-message_info_kick: Redirected from <code>%{0}%</code>
+message_info_kick: You have just redirected from %{0}%

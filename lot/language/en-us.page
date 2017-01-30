@@ -746,11 +746,11 @@ message_exist: %{0}% already exists.
 _message_avail: %{0}% is not available.
 _message_exist: %{0}% does not exist.
 
-message_info_search: Search results for <em>%{0}%</em>.
+message_info_search: Search results for %{0}%.
 
-message_error_search: No results for <em>%{0}%</em>.
-message_error_file_extension: Extension <code>%{0}%</code> is not allowed.
+message_error_search: No results for %{0}%.
+message_error_file_extension: Extension %{0}% is not allowed.
 message_error_file_size:
   0: Must be greater than %{0}%.
   1: Must be less than %{0}%.
-message_error_file_type: File type <code>%{0}%</code> is not allowed.
+message_error_file_type: File type %{0}% is not allowed.
