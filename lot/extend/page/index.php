@@ -45,6 +45,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
     if ($path === $site->path) {
+        Message::info('kick', [$url->current]);
         Guardian::kick(""); // Redirect to home page…
     }
     $step = $step - 1; // 0–based index…
@@ -74,7 +75,9 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     // Placeholder…
     Lot::set([
         'pager' => new Elevator([], 1, 0, true, $elevator, $site->type),
-        'page' => new Page
+        'page' => new Page,
+        'message' => Message::get(),
+        'token' => Guardian::token()
     ]);
     // --ditto
     $pages = $page = [];
@@ -107,10 +110,11 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         ])) {
             $page_parent = new Page($file_parent);
             $sort_parent = $page_parent->sort($site->sort);
+            $chunk_parent = $page_parent->chunk($site->chunk);
             $files_parent = fn_get_pages($folder_parent, 'page', $sort_parent, 'slug');
             // Inherit parent’s `sort` and `chunk` property where possible
-            if ($page_parent->sort) $sort = $page_parent->sort;
-            if ($page_parent->chunk) $chunk = $page_parent->chunk;
+            $sort = $page_parent->sort ?: $sort;
+            $chunk = $page_parent->chunk ?: $chunk;
         } else {
             $files_parent = [];
         }
@@ -125,7 +129,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                     $pages[] = new Page($file);
                 }
                 if (empty($pages)) {
-                    Shield::abort(['204/' . $path_alt, '404/' . $path_alt, '204', '404']);
+                    // Greater than the maximum step or less than `1`, abort!
+                    Shield::abort('404/' . $path_alt);
                 }
                 Lot::set([
                     'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, $site->type),
@@ -133,6 +138,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 ]);
                 Shield::attach('pages/' . $path_alt);
             } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {
+                Message::info('kick', [$url->current]);
                 Guardian::kick($path_parent);  // Redirect to parent page if user tries to access the placeholder page…
             }
         }

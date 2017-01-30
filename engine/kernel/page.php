@@ -54,6 +54,10 @@ class Page extends Genome {
         return Hook::NS($this->prefix . $key, [$this->lot[$key], $this->lot]);
     }
 
+    public function __unset($key) {
+        unset($this->lot[$key]);
+    }
+
     public function __toString() {
         return file_get_contents(self::$data['path']);
     }

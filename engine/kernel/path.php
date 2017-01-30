@@ -16,7 +16,7 @@ class Path extends Genome {
     }
 
     public static function D($path, $step = 1, $s = null) {
-        if (isset($s)) {
+        if ($t = isset($s)) {
             $path = str_replace([DS, $s], [X, DS], $path);
         } else if ($step === 1) {
             return dirname($path) === '.' ? "" : dirname($path);
@@ -25,7 +25,7 @@ class Path extends Genome {
             $path = dirname($path);
             --$step;
         }
-        if (isset($s)) {
+        if ($t) {
             $path = str_replace([DS, X], [$s, DS], $path);
         }
         return $path === '.' ? "" : $path;
@@ -47,7 +47,7 @@ class Path extends Genome {
         if (isset($root)) {
             $f = str_replace([$root . DS, $root], "", $f);
         }
-        return rtrim(($f === '.' ? "" : $f) . DS . $n, DS);
+        return trim(($f === '.' ? "" : $f) . DS . $n, DS);
     }
 
 }

@@ -148,6 +148,9 @@ ids: IDs
 image: Image
 images: Images
 
+ip: IP
+ips: IPs
+
 key: Key
 keys: Keys
 
@@ -702,6 +705,10 @@ viewing: Viewing
 viewed: Viewed
 
 visible: Visible
+
+visit: Visit
+visiting: Visiting
+visited: Visited
 
 yes: Yes
 

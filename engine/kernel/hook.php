@@ -75,16 +75,16 @@ class Hook extends Genome {
             }
             $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack'])->vomit();
             foreach ($hooks as $v) {
+                if (!is_callable($v['fn'])) continue;
                 $lot[0] = call_user_func_array($v['fn'], $lot);
             }
+            return $lot[0];
         } else {
-            $a = func_get_args();
             foreach ($id as $v) {
-                $a[0] = $v;
-                $lot[0] = call_user_func_array('self::fire', $a);
+                $end = call_user_func('self::fire', $v, $lot);
             }
+            return $end;
         }
-        return $lot[0];
     }
 
     public static function NS(...$lot) {

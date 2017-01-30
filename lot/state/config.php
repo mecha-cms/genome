@@ -7,7 +7,6 @@ return [
     'charset' => 'utf-8',
     'title' => 'Site Title',
     'description' => 'Site description.',
-    'query' => [],
     'page' => [
         'title' => "",
         'description' => "",

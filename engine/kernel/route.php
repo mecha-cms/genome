@@ -132,6 +132,7 @@ class Route extends Genome {
                         if (isset(self::$lot_o[1][$k])) {
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack'])->vomit();
                             foreach ($fn as $f) {
+                                if (!is_callable($f['fn'])) continue;
                                 call_user_func_array($f['fn'], $route['lot']);
                             }
                         }
