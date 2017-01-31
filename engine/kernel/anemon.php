@@ -30,7 +30,7 @@ class Anemon extends Genome {
     }
 
     // Set array value recursively
-    public static function set(&$input, $key, $value = null) {
+    public static function set(array &$input, $key, $value = null) {
         $keys = explode('.', $key);
         while (count($keys) > 1) {
             $key = array_shift($keys);
@@ -43,7 +43,7 @@ class Anemon extends Genome {
     }
 
     // Get array value recursively
-    public static function get(&$input, $key = null, $fail = false) {
+    public static function get(array &$input, $key = null, $fail = false) {
         if (!isset($key)) return $input;
         $keys = explode('.', $key);
         foreach ($keys as $value) {
@@ -56,7 +56,7 @@ class Anemon extends Genome {
     }
 
     // Remove array value recursively
-    public static function reset(&$input, $key = null) {
+    public static function reset(array &$input, $key = null) {
         if ($key === null) {
             return ($input = []);
         }
@@ -74,18 +74,18 @@ class Anemon extends Genome {
     }
 
     // Extend two array
-    public static function extend(&$input, ...$b) {
+    public static function extend(array &$input, ...$b) {
         $input = array_replace_recursive((array) $input, ...$b);
         return $input;
     }
 
     // Concat two array
-    public static function concat(&$input, ...$b) {
+    public static function concat(array &$input, ...$b) {
         $input = array_merge_recursive((array) $input, ...$b);
         return $input;
     }
 
-    public static function eat($array) {
+    public static function eat(array $array) {
         return new static($array);
     }
 
@@ -163,7 +163,7 @@ class Anemon extends Genome {
         return $this;
     }
 
-    public static function walk($array, $fn = null, $deep = false) {
+    public static function walk(array $array, $fn = null, $deep = false) {
         if (is_callable($fn)) {
             $deep ? array_walk_recursive($array, $fn, $array) : array_walk($array, $fn, $array);
             return $array;
@@ -171,7 +171,7 @@ class Anemon extends Genome {
         return self::eat($array);
     }
 
-    public static function alter($input, $replace = [], $fail = null) {
+    public static function alter(array $input, $replace = [], $fail = null) {
         // return `$replace[$input]` value if exist
         // or `$fail` value if `$replace[$input]` does not exist
         // or `$input` value if `$fail` is `null`
@@ -292,7 +292,7 @@ class Anemon extends Genome {
         return $this->__invoke($s);
     }
 
-    public function __construct($array = [], $separator = ', ') {
+    public function __construct(array $array = [], $separator = ', ') {
         $this->bucket = $array;
         $this->separator = $separator;
     }

@@ -1,7 +1,7 @@
 <?php
 
 $url = __url__();
-$x_mb_string = extension_loaded('mbstring');
+$has_mb_string = extension_loaded('mbstring');
 
 To::plug('url', function($input) use($url) {
     $s = str_replace(DS, '/', ROOT);
@@ -61,9 +61,9 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
 
 To::plug('text', 'w');
 
-To::plug('title', function($input) use($x_mb_string) {
+To::plug('title', function($input) use($has_mb_string) {
     $input = w($input);
-    if ($x_mb_string) {
+    if ($has_mb_string) {
         return mb_convert_case($input, MB_CASE_TITLE);
     }
     return ucwords($input);
@@ -107,8 +107,14 @@ To::plug('html_hex', function($input, $z = false) {
     return $output;
 });
 
-To::plug('url_encode', 'urlencode');
-To::plug('url_decode', 'urldecode');
+To::plug('url_encode', function($input, $raw = false) {
+    return $raw ? rawurlencode($input) : urlencode($input);
+});
+
+To::plug('url_decode', function($input, $raw = false) {
+    return $raw ? rawurldecode($input) : urldecode($input);
+});
+
 To::plug('base64', 'base64_encode');
 To::plug('json', 'json_encode');
 
@@ -129,21 +135,21 @@ To::plug('yaml', function(...$lot) {
     return call_user_func_array('__to_yaml__', $lot);
 });
 
-To::plug('sentence', function($input, $tail = '.') use($x_mb_string) {
+To::plug('sentence', function($input, $tail = '.') use($has_mb_string) {
     $input = trim($input);
-    if ($x_mb_string) {
+    if ($has_mb_string) {
         return mb_strtoupper(mb_substr($input, 0, 1)) . mb_strtolower(mb_substr($input, 1)) . $tail;
     }
     return ucfirst(strtolower($input)) . $tail;
 });
 
-To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($x_mb_string) {
+To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($has_mb_string) {
     $s = w($input, $html ? explode(',', HTML_WISE_I) : []);
-    $t = $x_mb_string ? mb_strlen($s) : strlen($s);
+    $t = $has_mb_string ? mb_strlen($s) : strlen($s);
     if (is_int($x)) {
         $x = [$x, ""];
     }
-    return ($x_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0])) . ($t > $x[0] ? $x[1] : "");
+    return ($has_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0])) . ($t > $x[0] ? $x[1] : "");
 });
 
 To::plug('file', function($input) {
