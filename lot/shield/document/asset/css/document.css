@@ -49,6 +49,7 @@ abbr[title]:hover {border-bottom-color:inherit}
 b,dt,h1,h2,h3,h4,h5,h6,strong,th {font-weight:bold}
 caption,em,figcaption,i,var {font-style:italic}
 caption,figcaption {text-align:center}
+code,small,sub,sup {font-size:80%}
 ins,u {text-decoration:underline}
 del,s {text-decoration:line-through}
 img {
@@ -67,6 +68,13 @@ mark {
   background:#ff0;
   color:inherit;
 }
+sub,sup {
+  display:inline;
+  position:relative;
+  vertical-align:middle;
+}
+sub {top:.5em}
+sup {top:-.5em}
 article,aside,footer,header,main,nav,section {display:block}
 .button,
 .input,
@@ -262,14 +270,6 @@ nav ul {
 }
 nav li {display:inline-block}
 nav li + li {margin-left:1em}
-code,small,sub,sup {font-size:80%}
-sub,sup {
-  display:inline;
-  position:relative;
-  vertical-align:middle;
-}
-sub {top:.5em}
-sup {top:-.5em}
 .message {
   background:#fea;
   padding:.5em 1em;
