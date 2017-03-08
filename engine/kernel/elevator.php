@@ -2,42 +2,49 @@
 
 class Elevator extends Genome {
 
-    public $config = [
-        // -1: previous
-        //  0: current
-        //  1: next
-        'direction' => [
-           '-1' => 'up',
-            '0' => "",
-            '1' => 'down'
-        ],
-        'union' => [
-           '-2' => [ // not active
-                0 => 'span',
-                2 => ['href' => null]
-            ],
-           '-1' => [
-                0 => 'a',
-                1 => '&#x25B2;'
-            ],
-            '0' => [
-                0 => 'a',
-                1 => '&#x25C6;'
-            ],
-            '1' => [
-                0 => 'a',
-                1 => '&#x25BC;'
-            ]
-        ]
-    ];
+    const NORTH = '&#x25B2;';
+    const SOUTH = '&#x25BC;';
+    const WEST = '&#x25C0;';
+    const EAST = '&#x25B6;';
+    const CURRENT = '&#x25C6;';
+
+    public $config = [];
 
     protected $bucket = [];
     protected $NS = "";
 
     public function __construct($input, $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
-        $key = __c2f__(static::class) . '.' . $NS;
-        $c = Hook::NS($key, [Anemon::extend($this->config, $config), $this->config]);
-        $d = $c['direction'];
+        $key = __c2f__(static::class) . ($NS ? '.' . $NS : "");
+        $c = [
+            // -1: previous
+            //  0: current
+            //  1: next
+            'direction' => [
+               '-1' => 'up',
+                '0' => "",
+                '1' => 'down'
+            ],
+            'union' => [
+               '-2' => [ // not active
+                    0 => 'span',
+                    2 => ['href' => null]
+                ],
+               '-1' => [
+                    0 => 'a',
+                    1 => self::NORTH
+                ],
+                '0' => [
+                    0 => 'a',
+                    1 => self::CURRENT
+                ],
+                '1' => [
+                    0 => 'a',
+                    1 => self::SOUTH
+                ]
+            ]
+        ];
+        $this->config = Hook::NS($key, [Anemon::extend($c, $config), $c]);
+        $d = $this->config['direction'];
         global $url;
         if (isset($chunk)) {
             $input = Anemon::eat($input)->chunk($chunk);
@@ -57,7 +64,6 @@ class Elevator extends Genome {
             if ($d['0'] !== false) $this->bucket[$d['0']] = $path !== $url->current ? $path : null;
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
-        $this->config = $c;
         $this->NS = $NS;
         $this->bucket = Hook::NS($key . '.links', [$this->bucket]);
     }

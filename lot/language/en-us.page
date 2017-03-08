@@ -101,6 +101,9 @@ descriptions: Descriptions
 detail: Detail
 details: Details
 
+direction: Direction
+directions: Directions
+
 draft: Draft
 drafts: Drafts
 
@@ -243,6 +246,9 @@ only: Only
 
 option: Option
 options: Options
+
+order: Order
+orders: Orders
 
 parent: Parent
 parents: Parents
@@ -411,8 +417,9 @@ next__: Next %{0}%
 none: None
 not: Not
 not__: Not %{0}%
-of: Of
 on: On
+of: Of
+off: Off
 previous: Previous
 previous__: Previous %{0}%
 right: Right

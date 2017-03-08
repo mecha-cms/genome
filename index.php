@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Mecha · Content Management System (CMS)
- * =======================================
- *
+ * =========================================
+ *  MECHA · CONTENT MANAGEMENT SYSTEM (CMS)
+ * =========================================
  * © 2014 – 2017 Taufik Nurrohman
- *
+ * -----------------------------------------
  */
 
 define('DS', DIRECTORY_SEPARATOR);
@@ -13,7 +13,6 @@ define('ROOT', rtrim(__DIR__, DS));
 
 define('DENT', '  '); // Default HTML indent
 define('N', "\n"); // Line break
-define('S', "\xA0"); // Non break space
 define('T', "\t"); // Tab
 define('X', "\x1A"); // Placeholder text
 

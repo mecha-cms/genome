@@ -3,7 +3,9 @@
 class Request extends Genome {
 
     public static $config = [
-        'session' => ['request' => 'Mecha\Request']
+        'session' => [
+            'request' => 'Mecha\Request'
+        ]
     ];
 
     public static function any($id, $key = null, $fail = null, $eval = true) {
@@ -61,7 +63,7 @@ class Request extends Genome {
         return new static;
     }
 
-    // save state
+    // Save state
     public static function save($id, $key = null, $value = null) {
         $id = strtoupper($id);
         $data = self::any($id, null, []);
@@ -78,7 +80,7 @@ class Request extends Genome {
         return new static;
     }
 
-    // restore state
+    // Restore state
     public static function restore($id, $key = null, $fail = null) {
         $id = strtoupper($id);
         $cache = Session::get(self::$config['session']['request'] . '.' . $id, []);
@@ -90,7 +92,7 @@ class Request extends Genome {
         return $cache;
     }
 
-    // delete state
+    // Delete state
     public static function delete($id, $key = null) {
         $id = strtoupper($id);
         Session::reset(self::$config['session']['request'] . '.' . $id . (isset($key) ? '.' . $key : ""));

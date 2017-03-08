@@ -11,11 +11,11 @@ if ($state = Extend::state(__DIR__)) {
 $path = $url->path;
 $path_array = explode('/', $path);
 
-$site->type = '404'; // default is `404`
+$site->is = '404'; // default is `404`
 $site->state = 'page'; // default is `page`
 
 if (!$path || $path === $site->path) {
-    $site->type = ""; // home page type is ``
+    $site->is = ""; // home page type is ``
 }
 
 $n = DS . Path::B($path);
@@ -27,10 +27,10 @@ if ($file = File::exist([
     $folder . $n . '.page',
     $folder . $n . '.archive'
 ])) {
-    $site->type = 'page';
+    $site->is = 'page';
     $site->state = Path::X($file);
     if (!File::exist($folder . $n . '.page') && Get::pages($folder, 'page')) {
-        $site->type = 'pages';
+        $site->is = 'pages';
     }
 }
 
@@ -63,18 +63,18 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 2 => ['rel' => null]
             ],
            '-1' => [
-                1 => '&#x25C0;',
+                1 => Elevator::WEST,
                 2 => ['rel' => 'prev']
             ],
             '1' => [
-                1 => '&#x25B6;',
+                1 => Elevator::EAST,
                 2 => ['rel' => 'next']
             ]
         ]
     ];
     // Placeholder…
     Lot::set([
-        'pager' => new Elevator([], 1, 0, true, $elevator, $site->type),
+        'pager' => new Elevator([], 1, 0, true, $elevator, $site->is),
         'page' => new Page,
         'message' => Message::get(),
         'token' => Guardian::token()
@@ -119,12 +119,25 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             $files_parent = [];
         }
         Lot::set([
-            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->type),
+            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->is),
             'page' => $page
         ]);
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         if (!File::exist($folder . DS . $name . '.' . $page->state)) {
             if ($files = fn_get_pages($folder, 'page', $sort, 'path')) {
+                if ($query = l(Request::get($config->q, ""))) {
+                    Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
+                    $query = explode(' ', $query);
+                    $files = array_filter($files, function($v) use($query) {
+                        $v = Path::N($v);
+                        foreach ($query as $q) {
+                            if (strpos($v, $q) !== false) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                }
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
                     $pages[] = new Page($file);
                 }
@@ -133,7 +146,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                     Shield::abort('404/' . $path_alt);
                 }
                 Lot::set([
-                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, $site->type),
+                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, $site->is),
                     'pages' => $pages
                 ]);
                 Shield::attach('pages/' . $path_alt);

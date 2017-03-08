@@ -25,7 +25,7 @@ class File extends Genome {
             'update' => $update_date,
             'size' => file_exists($path) ? self::size($path) : null,
             'is' => [
-                // hidden file/folder only
+                // Hidden file/folder only
                 'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
                 'file' => is_file($path),
                 'folder' => is_dir($path)

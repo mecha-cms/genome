@@ -32,9 +32,9 @@ class Hook extends Genome {
                     if (isset($stack)) {
                         foreach (self::$lot[1][$c][$id] as $k => $v) {
                             if (
-                                // eject hook by function name
+                                // Eject hook by function name
                                 $v['fn'] === $stack ||
-                                // eject hook by function stack
+                                // Eject hook by function stack
                                 is_numeric($stack) && $v['stack'] === (float) $stack
                             ) {
                                 unset(self::$lot[1][$c][$id][$k]);

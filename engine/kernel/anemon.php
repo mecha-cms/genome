@@ -7,8 +7,7 @@ class Anemon extends Genome {
     protected $i = 0;
 
     // Create list of namespace step(s)
-    public static function step($input, $NS = null) {
-        $NS = $NS ?: '.';
+    public static function step($input, $NS = '.') {
         if (is_string($input) && strpos($input, $NS) !== false) {
             $input = explode($NS, trim($input, $NS));
             $a = array_shift($input);
@@ -73,13 +72,13 @@ class Anemon extends Genome {
         return $input;
     }
 
-    // Extend two array
+    // Extend two or more array
     public static function extend(array &$input, ...$b) {
         $input = array_replace_recursive((array) $input, ...$b);
         return $input;
     }
 
-    // Concat two array
+    // Concatenate two or more array
     public static function concat(array &$input, ...$b) {
         $input = array_merge_recursive((array) $input, ...$b);
         return $input;

@@ -10,7 +10,6 @@ To enable this feature, add `css.data` and `js.data` files to a folder that is n
 
 ~~~ .txt
 lot\
- │
  └── page\
      ├── blog-page\
      │   ├── css.data

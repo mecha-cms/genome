@@ -3,7 +3,9 @@
 class Guardian extends Genome {
 
     public static $config = [
-        'session' => ['token' => 'Mecha\Guardian\Token']
+        'session' => [
+            'token' => 'Mecha\Guardian\Token'
+        ]
     ];
 
     public static function hash($salt = "") {
@@ -24,9 +26,9 @@ class Guardian extends Genome {
             $path = $current;
         }
         $long = URL::long($path, false);
-        $G = ['source' => $path, 'url' => $long];
+        $G = ['url' => $long];
         Session::set('url.previous', $current);
-        Hook::fire(__c2f__(static::class) . '.kick.before', [null, $G, $G]);
+        Hook::fire(__c2f__(static::class) . '.kick.before', [$path, $G]);
         header('Location: ' . $long);
         exit;
     }

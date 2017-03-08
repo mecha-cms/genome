@@ -1011,12 +1011,19 @@ function x($x, $c = "'", $d = '-+*/=:()[]{}<>^$.?!|\\') {
 }
 
 function y($x, $a = []) {
-    if (is_callable($x)) {
+    // By path
+    if (is_string($x) && file_exists($x)) {
+        ob_start();
+        extract($a);
+        require $x;
+        return ob_get_clean();
+    // By function
+    } else if (is_callable($x)) {
         ob_start();
         call_user_func_array($x, $a);
         return ob_get_clean();
     }
-    return $x;
+    return false;
 }
 
 // $b: use `[]` or `array()` syntax?

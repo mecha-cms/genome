@@ -79,12 +79,12 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
-    // Is file?
+    // Is file
     public static function F($x) {
         return is_file($x);
     }
 
-    // Is directory?
+    // Is directory
     public static function D($x) {
         return is_dir($x);
     }
