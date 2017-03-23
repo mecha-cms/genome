@@ -65,7 +65,7 @@ class HTTP extends Genome {
         511 => 'Network Authentication Required' // RFC6585
     ];
 
-    public static function status($i = 200, $v = null) {
+    public static function status($i = 200) {
         if (is_int($i) && isset(self::$message[$i])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
                 header('Status: ' . $i . ' ' . self::$message[$i]);
@@ -103,20 +103,20 @@ class HTTP extends Genome {
         return $output;
     }
 
-    public static function header($k, $v = null) {
-        if (!is_array($k)) {
-            if (is_int($k)) {
-                self::status($k);
+    public static function header($key, $value = null) {
+        if (!is_array($key)) {
+            if (is_int($key)) {
+                self::status($key);
             } else {
-                if (isset($v)) {
-                    header($k . ': ' . $v);
+                if (isset($value)) {
+                    header($key . ': ' . $value);
                 } else {
-                    header($k);
+                    header($key);
                 }
             }
         } else {
-            foreach ($k as $kk => $vv) {
-                header($kk . ': ' . $vv);
+            foreach ($key as $k => $v) {
+                header($k . ': ' . $v);
             }
         }
         return new static;

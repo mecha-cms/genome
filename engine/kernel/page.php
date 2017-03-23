@@ -20,6 +20,9 @@ class Page extends Genome {
         ]);
         $this->prefix = $NS . '.';
         $this->lot = array_replace($lot, is_array($input) ? $input : ['path' => $input]);
+        if (!array_key_exists('date', $this->lot)) {
+            $this->lot['date'] = new Date(File::open(Path::F($input) . DS . 'time.data')->read());
+        }
     }
 
     public function __call($key, $lot) {
