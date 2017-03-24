@@ -10,18 +10,18 @@ class Page extends Genome {
     public function __construct($input = null, $lot = [], $NS = 'page') {
         $t = File::T($input, time());
         $date = date(DATE_WISE, $t);
-        $this->lot_alt = array_replace(a(Config::get('page', [])), $lot, [
+        $this->lot_alt = array_replace(a(Config::get('page', [])), [
             'time' => $date,
             'update' => $date,
             'slug' => Path::N($input),
             'state' => Path::X($input),
             'id' => (string) $t,
             'url' => To::url($input)
-        ]);
+        ], $lot);
         $this->prefix = $NS . '.';
         $this->lot = array_replace($lot, is_array($input) ? $input : ['path' => $input]);
         if (!array_key_exists('date', $this->lot)) {
-            $this->lot['date'] = new Date(File::open(Path::F($input) . DS . 'time.data')->read());
+            $this->lot['date'] = new Date(File::open(Path::F($input) . DS . 'time.data')->read($this->lot_alt['time']));
         }
     }
 

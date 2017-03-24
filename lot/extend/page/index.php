@@ -41,6 +41,11 @@ function fn_page_url($content, $lot) {
 
 Hook::set('page.url', 'fn_page_url', 1);
 
+Lot::set([
+    'message' => Message::get(false),
+    'token' => Guardian::token()
+]);
+
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $date, $language, $site, $url, $u_r_l) {
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
@@ -75,9 +80,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     // Placeholder…
     Lot::set([
         'pager' => new Elevator([], 1, 0, true, $elevator, $site->is),
-        'page' => new Page,
-        'message' => Message::get(),
-        'token' => Guardian::token()
+        'page' => new Page
     ]);
     // --ditto
     $pages = $page = [];
@@ -128,6 +131,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 if ($query = l(Request::get($config->q, ""))) {
                     Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                     $query = explode(' ', $query);
+                    Config::set('search', $query);
                     $files = array_filter($files, function($v) use($query) {
                         $v = Path::N($v);
                         foreach ($query as $q) {

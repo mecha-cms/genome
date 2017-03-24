@@ -2,7 +2,7 @@
 
 function fn_art_css($content) {
     $content = trim($content);
-    if ($content && stripos($content, '</style>') === false) {
+    if ($content && stripos($content, '</style>') === false && stripos($content, '<link ') === false) {
         return '<style media="screen">' . N . $content . N . '</style>';
     }
     return $content;
@@ -10,7 +10,7 @@ function fn_art_css($content) {
 
 function fn_art_js($content) {
     $content = trim($content);
-    if ($content && stripos($content, '</script>') === false) {
+    if ($content && stripos($content, '</script>') === false && stripos($content, '<script ') === false) {
         return '<script>' . N . $content . N . '</script>';
     }
     return $content;
