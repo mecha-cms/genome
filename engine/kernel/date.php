@@ -31,6 +31,7 @@ class Date extends Genome {
 
     public function __construct($date = null) {
         $this->date = isset($date) ? $date : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
+        self::$__instance__[] = $this;
     }
 
     public function format($format = DATE_WISE) {

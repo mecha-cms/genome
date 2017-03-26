@@ -2,28 +2,14 @@
 
 abstract class Genome {
 
+    // Instance(s)…
+    public static $__instance__ = [];
+
     // Static method name’s suffix
     public static $_suf = '__';
 
-    // Instance(s)…
-    public static $_instance = [];
-
     // Method(s)…
     public static $_ = [];
-
-    // Trigger a class instance
-    public static function _(...$lot) {
-        return (self::$_instance[static::class][] = new static(...$lot));
-    }
-
-    // Count all class instance
-    public static function __instance__($fail = [], $all = false) {
-        $c = static::class;
-        if ($all) {
-            return !empty(self::$_instance) ? self::$_instance : $fail;
-        }
-        return !empty(self::$_instance[$c]) ? self::$_instance[$c] : $fail;
-    }
 
     // Show the added method(s)
     public static function kin($kin = null, $fail = false, $origin = false) {

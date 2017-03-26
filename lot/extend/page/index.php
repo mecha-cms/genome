@@ -79,12 +79,12 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     ];
     // Placeholder…
     Lot::set([
-        'pager' => Elevator::_([], 1, 0, true, $elevator, $site->is),
-        'page' => Page::_()
+        'pager' => new Elevator([], 1, 0, true, $elevator, $site->is),
+        'page' => new Page
     ]);
     // --ditto
     $pages = $page = [];
-    Config::set('page.title', Anemon::_([$site->title], ' &#x00B7; '));
+    Config::set('page.title', new Anemon([$site->title], ' &#x00B7; '));
     if ($file = File::exist([
         $folder . '.page', // `lot\page\page-slug.page`
         $folder . '.archive', // `lot\page\page-slug.archive`
@@ -98,7 +98,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             if ($fn = File::exist($s . DS . 'index.php')) include $fn;
             if ($fn = File::exist($s . DS . 'index__.php')) include $fn;
         }
-        $page = Page::_($file);
+        $page = new Page($file);
         $sort = $page->sort($site->sort);
         $chunk = $page->chunk($site->chunk);
         // Create elevator for single page mode
@@ -111,7 +111,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             $folder_parent . DS . $name_parent . '.page',
             $folder_parent . DS . $name_parent . '.archive'
         ])) {
-            $page_parent = Page::_($file_parent);
+            $page_parent = new Page($file_parent);
             $sort_parent = $page_parent->sort($site->sort);
             $chunk_parent = $page_parent->chunk($site->chunk);
             $files_parent = fn_get_pages($folder_parent, 'page', $sort_parent, 'slug');
@@ -122,16 +122,16 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             $files_parent = [];
         }
         Lot::set([
-            'pager' => Elevator::_($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->is),
+            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->is),
             'page' => $page
         ]);
-        Config::set('page.title', Anemon::_([$page->title, $site->title], ' &#x00B7; '));
+        Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         if (!File::exist($folder . DS . $name . '.' . $page->state)) {
             if ($files = fn_get_pages($folder, 'page', $sort, 'path')) {
                 if ($query = l(Request::get($config->q, ""))) {
-                    Config::set('page.title', Anemon::_([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
+                    Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                     $query = explode(' ', $query);
-                    Config::set('search', Page::_(null, ['query' => $query], 'search'));
+                    Config::set('search', new Page(null, ['query' => $query], 'search'));
                     $files = array_filter($files, function($v) use($query) {
                         $v = Path::N($v);
                         foreach ($query as $q) {
@@ -143,7 +143,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                     });
                 }
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
-                    $pages[] = Page::_($file);
+                    $pages[] = new Page($file);
                 }
                 if (empty($pages)) {
                     // Greater than the maximum step or less than `1`, abort!
@@ -152,7 +152,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 $site->is = 'pages';
                 Lot::set([
                     'pages' => $pages,
-                    'pager' => Elevator::_($files, $chunk, $step, $url . '/' . $path, $elevator, $site->is)
+                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, $site->is)
                 ]);
                 Shield::attach('pages/' . $path_alt);
             } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {

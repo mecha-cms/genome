@@ -17,7 +17,7 @@ call_user_func(function() {
             $i18n . $config->language . '.page',
             $i18n . 'en-us.page'
         ])) {
-            $i18n = Page::_($l, [], 'language');
+            $i18n = new Page($l, [], 'language');
             $fn = 'From::' . l($i18n->type);
             Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
         }

@@ -66,6 +66,7 @@ class Elevator extends Genome {
         }
         $this->NS = $NS;
         $this->bucket = Hook::NS($key . '.links', [$this->bucket]);
+        self::$__instance__[] = $this;
     }
 
     protected function _unite($input, $alt = ['span']) {

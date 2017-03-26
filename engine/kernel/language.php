@@ -9,7 +9,7 @@ class Language extends Genome {
         $x = File::open($cache)->import([0, []]);
         $i18n = File::exist([LANGUAGE . DS . $language . '.page', LANGUAGE . DS . 'en-us.page'], null);
         $t = File::T($i18n, -1);
-        $i18n = Page::_($i18n, [], 'language');
+        $i18n = new Page($i18n, [], 'language');
         if ($x[0] === 0 || $t > $x[0]) {
             $fn = 'From::' . l($i18n->type);
             $x = [$t, is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content];
@@ -54,6 +54,7 @@ class Language extends Genome {
         if ($input) {
             self::set(From::yaml($input));
         }
+        self::$__instance__[] = $this;
     }
 
     public function __call($key, $lot) {

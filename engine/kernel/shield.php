@@ -31,7 +31,7 @@ class Shield extends Genome {
         if ($path__ = Hook::NS($NS . 'path', [self::path($input, is_array($fail) ? false : $fail)])) {
             global $config;
             $G = ['source' => $input];
-            $lot__ = Lot::set('state', State::_(self::state($config->shield, [])))->get(null, []);
+            $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";
@@ -64,7 +64,7 @@ class Shield extends Genome {
         if ($path__ = Hook::NS($NS . 'path', [self::path($input, is_array($fail) ? false : $fail)])) {
             global $config;
             $G = ['source' => $input];
-            $lot__ = Lot::set('state', State::_(self::state($config->shield, [])))->get(null, []);
+            $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             $out = "";

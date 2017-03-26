@@ -51,6 +51,7 @@ class Union extends Genome {
         $NS .= '.';
         $this->union = Hook::NS($NS . 'union', [array_replace_recursive($this->union, $union)]);
         $this->prefix = $NS;
+        self::$__instance__[] = $this;
     }
 
     protected $unit = [];

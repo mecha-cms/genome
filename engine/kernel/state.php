@@ -20,6 +20,7 @@ class State extends Genome {
 
     public function __construct($input = [], $lot = []) {
         $this->lot = array_replace($lot, $input);
+        self::$__instance__[] = $this;
     }
 
     public function __call($key, $lot) {

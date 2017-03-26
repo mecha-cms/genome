@@ -21,8 +21,9 @@ class Page extends Genome {
         $this->prefix = $NS . '.';
         $this->lot = array_replace($lot, is_array($input) ? $input : ['path' => $input]);
         if (!array_key_exists('date', $this->lot)) {
-            $this->lot['date'] = Date::_(File::open(Path::F($input) . DS . 'time.data')->read($this->lot_alt['time']));
+            $this->lot['date'] = new Date(File::open(Path::F($input) . DS . 'time.data')->read($this->lot_alt['time']));
         }
+        self::$__instance__[] = $this;
     }
 
     public function __call($key, $lot) {
@@ -59,7 +60,7 @@ class Page extends Genome {
         }
         // Prioritize data from a file…
         if ($data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
-            $lot[$key] = $data;
+            $lot[$key] = e($data);
         }
         $this->lot = $lot;
         // $this->lot_alt = $lot_alt;
@@ -125,7 +126,7 @@ class Page extends Genome {
 
     public static function open($path, $lot = [], $NS = 'page') {
         self::$data = ['path' => $path];
-        return self::_($path, $lot, $NS);
+        return new static($path, $lot, $NS);
     }
 
     public static function data($input, $fn = null, $NS = 'page') {
@@ -142,7 +143,7 @@ class Page extends Genome {
             if ($v === false) unset(self::$data[$k], $data[$k]);
         }
         unset($data['path']);
-        return self::_(null, $data, $NS);
+        return new static(null, $data, $NS);
     }
 
     public function get($key, $fail = null, $NS = 'page') {
