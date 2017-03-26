@@ -29,4 +29,4 @@ function fn_art_set($content) {
 
 Hook::set('page.css', 'fn_art_css');
 Hook::set('page.js', 'fn_art_js');
-Hook::set('shield.output', 'fn_art_set');
+Hook::set('shield.output', 'fn_art_set', 1);

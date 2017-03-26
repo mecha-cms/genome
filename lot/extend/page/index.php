@@ -42,7 +42,7 @@ function fn_page_url($content, $lot) {
 Hook::set('page.url', 'fn_page_url', 1);
 
 Lot::set([
-    'message' => Message::get(false),
+    'message' => Message::get(),
     'token' => Guardian::token()
 ]);
 
@@ -149,9 +149,10 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                     // Greater than the maximum step or less than `1`, abort!
                     Shield::abort('404/' . $path_alt);
                 }
+                $site->is = 'pages';
                 Lot::set([
-                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, $site->is),
-                    'pages' => $pages
+                    'pages' => $pages,
+                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, $site->is)
                 ]);
                 Shield::attach('pages/' . $path_alt);
             } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {
