@@ -102,9 +102,9 @@ class Date extends Genome {
 
     public function ago($key = null, $fail = false, $compact = true) {
         extract(Lot::get(null, []));
-        $date = new DateTime();
+        $date = new \DateTime();
         $date->setTimestamp((int) $this->format('U'));
-        $interval = $date->diff(new DateTime('now'));
+        $interval = $date->diff(new \DateTime('now'));
         $time = $interval->format('%y.%m.%d.%h.%i.%s');
         $time = explode('.', $time);
         $data = [
@@ -125,8 +125,8 @@ class Date extends Genome {
     }
 
     public function GMT($format = DATE_WISE) {
-        $date_GMT = new DateTime($this->format('c'));
-        $date_GMT->setTimeZone(new DateTimeZone('UTC'));
+        $date_GMT = new \DateTime($this->format('c'));
+        $date_GMT->setTimeZone(new \DateTimeZone('UTC'));
         return $date_GMT->format($format);
     }
 

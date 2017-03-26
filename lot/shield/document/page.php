@@ -16,7 +16,7 @@
       <?php endif; ?>
     </section>
     <footer>
-      <?php $update = new Date($page->update); ?>
+      <?php $update = Date::_($page->update); ?>
       <p><time datetime="<?php echo $update->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $update->{str_replace('-', '_', $config->language)}; ?></time></p>
     </footer>
   </article>

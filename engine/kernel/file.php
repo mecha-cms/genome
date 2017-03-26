@@ -250,8 +250,8 @@ class File extends Genome {
     public static function delete() {
         if (self::$path !== false) {
             if (is_dir(self::$path)) {
-                $a = new RecursiveDirectoryIterator(self::$path, FilesystemIterator::SKIP_DOTS);
-                $b = new RecursiveIteratorIterator($a, RecursiveIteratorIterator::CHILD_FIRST);
+                $a = new \RecursiveDirectoryIterator(self::$path, \FilesystemIterator::SKIP_DOTS);
+                $b = new \RecursiveIteratorIterator($a, \RecursiveIteratorIterator::CHILD_FIRST);
                 foreach ($b as $o) {
                     if ($o->isFile()) {
                         unlink($o->getPathname());

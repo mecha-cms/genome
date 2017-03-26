@@ -3,16 +3,33 @@
 abstract class Genome {
 
     // Static method name’s suffix
-    public static $_suffix = '__';
+    public static $_suf = '__';
+
+    // Instance(s)…
+    public static $_instance = [];
 
     // Method(s)…
     public static $_ = [];
+
+    // Trigger a class instance
+    public static function _(...$lot) {
+        return (self::$_instance[static::class][] = new static(...$lot));
+    }
+
+    // Count all class instance
+    public static function __instance__($fail = [], $all = false) {
+        $c = static::class;
+        if ($all) {
+            return !empty(self::$_instance) ? self::$_instance : $fail;
+        }
+        return !empty(self::$_instance[$c]) ? self::$_instance[$c] : $fail;
+    }
 
     // Show the added method(s)
     public static function kin($kin = null, $fail = false, $origin = false) {
         $c = static::class;
         if (isset($kin)) {
-            $kin .= self::$_suffix;
+            $kin .= self::$_suf;
             if (!isset(self::$_[0][$c][$kin])) {
                 $output = isset(self::$_[1][$c][$kin]) ? self::$_[1][$c][$kin] : $fail;
                 return $origin && method_exists($c, $kin) ? 1 : $output;
@@ -24,7 +41,7 @@ abstract class Genome {
 
     // Add new method with `Genome::plug('foo')`
     public static function plug($kin, $fn) {
-        self::$_[1][static::class][$kin . self::$_suffix] = $fn;
+        self::$_[1][static::class][$kin . self::$_suf] = $fn;
         return true;
     }
 
@@ -32,7 +49,7 @@ abstract class Genome {
     public static function unplug($kin = null) {
         if (isset($kin)) {
             $c = static::class;
-            $kin .= self::$_suffix;
+            $kin .= self::$_suf;
             self::$_[0][$c][$kin] = 1;
             unset(self::$_[1][$c][$kin]);
         } else {
@@ -44,7 +61,7 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot) {
         $c = static::class;
-        $kin_ = $kin . self::$_suffix;
+        $kin_ = $kin . self::$_suf;
         if (method_exists($c, $kin_)) {
             return call_user_func_array('self::' . $kin_, $lot);
         }

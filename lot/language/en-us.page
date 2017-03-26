@@ -235,12 +235,16 @@ new: New
 newer: Newer
 newest: Newest
 
+new__: New %{0}%
+
 object: Object
 objects: Objects
 
 old: Old
 older: Older
 oldest: Oldest
+
+old__: Old %{0}%
 
 only: Only
 
@@ -417,9 +421,9 @@ next__: Next %{0}%
 none: None
 not: Not
 not__: Not %{0}%
-on: On
+on: "On"
 of: Of
-off: Off
+off: "Off"
 previous: Previous
 previous__: Previous %{0}%
 right: Right
