@@ -1,18 +1,11 @@
 <?php
 
-$state = Plugin::state(__DIR__);
-
-Lot::set([
-    'state' => $state,
-    'x' => new ParsedownExtraPlugin
-], __DIR__);
-
 function fn_markdown($input, $lot) {
     if (!isset($lot['type']) || $lot['type'] !== 'Markdown') {
         return $input;
     }
-    extract(Lot::get(null, [], __DIR__));
-    foreach ($state as $k => $v) {
+    $x = new ParsedownExtraPlugin;
+    foreach (Plugin::state(__DIR__) as $k => $v) {
         $x->{$k} = $v;
     }
     return $x->text($input);

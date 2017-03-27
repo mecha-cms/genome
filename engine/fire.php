@@ -83,7 +83,12 @@ foreach ($extends as $k => $v) {
     }, $seeds);
 }
 
-foreach (array_keys($extends) as $v) require $v;
+foreach (array_keys($extends) as $v) {
+    call_user_func(function() use($v) {
+        extract(Lot::get(null, []));
+        require $v;
+    });
+}
 
 // Load user function(s) from the current shield folder if any
 $folder_shield = SHIELD . DS . $config->shield . DS;
