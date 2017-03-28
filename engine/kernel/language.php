@@ -54,7 +54,7 @@ class Language extends Genome {
         if ($input) {
             self::set(From::yaml($input));
         }
-        self::$__instance__[] = $this;
+        parent::__construct();
     }
 
     public function __call($key, $lot) {

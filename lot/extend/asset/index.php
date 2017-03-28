@@ -1,6 +1,6 @@
 <?php
 
-function fn_asset($content) {
+function fn_asset_replace($content) {
     $lot = ["", Lot::get(null, [])];
     $content = str_ireplace('</head>', Hook::NS('asset.top', $lot) . '</head>', $content);
     $content = str_ireplace('</body>', Hook::NS('asset.bottom', $lot) . '</body>', $content);
@@ -15,4 +15,4 @@ Hook::set('asset.bottom', function($content) {
     return $content . Asset::js();
 });
 
-Hook::set('shield.input', 'fn_asset', 0);
+Hook::set('shield.input', 'fn_asset_replace', 0);

@@ -5,7 +5,7 @@ class Page extends Genome {
     public $lot = [];
     public $lot_alt = [];
 
-    private $prefix = "";
+    private $pref = "";
 
     public function __construct($input = null, $lot = [], $NS = 'page') {
         $t = File::T($input, time());
@@ -18,12 +18,12 @@ class Page extends Genome {
             'id' => (string) $t,
             'url' => To::url($input)
         ], $lot);
-        $this->prefix = $NS . '.';
+        $this->pref = $NS . '.';
         $this->lot = array_replace($lot, is_array($input) ? $input : ['path' => $input]);
         if (!array_key_exists('date', $this->lot)) {
             $this->lot['date'] = new Date(File::open(Path::F($input) . DS . 'time.data')->read($this->lot_alt['time']));
         }
-        self::$__instance__[] = $this;
+        parent::__construct();
     }
 
     public function __call($key, $lot) {
@@ -64,7 +64,7 @@ class Page extends Genome {
         }
         $this->lot = $lot;
         // $this->lot_alt = $lot_alt;
-        return Hook::NS($this->prefix . $key, [$lot[$key], $lot]);
+        return Hook::NS($this->pref . $key, [$lot[$key], $lot]);
     }
 
     public function __unset($key) {

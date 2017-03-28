@@ -24,5 +24,5 @@ To::plug('markdown', function($input) {
     return $input; // TODO
 });
 
-Hook::set('page.title', 'fn_markdown_span', 1);
-Hook::set(['page.description', 'page.content'], 'fn_markdown', 1);
+Hook::set('page.title', 'fn_markdown_span', 2);
+Hook::set(['page.description', 'page.content'], 'fn_markdown', 2);

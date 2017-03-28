@@ -60,7 +60,7 @@ class URL extends Genome {
 
     public function __construct() {
         $this->lot = __url__();
-        self::$__instance__[] = $this;
+        parent::__construct();
     }
 
     public function __set($key, $value = null) {

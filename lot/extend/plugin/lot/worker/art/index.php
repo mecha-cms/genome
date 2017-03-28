@@ -16,7 +16,7 @@ function fn_art_js($content) {
     return $content;
 }
 
-function fn_art_set($content) {
+function fn_art_replace($content) {
     if (!$page = Lot::get('page')) {
         return $content;
     }
@@ -29,4 +29,4 @@ function fn_art_set($content) {
 
 Hook::set('page.css', 'fn_art_css');
 Hook::set('page.js', 'fn_art_js');
-Hook::set('shield.output', 'fn_art_set', 1);
+Hook::set('shield.output', 'fn_art_replace', 1);

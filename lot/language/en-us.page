@@ -760,6 +760,8 @@ message_exist: %{0}% already exists.
 _message_avail: %{0}% is not available.
 _message_exist: %{0}% does not exist.
 
+message_info_is: Your %{0}% is %{1}%.
+message_info_are: Your %{0}% are %{1}%.
 message_info_search: Search results for %{0}%.
 
 message_error_search: No results for %{0}%.

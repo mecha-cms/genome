@@ -5,6 +5,11 @@ abstract class Genome {
     // Instance(s)…
     public static $__instance__ = [];
 
+    // Instance counter
+    public function __construct() {
+        self::$__instance__[] = $this;
+    }
+
     // Static method name’s suffix
     public static $_suf = '__';
 

@@ -15,7 +15,7 @@ class Union extends Genome {
         ]
     ];
 
-    protected $prefix = null;
+    private $pref = null;
 
     protected $data = [
         'class' => null,
@@ -50,8 +50,8 @@ class Union extends Genome {
         }
         $NS .= '.';
         $this->union = Hook::NS($NS . 'union', [array_replace_recursive($this->union, $union)]);
-        $this->prefix = $NS;
-        self::$__instance__[] = $this;
+        $this->pref = $NS;
+        parent::__construct();
     }
 
     protected $unit = [];
@@ -75,7 +75,7 @@ class Union extends Genome {
             return strlen($data) ? ' ' . $data : ""; // no hook(s) applied…
         }
         $output = "";
-        $c = $this->prefix;
+        $c = $this->pref;
         $u = $this->union[1][1];
         $unit = $unit ? '.' . $unit : "";
         $array = Hook::NS($c . 'bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
@@ -122,7 +122,7 @@ class Union extends Genome {
             $content = N . call_user_func_array([$this, __FUNCTION__], array_merge($content, $dent + 1)) . N;
         }
         $dent = self::dent($dent);
-        $c = $this->prefix;
+        $c = $this->pref;
         $u = $this->union[1][0];
         $s  = $dent . $u[0] . $unit . $this->bond($data, $unit);
         $s .= $content === false ? $u[1] : $u[1] . ($content ? $content : "") . $u[0] . $u[2] . $unit . $u[1];
@@ -179,7 +179,7 @@ class Union extends Genome {
         if (strpos($block, N) !== false) {
             $end = $block . $dent;
         }
-        $c = $this->prefix;
+        $c = $this->pref;
         $u = $this->union[1][2];
         return Hook::NS($c . 'unit.__', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
     }
@@ -190,7 +190,7 @@ class Union extends Genome {
         $this->unit[] = $unit;
         $this->dent[] = $dent;
         $u = $this->union[1][0];
-        $c = $this->prefix;
+        $c = $this->pref;
         return Hook::NS($c . $unit . '.begin', [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], [$unit, null, $data]]);
     }
 
@@ -206,7 +206,7 @@ class Union extends Genome {
         }
         $unit = isset($unit) ? $unit : array_pop($this->unit);
         $dent = isset($dent) ? self::dent($dent) : array_pop($this->dent);
-        $c = $this->prefix;
+        $c = $this->pref;
         $u = $this->union[1][0];
         return Hook::NS($c . $unit . '.end', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
     }

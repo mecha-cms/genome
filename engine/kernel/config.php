@@ -54,10 +54,6 @@ class Config extends Genome {
         return new static;
     }
 
-    public function __construct() {
-        self::$__instance__[] = $this;
-    }
-
     public static function __callStatic($kin, $lot) {
         if (!self::kin($kin)) {
             $fail = false;
