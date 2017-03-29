@@ -57,7 +57,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         }
         $v = trim(isset($part[1]) ? $part[1] : "");
         // Remove inline comment(s)…
-        if ($v && strpos($v, '#') !== false) {
+        if ($v !== "" && strpos($v, '#') !== false) {
             if ($v[0] === '"' || $v[0] === "'") {
                 $vv = '/(' . implode('|', $q) . ')|\s*#.*/';
                 $v = preg_replace($vv, '$1', $v);
@@ -74,9 +74,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
                 $k = t($k, $k[0]);
             }
             if (!isset($parent[$k])) {
-                if (!$v) {
-                    $parent[$k] = [];
-                } else {
+                if ($v !== "") {
                     $v = e($v);
                     if (is_string($v)) {
                         if (strpos($v, '[') === 0 && substr($v, -1) === ']') {
@@ -88,6 +86,8 @@ function __from_yaml__($input, $c = [], $in = '  ') {
                         }
                     }
                     $parent[$k] = $v;
+                } else {
+                    $parent[$k] = [];
                 }
                 break;
             }

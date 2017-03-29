@@ -41,9 +41,14 @@ class Elevator extends Genome {
                     0 => 'a',
                     1 => self::SOUTH
                 ]
-            ]
+            ],
+            'input' => $input,
+            'chunk' => $chunk,
+            'index' => $index,
+            'path' => $path
         ];
-        $this->config = Hook::NS($key, [Anemon::extend($c, $config), $c]);
+        $cc = Anemon::extend($c, $config);
+        $this->config = Hook::NS($key, [$cc, $c]);
         $d = $this->config['direction'];
         global $url;
         if (isset($chunk)) {
@@ -65,7 +70,7 @@ class Elevator extends Genome {
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
         $this->NS = $NS;
-        $this->bucket = Hook::NS($key . '.links', [$this->bucket]);
+        $this->bucket = Hook::NS($key . '.links', [$this->bucket, $cc, $c]);
         parent::__construct();
     }
 
