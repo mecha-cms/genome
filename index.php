@@ -32,7 +32,7 @@ foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
 // Common HTML tag(s) allowed to be written in the form field
 define('HTML_WISE_I', 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var');
 define('HTML_WISE_B', 'address,blockquote,caption,dd,div,dl,dt,figcaption,figure,hr,h1,h2,h3,h4,h5,h6,li,ol,p,pre,table,tbody,tfoot,td,th,tr,ul');
-define('HTML_WISE', HTML_WISE_I . HTML_WISE_B);
+define('HTML_WISE', HTML_WISE_I . ',' . HTML_WISE_B);
 
 // Common date format
 define('DATE_WISE', 'Y-m-d H:i:s');
