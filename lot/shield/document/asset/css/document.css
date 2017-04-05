@@ -195,7 +195,7 @@ figcaption,
 figure,
 form,
 h1,h2,h3,h4,h5,h6,
-hr,nav,ol,p,pre,table,ul {margin:1rem 0 0}
+hr,nav,ol,p,.p,pre,table,ul {margin:1rem 0 0}
 ol,ul,dd {margin-left:2em}
 ol ol,
 ol ul,
@@ -218,7 +218,7 @@ fieldset {
 }
 legend {padding:0 .5em}
 hr:before {content:'\2756\0020\2756\0020\2756'}
-code {font-family:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace}
+code,.code {font-family:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace}
 blockquote {
   padding-left:1em;
   border-left:4px solid;
