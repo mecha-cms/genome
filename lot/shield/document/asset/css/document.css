@@ -49,7 +49,7 @@ abbr[title]:hover {border-bottom-color:inherit}
 b,dt,h1,h2,h3,h4,h5,h6,strong,th {font-weight:bold}
 caption,em,figcaption,i,var {font-style:italic}
 caption,figure {text-align:center}
-code,small,sub,sup {font-size:80%}
+code,small,sub,sup {font-size:75%}
 ins,u {text-decoration:underline}
 del,s {text-decoration:line-through}
 img {
@@ -244,10 +244,9 @@ pre code {
   padding:.25em .5em;
 }
 header {margin-bottom:5%}
-article + nav,
 footer,
-main + nav {margin-top:5%}
-main + nav {text-align:center}
+nav {margin-top:5%}
+article + nav,
 body > footer {overflow:hidden}
 body > footer,
 body > header,
@@ -257,11 +256,6 @@ body > nav {
   margin-right:auto;
   margin-left:auto;
 }
-main > article:not(:only-child) > footer,
-main > article:not(:only-child) > header {
-  margin-top:0;
-  margin-bottom:0;
-}
 nav li,
 nav ul {
   margin:0;
@@ -270,6 +264,12 @@ nav ul {
 }
 nav li {display:inline-block}
 nav li + li {margin-left:1em}
+.page main nav {text-align:center}
+.pages article > footer,
+.pages article > header {
+  margin-top:0;
+  margin-bottom:0;
+}
 .message {
   background:#fea;
   padding:.5em 1em;

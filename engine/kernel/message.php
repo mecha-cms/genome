@@ -60,9 +60,9 @@ class Message extends Genome {
         $lot .= 'Return-Path: ' . $from . N;
         $lot .= 'X-Mailer: PHP/' . phpversion();
         $s = __c2f__(static::class) . '.' . __FUNCTION__;
-        $lot = Hook::NS($s . '.data', [$meta]);
+        $lot = Hook::NS($s . '.data', [$lot]);
         $data = Hook::NS($s . '.content', [$message]);
-        return mail($to, $subject, $data, $meta);
+        return mail($to, $subject, $data, $lot);
     }
 
     public static function __callStatic($kin, $lot) {

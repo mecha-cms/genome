@@ -30,7 +30,7 @@ class Language extends Genome {
     }
 
     public static function get($key = null, $vars = [], $preserve_case = false) {
-        $vars = array_merge((array) $vars, [""]);
+        $vars = array_merge(s((array) $vars), [""]);
         $fail = $key;
         $id = '__' . static::class;
         if (!isset($key)) {

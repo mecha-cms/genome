@@ -20,8 +20,8 @@
       <p><time datetime="<?php echo $update->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $update->{str_replace('-', '_', $config->language)}; ?></time></p>
     </footer>
   </article>
+  <?php if (strpos($url->path, '/') !== false): ?>
+  <nav><?php echo $pager; ?></nav>
+  <?php endif; ?>
 </main>
-<?php if (strpos($url->path, '/') !== false): ?>
-<nav><?php echo $pager; ?></nav>
-<?php endif; ?>
 <?php Shield::get('footer'); ?>
