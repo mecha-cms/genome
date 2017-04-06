@@ -217,7 +217,7 @@ fieldset {
   padding:0 1em 1em;
 }
 legend {padding:0 .5em}
-hr:before {content:'\2756\0020\2756\0020\2756'}
+hr:before {content:'\2022\2002\2022\2002\2022'}
 code,.code {font-family:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace}
 blockquote {
   padding-left:1em;
