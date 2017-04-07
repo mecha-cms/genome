@@ -982,7 +982,7 @@ function v($x) {
 function w($x, $c = [], $n = false) {
     // Should be a HTML input
     if (strpos($x, '<') !== false || strpos($x, ' ') !== false) {
-        $c = '<' . implode('><', $c) . '>';
+        $c = '<' . implode('><', is_string($c) ? explode(',', $c) : (array) $c) . '>';
         return preg_replace($n ? '# +#' : '#\s+#', ' ', trim(strip_tags($x, $c)));
     }
     // [1]. Replace `+` to ` `
