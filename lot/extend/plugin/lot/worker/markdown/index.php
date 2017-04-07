@@ -1,6 +1,6 @@
 <?php
 
-function fn_markdown($input, $lot) {
+function fn_markdown($input = "", $lot = []) {
     if (!isset($lot['type']) || $lot['type'] !== 'Markdown') {
         return $input;
     }
