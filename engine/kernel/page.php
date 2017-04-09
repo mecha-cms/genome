@@ -113,7 +113,7 @@ class Page extends Genome {
             unset($input['content']);
         }
         foreach ($input as $k => $v) {
-            $v = self::x(s($v));
+            $v = is_array($v) ? json_encode($v) : self::x(s($v));
             if ($v && strpos($v, "\n") !== false) {
                 $v = json_encode($v); // contains line–break
             }

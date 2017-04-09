@@ -3,9 +3,7 @@
   <head>
     <meta charset="<?php echo $site->charset; ?>">
     <meta name="viewport" content="width=device-width">
-    <?php if ($s = To::text($page->description)): ?>
-    <meta name="description" content="<?php echo $s; ?>">
-    <?php elseif ($s = To::text($site->description)): ?>
+    <?php if ($s = To::text($page->description($site->description))): ?>
     <meta name="description" content="<?php echo $s; ?>">
     <?php endif; ?>
     <?php if ($page->state === 'archive'): ?>

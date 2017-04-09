@@ -22,6 +22,7 @@ return [
         'RSS' => 'Rich Site Summary',
         'RTE' => 'Rich Text Editor',
         'SFTP' => 'SSH File Transfer Protocol',
+        'UA' => 'User Agent',
         'UI' => 'User Interface',
         'URL' => 'Uniform Resource Locator',
         'WYSIWYG' => 'What You See is What You Get',

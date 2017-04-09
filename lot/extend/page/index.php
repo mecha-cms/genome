@@ -91,6 +91,9 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
         $folder . DS . $name . '.page', // `lot\page\page-slug\page-slug.page`
         $folder . DS . $name . '.archive' // `lot\page\page-slug\page-slug.archive`
     ])) { // File does exist, then …
+        if ($path !== "") {
+            $site->is = 'page';
+        }
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $s = PAGE;
         foreach (explode('/', '/' . $path) as $ss) {

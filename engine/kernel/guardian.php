@@ -34,7 +34,7 @@ class Guardian extends Genome {
     }
 
     public static function abort($message, $exit = true) {
-        echo '<p>' . $message . '</p>';
+        echo '<p style="color:#f00;">' . $message . '</p>';
         if ($exit) exit;
     }
 
