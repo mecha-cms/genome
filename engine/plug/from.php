@@ -14,9 +14,8 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         return a($input);
     }
     if (!trim($input)) return [];
-    $s = Page::$v;
+    $s = array_replace(Page::$v, $c);
     $q = ['"(?:[^"\\\]|\\\.)*"', '\'(?:[^\'\\\]|\\\.)*\''];
-    Anemon::extend($s, $c);
     $i = 0;
     $output = $data = [];
     // Normalize white–space(s)

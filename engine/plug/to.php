@@ -21,8 +21,7 @@ To::plug('path', function($input) use($url) {
 });
 
 function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
-    $s = Page::$v;
-    Anemon::extend($s, $c);
+    $s = array_replace(Page::$v, $c);
     if (__is_anemon__($input)) {
         $t = "";
         $line = !__is_anemon_assoc__($input) && !$safe;
