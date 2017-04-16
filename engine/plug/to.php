@@ -1,9 +1,108 @@
 <?php
 
-$url = __url__();
 $has_mb_string = extension_loaded('mbstring');
 
-To::plug('url', function($input) use($url) {
+To::plug('anemon', function($input) {
+    if (__is_anemon__($input)) {
+        return a($input);
+    }
+    return json_decode($input, true);
+});
+
+To::plug('base64', 'base64_encode');
+To::plug('camel', 'c');
+
+To::plug('dec', function($input, $z = false, $f = ['&#', ';']) {
+    $output = "";
+    for($i = 0, $count = strlen($input); $i < $count; ++$i) {
+        $s = ord($input[$i]);
+        if ($z) $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+        $output .= $f[0] . $s . $f[1];
+    }
+    return $output;
+});
+
+To::plug('file', function($input) {
+    $input = explode(DS, str_replace('/', DS, $input));
+    $n = array_pop($input);
+    $s = "";
+    foreach ($input as $v) {
+        $s .= f($v, '-', true, '\w') . DS;
+    }
+    return $s . f($n, '-', true, '\w.');
+});
+
+To::plug('folder', function($input) {
+    $input = explode(DS, str_replace('/', DS, $input));
+    $n = array_pop($input);
+    $s = "";
+    foreach ($input as $v) {
+        $s .= f($v, '-', true, '\w') . DS;
+    }
+    return $s . f($n, '-', true, '\w');
+});
+
+To::plug('hex', function($input, $z = false, $f = ['&#x', ';']) {
+    $output = "";
+    for($i = 0, $count = strlen($input); $i < $count; ++$i) {
+        $s = dechex(ord($input[$i]));
+        if ($z) $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+        $output .= $f[0] . $s . $f[1];
+    }
+    return $output;
+});
+
+To::plug('html', 'htmlspecialchars_decode');
+To::plug('json', 'json_encode');
+
+To::plug('key', function($input, $low = true) {
+    $s = f($input, '_', $low);
+    return is_numeric($s[0]) ? '_' . $s : $s;
+});
+
+To::plug('pascal', 'p');
+
+To::plug('path', function($input) {
+    $url = __url__();
+    $s = str_replace('/', DS, $url['url']);
+    return str_replace([$url['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
+});
+
+To::plug('sentence', function($input, $tail = '.') use($has_mb_string) {
+    $input = trim($input);
+    if ($has_mb_string) {
+        return mb_strtoupper(mb_substr($input, 0, 1)) . mb_strtolower(mb_substr($input, 1)) . $tail;
+    }
+    return ucfirst(strtolower($input)) . $tail;
+});
+
+To::plug('slug', 'h');
+
+To::plug('snake', function($input) {
+    return h($input, '_');
+});
+
+To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($has_mb_string) {
+    $s = w($input, $html ? HTML_WISE_I : []);
+    $t = $has_mb_string ? mb_strlen($s) : strlen($s);
+    if (is_int($x)) {
+        $x = [$x, ""];
+    }
+    return ($has_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0])) . ($t > $x[0] ? $x[1] : "");
+});
+
+To::plug('text', 'w');
+
+To::plug('title', function($input) use($has_mb_string) {
+    $input = w($input);
+    if ($has_mb_string) {
+        return mb_convert_case($input, MB_CASE_TITLE);
+    }
+    return ucwords($input);
+});
+
+To::plug('url', function($input, $raw = false) {
+    $url = __url__();
     $s = str_replace(DS, '/', ROOT);
     $input = str_replace([ROOT, DS, '\\', $s], [$url['url'], '/', '/', $url['url']], $input);
     // Fix broken external URL `http://://example.com`, `http:////example.com`
@@ -12,12 +111,7 @@ To::plug('url', function($input) use($url) {
     if (strpos($input, $url['scheme'] . ':') === 0 && strpos($input, $url['protocol']) !== 0) {
         $input = str_replace(X . $url['scheme'] . ':', $url['protocol'], X . $input);
     }
-    return $input;
-});
-
-To::plug('path', function($input) use($url) {
-    $s = str_replace('/', DS, $url['url']);
-    return str_replace([$url['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
+    return $raw ? rawurldecode($input) : urldecode($input);
 });
 
 function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
@@ -58,72 +152,6 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
     return $input !== $s[4] && strpos($input, $s[2]) !== false ? json_encode($input) : $input;
 }
 
-To::plug('text', 'w');
-
-To::plug('title', function($input) use($has_mb_string) {
-    $input = w($input);
-    if ($has_mb_string) {
-        return mb_convert_case($input, MB_CASE_TITLE);
-    }
-    return ucwords($input);
-});
-
-To::plug('slug', 'h');
-
-To::plug('key', function($input, $low = true) {
-    $s = f($input, '_', $low);
-    return is_numeric($s[0]) ? '_' . $s : $s;
-});
-
-To::plug('snake', function($input) {
-    return h($input, '_');
-});
-
-To::plug('html', function($input) {
-    return $input; // do nothing…
-});
-
-To::plug('html_encode', 'htmlspecialchars');
-To::plug('html_decode', 'htmlspecialchars_decode');
-
-To::plug('html_dec', function($input, $z = false) {
-    $output = "";
-    for($i = 0, $count = strlen($input); $i < $count; ++$i) {
-        $s = ord($input[$i]);
-        if ($z) $s = str_pad($s, 4, '0', STR_PAD_LEFT);
-        $output .= '&#' . $s . ';';
-    }
-    return $output;
-});
-
-To::plug('html_hex', function($input, $z = false) {
-    $output = "";
-    for($i = 0, $count = strlen($input); $i < $count; ++$i) {
-        $s = dechex(ord($input[$i]));
-        if ($z) $s = str_pad($s, 4, '0', STR_PAD_LEFT);
-        $output .= '&#x' . $s . ';';
-    }
-    return $output;
-});
-
-To::plug('url_encode', function($input, $raw = false) {
-    return $raw ? rawurlencode($input) : urlencode($input);
-});
-
-To::plug('url_decode', function($input, $raw = false) {
-    return $raw ? rawurldecode($input) : urldecode($input);
-});
-
-To::plug('base64', 'base64_encode');
-To::plug('json', 'json_encode');
-
-To::plug('anemon', function($input) {
-    if (__is_anemon__($input)) {
-        return a($input);
-    }
-    return (array) json_decode($input, true);
-});
-
 To::plug('yaml', function(...$lot) {
     if (!__is_anemon__($lot[0])) {
         return s($lot[0]);
@@ -134,27 +162,7 @@ To::plug('yaml', function(...$lot) {
     return call_user_func_array('__to_yaml__', $lot);
 });
 
-To::plug('sentence', function($input, $tail = '.') use($has_mb_string) {
-    $input = trim($input);
-    if ($has_mb_string) {
-        return mb_strtoupper(mb_substr($input, 0, 1)) . mb_strtolower(mb_substr($input, 1)) . $tail;
-    }
-    return ucfirst(strtolower($input)) . $tail;
-});
-
-To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($has_mb_string) {
-    $s = w($input, $html ? explode(',', HTML_WISE_I) : []);
-    $t = $has_mb_string ? mb_strlen($s) : strlen($s);
-    if (is_int($x)) {
-        $x = [$x, ""];
-    }
-    return ($has_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0])) . ($t > $x[0] ? $x[1] : "");
-});
-
-To::plug('file', function($input) {
-    return f($input, '-', true, '\w.');
-});
-
-To::plug('folder', function($input) {
-    return f($input, '-', true, '\w');
-});
+// Alias(es)…
+To::plug('h_t_m_l', 'htmlspecialchars_decode');
+To::plug('u_r_l', 'To::url');
+To::plug('y_a_m_l', 'To::yaml');

@@ -18,7 +18,7 @@ call_user_func(function() {
             $i18n . 'en-us.page'
         ])) {
             $i18n = new Page($l, [], 'language');
-            $fn = 'From::' . l($i18n->type);
+            $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
             Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
         }
         $f .= 'engine' . DS;

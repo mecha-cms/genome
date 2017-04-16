@@ -70,7 +70,7 @@ foreach ($extends as $k => $v) {
         $i18n . 'en-us.page'
     ])) {
         $i18n = new Page($l, [], 'language');
-        $fn = 'From::' . l($i18n->type);
+        $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
         Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
     }
     $f .= 'engine' . DS;
@@ -94,6 +94,17 @@ foreach (array_keys($extends) as $v) {
 $folder_shield = SHIELD . DS . $config->shield . DS;
 if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
 if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
+
+// Load user language(s) from the current shield folder if any
+$i18n = $folder_shield . 'language' . DS;
+if ($l = File::exist([
+    $i18n . $config->language . '.page',
+    $i18n . 'en-us.page'
+])) {
+    $i18n = new Page($l, [], 'language');
+    $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
+    Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
+}
 
 function do_fire() {
     Route::fire();

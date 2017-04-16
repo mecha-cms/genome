@@ -3,7 +3,7 @@
 class Language extends Genome {
 
     public static function ignite(...$lot) {
-        $id = '__' . static::class;
+        $id = '_' . static::class;
         $language = Config::get('language');
         $cache = str_replace(ROOT, CACHE, LANGUAGE) . DS . $language . '.php';
         $x = File::open($cache)->import([0, []]);
@@ -11,7 +11,7 @@ class Language extends Genome {
         $t = File::T($i18n, -1);
         $i18n = new Page($i18n, [], 'language');
         if ($x[0] === 0 || $t > $x[0]) {
-            $fn = 'From::' . l($i18n->type);
+            $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
             $x = [$t, is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content];
             File::export($x)->saveTo($cache);
         }
@@ -19,7 +19,7 @@ class Language extends Genome {
     }
 
     public static function set($key, $value = null) {
-        $id = '__' . static::class . '.';
+        $id = '_' . static::class . '.';
         if (!__is_anemon__($key)) {
             return Config::set($id . $key, $value);
         }
@@ -32,7 +32,7 @@ class Language extends Genome {
     public static function get($key = null, $vars = [], $preserve_case = false) {
         $vars = array_merge(s((array) $vars), [""]);
         $fail = $key;
-        $id = '__' . static::class;
+        $id = '_' . static::class;
         if (!isset($key)) {
             return Config::get($id, $fail);
         }
@@ -66,19 +66,19 @@ class Language extends Genome {
     }
 
     public function __get($key) {
-        return Config::get('__' . static::class . '.' . $key, $key);
+        return Config::get('_' . static::class . '.' . $key, $key);
     }
 
     public function __unset($key) {
-        return Config::reset('__' . static::class . '.' . $key);
+        return Config::reset('_' . static::class . '.' . $key);
     }
 
     public function __toString() {
-        return To::yaml(Config::get('__' . static::class));
+        return To::yaml(Config::get('_' . static::class));
     }
 
     public function __invoke($fail = []) {
-        return Config::get('__' . static::class, o($fail));
+        return Config::get('_' . static::class, o($fail));
     }
 
 }

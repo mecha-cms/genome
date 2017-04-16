@@ -11,7 +11,7 @@ abstract class Genome {
     }
 
     // Static method name’s suffix
-    public static $_suf = '__';
+    public static $_suf = '_';
 
     // Method(s)…
     public static $_ = [];
@@ -36,8 +36,8 @@ abstract class Genome {
         return true;
     }
 
-    // Remove the added method with `Genome::unplug('foo')`
-    public static function unplug($kin = null) {
+    // Remove the added method with `Genome::eject('foo')`
+    public static function eject($kin = null) {
         if (isset($kin)) {
             $c = static::class;
             $kin .= self::$_suf;

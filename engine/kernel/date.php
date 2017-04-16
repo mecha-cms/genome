@@ -102,7 +102,6 @@ class Date extends Genome {
     }
 
     public function ago($key = null, $fail = false, $compact = true) {
-        extract(Lot::get(null, []));
         $date = new \DateTime();
         $date->setTimestamp((int) $this->format('U'));
         $interval = $date->diff(new \DateTime('now'));
@@ -119,7 +118,7 @@ class Date extends Genome {
         $output = [];
         foreach ($data as $k => $v) {
             if ($compact && $v === '0') continue;
-            $output[$k] = $v . ' ' . ($v === '1' ? $language->{$k} : $language->{$k . 's'});
+            $output[$k] = e($v);
         }
         unset($data);
         return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;

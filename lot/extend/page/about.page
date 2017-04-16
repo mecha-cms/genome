@@ -6,6 +6,6 @@ type: Markdown
 version: 1.0.4
 ...
 
-This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$config` variable.
+This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.
 
 <!-- block:donate -->

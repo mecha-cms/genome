@@ -876,7 +876,7 @@ function m() {}
 
 function n($x, $t = '    ') {
     // Tab to 4 space(s), line–break to `\n`
-    return str_replace(["\t", "\r\n", "\r"], [$t, N, N], $x);
+    return str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
 }
 
 function o($a, $safe = true) {
@@ -985,12 +985,12 @@ function w($x, $c = [], $n = false) {
         $c = '<' . implode('><', is_string($c) ? explode(',', $c) : (array) $c) . '>';
         return preg_replace($n ? '# +#' : '#\s+#', ' ', trim(strip_tags($x, $c)));
     }
-    // [1]. Replace `+` to ` `
-    // [2]. Replace `-` to ` `
-    // [3]. Replace `-----` to ` - `
-    // [4]. Replace `---` to `-`
+    // [1]. Replace `+` with ` `
+    // [2]. Replace `-` with ` `
+    // [3]. Replace `-----` with ` - `
+    // [4]. Replace `---` with `-`
     return preg_replace([
-        '#^(\.|_{2})|(\.|_{2})$#', // remove `.` and `__` prefix/suffix in file name
+        '#^([._]+)|([._]+)$#', // remove `.` and `__` prefix/suffix in file name
         '#-{5}#',
         '#-{3}#',
         '#-#',

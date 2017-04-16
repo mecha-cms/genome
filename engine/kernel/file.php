@@ -26,12 +26,12 @@ class File extends Genome {
             'size' => file_exists($path) ? self::size($path) : null,
             'is' => [
                 // Hidden file/folder only
-                'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
+                'hidden' => strpos($n, '.') === 0 || strpos($n, '_') === 0,
                 'file' => is_file($path),
                 'folder' => is_dir($path)
             ],
-            '__update' => $update,
-            '__size' => file_exists($path) ? filesize($path) : null
+            '_update' => $update,
+            '_size' => file_exists($path) ? filesize($path) : null
         ];
         return isset($key) ? Anemon::get($output, $key, $fail) : $output;
     }

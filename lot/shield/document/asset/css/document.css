@@ -124,6 +124,13 @@ article,aside,footer,header,main,nav,section {display:block}
 }
 .input[type="range"] {width:12em}
 .button,.select,label {cursor:pointer}
+label .input + span {
+  display:inline-block;
+  vertical-align:middle;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  user-select:none;
+}
 .input[type="color"] {
   width:1.75em;
   height:1.75em;
@@ -246,8 +253,15 @@ pre code {
 header {margin-bottom:5%}
 footer,
 nav {margin-top:5%}
-article + nav,
-body > footer {overflow:hidden}
+article:after,
+footer:after,
+header:after,
+nav:after,
+section:after {
+  content:"";
+  display:table;
+  clear:both;
+}
 body > footer,
 body > header,
 body > main,

@@ -65,7 +65,7 @@ class Union extends Genome {
     // Encode all union's special character(s)
     public static function x($v) {
         if (!is_string($v)) return $v;
-        return To::html_encode($v);
+        return From::html($v);
     }
 
     // Build union attribute(s)…
@@ -159,7 +159,7 @@ class Union extends Genome {
             $output[1] = isset($m[4]) ? $m[3] : false;
             if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '([\s\S]*?)' . $d2 . ')?/s', $m[2], $mm)) {
                 foreach ($mm[1] as $k => $v) {
-                    $s = To::html_decode($mm[2][$k]);
+                    $s = To::html($mm[2][$k]);
                     $s = $eval ? e($s) : $s;
                     if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
                         $s = $v;

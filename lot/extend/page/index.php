@@ -49,7 +49,7 @@ Lot::set([
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $date, $language, $site, $url, $u_r_l) {
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
-    if ($path === $site->path) {
+    if ($step === 1 && $path === $site->path) {
         Message::info('kick', '<code>' . $url->current . '</code>');
         Guardian::kick(""); // Redirect to home page…
     }
@@ -150,12 +150,13 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 }
                 if (empty($pages)) {
                     // Greater than the maximum step or less than `1`, abort!
+                    $site->is = '404';
                     Shield::abort('404/' . $path_alt);
                 }
                 $site->is = 'pages';
                 Lot::set([
                     'pages' => $pages,
-                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path, $elevator, $site->is)
+                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path_alt, $elevator, $site->is)
                 ]);
                 Shield::attach('pages/' . $path_alt);
             } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {

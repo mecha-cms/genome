@@ -17,8 +17,16 @@ class Get extends Genome {
         return Is::ip($ip) ? $ip : $fail;
     }
 
+    public static function i_p($fail = false) {
+        return self::ip($fail);
+    }
+
     public static function ua($fail = false) {
         return !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : $fail;
+    }
+
+    public static function u_a($fail = false) {
+        return self::ua($fail);
     }
 
 }

@@ -58,9 +58,17 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_IP);
     }
 
+    public static function i_p($x) {
+        return self::ip($x);
+    }
+
     // Check for URL address
     public static function url($x) {
         return filter_var($x, FILTER_VALIDATE_URL);
+    }
+
+    public static function u_r_l($x) {
+        return self::url($x);
     }
 
     // Check for valid local path address (whether it is exists or not)
@@ -72,6 +80,10 @@ class Is extends Genome {
     // Check for email address
     public static function email($x) {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
+    }
+
+    public static function e_mail($x) {
+        return self::email($x);
     }
 
     // Check for valid boolean value

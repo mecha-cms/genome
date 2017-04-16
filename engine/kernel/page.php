@@ -2,26 +2,36 @@
 
 class Page extends Genome {
 
-    public $lot = [];
-    public $lot_alt = [];
+    public static $page = [];
+
+    protected $lot = [];
+    protected $lot_alt = [];
 
     private $pref = "";
 
     public function __construct($input = null, $lot = [], $NS = 'page') {
-        $t = File::T($input, time());
-        $date = date(DATE_WISE, $t);
-        $this->lot_alt = array_replace(a(Config::get('page', [])), [
-            'time' => $date,
-            'update' => $date,
-            'slug' => Path::N($input),
-            'state' => Path::X($input),
-            'id' => (string) $t,
-            'url' => To::url($input)
-        ], $lot);
         $this->pref = $NS . '.';
-        $this->lot = array_replace($lot, is_array($input) ? $input : ['path' => $input]);
-        if (!array_key_exists('date', $this->lot)) {
-            $this->lot['date'] = new Date(File::open(Path::F($input) . DS . 'time.data')->read($this->lot_alt['time']));
+        $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
+        $id = md5($path . $NS);
+        if (isset(self::$page[$id])) {
+            $this->lot = self::$page[$id][1];
+            $this->lot_alt = self::$page[$id][0];
+        } else {
+            $t = File::T($path, time());
+            $date = date(DATE_WISE, $t);
+            $this->lot_alt = array_replace(a(Config::get('page', [])), [
+                'time' => $date,
+                'update' => $date,
+                'slug' => Path::N($path),
+                'state' => Path::X($path),
+                'id' => (string) $t,
+                'url' => To::url($path)
+            ], $lot);
+            $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
+            if (!array_key_exists('date', $this->lot)) {
+                $this->lot['date'] = new Date(File::open(Path::F($path) . DS . 'time.data')->read($date));
+            }
+            self::$page[$id] = [$this->lot_alt, $this->lot];
         }
         parent::__construct();
     }
@@ -59,7 +69,7 @@ class Page extends Genome {
             }
         }
         // Prioritize data from a file…
-        if ($data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
+        if (isset($lot['path']) && $data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
             $lot[$key] = e($data);
         }
         $this->lot = $lot;

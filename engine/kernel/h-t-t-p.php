@@ -90,7 +90,7 @@ class HTTP extends Genome {
         return !empty($output) ? $cc[0] . implode($cc[1], $output) : "";
     }
 
-    public static function _q($a, $k) {
+    protected static function _q($a, $k) {
         $output = [];
         $s = $k ? '%5D' : "";
         foreach ($a as $kk => $vv) {

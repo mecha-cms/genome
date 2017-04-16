@@ -3,7 +3,7 @@ title: Markdown Parser
 description: Convert Markdown syntax to HTML.
 author: Taufik Nurrohman
 type: Markdown
-version: 2.0.3
+version: 2.0.4
 ...
 
 **Markdown** is two things: a plain text markup syntax, and a software tool that converts plain text markup to HTML for publishing on the web.
@@ -12,7 +12,7 @@ The Markdown syntax allows you to write text naturally and format it without usi
 
 ### Usage
 
-In your page headers, add a `type` property with a value set to `Markdown`:
+In your page header, add a `type` property with a value set to `Markdown`:
 
 ~~~ .yaml
 ---
