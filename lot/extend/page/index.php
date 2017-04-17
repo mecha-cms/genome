@@ -45,7 +45,7 @@ Lot::set([
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $date, $language, $site, $url, $u_r_l) {
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
-    if ($step === 1 && $path === $site->path) {
+    if ($step === 1 && !$url->query && $path === $site->path) {
         Message::info('kick', '<code>' . $url->current . '</code>');
         Guardian::kick(""); // Redirect to home page…
     }

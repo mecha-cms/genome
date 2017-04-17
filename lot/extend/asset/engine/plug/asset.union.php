@@ -9,7 +9,7 @@ Asset\Union::plug('css', function($value, $key, $attr) use($state) {
         return '<!-- ' . $key . ' -->';
     }
     return HTML::unite('link', false, Anemon::extend($attr, [
-        'href' => $x ? $url : __replace__($state, [$url, File::T($path, 0)]),
+        'href' => $path === false ? $url : __replace__($state, [$url, File::T($path, 0)]),
         'rel' => 'stylesheet'
     ]));
 });
@@ -21,7 +21,7 @@ Asset\Union::plug('js', function($value, $key, $attr) use($state) {
         return '<!-- ' . $key . ' -->';
     }
     return HTML::unite('script', "", Anemon::extend($attr, [
-        'src' => $x ? $url : __replace__($state, [$url, File::T($path, 0)])
+        'src' => $path === false ? $url : __replace__($state, [$url, File::T($path, 0)])
     ]));
 });
 

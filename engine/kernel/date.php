@@ -11,11 +11,16 @@ class Date extends Genome {
         return date_default_timezone_set($zone);
     }
 
-    public static function set($key = null, $fn = null) {
+    public static function set($key, $fn = null) {
+        self::$format[$key] = $fn;
+        return new static;
+    }
+
+    public static function get($key = null, $fail = false) {
         if (isset($key)) {
-            self::$format[$key] = $fn;
+            return isset(self::$format[$key]) ? self::$format[$key] : $fail;
         }
-        return self::$format;
+        return !empty(self::$format) ? self::$format : $fail;
     }
 
     public static function reset($key = null) {
@@ -24,7 +29,7 @@ class Date extends Genome {
         } else {
             self::$format = [];
         }
-        return self::$format;
+        return new static;
     }
 
     protected $date = "";
