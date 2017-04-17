@@ -9,19 +9,15 @@ if ($state = Extend::state(__DIR__)) {
 }
 
 $path = $url->path;
-$path_array = explode('/', $path);
+$n = DS . Path::B($path);
+$folder = PAGE . DS . $path;
 
 $site->is = '404'; // default is `404`
 $site->state = 'page'; // default is `page`
 
 if (!$path || $path === $site->path) {
     $site->is = ""; // home page type is ``
-}
-
-$n = DS . Path::B($path);
-$folder = PAGE . DS . $path;
-
-if ($file = File::exist([
+} else if ($file = File::exist([
     $folder . '.page',
     $folder . '.archive',
     $folder . $n . '.page',
@@ -153,7 +149,9 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                     $site->is = '404';
                     Shield::abort('404/' . $path_alt);
                 }
-                $site->is = 'pages';
+                if ($path !== "") {
+                    $site->is = 'pages';
+                }
                 Lot::set([
                     'pages' => $pages,
                     'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path_alt, $elevator, $site->is)
