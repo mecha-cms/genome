@@ -86,9 +86,11 @@ To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($
     $s = w($input, $html ? HTML_WISE_I : []);
     $t = $has_mb_string ? mb_strlen($s) : strlen($s);
     if (is_int($x)) {
-        $x = [$x, ""];
+        $x = [$x, '&#x2026;'];
     }
-    return ($has_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0])) . ($t > $x[0] ? $x[1] : "");
+    $s = $has_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
+    // TODO: remove the unclosed HTML tag(s) at the end…
+    return $s . ($t > $x[0] ? $x[1] : "");
 });
 
 To::plug('text', 'w');
