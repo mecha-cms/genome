@@ -6,7 +6,7 @@ type: Markdown
 version: 1.0.3
 ...
 
-This extension works by looking for two special places in the HTML document, i.e. right before the `</head>` and `</body>` tags. This extension will process all assets that you were added to the hook storage and then spit them out into that places:
+This extension works by looking for two special places in the HTML document, i.e. right before the `</head>` and `</body>` tag. This extension will process all assets that you were added to the hook storage and then spit them out into that places:
 
 ~~~ .html
 <!DOCTYPE html>
@@ -37,7 +37,7 @@ To append JavaScript assets to the `<body>` section, write this code in an `inde
 Asset::set('path/to/file.js');
 ~~~
 
-Once added, this extension will process the file path and then will output them into the HTML page as a `<link>` tags for CSS files and `<script>` tags for JavaScript files.
+Once added, this extension will process the file path and then will output them into the HTML page as `<link>` tags for CSS files and `<script>` tags for JavaScript files.
 
 > **Note:** This extension will ignore files that does not exist.
 

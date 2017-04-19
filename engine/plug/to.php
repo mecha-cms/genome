@@ -89,7 +89,15 @@ To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($
         $x = [$x, '&#x2026;'];
     }
     $s = $has_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
-    // TODO: remove the unclosed HTML tag(s) at the end…
+    $s = str_replace('<br>', ' ', $s);
+    // Remove the unclosed HTML tag(s)…
+    if ($html && strpos($s, '<') !== false) {
+        $ss = '#<[^\/>]+?>([^<]*?)$#';
+        while (preg_match($ss, $s)) {
+            $s = preg_replace($ss, '$1', $s); // `foo bar <a href="">baz`
+        }
+        $s = preg_replace('#<[^>]*$#', "", $s); // `foo bar <a href=`
+    }
     return $s . ($t > $x[0] ? $x[1] : "");
 });
 
