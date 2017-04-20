@@ -12,7 +12,7 @@ class Page extends Genome {
     public function __construct($input = null, $lot = [], $NS = 'page') {
         $this->pref = $NS . '.';
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
-        $id = md5($path . $NS);
+        $id = md5($this->pref . $path);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id][1];
             $this->lot_alt = self::$page[$id][0];
@@ -50,6 +50,7 @@ class Page extends Genome {
 
     public function __set($key, $value = null) {
         $this->lot[$key] = $value;
+        self::$page[md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null))][1][$key] = $value;
     }
 
     public function __get($key) {
@@ -73,12 +74,13 @@ class Page extends Genome {
             $lot[$key] = e($data);
         }
         $this->lot = $lot;
+        self::$page[md5($this->pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
         // $this->lot_alt = $lot_alt;
         return Hook::NS($this->pref . $key, [$lot[$key], $lot]);
     }
 
     public function __unset($key) {
-        unset($this->lot[$key]);
+        unset($this->lot[$key], self::$page[md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null))][1][$key]);
     }
 
     public function __toString() {
