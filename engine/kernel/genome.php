@@ -52,15 +52,15 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot) {
         $c = static::class;
-        $kin_ = $kin . self::$_suf;
-        if (method_exists($c, $kin_)) {
-            return call_user_func_array('self::' . $kin_, $lot);
+        $k = $kin . self::$_suf;
+        if (method_exists($c, $k)) {
+            return call_user_func_array('self::' . $k, $lot);
         }
-        if (!isset(self::$_[1][$c][$kin_])) {
+        if (!isset(self::$_[1][$c][$k]) && defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
             return false;
         }
-        return call_user_func_array(self::$_[1][$c][$kin_], $lot);
+        return call_user_func_array(self::$_[1][$c][$k], $lot);
     }
 
 }

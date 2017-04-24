@@ -27,7 +27,6 @@ Asset\Union::plug('js', function($value, $key, $attr) use($state) {
 
 function fn_asset_image($value, $key, $attr) {
     extract($value);
-    global $state;
     if ($path === false) {
         if (strpos($url, '://') !== false || strpos($url, '//') === 0) {
             return HTML::unite('img', false, Anemon::extend($attr, [
@@ -37,12 +36,9 @@ function fn_asset_image($value, $key, $attr) {
         }
         return '<!-- ' . $key . ' -->';
     }
-    $z = getimagesize($path);
     return HTML::unite('img', false, Anemon::extend($attr, [
         'alt' => "",
-        'src' => __replace__($state, [$url, File::T($path, 0)]),
-        'width' => $z[0],
-        'height' => $z[1]
+        'src' => __replace__(Extend::state(Path::D(__DIR__, 2), 'url'), [$url, File::T($path, 0)])
     ]));
 }
 

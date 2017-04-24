@@ -203,7 +203,7 @@ class File extends Genome {
     // Move the file/folder to …
     public static function moveTo($target = ROOT) {
         if (self::$path !== false) {
-            $target = To::path($input);
+            $target = To::path($target);
             if (is_dir($target) && is_file(self::$path)) {
                 $target .= DS . Path::B(self::$path);
             }
@@ -221,7 +221,7 @@ class File extends Genome {
         $i = 1;
         if (self::$path !== false) {
             foreach ((array) $target as $v) {
-                $v = To::path($input);
+                $v = To::path($v);
                 if (is_dir($v)) {
                     if (!file_exists($v)) {
                         mkdir($v, 0777, true);
@@ -236,7 +236,7 @@ class File extends Genome {
                     copy(self::$path, $v);
                     $i = 1;
                 } else {
-                    $v = preg_replace('#\.([a-z\d]+)$#', __replace__($s, $i) . '.$1', $v);
+                    $v = preg_replace('#\.[a-z\d]+$#', __replace__($s, $i) . '.$1', $v);
                     copy(self::$path, $v);
                     ++$i;
                 }
@@ -297,7 +297,7 @@ class File extends Genome {
             // Bad file extension
             $x_ok = X . implode(X, self::$config['extensions']) . X;
             if (strpos($x_ok, X . $x . X) === false) {
-                Message::error('file_extension', $x);
+                Message::error('file_x', '<em>' . $x . '</em>');
             }
             // Too small
             if ($file['size'] < self::$config['sizes'][0]) {

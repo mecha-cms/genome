@@ -11,9 +11,17 @@ HTML::plug('a', function($content = "", $href = null, $target = null, $attr = []
 });
 
 HTML::plug('img', function($src = null, $alt = null, $attr = [], $dent = 0) {
+    $path = To::path($src);
+    if (file_exists($path)) {
+        $z = getimagesize($path);
+    } else {
+        $z = [null, null];
+    }
     $attr_o = [
         'src' => $src,
-        'alt' => !isset($alt) ? "" : $alt
+        'alt' => !isset($alt) ? "" : $alt,
+        'width' => $z[0],
+        'height' => $z[1]
     ];
     $attr = Anemon::extend($attr_o, $attr);
     $attr['src'] = URL::long(str_replace('&amp;', '&', $attr['src']));

@@ -49,8 +49,8 @@ class Page extends Genome {
     }
 
     public function __set($key, $value = null) {
-        $this->lot[$key] = $value;
-        self::$page[md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null))][1][$key] = $value;
+        $id = md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        $this->lot[$key] = self::$page[$id][1][$key] = $value;
     }
 
     public function __get($key) {
@@ -76,11 +76,12 @@ class Page extends Genome {
         $this->lot = $lot;
         self::$page[md5($this->pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
         // $this->lot_alt = $lot_alt;
-        return Hook::NS($this->pref . $key, [$lot[$key], $lot]);
+        return Hook::NS($this->pref . $key, [$lot[$key], $lot, $this]);
     }
 
     public function __unset($key) {
-        unset($this->lot[$key], self::$page[md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null))][1][$key]);
+        $id = md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        unset($this->lot[$key], self::$page[$id][1][$key]);
     }
 
     public function __toString() {

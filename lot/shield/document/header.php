@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="<?php echo $site->direction; ?>" class="<?php echo $site->is; ?>">
+<html dir="<?php echo $site->direction; ?>" class="page-<?php echo $site->is ?: 'home'; ?>">
   <head>
     <meta charset="<?php echo $site->charset; ?>">
     <meta name="viewport" content="width=device-width">

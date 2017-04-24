@@ -24,12 +24,13 @@ To::plug('dec', function($input, $z = false, $f = ['&#', ';']) {
 
 To::plug('file', function($input) {
     $input = explode(DS, str_replace('/', DS, $input));
-    $n = array_pop($input);
+    $n = explode('.', array_pop($input));
+    $x = array_pop($n);
     $s = "";
     foreach ($input as $v) {
         $s .= f($v, '-', true, '\w') . DS;
     }
-    return $s . f($n, '-', true, '\w.');
+    return $s . f(implode('.', $n), '-', true, '\w.') . '.' . f($x, '-', true);
 });
 
 To::plug('folder', function($input) {
@@ -98,7 +99,7 @@ To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($
         }
         $s = preg_replace('#<[^>]*$#', "", $s); // `foo bar <a href=`
     }
-    return $s . ($t > $x[0] ? $x[1] : "");
+    return trim($s) . ($t > $x[0] ? $x[1] : "");
 });
 
 To::plug('text', 'w');

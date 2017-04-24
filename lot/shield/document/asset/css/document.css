@@ -278,12 +278,16 @@ nav ul {
 }
 nav li {display:inline-block}
 nav li + li {margin-left:1em}
-.page main nav {text-align:center}
-.pages article > footer,
-.pages article > header {
+article > footer,
+article > header {
   margin-top:0;
   margin-bottom:0;
 }
+.page-page main nav {text-align:center}
+.page-page article > footer,
+.page-404 aricle > footer {margin-top:5%}
+.page-page article > header,
+.page-404 article > header {margin-bottom:5%}
 .message {
   background:#fea;
   padding:.5em 1em;

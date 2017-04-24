@@ -1,16 +1,18 @@
 <?php
 
 // Enable/disable debug mode (default is `null`)
-ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
-if (DEBUG === true) {
-    error_reporting(E_ALL | E_STRICT);
-    ini_set('display_errors', true);
-    ini_set('display_startup_errors', true);
-    ini_set('html_errors', 1);
-} else if (DEBUG === false) {
-    error_reporting(0);
-    ini_set('display_errors', false);
-    ini_set('display_startup_errors', false);
+if (defined('DEBUG')) {
+    ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
+    if (DEBUG === true) {
+        error_reporting(E_ALL | E_STRICT);
+        ini_set('display_errors', true);
+        ini_set('display_startup_errors', true);
+        ini_set('html_errors', 1);
+    } else if (DEBUG === false) {
+        error_reporting(0);
+        ini_set('display_errors', false);
+        ini_set('display_startup_errors', false);
+    }
 }
 
 // Normalize line–break
@@ -83,6 +85,7 @@ foreach ($extends as $k => $v) {
     }, $seeds);
 }
 
+// Load all extension(s)…
 foreach (array_keys($extends) as $v) {
     call_user_func(function() use($v) {
         extract(Lot::get(null, []));
@@ -90,12 +93,8 @@ foreach (array_keys($extends) as $v) {
     });
 }
 
-// Load user function(s) from the current shield folder if any
-$folder_shield = SHIELD . DS . $config->shield . DS;
-if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
-if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
-
 // Load user language(s) from the current shield folder if any
+$folder_shield = SHIELD . DS . $config->shield . DS;
 $i18n = $folder_shield . 'language' . DS;
 if ($l = File::exist([
     $i18n . $config->language . '.page',
@@ -105,6 +104,10 @@ if ($l = File::exist([
     $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
     Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
 }
+
+// Load user function(s) from the current shield folder if any
+if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
+if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
 function do_fire() {
     Route::fire();

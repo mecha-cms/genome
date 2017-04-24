@@ -170,11 +170,11 @@ class Anemon extends Genome {
         return self::eat($array);
     }
 
-    public static function alter(array $input, $replace = [], $fail = null) {
+    public static function alter($input, array $replace = [], $fail = null) {
         // return `$replace[$input]` value if exist
         // or `$fail` value if `$replace[$input]` does not exist
         // or `$input` value if `$fail` is `null`
-        return array_key_exists($input, $replace) ? $replace[$input] : ($fail ?: $input);
+        return array_key_exists((string) $input, $replace) ? $replace[$input] : ($fail ?: $input);
     }
 
     // Move to next array index

@@ -58,15 +58,16 @@ class Elevator extends Genome {
             $path = $url->current;
         }
         $path = rtrim($path, '/');
+        $parent = Path::D($path);
         if (!isset($chunk)) {
             $i = array_search($index, $input);
             $i = isset($i) ? $i : 0;
             if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null;
-            if ($d['0'] !== false) $this->bucket[$d['0']] = $path !== $url->current ? $path : null;
+            if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] : null;
         } else {
             if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$index - 1]) ? $path . '/' . $index : null;
-            if ($d['0'] !== false) $this->bucket[$d['0']] = $path !== $url->current ? $path : null;
+            if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
         $this->NS = $NS;
