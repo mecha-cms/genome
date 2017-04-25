@@ -28,6 +28,10 @@ class Shield extends Genome {
 
     public static function get($input, $fail = false, $buffer = true) {
         $NS = __c2f__(static::class) . '.get.';
+        if (is_array($fail)) {
+            Lot::set($fail);
+            $fail = false;
+        }
         if ($path__ = Hook::NS($NS . 'path', [self::path($input, is_array($fail) ? false : $fail), $input])) {
             global $config;
             $G = ['source' => $input];
