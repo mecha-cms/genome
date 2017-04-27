@@ -1,6 +1,8 @@
 Mecha CMS
 =========
 
+[![Download](https://cloud.githubusercontent.com/assets/1669261/25494257/3d373b0c-2ba3-11e7-8f88-13e36d1b5bd9.png)](http://mecha-cms.com) [![Learn](https://cloud.githubusercontent.com/assets/1669261/25494261/410de820-2ba3-11e7-86e4-bc7901ed403b.png)](http://mecha-cms.com/reference)
+
 ### At a Glance
 
 #### Control Panel
