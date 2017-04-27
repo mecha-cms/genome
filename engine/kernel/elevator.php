@@ -2,11 +2,11 @@
 
 class Elevator extends Genome {
 
+    const HUB = '&#x25C6;';
     const NORTH = '&#x25B2;';
     const SOUTH = '&#x25BC;';
     const WEST = '&#x25C0;';
     const EAST = '&#x25B6;';
-    const CURRENT = '&#x25C6;';
 
     public $config = [];
 
@@ -17,7 +17,7 @@ class Elevator extends Genome {
         $key = __c2f__(static::class) . ($NS ? '.' . $NS : "");
         $c = [
             // -1: previous
-            //  0: current
+            //  0: parent
             //  1: next
             'direction' => [
                '-1' => 'up',
@@ -35,7 +35,7 @@ class Elevator extends Genome {
                 ],
                 '0' => [
                     0 => 'a',
-                    1 => self::CURRENT
+                    1 => self::HUB
                 ],
                 '1' => [
                     0 => 'a',
