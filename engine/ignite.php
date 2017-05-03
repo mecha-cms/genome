@@ -13,6 +13,8 @@ function __is_anemon__($x) {
 
 function __is_instance__($x) {
     if (!is_object($x)) return false;
+    return ($x = get_class($x)) && $x !== 'stdClass';
+    /*
     $m = [
         'construct',
         'destruct',
@@ -34,9 +36,16 @@ function __is_instance__($x) {
         if (method_exists($x, '__' . $v)) return $x;
     }
     return false;
+    */
 }
 
-function __is_anemon_assoc__($x) {
+function __is_anemon_0__($x) {
+    $a = (array) $x;
+    $count = count($a);
+    return $count && array_keys($a) === range(0, $count - 1);
+}
+
+function __is_anemon_a__($x) {
     $a = (array) $x;
     $count = count($a);
     return $count && array_keys($a) !== range(0, $count - 1);
@@ -50,11 +59,11 @@ function __is_json__($x) {
         $x === '[]' ||
         $x === '{}' ||
         // Maybe an encoded JSON string
-        $x[0] === '"' ||
-        // Maybe a flat array
-        $x[0] === '[' ||
+        $x[0] === '"' && substr($x, -1) === '"' ||
+        // Maybe a numeric array
+        $x[0] === '[' && substr($x, -1) === ']' ||
         // Maybe an associative array
-        $x[0] === '{'
+        $x[0] === '{' && substr($x, -1) === '}'
     ) && json_decode($x) !== null;
 }
 
@@ -882,7 +891,7 @@ function n($x, $t = '    ') {
 function o($a, $safe = true) {
     if (__is_anemon__($a)) {
         if ($safe) {
-            $a = __is_anemon_assoc__($a) ? (object) $a : $a;
+            $a = __is_anemon_a__($a) ? (object) $a : $a;
         } else {
             $a = (object) $a;
         }

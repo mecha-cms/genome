@@ -58,8 +58,26 @@ class URL extends Genome {
         return parent::__callStatic($kin, $lot);
     }
 
-    public function __construct() {
-        $this->lot = __url__();
+    public function __construct($input = null) {
+        if (isset($input)) {
+            $a = parse_url($input);
+            if (isset($a['path'])) {
+                $a['path'] = trim($a['path'], '/');
+            }
+            if (isset($a['query']) && strpos($a['query'], '?') !== 0) {
+                $a['query'] = '?' . str_replace('&amp;', '&', $a['query']);
+            }
+            if (isset($a['fragment'])) {
+                if (strpos($a['fragment'], '#') !== 0) {
+                    $a['fragment'] = '#' . $a['fragment'];
+                }
+                $a['hash'] = $a['fragment'];
+            }
+            unset($a['fragment']);
+            $this->lot = $a;
+        } else {
+            $this->lot = __url__();
+        }
         parent::__construct();
     }
 

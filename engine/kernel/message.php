@@ -52,7 +52,22 @@ class Message extends Genome {
     }
 
     public static function send($from, $to, $subject, $message) {
-        if (Is::void($to) || !Is::email($to)) return false;
+        if (empty($to) || (!is_array($to) && !Is::email($to))) {
+            return false;
+        }
+        if (is_array($to)) {
+            $s = "";
+            if (__is_anemon_a__($to)) {
+                // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
+                foreach ($to as $k => $v) {
+                    $s .= ', ' . $v . ' <' . $k . '>';
+                }
+                $to = substr($s, 2);
+            } else {
+                // ['foo@bar', 'baz@qux']
+                $to = implode(', ', $to);
+            }
+        }
         $lot  = 'MIME-Version: 1.0' . N;
         $lot .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
         $lot .= 'From: ' . $from . N;

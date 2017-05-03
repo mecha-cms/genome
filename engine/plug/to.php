@@ -129,7 +129,7 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
     $s = array_replace(Page::$v, $c);
     if (__is_anemon__($input)) {
         $t = "";
-        $line = !__is_anemon_assoc__($input) && !$safe;
+        $line = __is_anemon_0__($input) && !$safe;
         $T = str_repeat($in, $dent);
         foreach ($input as $k => $v) {
             if (!__is_anemon__($v) || empty($v)) {
