@@ -31,6 +31,7 @@ if (!$path || $path === $site->path) {
 }
 
 function fn_page_url($content, $lot) {
+    if (!isset($lot['path'])) return $content;
     $s = Path::F($lot['path'], PAGE);
     return rtrim(__url__('url') . '/' . ltrim(To::url($s), '/'), '/');
 }
