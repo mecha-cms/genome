@@ -19,17 +19,39 @@ class Page extends Genome {
         } else {
             $t = File::T($path, time());
             $date = date(DATE_WISE, $t);
+            $n = $path ? Path::N($path) : null;
             $this->lot_alt = array_replace(a(Config::get('page', [])), [
                 'time' => $date,
                 'update' => $date,
-                'slug' => Path::N($path),
+                'slug' => $n,
+                'title' => To::title($n), // fake `title` data from the page’s file name
                 'state' => Path::X($path),
                 'id' => (string) $t,
                 'url' => To::url($path)
             ], $lot);
             $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
+            // Set `time` value from the page’s file name
+            if (
+                $n &&
+                is_numeric($n[0]) &&
+                (
+                    // `2017-04-21.page`
+                    substr_count($n, '-') === 2 ||
+                    // `2017-04-21-14-25-00.page`
+                    substr_count($n, '-') === 5
+                ) &&
+                is_numeric(str_replace('-', "", $n)) &&
+                preg_match('#^\d{4,}-\d{2}-\d{2}(?:-\d{2}-\d{2}-\d{2})?$#', $n)
+            ) {
+                $t = new Date($n);
+                $this->lot['time'] = $t->format();
+                $this->lot['title'] = $t->F2;
+            // else, set `time` value by page’s file modification time
+            } else {
+                $this->lot['time'] = File::open(Path::F($path) . DS . 'time.data')->read($date);
+            }
             if (!array_key_exists('date', $this->lot)) {
-                $this->lot['date'] = new Date(File::open(Path::F($path) . DS . 'time.data')->read($date));
+                $this->lot['date'] = new Date($this->lot['time']);
             }
             self::$page[$id] = [$this->lot_alt, $this->lot];
         }
@@ -76,7 +98,7 @@ class Page extends Genome {
         $this->lot = $lot;
         self::$page[md5($this->pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
         // $this->lot_alt = $lot_alt;
-        return Hook::NS($this->pref . $key, [$lot[$key], $lot, $this]);
+        return Hook::NS($this->pref . $key, [$lot[$key], $lot, $key, $this]);
     }
 
     public function __unset($key) {
