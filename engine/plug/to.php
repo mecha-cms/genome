@@ -93,6 +93,7 @@ To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($
     $s = str_replace('<br>', ' ', $s);
     // Remove the unclosed HTML tag(s)…
     if ($html && strpos($s, '<') !== false) {
+        $s = preg_replace('#<\/[^>]*$#', "", $s); // `foo bar </a`
         $ss = '#<[^\/>]+?>([^<]*?)$#';
         while (preg_match($ss, $s)) {
             $s = preg_replace($ss, '$1', $s); // `foo bar <a href="">baz`

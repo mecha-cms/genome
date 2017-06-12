@@ -46,9 +46,12 @@ class Page extends Genome {
                 $t = new Date($n);
                 $this->lot['time'] = $t->format();
                 $this->lot['title'] = $t->F2;
+                $this->lot['id'] = $t->format('U');
             // else, set `time` value by page’s file modification time
             } else {
-                $this->lot['time'] = File::open(Path::F($path) . DS . 'time.data')->read($date);
+                $t = new Date(File::open(Path::F($path) . DS . 'time.data')->read($date));
+                $this->lot['time'] = $t->format();
+                $this->lot['id'] = $t->format('U');
             }
             if (!array_key_exists('date', $this->lot)) {
                 $this->lot['date'] = new Date($this->lot['time']);
