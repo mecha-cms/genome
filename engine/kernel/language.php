@@ -5,17 +5,16 @@ class Language extends Genome {
     public static function ignite(...$lot) {
         $id = '_' . static::class;
         $language = Config::get('language');
-        $cache = str_replace(ROOT, CACHE, LANGUAGE) . DS . $language . '.php';
-        $x = File::open($cache)->import([0, []]);
-        $i18n = File::exist([LANGUAGE . DS . $language . '.page', LANGUAGE . DS . 'en-us.page'], null);
-        $t = File::T($i18n, -1);
-        $i18n = new Page($i18n, [], 'language');
-        if ($x[0] === 0 || $t > $x[0]) {
+        $f = LANGUAGE . DS . $language . '.page';
+        if (Cache::expire($f)) {
+            $i18n = new Page($f, [], 'language');
             $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
-            $x = [$t, is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content];
-            File::export($x)->saveTo($cache);
+            $content = is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content;
+            Cache::set($f, $content);
+        } else {
+            $content = Cache::get($f);
         }
-        return Config::set($id, $x[1])->get($id);
+        return Config::set($id, $content)->get($id, []);
     }
 
     public static function set($key, $value = null) {

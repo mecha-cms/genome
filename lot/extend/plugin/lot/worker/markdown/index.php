@@ -13,7 +13,7 @@ function fn_markdown($input = "", $lot = []) {
 
 function fn_markdown_span($input, $lot = []) {
     if (!isset($lot)) return $input;
-    return t(fn_markdown($input, $lot), '<p>', '</p>');
+    return w(fn_markdown($input, $lot), HTML_WISE_I);
 }
 
 From::plug('markdown', function($input) {

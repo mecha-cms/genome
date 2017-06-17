@@ -64,6 +64,7 @@ foreach (g(EXTEND . DS . '*', '{index__,index}.php') as $v) {
 
 asort($extends);
 extract($seeds);
+$c = [];
 foreach ($extends as $k => $v) {
     $f = Path::D($k) . DS;
     $i18n = $f . 'lot' . DS . 'language' . DS;
@@ -71,9 +72,7 @@ foreach ($extends as $k => $v) {
         $i18n . $config->language . '.page',
         $i18n . 'en-us.page'
     ])) {
-        $i18n = new Page($l, [], 'language');
-        $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
-        Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
+        $c[$l] = filemtime($l);
     }
     $f .= 'engine' . DS;
     d($f . 'kernel', function($w, $n) use($f, $seeds) {
@@ -84,6 +83,22 @@ foreach ($extends as $k => $v) {
         }
     }, $seeds);
 }
+
+$id = array_sum($c);
+if (Cache::expire(EXTEND, $id)) {
+    $content = [];
+    foreach ($c as $k => $v) {
+        $i18n = new Page($k, [], 'language');
+        $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
+        $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $i18n->content) : (array) $i18n->content);
+    }
+    Cache::set(EXTEND, $content, $id);
+} else {
+    $content = Cache::get(EXTEND, []);
+}
+
+// Load extension(s)’ language…
+Language::set($content);
 
 // Load all extension(s)…
 foreach (array_keys($extends) as $v) {

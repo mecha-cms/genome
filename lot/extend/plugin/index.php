@@ -10,6 +10,7 @@ call_user_func(function() {
     }
     asort($plugins);
     extract($seeds);
+    $c = [];
     foreach ($plugins as $k => $v) {
         $f = Path::D($k) . DS;
         $i18n = $f . 'lot' . DS . 'language' . DS;
@@ -17,9 +18,7 @@ call_user_func(function() {
             $i18n . $config->language . '.page',
             $i18n . 'en-us.page'
         ])) {
-            $i18n = new Page($l, [], 'language');
-            $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
-            Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
+            $c[$l] = filemtime($l);
         }
         $f .= 'engine' . DS;
         d($f . 'kernel', function($w, $n) use($f, $seeds) {
@@ -30,5 +29,18 @@ call_user_func(function() {
             }
         }, $seeds);
     }
+    $id = array_sum($c);
+    if (Cache::expire(PLUGIN, $id)) {
+        $content = [];
+        foreach ($c as $k => $v) {
+            $i18n = new Page($k, [], 'language');
+            $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
+            $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $i18n->content) : (array) $i18n->content);
+        }
+        Cache::set(PLUGIN, $content, $id);
+    } else {
+        $content = Cache::get(PLUGIN, []);
+    }
+    Language::set($content);
     foreach (array_keys($plugins) as $v) require $v;
 });
