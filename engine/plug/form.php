@@ -49,7 +49,7 @@ foreach (['reset', 'submit'] as $unit) {
 }
 
 // `<input type="(color|date|email|number|password|search|tel|text|url)">`
-foreach (['color', 'date', 'email', 'number', 'password', 'range', 'search', 'tel', 'text', 'url'] as $unit) {
+foreach (['color', 'date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url'] as $unit) {
     Form::plug($unit, function($name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) use($unit) {
         return Form::input($name, $unit, $value, $placeholder, $attr, $dent);
     });

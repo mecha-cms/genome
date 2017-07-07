@@ -25,7 +25,7 @@ if (!$path || $path === $site->path) {
 ])) {
     $site->is = 'page';
     $site->state = Path::X($file);
-    if (!File::exist($folder . $n . '.page') && Get::pages($folder, 'page')) {
+    if (!File::exist($folder . $n . '.page') && fn_get_pages($folder, 'page')) {
         $site->is = 'pages';
     }
 }
@@ -116,8 +116,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             $chunk_parent = $page_parent->chunk($site->chunk);
             $files_parent = fn_get_pages($folder_parent, 'page', $sort_parent, 'slug');
             // Inherit parent’s `sort` and `chunk` property where possible
-            $sort = $page_parent->sort ?: $sort;
-            $chunk = $page_parent->chunk ?: $chunk;
+            $sort = $page_parent->sort($sort);
+            $chunk = $page_parent->chunk($chunk);
         } else {
             $files_parent = [];
         }

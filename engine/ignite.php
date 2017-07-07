@@ -14,29 +14,6 @@ function __is_anemon__($x) {
 function __is_instance__($x) {
     if (!is_object($x)) return false;
     return ($x = get_class($x)) && $x !== 'stdClass';
-    /*
-    $m = [
-        'construct',
-        'destruct',
-        'call',
-        'callStatic',
-        'get',
-        'set',
-        'isset',
-        'unset',
-        'sleep',
-        'wakeup',
-        'toString',
-        'invoke',
-        'set_state',
-        'clone',
-        'debugInfo'
-    ];
-    foreach ($m as $v) {
-        if (method_exists($x, '__' . $v)) return $x;
-    }
-    return false;
-    */
 }
 
 function __is_anemon_0__($x) {

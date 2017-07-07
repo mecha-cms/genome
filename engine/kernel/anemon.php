@@ -315,7 +315,8 @@ class Anemon extends Genome {
 
     public function __invoke($s = ', ', $filter = true) {
         return implode($s, $filter ? $this->is(function($v, $k) {
-            return strpos($k, '_') !== 0;
+            // Ignore `null` value and item with key prefixed by a `_`
+            return isset($v) && strpos($k, '_') !== 0;
         })->vomit() : $this->bucket);
     }
 
