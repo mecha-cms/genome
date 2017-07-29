@@ -211,7 +211,7 @@ class Union extends Genome {
     }
 
     // …
-    public function __call($kin, $lot) {
+    public function __call($kin, $lot = []) {
         if (!self::kin($kin)) {
             array_unshift($lot, $kin);
             return call_user_func_array([$this, 'unite'], $lot);

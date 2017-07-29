@@ -63,7 +63,7 @@ class Page extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot) {
+    public function __call($key, $lot = []) {
         $fail = array_shift($lot);
         $fail_alt = array_shift($lot);
         $x = $this->__get($key);
