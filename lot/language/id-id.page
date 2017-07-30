@@ -144,6 +144,9 @@ images: Gambar
 ip: IP
 ips: IP
 
+item: Item
+items: Item
+
 key: Kunci
 keys: Kunci
 
@@ -169,6 +172,9 @@ links: Tautan
 
 locale: Lokalisasi
 locales: Lokalisasi
+
+log: Catatan
+logs: Catatan
 
 media: Media
 medias: Media
@@ -252,6 +258,9 @@ parents: Induk
 
 pass: Kunci
 passs: Kunci
+
+path: Jalur
+paths: Jalur
 
 pattern: Pola
 patterns: Pola
