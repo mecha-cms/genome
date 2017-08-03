@@ -38,7 +38,7 @@ class File extends Genome {
     }
 
     // List all file(s) from a folder
-    public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = false) {
+    public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = []) {
         $folder = To::path($folder);
         $files = array_merge(
             glob($folder . DS . '*', GLOB_NOSORT),
@@ -208,7 +208,9 @@ class File extends Genome {
             if (!file_exists($target)) {
                 mkdir($target, 0777, true);
             }
-            $target .= DS . Path::B(self::$path);
+            if (is_file(self::$path)) {
+                $target .= DS . Path::B(self::$path);
+            }
             rename(self::$path, $target);
             self::$path = $target;
         }
