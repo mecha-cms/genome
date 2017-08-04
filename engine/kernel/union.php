@@ -97,9 +97,7 @@ class Union extends Genome {
                 // class value as array
                 if ($k === 'classes') {
                     $k = 'class';
-                    $v = implode(' ', array_filter(array_unique($v), function($v) {
-                        return isset($v);
-                    }));
+                    $v = implode(' ', array_filter(array_unique($v)));
                 // Inline CSS via `css` attribute
                 } else if ($k === 'css') {
                     $css = "";
