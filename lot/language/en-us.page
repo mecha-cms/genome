@@ -151,6 +151,9 @@ ids: IDs
 image: Image
 images: Images
 
+info: Info
+infos: Infos
+
 ip: IP
 ips: IPs
 

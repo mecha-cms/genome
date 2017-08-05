@@ -204,14 +204,16 @@ class File extends Genome {
     // Move the file/folder to …
     public static function moveTo($target = ROOT) {
         if (self::$path !== false) {
+            $p = self::$path;
             $target = To::path($target);
             if (!file_exists($target)) {
                 mkdir($target, 0777, true);
             }
-            if (is_file(self::$path)) {
-                $target .= DS . Path::B(self::$path);
+            if (is_file($p)) {
+                $target .= DS . Path::B($p);
             }
-            rename(self::$path, $target);
+            self::open($target)->delete();
+            rename($p, $target);
             self::$path = $target;
         }
         return new static;

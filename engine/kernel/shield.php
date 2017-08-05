@@ -95,9 +95,9 @@ class Shield extends Genome {
             }
             // End shield
             Hook::NS($NS . 'after', [$out, $G]);
-            exit;
+        } else {
+            Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
         }
-        Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
     }
 
     public static function abort($code = '404', $fail = false, $buffer = true) {
@@ -107,6 +107,7 @@ class Shield extends Genome {
         $s = is_numeric($s) ? $s : '404';
         HTTP::status((int) $s);
         self::attach($path, $fail, $buffer);
+        exit;
     }
 
     public static function exist($input, $fail = false) {

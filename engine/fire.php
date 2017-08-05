@@ -132,8 +132,13 @@ if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
 // Load all route(s)…
 function on_ready() {
-    Route::fire();
-    Shield::abort();
+    if (Route::fire()) {
+        Hook::fire('on.load');
+        exit;
+    } else {
+        Hook::fire('on.abort');
+        Shield::abort();
+    }
 }
 
 // Set and trigger `on.ready` hook!
