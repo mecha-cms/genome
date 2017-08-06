@@ -253,6 +253,9 @@ options: Opsi
 order: Urutan
 orders: Urutan
 
+package: Paket
+packages: Paket
+
 page: Halaman
 pages: Halaman
 
@@ -544,6 +547,10 @@ entered: Dimasukkan
 exit: Keluar
 exiting: Mengeluarkan
 exited: Dikeluarkan
+
+explore: Eksplorasi
+exploreing: Mengeksplorasi
+exploreed: Dieksplorasi
 
 extend: Perkaya
 extending: Memperkaya

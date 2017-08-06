@@ -263,6 +263,9 @@ options: Options
 order: Order
 orders: Orders
 
+package: Package
+packages: Packages
+
 page: Page
 pages: Pages
 
@@ -568,6 +571,10 @@ entered: Entered
 exit: Exit
 exiting: Exit
 exited: Exit
+
+explore: Explore
+exploreing: Exploring
+exploreed: Explored
 
 extend: Extend
 extending: Extending
