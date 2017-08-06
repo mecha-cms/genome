@@ -42,13 +42,13 @@ class Shield extends Genome {
             $G['path'] = $path__;
             $out = "";
             // Begin shield part
-            Hook::NS($NS . 'lot.before', [$out, $G]);
+            Hook::NS($NS . 'lot.enter', [$out, $G]);
             extract(Hook::NS($NS . 'lot', [$lot__, $G]));
             if (!empty($lot_a__)) {
                 extract($lot_a__);
             }
-            Hook::NS($NS . 'lot.after', [$out, $G]);
-            Hook::NS($NS . 'before', [$out, $G]);
+            Hook::NS($NS . 'lot.exit', [$out, $G]);
+            Hook::NS($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
                     $content = Hook::NS($NS . 'input', [$content, $G]);
@@ -61,7 +61,7 @@ class Shield extends Genome {
                 require $path__;
             }
             // End shield part
-            Hook::NS($NS . 'after', [$out, $G]);
+            Hook::NS($NS . 'exit', [$out, $G]);
         }
     }
 
@@ -75,13 +75,13 @@ class Shield extends Genome {
             $G['path'] = $path__;
             $out = "";
             // Begin shield
-            Hook::NS($NS . 'lot.before', [$out, $G]);
+            Hook::NS($NS . 'lot.enter', [$out, $G]);
             extract(Hook::NS($NS . 'lot', [$lot__, $G]));
             if (is_array($fail)) {
                 extract($fail);
             }
-            Hook::NS($NS . 'lot.after', [$out, $G]);
-            Hook::NS($NS . 'before', [$out, $G]);
+            Hook::NS($NS . 'lot.exit', [$out, $G]);
+            Hook::NS($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
                     $content = Hook::NS($NS . 'input', [$content, $G]);
@@ -94,7 +94,7 @@ class Shield extends Genome {
                 require $path__;
             }
             // End shield
-            Hook::NS($NS . 'after', [$out, $G]);
+            Hook::NS($NS . 'exit', [$out, $G]);
         } else {
             Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
         }
