@@ -316,15 +316,12 @@ class File extends Genome {
             if (!file_exists($target)) Folder::set($target);
             // Move the uploaded file to the destination folder
             if (!file_exists($target . DS . $file['name'])) {
-                // Create private asset URL to be hooked on file uploaded
-                $file['path'] = $target . DS . $file['name'];
                 // Move…
-                move_uploaded_file($file['tmp_name'], $file['path']);
-                // Create public asset URL to be hooked on file uploaded
-                $file['url'] = To::url($target) . '/' . $file['name'];
+                $path = $target . DS . $file['name'];
+                move_uploaded_file($file['tmp_name'], $path);
                 Message::success('file_upload', '<code>' . $file['name'] . '</code>');
                 if (is_callable($fn)) {
-                    return call_user_func($fn, $file);
+                    return call_user_func($fn, self::inspect($path));
                 }
                 return $target . DS . $file['name'];
             }
