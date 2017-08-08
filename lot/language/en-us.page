@@ -50,6 +50,9 @@ chars_sets: Characters Sets
 child: Child
 childs: Children
 
+chunk: Chunk
+chunks: Chunks
+
 common: Common
 commons: Commons
 

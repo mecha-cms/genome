@@ -40,6 +40,9 @@ chars_sets: Set Karakter
 child: Anak
 childs: Anak
 
+chunk: Bagian
+chunks: Bagian
+
 common: Umum
 commons: Umum
 
