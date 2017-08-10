@@ -45,7 +45,8 @@ class Path extends Genome {
         $f = pathinfo($path, PATHINFO_DIRNAME);
         $n = pathinfo($path, PATHINFO_FILENAME);
         if (isset($root)) {
-            $f = str_replace(['/', $root . $s, $root], [$s, "", ""], $f);
+            $root = str_replace([DS, '/'], $s, $root);
+            $f = str_replace([DS, '/', $root . $s, $root], [$s, $s, "", ""], $f);
         }
         $f = ($f === '.' ? "" : $f) . $s . $n;
         if (isset($root)) {
