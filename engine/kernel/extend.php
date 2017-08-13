@@ -9,7 +9,7 @@ class Extend extends Genome {
     }
 
     public static function state(...$lot) {
-        $id = basename(array_shift($lot));
+        $id = str_replace('.', '\\', basename(array_shift($lot)));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: EXTEND;

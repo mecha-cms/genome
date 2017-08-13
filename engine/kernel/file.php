@@ -47,21 +47,47 @@ class File extends Genome {
 
     // List all file(s) from a folder
     public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = []) {
+        $x = '*';
+        if (is_array($folder)) {
+            $x = isset($folder[1]) ? $folder[1] : '*';
+            $folder = $folder[0];
+        }
         $folder = To::path($folder);
-        $files = array_merge(
-            glob($folder . DS . '*', GLOB_NOSORT),
-            glob($folder . DS . '.*', GLOB_NOSORT)
-        );
+        if (is_int($x)) {
+            if ($x === 0) {
+                $files = array_merge(
+                    glob($folder . DS . '*', GLOB_ONLYDIR | GLOB_NOSORT),
+                    glob($folder . DS . '.*', GLOB_ONLYDIR | GLOB_NOSORT)
+                );
+            } else if ($x === 1) {
+                $files = array_filter(array_merge(
+                    glob($folder . DS . '*', GLOB_NOSORT),
+                    glob($folder . DS . '.*', GLOB_NOSORT)
+                ), function($v) {
+                    return is_file($v);
+                });
+            }
+        } else if (strpos($x, ',') !== false) {
+            $files = array_merge(
+                glob($folder . DS . '{' . $x . '}', GLOB_BRACE | GLOB_NOSORT),
+                glob($folder . DS . '.{' . $x . '}', GLOB_BRACE | GLOB_NOSORT)
+            );
+        } else {
+            $files = array_merge(
+                glob($folder . DS . $x, GLOB_NOSORT),
+                glob($folder . DS . '.' . $x, GLOB_NOSORT)
+            );
+        }
         $output = [];
         foreach ($files as $file) {
-            $b = Path::B($file);
+            $b = basename($file);
             if ($b && $b !== '.' && $b !== '..') {
                 if (is_dir($file)) {
                     if (!$flat) {
-                        $output[$file] = $deep ? self::explore($file, true, false, []) : 0;
+                        $output[$file] = $deep ? self::explore([$file, $x], true, false, []) : 0;
                     } else {
                         $output[$file] = 0;
-                        $output = $deep ? array_merge($output, self::explore($file, true, true, [])) : $output;
+                        $output = $deep ? array_merge($output, self::explore([$file, $x], true, true, [])) : $output;
                     }
                 } else {
                     $output[$file] = 1;

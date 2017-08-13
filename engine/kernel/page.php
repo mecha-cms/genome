@@ -130,7 +130,7 @@ class Page extends Genome {
     public static function apart($input, $key = null, $fail = null) {
         $input = n($input);
         $c = static::class;
-        $k = __FUNCTION__;
+        $k = __METHOD__;
         // Custom `apart` method by the `Genome` class…
         if (isset(self::$_[1][$c][$k])) {
             return call_user_func(self::$_[1][$c][$k], $input, $key, $fail);

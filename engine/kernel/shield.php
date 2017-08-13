@@ -106,13 +106,13 @@ class Shield extends Genome {
         }
     }
 
-    public static function abort($code = '404', $fail = false, $buffer = true) {
-        $path = self::path($code);
+    public static function abort($code = 404, $fail = false, $buffer = true) {
+        $path = self::path((string) $code);
         $s = explode('/', $path);
         $s = array_shift($s);
         $s = is_numeric($s) ? $s : '404';
         HTTP::status((int) $s);
-        self::attach($path, $fail, $buffer);
+        self::attach($code, $fail, $buffer);
     }
 
     public static function exist($input, $fail = false) {
@@ -120,7 +120,7 @@ class Shield extends Genome {
     }
 
     public static function state(...$lot) {
-        $id = basename(array_shift($lot));
+        $id = str_replace('.', '\\', basename(array_shift($lot)));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: SHIELD;
