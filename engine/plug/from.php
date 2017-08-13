@@ -7,9 +7,9 @@ From::plug('html', 'htmlspecialchars');
 
 From::plug('json', function($input) {
     if (__is_anemon__($input)) {
-        return o($input);
+        return (object) o($input);
     }
-    return o(json_decode($input, true));
+    return json_decode($input);
 });
 
 From::plug('url', function($input, $raw = false) {

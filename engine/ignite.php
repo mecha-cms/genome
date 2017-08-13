@@ -97,9 +97,46 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
     if (!$s || strpos($s, '%') === false) return $s;
     $a = (array) $a;
     foreach ($a as $k => $v) {
-        $v = s($v);
-        if (strpos($s, '%{' . $k . '}%') !== false) {
-            $s = str_replace('%{' . $k . '}%', $v, $s);
+        if (is_array($v) || is_object($v)) {
+            // `%{this.a.b.c}%`
+            if (strpos($s, '%{' . $k . '.') !== false) {
+                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)+\}\%#i', function($m) use($v) {
+                    $a = explode('.', $m[1]);
+                    $b = array_pop($a);
+                    if (is_object($v)) {
+                        if (!method_exists($v, '__get') && !isset($v->{$b})) {
+                            return $m[0];
+                        }
+                        $v = $v->{$b};
+                    } else if (is_array($v)) {
+                        if (!isset($v[$b])) {
+                            return $m[0];
+                        }
+                        $v = $v[$b];
+                    }
+                    if ($a) {
+                        $v = a($v);
+                        if (!is_array($v)) {
+                            return $v;
+                        }
+                        while ($b = array_pop($a)) {
+                            if (!is_array($v) || !array_key_exists($b, $v)) {
+                                return $v;
+                            }
+                            $v = $v[$b];
+                        }
+                        return $v;
+                    }
+                    return $v;
+                }, $s);
+            }
+            // `%{this}%`
+            if (is_object($v) && method_exists($v, '__toString')) {
+                $s = str_replace('%{' . $k . '}%', $v . "", $s);
+            }
+        // `%{key}%`
+        } else if (strpos($s, '%{' . $k . '}%') !== false) {
+            $s = str_replace('%{' . $k . '}%', s($v), $s);
             continue;
         }
         // TODO: replace pattern(s) as in `__format__` function

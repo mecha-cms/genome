@@ -29,7 +29,10 @@ class Language extends Genome {
     }
 
     public static function get($key = null, $vars = [], $preserve_case = false) {
-        $vars = array_merge(s((array) $vars), [""]);
+        $vars = array_replace([
+            '0' => "",
+            '$' => new static // allow to embed variable like `%{$.key}%`
+        ], (array) $vars);
         $fail = $key;
         $id = '_' . __c2f__(static::class, '_');
         if (!isset($key)) {
@@ -65,7 +68,7 @@ class Language extends Genome {
     }
 
     public function __get($key) {
-        return Config::get('_' . __c2f__(static::class, '_') . '.' . $key, $key);
+        return self::get($key);
     }
 
     public function __unset($key) {
