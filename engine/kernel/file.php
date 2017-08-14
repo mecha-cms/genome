@@ -6,10 +6,12 @@ class File extends Genome {
     protected $content = "";
     protected $c = [];
 
-    public static $config = [
+    const config = [
         'sizes' => [0, 2097152], // Range of allowed file size(s)
         'extensions' => ['txt'] // List of allowed file extension(s)
     ];
+
+    public static $config = self::config;
 
     public function __construct($path = true, $c = []) {
         $this->path = file_exists($path) ? $path : false;

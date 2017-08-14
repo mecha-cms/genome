@@ -2,7 +2,7 @@
 
 class Config extends Genome {
 
-    protected static $bucket = [];
+    public static $bucket = [];
 
     public static function ignite(...$lot) {
         return (self::$bucket = State::config());
@@ -92,8 +92,13 @@ class Config extends Genome {
         return self::get($key, null);
     }
 
+    // Fix case for `isset($config->key)` or `!empty($config->key)`
+    public function __isset($key) {
+        return !!self::get($key);
+    }
+
     public function __unset($key) {
-        return self::reset($key);
+        self::reset($key);
     }
 
     public function __toString() {

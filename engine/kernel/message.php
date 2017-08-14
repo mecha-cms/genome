@@ -5,7 +5,7 @@ class Message extends Genome {
     public static $id = 'mecha.message';
     public static $x = 0;
 
-    public static $config = [
+    const config = [
         'message' => [
             0 => 'p',
             1 => '%{1}%',
@@ -22,6 +22,8 @@ class Message extends Genome {
             ]
         ]
     ];
+
+    public static $config = self::config;
 
     public static function set(...$lot) {
         $c = __c2f__(static::class, '_');

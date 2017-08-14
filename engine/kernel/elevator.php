@@ -85,6 +85,15 @@ class Elevator extends Genome {
         return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : null;
     }
 
+    // Fix case for `isset($elevator->key)` or `!empty($elevator->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
+    }
+
+    public function __unset($key) {
+        unset($this->bucket[$key]);
+    }
+
     public function __call($kin, $lot = []) {
         $text = array_shift($lot);
         $u = $this->config['union'];

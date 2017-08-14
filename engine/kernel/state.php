@@ -43,6 +43,11 @@ class State extends Genome {
         return array_key_exists($key, $this->lot) ? $this->lot[$key] : null;
     }
 
+    // Fix case for `isset($state->key)` or `!empty($state->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
+    }
+
     public function __unset($key) {
         unset($this->lot[$key]);
     }

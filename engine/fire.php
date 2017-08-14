@@ -94,7 +94,8 @@ if (Cache::expire(EXTEND, $id)) {
     foreach ($c as $k => $v) {
         $i18n = new Page($k, [], 'language');
         $fn = 'From::' . __c2f__($i18n->type, '_');
-        $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $i18n->content) : (array) $i18n->content);
+        $c = $i18n->content;
+        $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
     }
     Cache::set(EXTEND, $content, $id);
 } else {
@@ -122,8 +123,9 @@ if ($l = File::exist([
     $i18n . 'en-us.page'
 ])) {
     $i18n = new Page($l, [], 'language');
-    $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
-    Language::set(is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content);
+    $fn = 'From::' . __c2f__($i18n->type, '_');
+    $c = $i18n->content;
+    Language::set(is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
 }
 
 // Load user function(s) from the current shield folder if any

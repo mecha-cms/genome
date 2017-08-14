@@ -2,11 +2,13 @@
 
 class Guardian extends Genome {
 
-    public static $config = [
+    const config = [
         'session' => [
             'token' => 'mecha.guardian.token'
         ]
     ];
+
+    public static $config = self::config;
 
     public static function hash($salt = "") {
         return sha1(uniqid(mt_rand(), true) . $salt);

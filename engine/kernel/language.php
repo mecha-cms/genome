@@ -9,7 +9,11 @@ class Language extends Genome {
         if (Cache::expire($f)) {
             $i18n = new Page($f, [], 'language');
             $fn = 'From::' . __c2f__($i18n->type, '_');
-            $content = is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content;
+            $c = $i18n->content;
+            $content = is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
+            array_walk_recursive($content, function(&$v) use($content) {
+                $v = __replace__($v, ['$' => $content]);
+            });
             Cache::set($f, $content);
         } else {
             $content = Cache::get($f);
@@ -71,8 +75,13 @@ class Language extends Genome {
         return self::get($key);
     }
 
+    // Fix case for `isset($language->key)` or `!empty($language->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
+    }
+
     public function __unset($key) {
-        return Config::reset('_' . __c2f__(static::class, '_') . '.' . $key);
+        Config::reset('_' . __c2f__(static::class, '_') . '.' . $key);
     }
 
     public function __toString() {

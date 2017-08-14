@@ -305,6 +305,11 @@ class Anemon extends Genome {
         return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : null;
     }
 
+    // Fix case for `isset($a->key)` or `!empty($a->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
+    }
+
     public function __unset($key) {
         unset($this->bucket[$key]);
     }

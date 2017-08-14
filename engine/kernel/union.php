@@ -2,47 +2,52 @@
 
 class Union extends Genome {
 
-    protected $union = [
-        // 0 => [
-        //     0 => ['\<', '\>', '\/'],
-        //     1 => ['\=', '\"', '\"', '\s'],
-        //     2 => ['\<\!\-\-', '\-\-\>']
-        // ],
-        1 => [
-            0 => ['<', '>', '/', '[\w:.-]+'],
-            1 => ['=', '"', '"', ' ', '[\w:.-]+'],
-            2 => ['<!--', '-->']
+    const config = [
+        'union' => [
+            // 0 => [
+            //     0 => ['\<', '\>', '\/'],
+            //     1 => ['\=', '\"', '\"', '\s'],
+            //     2 => ['\<\!\-\-', '\-\-\>']
+            // ],
+            1 => [
+                0 => ['<', '>', '/', '[\w:.-]+'],
+                1 => ['=', '"', '"', ' ', '[\w:.-]+'],
+                2 => ['<!--', '-->']
+            ]
+        ],
+        // Common attribute(s) order…
+        'data' => [
+            'class' => null,
+            'id' => null,
+            'src' => null,
+            'alt' => null,
+            'width' => null,
+            'height' => null,
+            'property' => null,
+            'name' => null, // [1]
+            'content' => null,
+            'href' => null,
+            'rel' => null,
+            'target' => null,
+            'type' => null, // [2]
+            'action' => null,
+            'method' => null,
+            'enctype' => null,
+            'value' => null, // [3]
+            'placeholder' => null, // [4]
+            'label' => null,
+            'selected' => null,
+            'checked' => null,
+            'disabled' => null,
+            'readonly' => null,
+            'style' => null
         ]
     ];
 
     private $_pref = null;
 
-    protected $data = [
-        'class' => null,
-        'id' => null,
-        'src' => null,
-        'alt' => null,
-        'width' => null,
-        'height' => null,
-        'property' => null,
-        'name' => null, // [1]
-        'content' => null,
-        'href' => null,
-        'rel' => null,
-        'target' => null,
-        'type' => null, // [2]
-        'action' => null,
-        'method' => null,
-        'enctype' => null,
-        'value' => null, // [3]
-        'placeholder' => null, // [4]
-        'label' => null,
-        'selected' => null,
-        'checked' => null,
-        'disabled' => null,
-        'readonly' => null,
-        'style' => null
-    ];
+    protected $union = self::config['union'];
+    protected $data = self::config['data'];
 
     public function __construct($union = [], $NS = null) {
         if (!isset($NS)) {

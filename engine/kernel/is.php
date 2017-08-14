@@ -127,3 +127,5 @@ class Is extends Genome {
     }
 
 }
+
+class_alias('Is', 'Are');
