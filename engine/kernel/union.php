@@ -54,7 +54,7 @@ class Union extends Genome {
             $NS = __c2f__(static::class, '_');
         }
         $NS .= '.';
-        $this->union = Hook::NS($NS . 'union', [array_replace_recursive($this->union, $union)]);
+        $this->union = Hook::fire($NS . 'union', [array_replace_recursive($this->union, $union)]);
         $this->_pref = $NS;
         parent::__construct();
     }
@@ -83,7 +83,7 @@ class Union extends Genome {
         $c = $this->_pref;
         $u = $this->union[1][1];
         $unit = $unit ? '.' . $unit : "";
-        $array = Hook::NS($c . 'bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
+        $array = Hook::fire($c . 'bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
         // HTML5 `data-*` attribute
         foreach ($a as $k => $v) {
             if ($k === 'data') {
@@ -128,7 +128,7 @@ class Union extends Genome {
         $u = $this->union[1][0];
         $s  = $dent . $u[0] . $unit . $this->bond($data, $unit);
         $s .= $content === false ? $u[1] : $u[1] . ($content ? $content : "") . $u[0] . $u[2] . $unit . $u[1];
-        return Hook::NS($c . 'unit.' . $unit, [$s, [$unit, $content, $data]]);
+        return Hook::fire($c . 'unit.' . $unit, [$s, [$unit, $content, $data]]);
     }
 
     // Inverse version of `Union::unite()`
@@ -183,7 +183,7 @@ class Union extends Genome {
         }
         $c = $this->_pref;
         $u = $this->union[1][2];
-        return Hook::NS($c . 'unit.__', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
+        return Hook::fire($c . 'unit.__', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
     }
 
     // Base union tag open
@@ -193,7 +193,7 @@ class Union extends Genome {
         $this->dent[] = $dent;
         $u = $this->union[1][0];
         $c = $this->_pref;
-        return Hook::NS($c . $unit . '.begin', [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], [$unit, null, $data]]);
+        return Hook::fire($c . $unit . '.begin', [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], [$unit, null, $data]]);
     }
 
     // Base union tag close
@@ -210,7 +210,7 @@ class Union extends Genome {
         $dent = isset($dent) ? self::dent($dent) : array_pop($this->dent);
         $c = $this->_pref;
         $u = $this->union[1][0];
-        return Hook::NS($c . $unit . '.end', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
+        return Hook::fire($c . $unit . '.end', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
     }
 
     // …

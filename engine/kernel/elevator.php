@@ -48,7 +48,7 @@ class Elevator extends Genome {
             'path' => $path
         ];
         $cc = array_replace_recursive($c, $config);
-        $this->config = Hook::NS($key, [$cc, $c]);
+        $this->config = Hook::fire($key, [$cc, $c]);
         $d = $this->config['direction'];
         global $url;
         if (isset($chunk)) {
@@ -71,7 +71,7 @@ class Elevator extends Genome {
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
         $this->NS = $NS;
-        $this->bucket = Hook::NS($key . '.links', [$this->bucket, $cc, $c]);
+        $this->bucket = Hook::fire($key . '.links', [$this->bucket, $cc, $c]);
         parent::__construct();
     }
 
@@ -114,7 +114,7 @@ class Elevator extends Genome {
         if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
         if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
         if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
-        return Hook::NS(__c2f__(static::class, '_') . '.' . $this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
+        return Hook::fire(__c2f__(static::class, '_') . '.' . $this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
     }
 
 }

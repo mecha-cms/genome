@@ -103,7 +103,7 @@ class Page extends Genome {
         $this->lot = $lot;
         self::$page[md5($this->_pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
         // $this->lot_alt = $lot_alt;
-        return Hook::NS($this->_pref . $key, [$lot[$key], $lot, $key, $this]);
+        return Hook::fire($this->_pref . $key, [$lot[$key], $lot, $key, $this]);
     }
 
     // Fix case for `isset($page->key)` or `!empty($page->key)`

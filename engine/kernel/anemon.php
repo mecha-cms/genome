@@ -7,14 +7,21 @@ class Anemon extends Genome {
     protected $i = 0;
 
     // Create list of namespace step(s)
-    public static function step($input, $NS = '.') {
+    public static function step($input, $NS = '.', $dir = 1) {
         if (is_string($input) && strpos($input, $NS) !== false) {
             $input = explode($NS, trim($input, $NS));
-            $a = array_shift($input);
+            $a = $dir === -1 ? array_pop($input) : array_shift($input);
             $output = [$a];
-            while ($b = array_shift($input)) {
-                $a .= $NS . $b;
-                array_unshift($output, $a);
+            if ($dir === -1) {
+                while ($b = array_pop($input)) {
+                    $a = $b . $NS . $a;
+                    array_unshift($output, $a);
+                }
+            } else {
+                while ($b = array_shift($input)) {
+                    $a .= $NS . $b;
+                    array_unshift($output, $a);
+                }
             }
             return $output;
         }
@@ -164,7 +171,15 @@ class Anemon extends Genome {
 
     public static function walk(array $array, $fn = null, $deep = false) {
         if (is_callable($fn)) {
-            $deep ? array_walk_recursive($array, $fn, $array) : array_walk($array, $fn, $array);
+            if ($deep) {
+                array_walk_recursive($array, function(&$v, $k, $a) use($fn) {
+                    call_user_func($v, $k, $a);
+                }, $array);
+            } else {
+                array_walk($array, function(&$v, $k, $a) use($fn) {
+                    call_user_func($v, $k, $a);
+                }, $array);
+            }
             return $array;
         }
         return self::eat($array);

@@ -38,7 +38,7 @@ class Message extends Genome {
         if ($count === 1) {
             self::set('default', $kin);
         } else {
-            Session::set(self::$id, Session::get(self::$id, "") . __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, Hook::NS($c . '.set.' . $kin, [$o])]));
+            Session::set(self::$id, Session::get(self::$id, "") . __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, Hook::fire($c . '.set.' . $kin, [$o])]));
         }
         return new static;
     }
@@ -49,7 +49,7 @@ class Message extends Genome {
     }
 
     public static function get($session_x = true) {
-        $output = Hook::NS(__c2f__(static::class, '_') . '.get', [Session::get(self::$id, "") !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : ""]);
+        $output = Hook::fire(__c2f__(static::class, '_') . '.get', [Session::get(self::$id, "") !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : ""]);
         if ($session_x) self::reset();
         return $output;
     }
@@ -78,8 +78,8 @@ class Message extends Genome {
         $lot .= 'Return-Path: ' . $from . N;
         $lot .= 'X-Mailer: PHP/' . phpversion();
         $s = __c2f__(static::class, '_') . '.' . __FUNCTION__;
-        $lot = Hook::NS($s . '.data', [$lot]);
-        $data = Hook::NS($s . '.content', [$message]);
+        $lot = Hook::fire($s . '.data', [$lot]);
+        $data = Hook::fire($s . '.content', [$message]);
         return mail($to, $subject, $data, $lot);
     }
 

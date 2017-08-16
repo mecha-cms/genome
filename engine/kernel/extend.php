@@ -19,7 +19,7 @@ class Extend extends Genome {
         }
         $c = __c2f__(static::class, '_');
         $state = isset(self::$extend[$c][$id]) ? self::$extend[$c][$id] : include $state;
-        $state = Hook::NS($c . '.state.' . $id, [$state]);
+        $state = Hook::fire($c . '.state.' . $id, [$state]);
         if (is_array($key)) {
             return array_replace_recursive($key, $state);
         }
