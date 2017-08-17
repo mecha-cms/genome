@@ -6,6 +6,10 @@ class File extends Genome {
     protected $content = "";
     protected $c = [];
 
+    // Cache!
+    private static $inspect = [];
+    private static $explore = [];
+
     const config = [
         'sizes' => [0, 2097152], // Range of allowed file size(s)
         'extensions' => ['txt'] // List of allowed file extension(s)
@@ -22,6 +26,11 @@ class File extends Genome {
 
     // Inspect file path
     public static function inspect($input, $key = null, $fail = false) {
+        $id = json_encode(func_get_args());
+        if (isset(self::$inspect[$id])) {
+            $output = self::$inspect[$id];
+            return isset($key) ? Anemon::get($output, $key, $fail) : $output;
+        }
         $path = To::path($input);
         $n = Path::N($path);
         $x = Path::X($path);
@@ -44,11 +53,16 @@ class File extends Genome {
             '_update' => $update,
             '_size' => file_exists($path) ? filesize($path) : null
         ];
+        self::$inspect[$id] = $output;
         return isset($key) ? Anemon::get($output, $key, $fail) : $output;
     }
 
     // List all file(s) from a folder
     public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = []) {
+        $id = json_encode(func_get_args());
+        if (isset(self::$explore[$id])) {
+            return !empty($output) ? $output : $fail;
+        }
         $x = '*';
         if (is_array($folder)) {
             $x = isset($folder[1]) ? $folder[1] : '*';
@@ -96,6 +110,7 @@ class File extends Genome {
                 }
             }
         }
+        self::$explore[$id] = $output;
         return !empty($output) ? $output : $fail;
     }
 

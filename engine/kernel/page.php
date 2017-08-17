@@ -2,12 +2,12 @@
 
 class Page extends Genome {
 
-    public static $page = [];
 
     protected $lot = [];
     protected $lot_alt = [];
 
     private $_pref = "";
+    private static $page = []; // Cache!
 
     public function __construct($input = null, $lot = [], $NS = 'page') {
         $this->_pref = $NS . '.';
@@ -25,8 +25,8 @@ class Page extends Genome {
                 'time' => $date,
                 'update' => $date,
                 'slug' => $n,
-                'title' => To::title($n), // fake `title` data from the page’s file name
-                'type' => u($x), // fake `type` data from the page’s file extension
+                'title' => To::title($n), // Fake `title` data from the page’s file name
+                'type' => u($x), // Fake `type` data from the page’s file extension
                 'state' => $x,
                 'id' => (string) $t,
                 'url' => To::url($path)
@@ -181,7 +181,7 @@ class Page extends Genome {
         foreach ($input as $k => $v) {
             $v = is_array($v) ? json_encode($v) : self::x(s($v));
             if ($v && strpos($v, "\n") !== false) {
-                $v = json_encode($v); // contains line–break
+                $v = json_encode($v); // Contains line–break
             }
             $data[] = self::x($k) . self::$v[2] . $v;
         }
