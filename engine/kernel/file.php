@@ -58,56 +58,60 @@ class File extends Genome {
     }
 
     // List all file(s) from a folder
-    public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = []) {
+    public static function explore($folder = ROOT, $deep = false, $fail = []) {
         $id = json_encode(func_get_args());
         if (isset(self::$explore[$id])) {
+            $output = self::$explore[$id];
             return !empty($output) ? $output : $fail;
         }
-        $x = '*';
+        $x = null;
         if (is_array($folder)) {
-            $x = isset($folder[1]) ? $folder[1] : '*';
+            $x = isset($folder[1]) ? $folder[1] : null;
             $folder = $folder[0];
         }
-        $folder = To::path($folder);
-        if (is_int($x)) {
-            if ($x === 0) {
+        $folder = str_replace('/', DS, $folder);
+        $output = [];
+        if ($deep) {
+            $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
+            $b = $x === 1 || is_string($x) ? \RecursiveIteratorIterator::LEAVES_ONLY : \RecursiveIteratorIterator::SELF_FIRST;
+            $c = new \RecursiveIteratorIterator($a, $b);
+            foreach ($c as $v) {
+                $xx = $v->getExtension();
+                $vv = $v->getPathname();
+                if ($v->isDir()) {
+                    $output[$vv] = 0;
+                } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {
+                    $output[$vv] = 1;
+                }
+            }
+        } else {
+            if ($x === 1 || is_string($x)) {
+                if ($x === 1) {
+                    $x = '*.*';
+                } else {
+                    $x = '*.{' . $x . '}';
+                }
+                $files = array_filter(array_merge(
+                    glob($folder . DS . $x, GLOB_BRACE | GLOB_NOSORT),
+                    glob($folder . DS . substr($x, 1), GLOB_BRACE | GLOB_NOSORT)
+                ), 'is_file');
+            } else if ($x === 0) {
                 $files = array_merge(
                     glob($folder . DS . '*', GLOB_ONLYDIR | GLOB_NOSORT),
                     glob($folder . DS . '.*', GLOB_ONLYDIR | GLOB_NOSORT)
                 );
-            } else if ($x === 1) {
-                $files = array_filter(array_merge(
+            } else {
+                $files = array_merge(
                     glob($folder . DS . '*', GLOB_NOSORT),
                     glob($folder . DS . '.*', GLOB_NOSORT)
-                ), function($v) {
-                    return is_file($v);
-                });
+                );
             }
-        } else if (strpos($x, ',') !== false) {
-            $files = array_merge(
-                glob($folder . DS . '{' . $x . '}', GLOB_BRACE | GLOB_NOSORT),
-                glob($folder . DS . '.{' . $x . '}', GLOB_BRACE | GLOB_NOSORT)
-            );
-        } else {
-            $files = array_merge(
-                glob($folder . DS . $x, GLOB_NOSORT),
-                glob($folder . DS . '.' . $x, GLOB_NOSORT)
-            );
-        }
-        $output = [];
-        foreach ($files as $file) {
-            $b = basename($file);
-            if ($b && $b !== '.' && $b !== '..') {
-                if (is_dir($file)) {
-                    if (!$flat) {
-                        $output[$file] = $deep ? self::explore([$file, $x], true, false, []) : 0;
-                    } else {
-                        $output[$file] = 0;
-                        $output = $deep ? array_merge($output, self::explore([$file, $x], true, true, [])) : $output;
-                    }
-                } else {
-                    $output[$file] = 1;
+            foreach ($files as $file) {
+                $b = basename($file);
+                if ($b === '.' || $b === '..') {
+                    continue;
                 }
+                $output[$file] = is_file($file) ? 1 : 0;
             }
         }
         self::$explore[$id] = $output;
@@ -325,11 +329,11 @@ class File extends Genome {
             if (is_dir($path)) {
                 $a = new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS);
                 $b = new \RecursiveIteratorIterator($a, \RecursiveIteratorIterator::CHILD_FIRST);
-                foreach ($b as $o) {
-                    if ($o->isFile()) {
-                        unlink($o->getPathname());
+                foreach ($b as $v) {
+                    if ($v->isFile()) {
+                        unlink($v->getPathname());
                     } else {
-                        rmdir($o->getPathname());
+                        rmdir($v->getPathname());
                     }
                 }
                 rmdir($path);

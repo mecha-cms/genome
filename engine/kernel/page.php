@@ -142,14 +142,31 @@ class Page extends Genome {
         }
         // Get specific property…
         if ($key === 'content') {
-            $input = explode(self::$v[1], $input, 2);
+            $input = explode(self::$v[1], is_file($input) ? file_get_contents($input) : $input, 2);
             return trim(self::v(isset($input[1]) ? $input[1] : $input[0]), self::$v[4]);
         } else if (isset($key)) {
+            // By path… (faster)
+            if (is_file($input)) {
+                if ($o = fopen($input, 'r')) {
+                    $output = "";
+                    while (($s = fgets($o, 1024)) !== false) {
+                        if (strpos($s, $key . self::$v[2]) === 0) {
+                            $s = explode(self::$v[2], $s, 2);
+                            $output = isset($s[1]) ? trim(self::v($s[1])) : $fail;
+                            break;
+                        }
+                    }
+                    fclose($o);
+                    return $output;
+                }
+                return $fail;
+            }
+            // By content…
             $s = strpos($input, self::$v[2]);
             $ss = strpos($input, $k = self::$v[4] . $key . self::$v[2]);
             if ($s !== false && $ss !== false && $ss < $s) {
                 $input = substr($input, $ss + strlen($k)) . self::$v[4];
-                return self::v(substr($input, 0, strpos($input, self::$v[4])));
+                return trim(self::v(substr($input, 0, strpos($input, self::$v[4]))));
             }
             return $fail;
         }
@@ -163,10 +180,10 @@ class Page extends Genome {
             // Do data…
             foreach (explode(self::$v[4], $input[0]) as $v) {
                 $v = explode(self::$v[2], $v, 2);
-                $data[self::v($v[0])] = isset($v[1]) ? self::v($v[1]) : $fail;
+                $data[self::v($v[0])] = isset($v[1]) ? trim(self::v($v[1])) : $fail;
             }
             // Do content…
-            $data['content'] = trim(isset($input[1]) ? $input[1] : "", self::$v[4]);
+            $data['content'] = trim(self::v(isset($input[1]) ? $input[1] : ""), self::$v[4]);
         }
         return $data;
     }
