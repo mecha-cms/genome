@@ -70,7 +70,7 @@ class Elevator extends Genome {
             if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
-        $this->NS = $NS;
+        $this->NS = $key;
         $this->bucket = Hook::fire($key . '.links', [$this->bucket, $cc, $c]);
         parent::__construct();
     }
@@ -95,14 +95,17 @@ class Elevator extends Genome {
     }
 
     public function __call($kin, $lot = []) {
-        $text = array_shift($lot);
-        $u = $this->config['union'];
-        $d = array_search($kin, $this->config['direction']);
-        if ($d !== false && ($text || $text === "")) {
-            if ($text !== true) $u[$d][1] = $text;
-            return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
+        if (!self::kin($kin)) {
+            $text = array_shift($lot);
+            $u = $this->config['union'];
+            $d = array_search($kin, $this->config['direction']);
+            if ($d !== false && ($text || $text === "")) {
+                if ($text !== true) $u[$d][1] = $text;
+                return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
+            }
+            return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
         }
-        return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
+        return parent::__call($kin, $lot);
     }
 
     public function __toString() {
@@ -114,7 +117,7 @@ class Elevator extends Genome {
         if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
         if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
         if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
-        return Hook::fire(__c2f__(static::class, '_') . '.' . $this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
+        return Hook::fire($this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
     }
 
 }

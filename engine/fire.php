@@ -29,6 +29,8 @@ d($f . 'kernel', function($w, $n) use($f) {
     }
 });
 
+class_alias('Is', 'Are');
+
 File::$config['extensions'] = array_unique(explode(',', FONT_X . ',' . IMAGE_X . ',' . MEDIA_X . ',' . PACKAGE_X . ',' . SCRIPT_X));
 
 Session::ignite();

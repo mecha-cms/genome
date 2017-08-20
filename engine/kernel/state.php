@@ -24,15 +24,18 @@ class State extends Genome {
     }
 
     public function __call($key, $lot = []) {
-        $fail = array_shift($lot);
-        $fail_alt = array_shift($lot);
-        $x = $this->__get($key);
-        if (is_string($fail) && strpos($fail, '~') === 0) {
-            return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
-        } else if ($fail instanceof \Closure) {
-            return call_user_func($fail, $x !== null ? $x : $fail_alt);
+        if (!self::kin($key)) {
+            $fail = array_shift($lot);
+            $fail_alt = array_shift($lot);
+            $x = $this->__get($key);
+            if (is_string($fail) && strpos($fail, '~') === 0) {
+                return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
+            } else if ($fail instanceof \Closure) {
+                return call_user_func($fail, $x !== null ? $x : $fail_alt);
+            }
+            return $x !== null ? $x : $fail;
         }
-        return $x !== null ? $x : $fail;
+        return parent::__call($key, $lot);
     }
 
     public function __set($key, $value = null) {

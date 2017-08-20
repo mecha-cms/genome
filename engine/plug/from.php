@@ -60,7 +60,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
         return a($input);
     }
     if (!trim($input)) return [];
-    $s = array_replace(Page::$v, $c);
+    $s = array_replace(Page::v, $c);
     $q = ['"(?:[^"\\\]|\\\.)*"', '\'(?:[^\'\\\]|\\\.)*\''];
     $i = 0;
     $output = $data = [];
@@ -143,7 +143,7 @@ From::plug('yaml', function(...$lot) {
     if (Is::path($lot[0], true)) {
         $lot[0] = file_get_contents($lot[0]);
     }
-    $s = Page::$v;
+    $s = Page::v;
     $lot[0] = str_replace([X . $s[0], $s[1] . X, X], "", X . $lot[0] . X);
     return call_user_func_array('__from_yaml__', $lot);
 });
