@@ -14,8 +14,13 @@ class Guardian extends Genome {
         return sha1(uniqid(mt_rand(), true) . $salt);
     }
 
-    public static function token() {
-        $key = self::$config['session']['token'];
+    public static function check($token, $id = 0, $fail = false) {
+        $s = Session::get(self::$config['session']['token'] . '.' . $id);
+        return $s && $token && $s === $token ? $token : $fail;
+    }
+
+    public static function token($id = 0) {
+        $key = self::$config['session']['token'] . '.' . $id;
         $token = Session::get($key, self::hash());
         Session::set($key, $token);
         return $token;
