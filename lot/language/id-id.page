@@ -129,6 +129,9 @@ formats: %{$.format}%
 general: Umum
 generals: %{$.general}%
 
+guest: Pengunjung
+guests: %{$.guest}%
+
 hint: Petunjuk
 hints: %{$.hint}%
 
