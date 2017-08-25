@@ -111,12 +111,12 @@ class Is extends Genome {
     }
 
     // Is less than or equal to `$x`
-    public function lte($x) {
+    public function le($x) {
         return q($this->bucket) <= $x;
     }
 
     // Is greater than or equal to `$x`
-    public static function gte($x) {
+    public static function ge($x) {
         return q($this->bucket) >= $x;
     }
 
