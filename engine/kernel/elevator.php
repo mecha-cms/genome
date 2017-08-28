@@ -60,7 +60,7 @@ class Elevator extends Genome {
         $path = rtrim($path, '/');
         $parent = Path::D($path);
         if (!isset($chunk)) {
-            $i = array_search($index, $input);
+            $i = $input ? array_search($index, $input) : 0;
             $i = isset($i) ? $i : 0;
             if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null;
             if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
