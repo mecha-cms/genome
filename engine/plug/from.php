@@ -16,7 +16,7 @@ From::plug('url', function($input, $raw = false) {
     return $raw ? rawurlencode($input) : urlencode($input);
 });
 
-// Parse array–like string…
+// Parse array-like string…
 function __from_yaml_a__($s) {
     if (!is_string($s)) return $s;
     if (strpos($s, '[') === 0 && substr($s, -1) === ']') {
@@ -64,14 +64,14 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     $q = ['"(?:[^"\\\]|\\\.)*"', '\'(?:[^\'\\\]|\\\.)*\''];
     $i = 0;
     $output = $data = [];
-    // Normalize white–space(s)
+    // Normalize white-space(s)
     $input = trim(n($input, $in), $s[4]);
     // Save `\: ` as `\x1A`
     $input = str_replace('\\' . $s[2], X, $input);
     // Check if it is a flat YAML data, if so, optimize it!
     if (strpos($input, $in) !== 0 && strpos($input, $s[4] . $in) === false) {
         foreach (explode($s[4], $input) as $li) {
-            // Ignore comment and empty line–break
+            // Ignore comment and empty line-break
             if ($li === "" || strpos($li, '#') === 0) continue;
             // Start with `- `
             if (strpos($li, $s[3]) === 0) {
@@ -97,7 +97,7 @@ function __from_yaml__($input, $c = [], $in = '  ') {
     foreach (explode($s[4], $input) as $li) {
         $dent = 0;
         $li = rtrim($li);
-        // Ignore comment and empty line–break
+        // Ignore comment and empty line-break
         if ($li === "" || strpos($li, '#') === 0) continue;
         while (substr($li, 0, $len) === $in) {
             $dent += 1;

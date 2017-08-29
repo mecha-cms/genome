@@ -212,7 +212,7 @@ function __url__($key = null, $fail = false) {
 // k:
 // l: convert text to lower case
 // m:
-// n: normalize white–space in string
+// n: normalize white-space in string
 // o: convert array to object
 // p: convert text to pascal case
 // q: quantity (length of string, number or anemon)
@@ -220,7 +220,7 @@ function __url__($key = null, $fail = false) {
 // s: convert data type to their string format
 // t: trim string from specific prefix and suffix
 // u: convert text to upper case
-// v: un–escape
+// v: un-escape
 // w: convert any data to plain word(s)
 // x: escape
 // y: output/yield an echo-based function as normal return value
@@ -892,7 +892,7 @@ function l($x) {
 function m() {}
 
 function n($x, $t = '    ') {
-    // Tab to 4 space(s), line–break to `\n`
+    // Tab to 4 space(s), line-break to `\n`
     return str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
 }
 
@@ -994,10 +994,10 @@ function v($x) {
 }
 
 // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
-// $n: @keep line–break in the output or replace them with a space? (default is !@keep)
+// $n: @keep line-break in the output or replace them with a space? (default is !@keep)
 function w($x, $c = [], $n = false) {
     // Should be a HTML input
-    if (strpos($x, '<') !== false || strpos($x, ' ') !== false) {
+    if (strpos($x, '<') !== false || strpos($x, ' ') !== false || strpos($x, "\n") !== false) {
         $c = '<' . implode('><', is_string($c) ? explode(',', $c) : (array) $c) . '>';
         return preg_replace($n ? '# +#' : '#\s+#', ' ', trim(strip_tags($x, $c)));
     }

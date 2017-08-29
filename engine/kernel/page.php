@@ -116,8 +116,7 @@ class Page extends Genome {
     }
 
     public function __unset($key) {
-        $id = md5($this->NS . (isset($this->lot['path']) ? $this->lot['path'] : null));
-        unset($this->lot[$key], self::$page[$id][1][$key]);
+        $this->__set($key, null);
     }
 
     public function __toString() {
@@ -194,7 +193,7 @@ class Page extends Genome {
         foreach ($input as $k => $v) {
             $v = is_array($v) ? json_encode($v) : s($v);
             if ($v && strpos($v, "\n") !== false) {
-                $v = json_encode($v); // Contains line–break
+                $v = json_encode($v); // Contains line-break
             }
             $data[] = $k . self::v[2] . $v;
         }
