@@ -132,8 +132,8 @@ class HTTP extends Genome {
     }
 
     public static function post($url, $fields = []) {
-        if (!function_exists('curl_init')) {
-            exit('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
+        if (!extension_loaded('curl')) {
+            exit('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_new">PHP cURL</a> extension is not installed on your web server.');
         }
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -152,7 +152,7 @@ class HTTP extends Genome {
         } else {
             $url .= '?' . http_build_query($fields);
         }
-        if (function_exists('curl_init')) {
+        if (extension_loaded('curl')) {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_HEADER, 0);

@@ -80,16 +80,14 @@ class Hook extends Genome {
                     $lot[0] = $s;
                 }
             }
-            return $lot[0];
         } else {
-            $end = null;
             foreach ($id as $v) {
                 if (($s = call_user_func('self::fire', $v, $lot)) !== null) {
-                    $end = $s;
+                    $lot[0] = $s;
                 }
             }
-            return $end;
         }
+        return $lot[0];
     }
 
     public static function NS(...$lot) {

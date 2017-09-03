@@ -22,7 +22,10 @@ class Form extends HTML {
         }
         $attr_o = ['value' => $value];
         self::_name($name, $attr_o);
-        unset($attr_o['readonly'], $attr_o['required']);
+        unset(
+            $attr_o['readonly'],
+            $attr_o['required']
+        );
         $attr_o['name'] = $name;
         return self::unite('button', $text, array_replace_recursive($attr_o, $attr), $dent);
     }

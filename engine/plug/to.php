@@ -65,9 +65,9 @@ To::plug('key', function($input, $low = true) {
 To::plug('pascal', 'p');
 
 To::plug('path', function($input) {
-    $url = __url__();
-    $s = str_replace('/', DS, $url['url']);
-    return str_replace([$url['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
+    $u = __url__();
+    $s = str_replace('/', DS, $u['url']);
+    return str_replace([$u['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
 });
 
 To::plug('sentence', function($input, $tail = '.') use($has_mb_string) {
@@ -115,14 +115,14 @@ To::plug('title', function($input) use($has_mb_string) {
 });
 
 To::plug('url', function($input, $raw = false) {
-    $url = __url__();
+    $u = __url__();
     $s = str_replace(DS, '/', ROOT);
-    $input = str_replace([ROOT, DS, '\\', $s], [$url['url'], '/', '/', $url['url']], $input);
+    $input = str_replace([ROOT, DS, '\\', $s], [$u['url'], '/', '/', $u['url']], $input);
     // Fix broken external URL `http://://example.com`, `http:////example.com`
     $input = str_replace(['://://', ':////'], '://', $input);
     // --ditto `http:example.com`
-    if (strpos($input, $url['scheme'] . ':') === 0 && strpos($input, $url['protocol']) !== 0) {
-        $input = str_replace(X . $url['scheme'] . ':', $url['protocol'], X . $input);
+    if (strpos($input, $u['scheme'] . ':') === 0 && strpos($input, $u['protocol']) !== 0) {
+        $input = str_replace(X . $u['scheme'] . ':', $u['protocol'], X . $input);
     }
     return $raw ? rawurldecode($input) : urldecode($input);
 });

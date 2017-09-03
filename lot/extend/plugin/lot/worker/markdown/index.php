@@ -24,8 +24,8 @@ To::plug('markdown', function($input) {
     return $input; // TODO
 });
 
-Hook::set('page.title', 'fn_markdown_span', 2);
-Hook::set(['page.description', 'page.content'], 'fn_markdown', 2);
+Hook::set('*.title', 'fn_markdown_span', 2);
+Hook::set(['*.description', '*.content'], 'fn_markdown', 2);
 
 // Add `markdown` to the allowed file extension(s)
 File::$config['extensions'] = array_merge(File::$config['extensions'], [

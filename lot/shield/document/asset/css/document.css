@@ -148,12 +148,12 @@ label .input + span {
   display:block;
   width:100%;
 }
-.inline,
-.inline-block {
+.span,
+.span-block {
   display:inline;
   width:auto;
 }
-.inline-block {display:inline-block}
+.span-block {display:inline-block}
 .align-left {
   float:left;
   margin-top:.5rem;
