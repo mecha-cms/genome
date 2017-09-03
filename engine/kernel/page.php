@@ -9,12 +9,13 @@ class Page extends Genome {
     protected $lot_c = [];
 
     private $NS = "";
+    private $hash = "";
     private static $page = []; // Cache!
 
-    public function __construct($input = null, $lot = [], $NS = 'page') {
-        $this->NS = $NS . '.';
+    public function __construct($input = null, $lot = [], $NS = ['*', 'page']) {
+        $this->NS = $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
-        $id = md5($this->NS . $path);
+        $id = $this->hash = md5(serialize($NS) . $path);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id][1];
             $this->lot_c = self::$page[$id][0];
@@ -81,8 +82,7 @@ class Page extends Genome {
     }
 
     public function __set($key, $value = null) {
-        $id = md5($this->NS . (isset($this->lot['path']) ? $this->lot['path'] : null));
-        $this->lot[$key] = self::$page[$id][1][$key] = $value;
+        $this->lot[$key] = self::$page[$this->hash][1][$key] = $value;
     }
 
     public function __get($key) {
@@ -94,7 +94,7 @@ class Page extends Genome {
                 if ($data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
                     $lot[$key] = e($data);
                 } else if ($page = file_get_contents($lot['path'])) {
-                    $lot = array_replace($lot_c, $lot, e(self::apart($page)));
+                    $lot = array_replace($lot_c, $lot, e(self::apart($page), 'content'));
                 }
             }
             if (!array_key_exists($key, $lot)) {
@@ -106,8 +106,16 @@ class Page extends Genome {
             $lot[$key] = e($data);
         }
         $this->lot = $lot;
-        self::$page[md5($this->NS . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
-        return Hook::fire($this->NS . $key, [$lot[$key], $lot, $this, $key]);
+        self::$page[$this->hash][1] = $lot;
+        if (is_array($this->NS)) {
+            $name = [];
+            foreach ($this->NS as $v) {
+                $name[] = $v . '.' . $key;
+            }
+        } else {
+            $name = $this->NS . '.' . $key;
+        }
+        return Hook::fire($name, [$lot[$key], $lot, $this, $key]);
     }
 
     // Fix case for `isset($page->key)` or `!empty($page->key)`
@@ -139,7 +147,7 @@ class Page extends Genome {
             if (is_file($input)) {
                 if ($o = fopen($input, 'r')) {
                     $output = $fail;
-                    $end = trim(self::v[1]); // page header end
+                    $end = trim(self::v[1]); // Page header end!
                     while (($s = fgets($o, 1024)) !== false) {
                         $s = trim($s);
                         if ($s === $end) {
@@ -202,7 +210,7 @@ class Page extends Genome {
 
     private static $data = [];
 
-    public static function open($path, $lot = [], $NS = 'page') {
+    public static function open($path, $lot = [], $NS = ['*', 'page']) {
         self::$data = ['path' => $path];
         return new static($path, $lot, $NS);
     }
