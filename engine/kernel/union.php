@@ -159,7 +159,7 @@ class Union extends Genome {
             }
             $output[0] = $m[1];
             $output[1] = isset($m[4]) ? $m[3] : false;
-            if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '([\s\S]*?)' . $d2 . ')?/s', $m[2], $mm)) {
+            if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '((?:[^' . $d[1] . $d[2] . '\\\]|\\\.)*)' . $d2 . ')?/s', $m[2], $mm)) {
                 foreach ($mm[1] as $k => $v) {
                     $s = To::html($mm[2][$k]);
                     $s = $eval ? e($s) : $s;
