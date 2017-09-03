@@ -99,41 +99,49 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
     foreach ($a as $k => $v) {
         if (is_array($v) || is_object($v)) {
             // `%{$.a.b.c}%`
-            if (strpos($s, '%{' . $k . '.') !== false) {
-                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)+\}\%#i', function($m) use($v) {
+            if (strpos($s, '%{' . $k . '.') !== false || strpos($s, '%{' . $k . '~') !== false) {
+                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)*(~\S+)?\}\%#i', function($m) use($v) {
                     $a = explode('.', $m[1]);
                     $b = array_pop($a);
-                    if (is_object($v)) {
-                        if (!method_exists($v, '__get') && !isset($v->{$b})) {
-                            return $m[0];
-                        }
-                        $v = $v->{$b};
-                    } else if (is_array($v)) {
-                        if (!isset($v[$b])) {
-                            return $m[0];
-                        }
-                        $v = $v[$b];
+                    if (isset($m[2])) {
+                        $fn = substr($m[2], 1);
+                        $fn = is_callable($fn) ? $fn : false;
+                    } else {
+                        $fn = false;
                     }
-                    if ($a) {
-                        if (!is_array($v) && !is_object($v)) {
-                            return $v;
+                    if ($b) {
+                        if (is_object($v)) {
+                            if (!method_exists($v, '__get') && !isset($v->{$b})) {
+                                return $m[0];
+                            }
+                            $v = $v->{$b};
+                        } else if (is_array($v)) {
+                            if (!isset($v[$b])) {
+                                return $m[0];
+                            }
+                            $v = $v[$b];
                         }
-                        while ($b = array_pop($a)) {
+                        if ($a) {
                             if (!is_array($v) && !is_object($v)) {
                                 return $v;
                             }
-                            if (is_object($v)) {
-                                if (!method_exists($v, '__get') && !isset($v->{$b})) {
-                                    return $m[0];
+                            while ($b = array_pop($a)) {
+                                if (!is_array($v) && !is_object($v)) {
+                                    return $v;
                                 }
-                                $v = $v->{$b};
-                            } else if (is_array($v)) {
-                                $v = isset($v[$b]) ? $v[$b] : $m[0];
+                                if (is_object($v)) {
+                                    if (!method_exists($v, '__get') && !isset($v->{$b})) {
+                                        return $m[0];
+                                    }
+                                    $v = $v->{$b};
+                                } else if (is_array($v)) {
+                                    $v = isset($v[$b]) ? $v[$b] : $m[0];
+                                }
                             }
+                            return $fn ? $fn($v) : $v;
                         }
-                        return $v;
                     }
-                    return $v;
+                    return $fn ? $fn($v) : $v;
                 }, $s);
             }
             // `%{$}%`
@@ -263,17 +271,17 @@ function d($f, $fn = null, $s__ = []) {
     });
 }
 
-function e($x) {
-    if (is_string($x)) {
-        if ($x === "") return $x;
-        if (is_numeric($x)) {
-            return strpos($x, '.') !== false ? (float) $x : (int) $x;
-        } else if (__is_json__($x) && $v = json_decode($x, true)) {
+function e($s, $x = []) {
+    if (is_string($s)) {
+        if ($s === "") return $s;
+        if (is_numeric($s)) {
+            return strpos($s, '.') !== false ? (float) $s : (int) $s;
+        } else if (__is_json__($s) && $v = json_decode($s, true)) {
             return $v;
-        } else if ($x[0] === '"' || $x[0] === "'") {
-            return t($x, $x[0]);
+        } else if ($s[0] === '"' || $s[0] === "'") {
+            return t($s, $s[0]);
         }
-        $xx = [
+        $a = [
             'TRUE' => true,
             'FALSE' => false,
             'NULL' => null,
@@ -289,14 +297,17 @@ function e($x) {
             'on' => true,
             'off' => false
         ];
-        return array_key_exists($x, $xx) ? $xx[$x] : $x;
-    } else if (__is_anemon__($x)) {
-        foreach ($x as &$v) {
-            $v = e($v);
+        return array_key_exists($s, $a) ? $a[$s] : $s;
+    } else if (__is_anemon__($s)) {
+        $x = X . implode(X, (array) $x) . X;
+        foreach ($s as $k => &$v) {
+            if (strpos($x, X . $k . X) === false) {
+                $v = e($v, $x);
+            }
         }
         unset($v);
     }
-    return $x;
+    return $s;
 }
 
 function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
