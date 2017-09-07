@@ -1,6 +1,6 @@
 <?php
 
-$state = Extend::state(Path::D(__DIR__, 2), 'url');
+$state = Extend::state('asset', 'url');
 
 Asset\Union::plug('css', function($value, $key, $attr) use($state) {
     extract($value);
@@ -25,23 +25,21 @@ Asset\Union::plug('js', function($value, $key, $attr) use($state) {
     ]));
 });
 
-function fn_asset_image($value, $key, $attr) {
-    extract($value);
-    if ($path === false) {
-        if (strpos($url, '://') !== false || strpos($url, '//') === 0) {
-            return HTML::unite('img', false, Anemon::extend($attr, [
-                'alt' => "",
-                'src' => $url
-            ]));
-        }
-        return '<!-- ' . $key . ' -->';
-    }
-    return HTML::unite('img', false, Anemon::extend($attr, [
-        'alt' => "",
-        'src' => __replace__(Extend::state(Path::D(__DIR__, 2), 'url'), [$url, File::T($path, 0)])
-    ]));
-}
-
 foreach (['gif', 'jpg', 'jpeg', 'png'] as $x) {
-    Asset\Union::plug($x, 'fn_asset_image');
+    Asset\Union::plug($x, function($value, $key, $attr) use($state) {
+        extract($value);
+        if ($path === false) {
+            if (strpos($url, '://') !== false || strpos($url, '//') === 0) {
+                return HTML::unite('img', false, Anemon::extend($attr, [
+                    'alt' => "",
+                    'src' => $url
+                ]));
+            }
+            return '<!-- ' . $key . ' -->';
+        }
+        return HTML::unite('img', false, Anemon::extend($attr, [
+            'alt' => "",
+            'src' => __replace__($state, [$url, File::T($path, 0)])
+        ]));
+    });
 }
