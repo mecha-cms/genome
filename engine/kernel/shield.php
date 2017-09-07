@@ -120,11 +120,12 @@ class Shield extends Genome {
     }
 
     public static function state(...$lot) {
-        $id = str_replace('.', '\\', basename(array_shift($lot)));
+        $id = basename(array_shift($lot));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: SHIELD;
         $state = $folder . DS . $id . DS . 'state' . DS . 'config.php';
+        $id = str_replace('.', '\\', $id);
         if (!file_exists($state)) {
             return is_array($key) ? $key : $fail;
         }
