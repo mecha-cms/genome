@@ -43,18 +43,20 @@ Lot::set([
     'token' => Guardian::token()
 ]);
 
-Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, $date, $language, $site, $url, $u_r_l) {
+Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) {
+    // Include global variable(s)…
+    extract(Lot::get(null, []));
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
+    $path_f = ltrim($path === "" ? $site->path : $path, '/');
     Config::set('step', $step); // 1–based index…
     if ($step === 1 && !$url->query && $path === $site->path) {
         Message::info('kick', '<code>' . $url->current . '</code>');
         Guardian::kick(""); // Redirect to home page…
     }
-    $step = $step - 1; // 0–based index…
-    $path_alt = ltrim($path === "" ? $site->path : $path, '/');
-    $folder = rtrim(PAGE . DS . To::path($path_alt), DS);
+    $folder = rtrim(PAGE . DS . To::path($path_f), DS);
     $name = Path::B($folder);
+    $i = $step - 1; // 0-based index…
     // Horizontal elevator…
     $elevator = [
         'direction' => [
@@ -84,6 +86,12 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
     $pages = $page = [];
     Config::set('page.title', new Anemon([$site->title], ' &#x00B7; '));
     if ($file = File::exist([
+        // Check for page that has numeric file name…
+        $folder . DS . $step . '.page', // `lot\page\page-slug\1.page`
+        $folder . DS . $step . '.archive', // `lot\page\page-slug\1.archive`
+        $folder . DS . $step . DS . $step . '.page', // `lot\page\page-slug\1\1.page`
+        $folder . DS . $step . DS . $step . '.archive', // `lot\page\page-slug\1\1.archive`
+        // Else…
         $folder . '.page', // `lot\page\page-slug.page`
         $folder . '.archive', // `lot\page\page-slug.archive`
         $folder . DS . $name . '.page', // `lot\page\page-slug\page-slug.page`
@@ -93,11 +101,11 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
             $site->is = 'page';
         }
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
-        $s = PAGE;
-        foreach (explode('/', '/' . $path) as $ss) {
-            $s .= $ss ? DS . $ss : "";
-            if ($fn = File::exist($s . DS . 'index.php')) include $fn;
-            if ($fn = File::exist($s . DS . 'index__.php')) include $fn;
+        $k = PAGE;
+        foreach (explode('/', '/' . $path) as $v) {
+            $k .= $v ? DS . $v : "";
+            if ($fn = File::exist($k . DS . 'index.php')) include $fn;
+            if ($fn = File::exist($k . DS . 'index__.php')) include $fn;
         }
         $page = new Page($file);
         $sort = $page->sort($site->sort);
@@ -132,7 +140,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                 if ($query = l(Request::get($config->q, ""))) {
                     Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                     $query = explode(' ', $query);
-                    Config::set('search', new Page(null, ['query' => $query], 'search'));
+                    Config::set('search', new Page(null, ['query' => $query], ['*', 'search']));
                     $files = array_filter($files, function($v) use($query) {
                         $v = Path::N($v);
                         foreach ($query as $q) {
@@ -143,27 +151,33 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = 1) use($config, 
                         return false;
                     });
                 }
-                foreach (Anemon::eat($files)->chunk($chunk, $step) as $file) {
+                foreach (Anemon::eat($files)->chunk($chunk, $i) as $file) {
                     $pages[] = new Page($file);
                 }
                 if (empty($pages)) {
                     // Greater than the maximum step or less than `1`, abort!
                     $site->is = '404';
-                    Shield::abort('404/' . $path_alt);
+                    Shield::abort('404/' . $path_f);
                 }
                 if ($path !== "") {
                     $site->is = 'pages';
                 }
                 Lot::set([
                     'pages' => $pages,
-                    'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path_alt, $elevator, $site->is)
+                    'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_f, $elevator, $site->is)
                 ]);
-                Shield::attach('pages/' . $path_alt);
+                Shield::attach('pages/' . $path_f);
             } else if ($name === $name_parent && File::exist($folder . '.' . $page->state)) {
                 Message::info('kick', '<code>' . $url->current . '</code>');
                 Guardian::kick($path_parent);  // Redirect to parent page if user tries to access the placeholder page…
             }
+        } else if (
+            $step > 1 &&
+            $file !== $folder . DS . $step . '.' . $page->state &&
+            $file !== $folder . DS . $step . DS . $step . '.' . $page->state
+        ) {
+            Shield::abort();
         }
-        Shield::attach('page/' . $path_alt);
+        Shield::attach('page/' . $path_f);
     }
 }, 20);
