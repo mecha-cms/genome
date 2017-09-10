@@ -3,7 +3,7 @@ title: Page
 description: Add basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.9
+version: 1.0.10
 ...
 
 This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.
@@ -12,7 +12,7 @@ This extension enables basic features of a website by utilizing the structure of
 
  - `$site->is` → Return an empty string on home page, `page` on item page and `pages` on index page. Default is 404.
  - `$site->state` → Return the current page state. Default is `page`.
- - `$site->step` → Return the current index page’s offset. Default is `1`.
+ - `$site->step` → Return the current index page’s offset. Default is `null`.
 
 ### Hooks 
 
