@@ -2,7 +2,7 @@
 
 HTML::plug('a', function($text = "", $href = null, $target = null, $attr = [], $dent = 0) {
     $attr_o = [
-        'target' => $target === true ? '_new' : ($target === false ? null : $target)
+        'target' => $target === true ? '_blank' : ($target === false ? null : $target)
     ];
     $attr = array_replace_recursive($attr_o, $attr);
     $attr['href'] = URL::long(str_replace('&amp;', '&', $href));

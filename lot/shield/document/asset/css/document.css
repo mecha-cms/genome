@@ -91,7 +91,9 @@ article,aside,footer,header,main,nav,section {display:block}
   padding:0 .5em;
   text-align:left;
 }
-.input,.select,.textarea {
+.input,
+.select,
+.textarea {
   background:#eef;
   color:inherit;
 }
