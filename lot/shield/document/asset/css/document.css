@@ -168,7 +168,10 @@ label .input + span {
   margin-bottom:.5rem;
   margin-left:1.5rem;
 }
-.align-center {
+.align-left img,
+.align-right img {display:block}
+.align-center,
+.align-center img {
   display:block;
   margin-right:auto;
   margin-left:auto;
@@ -268,7 +271,7 @@ body > footer,
 body > header,
 body > main,
 body > nav {
-  max-width:50em;
+  max-width:40em;
   margin-right:auto;
   margin-left:auto;
 }
@@ -285,7 +288,7 @@ article > header {
   margin-top:0;
   margin-bottom:0;
 }
-.page-page main nav {text-align:center}
+main nav {text-align:center}
 .page-page article > footer,
 .page-404 aricle > footer {margin-top:5%}
 .page-page article > header,
