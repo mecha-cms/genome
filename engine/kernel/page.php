@@ -2,9 +2,6 @@
 
 class Page extends Genome {
 
-    const v = ["---\n", "\n...", ': ', '- ', "\n"];
-    const x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
-
     protected $lot = [];
     protected $lot_c = [];
 
@@ -133,28 +130,22 @@ class Page extends Genome {
     }
 
     public static function apart($input, $key = null, $fail = null) {
-        $input = n($input);
-        // Custom `apart` method by the `Genome` class…
-        if ($fn = self::kin(__METHOD__)) {
-            return call_user_func($fn, $input, $key, $fail);
-        }
         // Get specific property…
         if ($key === 'content') {
-            $input = explode(self::v[1], is_file($input) ? file_get_contents($input) : $input, 2);
-            return trim(isset($input[1]) ? $input[1] : $input[0], self::v[4]);
+            $input = explode("\n...", is_file($input) ? file_get_contents($input) : $input, 2);
+            return trim(isset($input[1]) ? $input[1] : $input[0], "\n");
         } else if (isset($key)) {
             // By path… (faster)
             if (is_file($input)) {
                 if ($o = fopen($input, 'r')) {
                     $output = $fail;
-                    $end = trim(self::v[1]); // Page header end!
                     while (($s = fgets($o, 1024)) !== false) {
                         $s = trim($s);
-                        if ($s === $end) {
-                            break;
+                        if ($s === '...') {
+                            break; // Page header end!
                         }
-                        if (strpos($s, $key . self::v[2]) === 0) {
-                            $s = explode(self::v[2], $s, 2);
+                        if (strpos($s, $key . ': ') === 0) {
+                            $s = explode(': ', $s, 2);
                             $output = isset($s[1]) ? trim($s[1]) : $fail;
                             break;
                         }
@@ -165,28 +156,27 @@ class Page extends Genome {
                 return $fail;
             }
             // By content…
-            $s = strpos($input, self::v[1]);
-            $ss = strpos($input, $k = self::v[4] . $key . self::v[2]);
+            $s = strpos($input, "\n...");
+            $ss = strpos($input, $k = "\n" . $key . ': ');
             if ($s !== false && $ss !== false && $ss < $s) {
-                $input = substr($input, $ss + strlen($k)) . self::v[4];
-                return trim(substr($input, 0, strpos($input, self::v[4])));
+                $input = substr($input, $ss + strlen($k)) . "\n";
+                return trim(substr($input, 0, strpos($input, "\n")));
             }
             return $fail;
         }
         // Get all propert(y|ies) embedded…
         $data = [];
-        if (strpos($input, self::v[0]) !== 0) {
+        if (strpos($input, "---\n") !== 0) {
             $data['content'] = $input;
         } else {
-            $input = str_replace([X . self::v[0], X], "", X . $input . N . N);
-            $input = explode(self::v[1] . N . N, $input, 2);
+            $input = str_replace([X . "---\n", X], "", X . $input . "\n\n");
+            $input = explode("\n...\n\n", $input, 2);
             // Do data…
-            foreach (explode(self::v[4], $input[0]) as $v) {
-                $v = explode(self::v[2], $v, 2);
-                $data[$v[0]] = isset($v[1]) ? trim($v[1]) : $fail;
-            }
+            $data = From::yaml($input[0]);
             // Do content…
-            $data['content'] = trim(isset($input[1]) ? $input[1] : "", self::v[4]);
+            if (!isset($data['content'])) {
+                $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");
+            }
         }
         return $data;
     }
@@ -203,9 +193,9 @@ class Page extends Genome {
             if ($v && strpos($v, "\n") !== false) {
                 $v = json_encode($v); // Contains line-break
             }
-            $data[] = $k . self::v[2] . $v;
+            $data[] = $k . ': ' . $v;
         }
-        return ($data ? self::v[0] . implode(N, $data) . self::v[1] : "") . ($content ? N . N . $content : "");
+        return ($data ? "---\n" . implode("\n", $data) . "\n..." : "") . ($content ? "\n\n" . $content : "");
     }
 
     private static $data = [];
