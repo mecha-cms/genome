@@ -127,8 +127,7 @@ To::plug('url', function($input, $raw = false) {
     return $raw ? rawurldecode($input) : urldecode($input);
 });
 
-function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
-    $s = array_replace(Page::v, $c);
+function __to_yaml__($input, $in = '  ', $safe = false, $dent = 0) {
     if (__is_anemon__($input)) {
         $t = "";
         $line = __is_anemon_0__($input) && !$safe;
@@ -144,25 +143,25 @@ function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
                 } else {
                     $v = s($v);
                 }
-                $v = $v !== $s[4] && strpos($v, $s[2]) !== false ? json_encode($v) : $v;
+                $v = $v !== "\n" && strpos($v, ': ') !== false ? json_encode($v) : $v;
                 // Line
-                if ($v === $s[4]) {
-                    $t .= $s[4];
+                if ($v === "\n") {
+                    $t .= "\n";
                 // Comment
                 } else if (strpos($v, '#') === 0) {
-                    $t .= $T . trim($v) . $s[4];
+                    $t .= $T . trim($v) . "\n";
                 // …
                 } else {
-                    $t .= $T . ($line ? $s[3] : trim($k) . $s[2]) . $v . $s[4];
+                    $t .= $T . ($line ? '- ' : trim($k) . ': ') . $v . "\n";
                 }
             } else {
-                $o = __to_yaml__($v, $s, $in, $safe, $dent + 1);
-                $t .= $T . $k . $s[2] . $s[4] . $o . $s[4];
+                $o = __to_yaml__($v, $in, $safe, $dent + 1);
+                $t .= $T . $k . ":\n" . $o . "\n";
             }
         }
-        return rtrim($t);
+        return rtrim($t, "\n");
     }
-    return $input !== $s[4] && strpos($input, $s[2]) !== false ? json_encode($input) : $input;
+    return $input !== "\n" && strpos($input, ': ') !== false ? json_encode($input) : $input;
 }
 
 To::plug('yaml', function(...$lot) {

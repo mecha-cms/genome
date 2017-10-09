@@ -1,6 +1,9 @@
 ---
 title: English
-description: American English, also called United States English or U.S. English, is the set of varieties of the English language native to the United States.
+description: >
+  American English, also called United States English
+  or U.S. English, is the set of varieties of the English
+  language native to the United States.
 version: 2.0.0
 type: YAML
 ...
@@ -12,8 +15,8 @@ type: YAML
 #.
 #. Example:
 #.
-#.  - `category`
-#.  - `category(s)` → should be `categories`
+#.- `category`
+#.- `category(s)` → should be `categories`
 
 action: Action
 actions: Actions
@@ -473,9 +476,9 @@ yesterday__: %{$.yesterday}% %{0}%
 #.
 #. Example:
 #.
-#.  - `backup` → or `back_up`
-#.  - `backup(ing)` → should be `backing_up`
-#.  - `backup(ed)` → should be `backed_up`
+#.- `backup` → or `back_up`
+#.- `backup(ing)` → should be `backing_up`
+#.- `backup(ed)` → should be `backed_up`
 
 abort: Abort
 aborting: Aborting

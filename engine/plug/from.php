@@ -16,121 +16,137 @@ From::plug('url', function($input, $raw = false) {
     return $raw ? rawurlencode($input) : urlencode($input);
 });
 
+$str_1 = "'(?:[^'\\\]|\\\.)*'";
+$str_2 = '"(?:[^"\\\]|\\\.)*"';
+$str_x = '(' . $str_1 . '|' . $str_2 . ')';
+
+// Get key and value pair…
+function __from_yaml_k__($s) {
+    global $str_x;
+    if ((strpos($s, "'") === 0 || strpos($s, '"') === 0) && preg_match('#' . $str_x . ' *: +([^\n]*)#', $s, $m)) {
+        $a = [$m[1], $m[2]];
+    } else {
+        $a = explode(':', $s, 2);
+    }
+    $a[0] = trim($a[0]);
+    // If value is an empty string, replace with `[]`
+    $a[1] = isset($a[1]) && $a[1] !== "" ? trim($a[1]) : [];
+    return $a;
+}
+
 // Parse array-like string…
 function __from_yaml_a__($s) {
-    if (!is_string($s)) return $s;
+    if (!is_string($s)) {
+        return $s;
+    }
+    global $str_x;
     if (strpos($s, '[') === 0 && substr($s, -1) === ']') {
-        return preg_split('#\s*,\s*#', trim(t($s, '[', ']')));
+        if ((strpos($s, "'") !== false || strpos($s, '"') !== false) && strpos($s, ',') !== false) {
+            $s = preg_replace_callback('#' . $str_x . '#', function($m) {
+                return str_replace(',', X, $m[1]);
+            }, $s);
+        }
+        $a = [];
+        foreach (preg_split('#(, *?(?:\[.*?\]|\{.*?\}) *,|,)#', t($s, '[', ']'), null, PREG_SPLIT_DELIM_CAPTURE) as $v) {
+            if ($v === ',') continue;
+            $v = trim(str_replace(X, ',', $v), ', ');
+            if (strpos($v, '[') === 0 && substr($v, -1) === ']' || strpos($v, '{') === 0 && substr($v, -1) === '}') {
+                $a[] = __from_yaml_a__($v);
+            } else {
+                $a[] = trim($v);
+            }
+        }
+        return $a;
     } else if (strpos($s, '{') === 0 && substr($s, -1) === '}') {
-        return $s; // TODO
+        $a = [];
+        foreach (__from_yaml_a__('[' . t($s, '{', '}') . ']') as $v) {
+            if (is_string($v)) {
+                $v = __from_yaml_k__($v);
+                $a[$v[0]] = __from_yaml_a__($v[1]);
+            } else {
+                $a[] = $v;
+            }
+        }
+        return $a;
     }
     return $s;
 }
 
-// Remove inline comment(s)…
-function __from_yaml_c__($s, $q) {
-    if (!is_string($s)) return $s;
-    if ($s && strpos($s, '#') !== false) {
-        if ($s[0] === '"' || $s[0] === "'") {
-            $s = preg_replace('/(' . implode('|', $q) . ')|\s*#.*/', '$1', $s);
-        } else {
-            $s = explode('#', $s, 2);
-            $s = trim($s[0]);
-        }
-    }
-    return $s;
-}
-
-// Get key and value part…
-function __from_yaml_k__($li, $s, $q) {
-    if ($li[0] === '"' && preg_match('/^(' . $q[0] . ')\s*' . x($s[2]) . '(.*?)$/', $li, $part)) {
-        array_shift($part);
-        $part[0] = t($part[0], '"');
-    } else if ($li[0] === "'" && preg_match('/^(' . $q[1] . ')\s*' . x($s[2]) . '(.*?)$/', $li, $part)) {
-        array_shift($part);
-        $part[0] = t($part[0], "'");
-    } else {
-        $part = explode($s[2], $li, 2);
-    }
-    return $part;
-}
-
-function __from_yaml__($input, $c = [], $in = '  ') {
-    if (!is_string($input)) {
-        return a($input);
-    }
-    if (!trim($input)) return [];
-    $s = array_replace(Page::v, $c);
-    $q = ['"(?:[^"\\\]|\\\.)*"', '\'(?:[^\'\\\]|\\\.)*\''];
-    $i = 0;
-    $output = $data = [];
-    // Normalize white-space(s)
-    $input = trim(n($input, $in), $s[4]);
-    // Save `\: ` as `\x1A`
-    $input = str_replace('\\' . $s[2], X, $input);
-    // Check if it is a flat YAML data, if so, optimize it!
-    if (strpos($input, $in) !== 0 && strpos($input, $s[4] . $in) === false) {
-        foreach (explode($s[4], $input) as $li) {
-            // Ignore comment and empty line-break
-            if ($li === "" || strpos($li, '#') === 0) continue;
-            // Start with `- `
-            if (strpos($li, $s[3]) === 0) {
-                $li = $i . $s[2] . substr($li, strlen($s[3]));
-                ++$i;
-            }
-            // No `: ` … fix it!
-            if (strpos($li, $s[2]) === false) {
-                $li = $li . $s[2] . $li;
-            }
-            $part = __from_yaml_k__($li, $s, $q);
-            // Restore `\x1A` as `: `
-            $k = str_replace(X, $s[2], trim($part[0]));
-            // If value is an empty string, replace with an `[]`
-            $v = isset($part[1]) && trim($part[1]) !== "" ? trim($part[1]) : [];
-            $v = __from_yaml_c__($v, $q);
-            $output[$k] = e(__from_yaml_a__($v));
-        }
-        return $output;
-    }
-    // Else, should be a complex YAML data…
+function __from_yaml__($input, $in = '  ', $ref = []) {
+    $output = $key = [];
     $len = strlen($in);
-    foreach (explode($s[4], $input) as $li) {
-        $dent = 0;
-        $li = rtrim($li);
-        // Ignore comment and empty line-break
-        if ($li === "" || strpos($li, '#') === 0) continue;
-        while (substr($li, 0, $len) === $in) {
-            $dent += 1;
-            $li = substr($li, $len);
+    $i = [];
+    // Normalize white-space(s)
+    $input = trim(n($input), "\n");
+    // Save `\:` as `\x1A`
+    $input = str_replace('\\:', X, $input);
+    if (strpos($input, ': |') !== false || strpos($input, ': >') !== false) {
+        $input = preg_replace_callback('#((?:' . x($in) . ')*)([^\n]+?): +([|>])\s*\n((?:(?:\1 +[^\n]*?)?\n)+|$)#', function($m) use($in) {
+            $s = trim(str_replace("\n" . $in, "\n", "\n" . $m[4]), "\n");
+            if ($m[3] === '>') {
+                // TODO
+                $s = preg_replace('#( *)([^\n]*)\n\1#', '$1$2 $1', $s);
+            }
+            return $m[1] . $m[2] . ': ' . json_encode($s) . "\n" . $m[1];
+        }, $input);
+    }
+    foreach (explode("\n", $input) as $v) {
+        $test = trim($v);
+        // Ignore empty line-break and comment(s)…
+        if ($test === "" || strpos($test, '#') === 0) {
+            continue;
         }
-        $li = ltrim($li) . ' ';
-        while ($dent < count($data)) {
-            array_pop($data);
+        $dent = 0;
+        while (substr($v, 0, $len) === $in) {
+            ++$dent;
+            $v = substr($v, $len);
         }
         // Start with `- `
-        if (strpos($li, $s[3]) === 0) {
-            $li = $i . $s[2] . substr($li, strlen($s[3]));
-            ++$i;
+        if (strpos($v, '- ') === 0) {
+            ++$dent;
+            if (isset($i[$dent])) {
+                $i[$dent] += 1;
+            } else {
+                $i[$dent] = 0;
+            }
+            $v = substr_replace($v, $i[$dent] . ': ', 0, 2);
+        // TODO
+        } else if ($v === '-') {
+            ++$dent;
+            if (isset($i[$dent])) {
+                $i[$dent] += 1;
+            } else {
+                $i[$dent] = 0;
+            }
+            $v = $i[$dent] . ':';
         } else {
-            $i = 0;
+            $i = [];
         }
-        // No `: ` … fix it!
-        if (strpos($li, $s[2]) === false) {
-            $li = $li . $s[2] . $li;
+        while ($dent < count($key)) {
+            array_pop($key);
         }
-        $part = __from_yaml_k__($li, $s, $q);
-        // Restore `\x1A` as `: `
-        $k = str_replace(X, $s[2], trim($part[0]));
-        $v = isset($part[1]) && trim($part[1]) !== "" ? trim($part[1]) : [];
-        $v = __from_yaml_c__($v, $q);
-        $data[$dent] = $k;
+        $a = __from_yaml_k__(trim($v));
+        // Restore `\x1A` to `:`
+        $a[0] = $key[$dent] = str_replace(X, ':', $a[0]);
+        if (is_string($a[1])) {
+            // Ignore comment(s)…
+            if (strpos($a[1], '#') === 0) {
+                $a[1] = [];
+            // TODO
+            } else if (strpos($a[1], '&') === 0) {
+                $ref[substr($a[1], 1)] = $a[0];
+                $a[1] = [];
+            } else {
+                $a[1] = __from_yaml_a__(e($a[1]));
+            }
+        }
         $parent =& $output;
-        foreach ($data as $k) {
-            if (!isset($parent[$k])) {
-                $parent[$k] = e(__from_yaml_a__($v));
+        foreach ($key as $kk) {
+            if (!isset($parent[$kk])) {
+                $parent[$kk] = $a[1];
                 break;
             }
-            $parent =& $parent[$k];
+            $parent =& $parent[$kk];
         }
     }
     return $output;
@@ -143,8 +159,6 @@ From::plug('yaml', function(...$lot) {
     if (Is::path($lot[0], true)) {
         $lot[0] = file_get_contents($lot[0]);
     }
-    $s = Page::v;
-    $lot[0] = str_replace([X . $s[0], $s[1] . X, X], "", X . $lot[0] . X);
     return call_user_func_array('__from_yaml__', $lot);
 });
 
