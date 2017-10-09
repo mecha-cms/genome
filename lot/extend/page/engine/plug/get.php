@@ -12,7 +12,7 @@ function _fn_get_page_property($v, $n = null) {
     return $v;
 }
 
-function fn_get_page($path, $key = null, $fail = false, $for = null) {
+function _fn_get_page($path, $key = null, $fail = false, $for = null) {
     if (!file_exists($path)) {
         return $fail;
     }
@@ -46,7 +46,7 @@ function fn_get_pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $ke
     $by = is_array($sort) && isset($sort[1]) ? $sort[1] : null;
     if ($input = g($folder, $state)) {
         foreach ($input as $v) {
-            $output[] = fn_get_page($v, null, false, $by);
+            $output[] = _fn_get_page($v, null, false, $by);
         }
         $output = $o = Anemon::eat($output)->sort($sort)->vomit();
         if (isset($key)) {
@@ -64,5 +64,4 @@ function fn_get_pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $ke
     return false;
 }
 
-Get::plug('page', 'fn_get_page');
 Get::plug('pages', 'fn_get_pages');
