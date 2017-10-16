@@ -182,20 +182,13 @@ class Page extends Genome {
     }
 
     public static function unite($input) {
-        $data = [];
         $content = "";
         if (isset($input['content'])) {
             $content = $input['content'];
             unset($input['content']);
         }
-        foreach ($input as $k => $v) {
-            $v = is_array($v) ? json_encode($v) : s($v);
-            if ($v && strpos($v, "\n") !== false) {
-                $v = json_encode($v); // Contains line-break
-            }
-            $data[] = $k . ': ' . $v;
-        }
-        return ($data ? "---\n" . implode("\n", $data) . "\n..." : "") . ($content ? "\n\n" . $content : "");
+        $header = To::yaml($input);
+        return ($header ? "---\n" . $header . "\n..." : "") . ($content ? "\n\n" . $content : "");
     }
 
     private static $data = [];

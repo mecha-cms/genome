@@ -133,6 +133,9 @@ function __to_yaml__($input, $in = '  ', $safe = false, $dent = 0) {
         $line = __is_anemon_0__($input) && !$safe;
         $T = str_repeat($in, $dent);
         foreach ($input as $k => $v) {
+            if (strpos($k, ':') !== false) {
+                $k = '"' . $k . '"';
+            }
             if (!__is_anemon__($v) || empty($v)) {
                 if (is_array($v)) {
                     $v = '[]';
@@ -143,7 +146,7 @@ function __to_yaml__($input, $in = '  ', $safe = false, $dent = 0) {
                 } else {
                     $v = s($v);
                 }
-                $v = $v !== "\n" && strpos($v, ': ') !== false ? json_encode($v) : $v;
+                $v = $v !== "\n" && strpos($v, "\n") !== false ? "|\n" . $T . $in . str_replace("\n", "\n" . $T . $in, $v) : $v;
                 // Line
                 if ($v === "\n") {
                     $t .= "\n";
@@ -161,7 +164,7 @@ function __to_yaml__($input, $in = '  ', $safe = false, $dent = 0) {
         }
         return rtrim($t, "\n");
     }
-    return $input !== "\n" && strpos($input, ': ') !== false ? json_encode($input) : $input;
+    return $input !== "\n" && strpos($input, ': ') === false ? json_encode($input) : $input;
 }
 
 To::plug('yaml', function(...$lot) {

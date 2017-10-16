@@ -18,13 +18,13 @@ From::plug('url', function($input, $raw = false) {
 
 $str_1 = "'(?:[^'\\\]|\\\.)*'";
 $str_2 = '"(?:[^"\\\]|\\\.)*"';
-$str_x = '(' . $str_1 . '|' . $str_2 . ')';
+$str_any = '(' . $str_1 . '|' . $str_2 . ')';
 
 // Get key and value pair…
 function __from_yaml_k__($s) {
-    global $str_x;
-    if ((strpos($s, "'") === 0 || strpos($s, '"') === 0) && preg_match('#' . $str_x . ' *: +([^\n]*)#', $s, $m)) {
-        $a = [$m[1], $m[2]];
+    global $str_any;
+    if ((strpos($s, "'") === 0 || strpos($s, '"') === 0) && preg_match('#' . $str_any . ' *: +([^\n]*)#', $s, $m)) {
+        $a = [t($m[1], '"'), $m[2]];
     } else {
         $a = explode(':', $s, 2);
     }
@@ -39,40 +39,36 @@ function __from_yaml_a__($s) {
     if (!is_string($s)) {
         return $s;
     }
-    global $str_x;
-    if (strpos($s, '[') === 0 && substr($s, -1) === ']') {
-        if ((strpos($s, "'") !== false || strpos($s, '"') !== false) && strpos($s, ',') !== false) {
-            $s = preg_replace_callback('#' . $str_x . '#', function($m) {
-                return str_replace(',', X, $m[1]);
-            }, $s);
-        }
-        $a = [];
-        foreach (preg_split('#(, *?(?:\[.*?\]|\{.*?\}) *,|,)#', t($s, '[', ']'), null, PREG_SPLIT_DELIM_CAPTURE) as $v) {
-            if ($v === ',') continue;
-            $v = trim(str_replace(X, ',', $v), ', ');
-            if (strpos($v, '[') === 0 && substr($v, -1) === ']' || strpos($v, '{') === 0 && substr($v, -1) === '}') {
-                $a[] = __from_yaml_a__($v);
-            } else {
-                $a[] = trim($v);
+    global $str_1, $str_2;
+    if (strpos($s, '[') === 0 && substr($s, -1) === ']' || strpos($s, '{') === 0 && substr($s, -1) === '}') {
+        $a = preg_split('#(\s*(?:' . $str_1 . '|' . $str_2 . '|[\[\]\{\}:,])\s*)#', $s, null, PREG_SPLIT_DELIM_CAPTURE);
+        $s = "";
+        foreach ($a as $v) {
+            if (($v = trim($v)) === "") {
+                continue;
             }
-        }
-        return $a;
-    } else if (strpos($s, '{') === 0 && substr($s, -1) === '}') {
-        $a = [];
-        foreach (__from_yaml_a__('[' . t($s, '{', '}') . ']') as $v) {
-            if (is_string($v)) {
-                $v = __from_yaml_k__($v);
-                $a[$v[0]] = __from_yaml_a__($v[1]);
+            if (strpos('[]{}:,', $v) !== false || is_numeric($v) || $v === 'true' || $v === 'false' || $v === 'null') {
+                // Do nothing!
+            } else if (strpos($v, '"') === 0 && substr($v, -1) === '"') {
+                if (json_decode($v) === null) {
+                    $v = '"' . str_replace('"', '\\"', $v) . '"';
+                }
+            } else if (strpos($v, "'") === 0 && substr($v, -1) === "'") {
+                $v = '"' . t($v, "'") . '"';
             } else {
-                $a[] = $v;
+                $v = '"' . $v . '"';
             }
+            $s .= $v;
         }
-        return $a;
+        return json_decode($s, true);
     }
     return $s;
 }
 
 function __from_yaml__($input, $in = '  ', $ref = []) {
+    if ($input === "") {
+        return [];
+    }
     $output = $key = [];
     $len = strlen($in);
     $i = [];
@@ -80,14 +76,14 @@ function __from_yaml__($input, $in = '  ', $ref = []) {
     $input = trim(n($input), "\n");
     // Save `\:` as `\x1A`
     $input = str_replace('\\:', X, $input);
-    if (strpos($input, ': |') !== false || strpos($input, ': >') !== false) {
-        $input = preg_replace_callback('#((?:' . x($in) . ')*)([^\n]+?): +([|>])\s*\n((?:(?:\1 +[^\n]*?)?\n)+|$)#', function($m) use($in) {
-            $s = trim(str_replace("\n" . $in, "\n", "\n" . $m[4]), "\n");
+    if (strpos($input, ': ') !== false && strpos($input, '|') !== false || strpos($input, '>') !== false) {
+        $x = x($in);
+        $input = preg_replace_callback('#((?:' . $x . ')*)([^\n]+?): +([|>])\s*\n((?:(?:\1' . $x . '[^\n]*?)?\n)+|$)#', function($m) use($in) {
+            $s = trim(str_replace("\n" . $m[1] . $in, "\n", "\n" . $m[4]), "\n");
             if ($m[3] === '>') {
-                // TODO
-                $s = preg_replace('#( *)([^\n]*)\n\1#', '$1$2 $1', $s);
+                $s = preg_replace('#(\S)\n(\S)#', '$1 $2', $s);
             }
-            return $m[1] . $m[2] . ': ' . json_encode($s) . "\n" . $m[1];
+            return $m[1] . $m[2] . ': ' . json_encode($s) . "\n";
         }, $input);
     }
     foreach (explode("\n", $input) as $v) {
@@ -137,7 +133,8 @@ function __from_yaml__($input, $in = '  ', $ref = []) {
                 $ref[substr($a[1], 1)] = $a[0];
                 $a[1] = [];
             } else {
-                $a[1] = __from_yaml_a__(e($a[1]));
+                $s = strpos($a[1], "'") === 0 || strpos($a[1], '"') === 0 ? $a[1] : explode('#', $a[1])[0];
+                $a[1] = __from_yaml_a__(e(trim($s)));
             }
         }
         $parent =& $output;
