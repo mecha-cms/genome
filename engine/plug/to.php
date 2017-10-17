@@ -146,25 +146,21 @@ function __to_yaml__($input, $in = '  ', $safe = false, $dent = 0) {
                 } else {
                     $v = s($v);
                 }
-                $v = $v !== "\n" && strpos($v, "\n") !== false ? "|\n" . $T . $in . str_replace("\n", "\n" . $T . $in, $v) : $v;
-                // Line
-                if ($v === "\n") {
-                    $t .= "\n";
-                // Comment
-                } else if (strpos($v, '#') === 0) {
+                $v = strpos($v, "\n") !== false ? "|\n" . $T . $in . str_replace("\n", "\n" . $T . $in, $v) : $v;
+                // Comment…
+                if (strpos($v, '#') === 0) {
                     $t .= $T . trim($v) . "\n";
                 // …
                 } else {
                     $t .= $T . ($line ? '- ' : trim($k) . ': ') . $v . "\n";
                 }
             } else {
-                $o = __to_yaml__($v, $in, $safe, $dent + 1);
-                $t .= $T . $k . ":\n" . $o . "\n";
+                $t .= $T . $k . ":\n" . __to_yaml__($v, $in, $safe, $dent + 1) . "\n";
             }
         }
         return rtrim($t, "\n");
     }
-    return $input !== "\n" && strpos($input, ': ') === false ? json_encode($input) : $input;
+    return strpos($input, ': ') === false ? json_encode($input) : $input;
 }
 
 To::plug('yaml', function(...$lot) {

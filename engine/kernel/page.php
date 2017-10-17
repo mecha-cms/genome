@@ -30,7 +30,7 @@ class Page extends Genome {
                 'state' => $x,
                 'id' => (string) $t,
                 'url' => To::url($path)
-            ], a(Config::get('page', [])), $lot);
+            ], (array) a(Config::get('page', [])), $lot);
             $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
             // Set `time` value from the page’s file name
             if (
@@ -129,10 +129,10 @@ class Page extends Genome {
         return $path && file_exists($path) ? file_get_contents($path) : "";
     }
 
-    public static function apart($input, $key = null, $fail = null) {
+    public static function apart($input, $key = null, $fail = null, $eval = false) {
         // Get specific property…
         if ($key === 'content') {
-            $input = explode("\n...", is_file($input) ? file_get_contents($input) : $input, 2);
+            $input = explode("\n...", n(is_file($input) ? file_get_contents($input) : $input), 2);
             return trim(isset($input[1]) ? $input[1] : $input[0], "\n");
         } else if (isset($key)) {
             // By path… (faster)
@@ -151,28 +151,31 @@ class Page extends Genome {
                         }
                     }
                     fclose($o);
-                    return $output;
+                    return $eval ? e($output) : $output;
                 }
                 return $fail;
             }
             // By content…
+            $input = n($input);
             $s = strpos($input, "\n...");
             $ss = strpos($input, $k = "\n" . $key . ': ');
             if ($s !== false && $ss !== false && $ss < $s) {
                 $input = substr($input, $ss + strlen($k)) . "\n";
-                return trim(substr($input, 0, strpos($input, "\n")));
+                $output = trim(substr($input, 0, strpos($input, "\n")));
+                return $eval ? e($output) : $output;
             }
             return $fail;
         }
         // Get all propert(y|ies) embedded…
         $data = [];
+        $input = n($input);
         if (strpos($input, "---\n") !== 0) {
             $data['content'] = $input;
         } else {
             $input = str_replace([X . "---\n", X], "", X . $input . "\n\n");
             $input = explode("\n...\n\n", $input, 2);
             // Do data…
-            $data = From::yaml($input[0]);
+            $data = From::yaml($input[0], '  ', [], $eval);
             // Do content…
             if (!isset($data['content'])) {
                 $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");

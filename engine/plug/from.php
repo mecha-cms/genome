@@ -65,20 +65,27 @@ function __from_yaml_a__($s) {
     return $s;
 }
 
-function __from_yaml__($input, $in = '  ', $ref = []) {
+function __from_yaml__($input, $in = '  ', $ref = [], $e = true) {
+    // Normalize white-space(s)…
+    $input = trim(n($input), "\n");
     if ($input === "") {
         return [];
     }
-    $output = $key = [];
+    $key = [];
     $len = strlen($in);
     $i = [];
-    // Normalize white-space(s)
-    $input = trim(n($input), "\n");
     // Save `\:` as `\x1A`
     $input = str_replace('\\:', X, $input);
+    $x = x($in);
+    if (strpos($input, '&') !== false) {
+        if (preg_match_all('#((?:' . $x . ')*)([^\n]+): +&(\S+)(\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)| *[^\n]*)#', $input, $m)) {
+            foreach ($m[3] as $k => $v) {
+                $ref[$v] = __from_yaml__($m[2][$k] . ':' . $m[4][$k], $in, $ref);
+            }
+        }
+    }
     if (strpos($input, ': ') !== false && strpos($input, '|') !== false || strpos($input, '>') !== false) {
-        $x = x($in);
-        $input = preg_replace_callback('#((?:' . $x . ')*)([^\n]+?): +([|>])\s*\n((?:(?:\1' . $x . '[^\n]*?)?\n)+|$)#', function($m) use($in) {
+        $input = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)#', function($m) use($in) {
             $s = trim(str_replace("\n" . $m[1] . $in, "\n", "\n" . $m[4]), "\n");
             if ($m[3] === '>') {
                 $s = preg_replace('#(\S)\n(\S)#', '$1 $2', $s);
@@ -128,13 +135,17 @@ function __from_yaml__($input, $in = '  ', $ref = []) {
             // Ignore comment(s)…
             if (strpos($a[1], '#') === 0) {
                 $a[1] = [];
-            // TODO
+            // Copy…
             } else if (strpos($a[1], '&') === 0) {
-                $ref[substr($a[1], 1)] = $a[0];
-                $a[1] = [];
+                $a[1] = strpos($a[1], ' ') !== false ? explode(' ', $a[1], 2)[1] : [];
+            // Paste…
+            } else if (strpos($a[1], '*') === 0 && isset($ref[substr($a[1], 1)])) {
+                $a[1] = array_pop($ref[substr($a[1], 1)]);
             } else {
                 $s = strpos($a[1], "'") === 0 || strpos($a[1], '"') === 0 ? $a[1] : explode('#', $a[1])[0];
-                $a[1] = __from_yaml_a__(e(trim($s)));
+                $s = trim($s);
+                $s = $s === '~' ? 'null' : $s;
+                $a[1] = __from_yaml_a__($e ? e($s) : $s);
             }
         }
         $parent =& $output;
@@ -156,6 +167,16 @@ From::plug('yaml', function(...$lot) {
     if (Is::path($lot[0], true)) {
         $lot[0] = file_get_contents($lot[0]);
     }
+    /*
+    if (strpos($lot[0] = n($lot[0]), "---\n") !== false) {
+        $output = [];
+        $lot[0] = str_replace([X . "---\n", "\n..." . X, X], "", X . $lot[0] . X);
+        foreach (explode("\n---\n", $lot[0]) as $v) {
+            $output[] = call_user_func_array('__from_yaml__', $lot);
+        }
+        return $output;
+    }
+    */
     return call_user_func_array('__from_yaml__', $lot);
 });
 
