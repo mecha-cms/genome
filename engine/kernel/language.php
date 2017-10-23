@@ -11,9 +11,6 @@ class Language extends Genome {
             $fn = 'From::' . __c2f__($i18n->type, '_');
             $c = $i18n->content;
             $content = is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
-            array_walk_recursive($content, function(&$v) use($content) {
-                $v = __replace__($v, ['$' => $content]);
-            });
             Cache::set($f, $content);
         } else {
             $content = Cache::get($f);
