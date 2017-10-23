@@ -2,7 +2,7 @@
 
 class Extend extends Genome {
 
-    public static $extend = [];
+    protected static $extend = [];
 
     public static function exist($input, $fail = false) {
         return Folder::exist(EXTEND . DS . $input, $fail);

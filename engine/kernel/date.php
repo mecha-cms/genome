@@ -2,8 +2,8 @@
 
 class Date extends Genome {
 
-    public static $zone = false;
-    public static $format = [];
+    protected static $zone = false;
+    protected static $format = [];
 
     public static function zone($zone = null) {
         if (!isset($zone)) return self::$zone;

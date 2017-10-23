@@ -1,7 +1,5 @@
 <?php
 
-$has_mb_string = extension_loaded('mbstring');
-
 To::plug('anemon', function($input) {
     if (__is_anemon__($input)) {
         return a($input);
@@ -70,9 +68,9 @@ To::plug('path', function($input) {
     return str_replace([$u['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
 });
 
-To::plug('sentence', function($input, $tail = '.') use($has_mb_string) {
+To::plug('sentence', function($input, $tail = '.') {
     $input = trim($input);
-    if ($has_mb_string) {
+    if (extension_loaded('mbstring')) {
         return mb_strtoupper(mb_substr($input, 0, 1)) . mb_strtolower(mb_substr($input, 1)) . $tail;
     }
     return ucfirst(strtolower($input)) . $tail;
@@ -84,13 +82,13 @@ To::plug('snake', function($input) {
     return h($input, '_');
 });
 
-To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($has_mb_string) {
+To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) {
     $s = w($input, $html ? HTML_WISE_I : []);
-    $t = $has_mb_string ? mb_strlen($s) : strlen($s);
+    $t = extension_loaded('mbstring') ? mb_strlen($s) : strlen($s);
     if (is_int($x)) {
         $x = [$x, '&#x2026;'];
     }
-    $s = $has_mb_string ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
+    $s = extension_loaded('mbstring') ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
     $s = str_replace('<br>', ' ', $s);
     // Remove the unclosed HTML tag(s)…
     if ($html && strpos($s, '<') !== false) {
@@ -106,9 +104,9 @@ To::plug('snippet', function($input, $html = true, $x = [200, '&#x2026;']) use($
 
 To::plug('text', 'w');
 
-To::plug('title', function($input) use($has_mb_string) {
+To::plug('title', function($input) {
     $input = w($input);
-    if ($has_mb_string) {
+    if (extension_loaded('mbstring')) {
         return mb_convert_case($input, MB_CASE_TITLE);
     }
     return ucwords($input);

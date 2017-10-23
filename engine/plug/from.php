@@ -84,10 +84,11 @@ function __from_yaml__($input, $in = '  ', $ref = [], $e = true) {
             }
         }
     }
-    if (strpos($input, ': ') !== false && strpos($input, '|') !== false || strpos($input, '>') !== false) {
+    if (strpos($input, ': ') !== false && (strpos($input, '|') !== false || strpos($input, '>') !== false)) {
         $input = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)#', function($m) use($in) {
             $s = trim(str_replace("\n" . $m[1] . $in, "\n", "\n" . $m[4]), "\n");
             if ($m[3] === '>') {
+                // TODO
                 $s = preg_replace('#(\S)\n(\S)#', '$1 $2', $s);
             }
             return $m[1] . $m[2] . ': ' . json_encode($s) . "\n";
@@ -167,8 +168,7 @@ From::plug('yaml', function(...$lot) {
     if (Is::path($lot[0], true)) {
         $lot[0] = file_get_contents($lot[0]);
     }
-    /*
-    if (strpos($lot[0] = n($lot[0]), "---\n") !== false) {
+    if (strpos($lot[0] = n($lot[0]), "---\n") === 0) {
         $output = [];
         $lot[0] = str_replace([X . "---\n", "\n..." . X, X], "", X . $lot[0] . X);
         foreach (explode("\n---\n", $lot[0]) as $v) {
@@ -176,7 +176,6 @@ From::plug('yaml', function(...$lot) {
         }
         return $output;
     }
-    */
     return call_user_func_array('__from_yaml__', $lot);
 });
 

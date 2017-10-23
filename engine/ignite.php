@@ -5,8 +5,6 @@
 // __is_json__: check for valid JSON string format
 // __is_serialize__: check for valid serialized string format
 
-$has_mb_string = extension_loaded('mbstring');
-
 function __is_anemon__($x) {
     return is_array($x) || is_object($x);
 }
@@ -896,8 +894,7 @@ function j() {}
 function k() {}
 
 function l($x) {
-    global $has_mb_string;
-    return $has_mb_string ? mb_strtolower($x) : strtolower($x);
+    return extension_loaded('mbstring') ? mb_strtolower($x) : strtolower($x);
 }
 
 function m() {}
@@ -927,11 +924,10 @@ function p($x, $s = "", $X = "") {
 }
 
 function q($x, $deep = false) {
-    global $has_mb_string;
     if (is_int($x) || is_float($x)) {
         return $x;
     } else if (is_string($x)) {
-        return $has_mb_string ? mb_strlen($x) : strlen($x);
+        return extension_loaded('mbstring') ? mb_strlen($x) : strlen($x);
     } else if (__is_anemon__($x)) {
         return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
@@ -996,8 +992,7 @@ function t($x, $o = '"', $c = null) {
 }
 
 function u($x) {
-    global $has_mb_string;
-    return $has_mb_string ? mb_strtoupper($x) : strtoupper($x);
+    return extension_loaded('mbstring') ? mb_strtoupper($x) : strtoupper($x);
 }
 
 function v($x) {

@@ -2,7 +2,7 @@
 
 class Shield extends Genome {
 
-    public static $shield = [];
+    protected static $shield = [];
 
     protected static function X($input) {
         $x = substr($input, -4) !== '.php' ? '.php' : "";

@@ -2,7 +2,7 @@
 
 class Config extends Genome {
 
-    public static $bucket = [];
+    protected static $bucket = [];
 
     public static function ignite(...$lot) {
         return (self::$bucket = State::config());

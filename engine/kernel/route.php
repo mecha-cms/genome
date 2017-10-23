@@ -2,8 +2,8 @@
 
 class Route extends Genome {
 
-    public static $lot = [];
-    public static $lot_o = [];
+    protected static $lot = [];
+    protected static $lot_o = [];
 
     public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
         $i = 0;

@@ -2,7 +2,7 @@
 
 class Cache extends Genome {
 
-    public static $cache = [];
+    protected static $cache = [];
 
     public static function set($from, $content = null, $id = null) {
         $n = self::_n($from);
