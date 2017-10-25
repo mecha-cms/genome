@@ -858,6 +858,9 @@ function h($x, $s = '-', $X = "") {
     }, $x), $s, true, 'a-zA-Z\d' . x($X));
 }
 
+// If `$fn` is a function, the function will be executed after file include.
+// If `$fn` is array of function, the first function will be executed before
+// file include, and the rest will be executed after file include.
 function i($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
@@ -934,6 +937,9 @@ function q($x, $deep = false) {
     return count($x);
 }
 
+// If `$fn` is a function, the function will be executed after file require.
+// If `$fn` is array of function, the first function will be executed before
+// file require, and the rest will be executed after file require.
 function r($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
