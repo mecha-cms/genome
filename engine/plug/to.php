@@ -63,7 +63,7 @@ To::plug('key', function($input, $low = true) {
 To::plug('pascal', 'p');
 
 To::plug('path', function($input) {
-    $u = __url__();
+    $u = $GLOBALS['URL'];
     $s = str_replace('/', DS, $u['url']);
     return str_replace([$u['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
 });
@@ -113,7 +113,7 @@ To::plug('title', function($input) {
 });
 
 To::plug('url', function($input, $raw = false) {
-    $u = __url__();
+    $u = $GLOBALS['URL'];
     $s = str_replace(DS, '/', ROOT);
     $input = str_replace([ROOT, DS, '\\', $s], [$u['url'], '/', '/', $u['url']], $input);
     // Fix broken external URL `http://://example.com`, `http:////example.com`

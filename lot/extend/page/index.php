@@ -34,8 +34,9 @@ function fn_page_url($content, $lot = []) {
     if (!isset($lot['path'])) {
         return $content;
     }
+    global $url;
     $s = Path::F($lot['path'], PAGE);
-    return rtrim(__url__('url') . '/' . ltrim(To::url($s), '/'), '/');
+    return rtrim($url . '/' . ltrim(To::url($s), '/'), '/');
 }
 
 Hook::set('page.url', 'fn_page_url', 1);

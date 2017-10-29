@@ -4,7 +4,7 @@ class URL extends Genome {
 
     public static function long($url, $root = true) {
         if (!is_string($url)) return $url;
-        $a = __url__();
+        $a = $GLOBALS['URL'];
         $b = false;
         if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
             $url = ltrim($url, '/');
@@ -24,7 +24,7 @@ class URL extends Genome {
     }
 
     public static function short($url, $root = true) {
-        $a = __url__();
+        $a = $GLOBALS['URL'];
         if (strpos($url, '//') === 0 && strpos($url, '//' . $a['host']) !== 0) {
             return $url; // Ignore external URL
         }
@@ -50,7 +50,7 @@ class URL extends Genome {
     protected $lot = [];
 
     public static function __callStatic($kin, $lot = []) {
-        $a = __url__();
+        $a = $GLOBALS['URL'];
         if (!self::kin($kin)) {
             $fail = array_shift($lot) ?: false;
             return array_key_exists($kin, $a) ? $a[$kin] : $fail;
@@ -76,7 +76,7 @@ class URL extends Genome {
             unset($a['fragment']);
             $this->lot = $a;
         } else {
-            $this->lot = __url__();
+            $this->lot = $GLOBALS['URL'];
         }
         parent::__construct();
     }

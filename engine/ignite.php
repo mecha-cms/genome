@@ -183,7 +183,7 @@ if ($path !== "") {
 $query = http_build_query($_GET);
 $current = rtrim($url . '/' . $path, '/');
 
-$__url__ = [
+$GLOBALS['URL'] = [
     'scheme' => $scheme,
     'protocol' => $protocol,
     'host' => $host,
@@ -199,11 +199,6 @@ $__url__ = [
     'next' => isset($_SESSION['url']['next']) ? $_SESSION['url']['next'] : null,
     'hash' => isset($_COOKIE['url']['hash']) ? $_COOKIE['url']['hash'] : null
 ];
-
-function __url__($key = null, $fail = false) {
-    global $__url__;
-    return isset($key) ? (array_key_exists($key, $__url__) ? $__url__[$key] : $fail) : $__url__;
-}
 
 // a: convert object to array
 // b:

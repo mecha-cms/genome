@@ -80,7 +80,7 @@ class HTTP extends Genome {
         $cc = ['?', '&amp;', '='];
         $cc = array_replace($cc, $c);
         if (!isset($query)) {
-            $query = __url__('query');
+            $query = $GLOBALS['URL']['query'];
             return str_replace(['?', '&', '='], $cc, $query);
         }
         $q = $query ? array_replace_recursive($_GET, (array) $query) : $_GET;
