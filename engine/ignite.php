@@ -99,7 +99,7 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
             // `%{$.a.b.c}%`
             if (strpos($s, '%{' . $k . '.') !== false || strpos($s, '%{' . $k . '~') !== false) {
                 $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)*(~\S+)?\}\%#i', function($m) use($v) {
-                    $a = explode('.', $m[1]);
+                    $a = explode('.', isset($m[1]) ? $m[1] : "");
                     $b = array_pop($a);
                     if (isset($m[2])) {
                         $fn = substr($m[2], 1);
