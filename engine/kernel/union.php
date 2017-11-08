@@ -15,120 +15,103 @@ class Union extends Genome {
                 2 => ['<!--', '-->']
             ]
         ],
-        // Common attribute(s) order…
         'data' => [
             'class' => null,
-            'id' => null,
-            'src' => null,
-            'alt' => null,
-            'width' => null,
-            'height' => null,
-            'property' => null,
-            'name' => null, // [1]
-            'content' => null,
-            'href' => null,
-            'rel' => null,
-            'target' => null,
-            'type' => null, // [2]
-            'action' => null,
-            'method' => null,
-            'enctype' => null,
-            'value' => null, // [3]
-            'placeholder' => null, // [4]
-            'label' => null,
-            'selected' => null,
-            'checked' => null,
-            'disabled' => null,
-            'readonly' => null,
-            'style' => null
+            'id' => null
         ]
     ];
 
-    private $NS = null;
+    public static $config = self::config;
 
-    protected $union = self::config['union'];
-    protected $data = self::config['data'];
-
-    public function __construct($union = [], $NS = null) {
-        if (!isset($NS)) {
-            $NS = __c2f__(static::class, '_');
-        }
-        $NS .= '.';
-        $this->union = Hook::fire($NS . 'union', [array_replace_recursive($this->union, $union)]);
-        $this->NS = $NS;
+    public function __construct() {
         parent::__construct();
+        return self::_create();
     }
 
-    protected $unit = [];
-    protected $dent = [];
+    private static function _create() {
+        $that = new _Union(static::class);
+        $that->union = static::$config['union'];
+        $that->data = static::$config['data'];
+        return $that;
+    }
 
     // Indent…
     public static function dent($i) {
         return is_numeric($i) ? str_repeat(DENT, (int) $i) : $i;
     }
 
-    // Encode all union’s special character(s)
+    // Encode all union’s special character(s)…
     public static function x($v) {
-        if (!is_string($v)) return $v;
-        return From::html($v);
+        return is_string($v) ? From::html($v) : $v;
+    }
+
+    // Build static union attribute(s)…
+    public static function data($a, $unit = "") {
+        return self::_create()->data($a, $unit);
+    }
+
+    // Base static union constructor
+    public static function unite($unit, $content = "", $data = [], $dent = 0) {
+        return self::_create()->unite($unit, $content, $data, $dent);
+    }
+
+    // Inverse version of `Union::unite()`
+    public static function apart($input, $eval = true) {
+        return self::_create()->apart($input, $eval);
+    }
+
+    // Static union comment
+    public static function __($content = "", $dent = 0, $block = N) {
+        return self::_create()->__($content, $dent, $block);
+    }
+
+}
+
+class _Union {
+
+    public $union = [];
+    public $data = [];
+
+    protected $parent = null;
+    protected $unit = [
+        'unit' => [],
+        'dent' => []
+    ];
+
+    public function __construct($id) {
+        $this->parent = [$id, __c2f__($id, '_')];
+    }
+
+    private function _call($kin, $lot = []) {
+        return call_user_func_array($this->parent[0] . '::' . $kin, $lot);
     }
 
     // Build union attribute(s)…
-    public function bond($a, $unit = "") {
+    public function data($a, $unit = "") {
         if (!is_array($a)) {
-            $data = trim((string) $a);
-            return strlen($data) ? ' ' . $data : ""; // no hook(s) applied…
+            $a = trim((string) $a);
+            return strlen($a) ? ' ' . $a : ""; // No hook(s) applied!
         }
         $output = "";
-        $c = $this->NS;
         $u = $this->union[1][1];
-        $unit = $unit ? '.' . $unit : "";
-        $array = Hook::fire($c . 'bond' . $unit, [array_replace($this->data, $a), substr($unit, 1)]);
-        // HTML5 `data-*` attribute
-        foreach ($a as $k => $v) {
-            if ($k === 'data') {
-                foreach ($v as $kk => $vv) {
-                    if (!isset($vv)) continue;
-                    $a['data-' . $kk] = __is_anemon__($vv) ? json_encode($vv) : $vv;
-                }
-                unset($a['data']);
-                break;
-            }
-        }
-        // Normal process…
+        $a = Hook::fire($this->parent[1] . '.data' . ($unit ? ':' . $unit : ""), [array_replace_recursive($this->data, $a), $unit]);
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
             if (__is_anemon__($v)) {
-                // class value as array
-                if ($k === 'classes') {
-                    $k = 'class';
-                    $v = implode(' ', array_filter(array_unique($v)));
-                // Inline CSS via `css` attribute
-                } else if ($k === 'css') {
-                    $css = "";
-                    foreach ($v as $kk => $vv) {
-                        if (!isset($vv)) continue;
-                        $css .= ' ' . $kk . ': ' . $vv . ';';
-                    }
-                    $k = 'style';
-                    $v = substr($css, 1);
-                } else {
-                    $v = __is_anemon__($v) ? json_encode($v) : $v;
-                }
+                $v = json_encode($v);
             }
-            $output .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . self::x($v) . $u[2] : $k);
+            $output .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . $this->_call('x', [$v]) . $u[2] : $k);
         }
         return $output;
     }
 
     // Base union constructor
-    public function unite($unit = 'html', $content = "", $data = [], $dent = 0) {
-        $dent = self::dent($dent);
-        $c = $this->NS;
+    public function unite($unit, $content = "", $data = [], $dent = 0) {
+        $dent = $this->_call('dent', [$dent]);
         $u = $this->union[1][0];
-        $s  = $dent . $u[0] . $unit . $this->bond($data, $unit);
+        $s  = $dent . $u[0] . $unit . $this->_call('data', [$data, $unit]);
         $s .= $content === false ? $u[1] : $u[1] . ($content ? $content : "") . $u[0] . $u[2] . $unit . $u[1];
-        return Hook::fire($c . 'unit.' . $unit, [$s, [$unit, $content, $data]]);
+        return Hook::fire($this->parent[1] . '.unit:' . $unit, [$s, [$unit, $content, $data]]);
     }
 
     // Inverse version of `Union::unite()`
@@ -176,50 +159,38 @@ class Union extends Genome {
 
     // Union comment
     public function __($content = "", $dent = 0, $block = N) {
-        $dent = self::dent($dent);
+        $dent = $this->_call('dent', [$dent]);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
             $end = $block . $dent;
         }
-        $c = $this->NS;
         $u = $this->union[1][2];
-        return Hook::fire($c . 'unit.__', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
+        return Hook::fire($this->parent[1] . '.unit:#', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
     }
 
-    // Base union tag open
+    // Base union unit open
     public function begin($unit = 'html', $data = [], $dent = 0) {
-        $dent = self::dent($dent);
-        $this->unit[] = $unit;
-        $this->dent[] = $dent;
+        $dent = $this->_call('dent', [$dent]);
+        $this->unit['unit'][] = $unit;
+        $this->unit['dent'][] = $dent;
         $u = $this->union[1][0];
-        $c = $this->NS;
-        return Hook::fire($c . $unit . '.begin', [$dent . $u[0] . $unit . $this->bond($data, $unit) . $u[1], [$unit, null, $data]]);
+        return Hook::fire($this->parent[1] . '.begin:' . $unit, [$dent . $u[0] . $unit . $this->_call('data', [$data, $unit]) . $u[1], [$unit, null, $data]]);
     }
 
-    // Base union tag close
+    // Base union unit close
     public function end($unit = null, $dent = null) {
         if ($unit === true) {
-            // close all
+            // Close all!
             $s = "";
-            foreach ($this->unit as $u) {
+            foreach ($this->unit['unit'] as $u) {
                 $s .= $this->end() . ($dent ?: N);
             }
             return $s;
         }
-        $unit = isset($unit) ? $unit : array_pop($this->unit);
-        $dent = isset($dent) ? self::dent($dent) : array_pop($this->dent);
-        $c = $this->NS;
+        $unit = isset($unit) ? $unit : array_pop($this->unit['unit']);
+        $dent = isset($dent) ? static::dent($dent) : array_pop($this->unit['dent']);
         $u = $this->union[1][0];
-        return Hook::fire($c . $unit . '.end', [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
-    }
-
-    // …
-    public function __call($kin, $lot = []) {
-        if (!self::kin($kin)) {
-            array_unshift($lot, $kin);
-            return call_user_func_array([$this, 'unite'], $lot);
-        }
-        return parent::__call($kin, $lot);
+        return Hook::fire($this->parent[1] . '.end:' . $unit, [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
     }
 
 }
