@@ -5,8 +5,8 @@ class HTML extends Union {
     public static $config = self::config;
 
     public function __construct() {
-        $that = parent::__construct();
-        $that->data = [
+        parent::__construct();
+        $this->data = [
             'class' => null,
             'id' => null,
             'src' => null,
@@ -32,11 +32,10 @@ class HTML extends Union {
             'readonly' => null,
             'style' => null
         ];
-        return $that;
     }
 
     // Build HTML attribute(s)…
-    public static function data($a, $unit = "") {
+    protected function _data($a, $unit = "") {
         if (is_array($a)) {
             foreach ($a as $k => $v) {
                 if (!is_array($v)) continue;
@@ -59,18 +58,18 @@ class HTML extends Union {
                     $css = "";
                     foreach ($v as $kk => $vv) {
                         if (!isset($vv)) continue;
-                        $css .= ' ' . $kk . ': ' . $vv . ';';
+                        $css .= $kk . ':' . $vv . ';';
                     }
-                    $a['style'] = substr($css, 1);
+                    $a['style'] = $css;
                     unset($a[$k]);
                 }
             }
         }
-        return parent::data($a, $unit);
+        return parent::_data($a, $unit);
     }
 
-    public static function apart($input, $eval = true) {
-        $output = parent::apart($input, $eval);
+    protected function _apart($input, $eval = true) {
+        $output = parent::_apart($input, $eval);
         if (!empty($output[2])) {
             foreach ($output[2] as $k => $v) {
                 if (strpos($k, 'data-') === 0) {
@@ -90,7 +89,7 @@ class HTML extends Union {
     }
 
     public function __call($kin, $lot = []) {
-        if (!self::kin($kin)) {
+        if (!self::kin($kin) && !method_exists($this, '_' . $kin)) {
             array_unshift($lot, $kin);
             return call_user_func_array([$this, 'unite'], $lot);
         }
@@ -98,9 +97,10 @@ class HTML extends Union {
     }
 
     public static function __callStatic($kin, $lot = []) {
-        if (!self::kin($kin)) {
+        $that = new static;
+        if (!self::kin($kin) && !method_exists($that, '_' . $kin)) {
             array_unshift($lot, $kin);
-            return call_user_func_array('self::unite', $lot);
+            return call_user_func_array([$that, 'unite'], $lot);
         }
         return parent::__callStatic($kin, $lot);
     }

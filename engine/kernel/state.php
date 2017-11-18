@@ -28,10 +28,8 @@ class State extends Genome {
             $fail = array_shift($lot);
             $fail_alt = array_shift($lot);
             $x = $this->__get($key);
-            if (is_string($fail) && strpos($fail, '~') === 0) {
-                return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
-            } else if ($fail instanceof \Closure) {
-                return call_user_func($fail, $x !== null ? $x : $fail_alt);
+            if ($fail instanceof \Closure) {
+                return call_user_func($fail, $x !== null ? $x : $fail_alt, $this);
             }
             return $x !== null ? $x : $fail;
         }

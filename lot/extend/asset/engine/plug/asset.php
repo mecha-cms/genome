@@ -2,7 +2,7 @@
 
 $state = Extend::state('asset', 'url');
 
-Asset\Union::plug('css', function($value, $key, $attr) use($state) {
+Asset::plug('.css', function($value, $key, $attr) use($state) {
     extract($value);
     $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
     if ($path === false && !$x) {
@@ -14,7 +14,7 @@ Asset\Union::plug('css', function($value, $key, $attr) use($state) {
     ]));
 });
 
-Asset\Union::plug('js', function($value, $key, $attr) use($state) {
+Asset::plug('.js', function($value, $key, $attr) use($state) {
     extract($value);
     $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
     if ($path === false && !$x) {
@@ -26,7 +26,7 @@ Asset\Union::plug('js', function($value, $key, $attr) use($state) {
 });
 
 foreach (['gif', 'jpg', 'jpeg', 'png'] as $x) {
-    Asset\Union::plug($x, function($value, $key, $attr) use($state) {
+    Asset::plug('.' . $x, function($value, $key, $attr) use($state) {
         extract($value);
         if ($path === false) {
             if (strpos($url, '://') !== false || strpos($url, '//') === 0) {

@@ -43,7 +43,7 @@ class Page extends Genome {
                     substr_count($n, '-') === 5
                 ) &&
                 is_numeric(str_replace('-', "", $n)) &&
-                preg_match('#^\d{4,}-\d{2}-\d{2}(?:-\d{2}-\d{2}-\d{2})?$#', $n)
+                preg_match('#^\d{4,}(?:-\d{2}){2}(?:(?:-\d{2}){3})?$#', $n)
             ) {
                 $t = new Date($n);
                 $this->lot['time'] = $t->format();
@@ -68,10 +68,8 @@ class Page extends Genome {
             $fail = array_shift($lot);
             $fail_alt = array_shift($lot);
             $x = $this->__get($key);
-            if (is_string($fail) && strpos($fail, '~') === 0) {
-                return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
-            } else if ($fail instanceof \Closure) {
-                return call_user_func($fail, $x !== null ? $x : $fail_alt);
+            if ($fail instanceof \Closure) {
+                return call_user_func($fail, $x !== null ? $x : $fail_alt, $this);
             }
             return $x !== null ? $x : $fail;
         }

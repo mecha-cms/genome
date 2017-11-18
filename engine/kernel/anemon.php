@@ -192,7 +192,7 @@ class Anemon extends Genome {
 
     // Move to next array index
     public function next($skip = 0) {
-        $this->i = $this->edge($this->i + 1 + $skip, 0, $this->count() - 1);
+        $this->i = self::edge($this->i + 1 + $skip, 0, $this->count() - 1);
         return $this;
     }
 
