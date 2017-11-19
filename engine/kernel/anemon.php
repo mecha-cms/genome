@@ -36,10 +36,10 @@ class Anemon extends Genome {
     }
 
     // Set array value recursively
-    public static function set(array &$input, $key, $value = null) {
-        $keys = explode('.', $key);
+    public static function set(array &$input, $key, $value = null, $NS = '.') {
+        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
-            $key = array_shift($keys);
+            $key = str_replace(X, $NS, array_shift($keys));
             if (!array_key_exists($key, $input)) {
                 $input[$key] = [];
             }
@@ -49,9 +49,8 @@ class Anemon extends Genome {
     }
 
     // Get array value recursively
-    public static function get(array &$input, $key = null, $fail = false) {
-        if (!isset($key)) return $input;
-        $keys = explode('.', $key);
+    public static function get(array &$input, $key, $fail = false, $NS = '.') {
+        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         foreach ($keys as $value) {
             if (!is_array($input) || !array_key_exists($value, $input)) {
                 return $fail;
@@ -62,13 +61,10 @@ class Anemon extends Genome {
     }
 
     // Remove array value recursively
-    public static function reset(array &$input, $key = null) {
-        if (!isset($key)) {
-            return ($input = []);
-        }
-        $keys = explode('.', $key);
+    public static function reset(array &$input, $key, $NS = '.') {
+        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
-            $key = array_shift($keys);
+            $key = str_replace(X, $NS, array_shift($keys));
             if (array_key_exists($key, $input)) {
                 $input =& $input[$key];
             }
@@ -94,7 +90,10 @@ class Anemon extends Genome {
     }
 
     public function vomit($key = null, $fail = false) {
-        return self::get($this->bucket, $key, $fail);
+        if (isset($key)) {
+            return self::get($this->bucket, $key, $fail);
+        }
+        return !empty($this->bucket) ? $this->bucket : $fail;
     }
 
     // Randomize array order
