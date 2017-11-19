@@ -49,6 +49,15 @@ class Language extends Genome {
         return $s;
     }
 
+    public static function reset($key = null) {
+        $id = '_' . __c2f__(static::class, '_');
+        if (!isset($key)) {
+            Config::reset($id);
+        } else {
+            Config::reset($id . '.' . $key);
+        }
+    }
+
     public static function __callStatic($kin, $lot = []) {
         return call_user_func_array([new static, $kin], $lot);
     }
@@ -81,7 +90,7 @@ class Language extends Genome {
     }
 
     public function __unset($key) {
-        Config::reset('_' . __c2f__(static::class, '_') . '.' . $key);
+        self::reset('_' . __c2f__(static::class, '_') . '.' . $key);
     }
 
     public function __toString() {

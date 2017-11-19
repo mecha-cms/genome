@@ -30,7 +30,7 @@ From::plug('query', function($input, $c = []) {
         } else {
             $q[1] = true;
         }
-        Anemon::set($output, str_replace(['[', ']'], ['.', ""], $q[0]), $q[1]);
+        Anemon::set($output, str_replace(']', "", $q[0]), $q[1], '[');
     }
     return $output;
 });
