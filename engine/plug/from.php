@@ -12,6 +12,29 @@ From::plug('json', function($input) {
     return json_decode($input);
 });
 
+From::plug('query', function($input, $c = []) {
+    $c = array_replace(['?', '&', '=', ""], $c);
+    if (!is_string($input)) {
+        return [];
+    }
+    $output = [];
+    foreach (explode($c[1], t($input, $c[0], $c[3])) as $v) {
+        $q = explode($c[2], $v, 2);
+        $q[0] = urldecode($q[0]);
+        if (isset($q[1])) {
+            $q[1] = urldecode($q[1]);
+            $q[1] = e(Anemon::alter($q[1], [
+                'TRUE' => '"true"', // `a=TRUE&b` → `['a' => 'true', 'b' => true]`
+                'true' => '"true"'  // `a=true&b` → `['a' => 'true', 'b' => true]`
+            ]));
+        } else {
+            $q[1] = true;
+        }
+        Anemon::set($output, str_replace(['[', ']'], ['.', ""], $q[0]), $q[1]);
+    }
+    return $output;
+});
+
 From::plug('url', function($input, $raw = false) {
     return $raw ? rawurlencode($input) : urlencode($input);
 });

@@ -1,6 +1,6 @@
 <?php
 
-class Form extends Genome {
+class Form extends HTML {
 
     // `<button>`
     public static function button($name = null, $value = null, $text = "", $attr = [], $dent = 0) {
@@ -14,7 +14,7 @@ class Form extends Genome {
             $attr_o['required']
         );
         $attr_o['name'] = $name;
-        return HTML::unite('button', $text, array_replace_recursive($attr_o, $attr), $dent);
+        return self::unite('button', $text, array_replace_recursive($attr_o, $attr), $dent);
     }
 
     // `<input>`
@@ -26,7 +26,7 @@ class Form extends Genome {
         self::_($name, $attr_o);
         $attr_o['name'] = $name;
         $attr_o['value'] = Request::restore('post', $name, $value);
-        return HTML::unite('input', false, array_replace_recursive($attr_o, $attr), $dent);
+        return self::unite('input', false, array_replace_recursive($attr_o, $attr), $dent);
     }
 
     // `<select>`
@@ -39,7 +39,7 @@ class Form extends Genome {
         $attr_o['name'] = $name;
         $attr_o = array_replace_recursive($attr_o, $attr);
         foreach ($option as $key => $value) {
-			$tag = new HTML;
+			$tag = new static;
             // option list group
             if (is_array($value)) {
                 $s = [];
@@ -56,7 +56,7 @@ class Form extends Genome {
                         $s['selected'] = true;
                     }
                     $s['value'] = $k;
-                    $o .= N . HTML::unite('option', trim(strip_tags($v)), $s, $dent + 2);
+                    $o .= N . self::unite('option', trim(strip_tags($v)), $s, $dent + 2);
                 }
                 $o .= N . $tag->end();
             // option list
@@ -69,10 +69,10 @@ class Form extends Genome {
                     $s['selected'] = true;
                 }
                 $s['value'] = $key;
-                $o .= N . HTML::unite('option', trim(strip_tags($value)), $s, $dent + 1);
+                $o .= N . self::unite('option', trim(strip_tags($value)), $s, $dent + 1);
             }
         }
-        return HTML::unite('select', $o . N . HTML::dent($dent), $attr_o, $dent);
+        return self::unite('select', $o . N . self::dent($dent), $attr_o, $dent);
     }
 
     // `<textarea>`
@@ -89,7 +89,7 @@ class Form extends Genome {
             $placeholder = explode("\n", n($placeholder), 2)[0];
         }
         $attr_o['placeholder'] = $placeholder;
-        return HTML::unite('textarea', HTML::x(Request::restore('post', $name, $value)), array_replace_recursive($attr_o, $attr), $dent);
+        return self::unite('textarea', self::x(Request::restore('post', $name, $value)), array_replace_recursive($attr_o, $attr), $dent);
     }
 
     private static function _(&$s, &$a) {

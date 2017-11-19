@@ -56,14 +56,14 @@ foreach (['color', 'date', 'email', 'number', 'password', 'search', 'tel', 'text
 }
 
 // `<input type="range">`
-Form::plug('range', function($name = null, $value = [0, 0, 1], $attr = [], $dent = 0) {
+Form::plug('range', function($name = null, $range = [0, 0, 1], $attr = [], $dent = 0) {
     if (is_array($value)) {
         if (!array_key_exists('min', $attr)) {
-            $attr['min'] = $value[0];
+            $attr['min'] = $range[0];
         }
         if (!array_key_exists('max', $attr)) {
-            $attr['max'] = $value[2];
+            $attr['max'] = $range[2];
         }
     }
-    return Form::input($name, 'range', is_array($value) ? $value[1] : $value, null, $attr, $dent);
+    return Form::input($name, 'range', is_array($range) ? $range[1] : $range, null, $attr, $dent);
 });

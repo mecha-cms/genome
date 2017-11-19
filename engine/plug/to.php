@@ -68,6 +68,30 @@ To::plug('path', function($input) {
     return str_replace([$u['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $input);
 });
 
+function __to_query_a__($a, $k) {
+    $output = [];
+    $s = $k ? '%5D' : "";
+    foreach ($a as $kk => $vv) {
+        $kk = urlencode($kk);
+        if (is_array($vv)) {
+            $output = array_merge($output, __to_query_a__($vv, $k . $kk . $s . '%5B'));
+        } else {
+            $output[$k . $kk . $s] = $vv;
+        }
+    }
+    return $output;
+}
+
+To::plug('query', function($input, $c = []) {
+    $c = array_replace(['?', '&', '=', ""], $c);
+    foreach (__to_query_a__($input, "") as $k => $v) {
+        if ($v === false) continue; // `['a' => 'false', 'b' => false]` → `a=false`
+        $v = $v !== true ? $c[2] . urlencode(s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`
+        $output[] = $k . $v; // `['a' => 'null', 'b' => null]` → `a=null&b=null`
+    }
+    return !empty($output) ? $c[0] . implode($c[1], $output) . $c[1] : "";
+});
+
 To::plug('sentence', function($input, $tail = '.') {
     $input = trim($input);
     if (extension_loaded('mbstring')) {

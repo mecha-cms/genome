@@ -269,7 +269,7 @@ function e($s, $x = []) {
         if ($s === "") return $s;
         if (is_numeric($s)) {
             return strpos($s, '.') !== false ? (float) $s : (int) $s;
-        } else if (__is_json__($s) && $v = json_decode($s, true)) {
+        } else if (__is_json__($s) && $v = json_decode($s)) {
             return $v;
         } else if ($s[0] === '"' || $s[0] === "'") {
             return t($s, $s[0]);
