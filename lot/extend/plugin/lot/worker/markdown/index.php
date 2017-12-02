@@ -1,27 +1,27 @@
 <?php
 
-function fn_markdown($input = "", $lot = []) {
+function fn_markdown($in = "", $lot = []) {
     if (!isset($lot['type']) || $lot['type'] !== 'Markdown') {
-        return $input;
+        return $in;
     }
     $x = new ParsedownExtraPlugin;
     foreach (Plugin::state(__DIR__) as $k => $v) {
         $x->{$k} = $v;
     }
-    return $x->text($input);
+    return $x->text($in);
 }
 
-function fn_markdown_span($input, $lot = []) {
-    if (!isset($lot)) return $input;
-    return w(fn_markdown($input, $lot), HTML_WISE_I);
+function fn_markdown_span($in, $lot = []) {
+    if (!isset($lot)) return $in;
+    return w(fn_markdown($in, $lot), HTML_WISE_I);
 }
 
-From::plug('markdown', function($input) {
-    return fn_markdown($input, ['type' => 'Markdown']);
+From::_('markdown', function($in) {
+    return fn_markdown($in, ['type' => 'Markdown']);
 });
 
-To::plug('markdown', function($input) {
-    return $input; // TODO
+To::_('markdown', function($in) {
+    return $in; // TODO
 });
 
 Hook::set('*.title', 'fn_markdown_span', 2);

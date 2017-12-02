@@ -25,7 +25,7 @@ if (!$path || $path === $site->path) {
 ])) {
     $site->is = 'page';
     $site->state = Path::X($file);
-    if (!File::exist($folder . $b . '.page') && fn_get_pages($folder, 'page')) {
+    if (!File::exist($folder . $b . '.page') && Get::pages($folder, 'page')) {
         $site->is = 'pages';
     }
 }
@@ -126,7 +126,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
             $page_parent = new Page($file_parent);
             $sort_parent = $page_parent->sort($site->sort);
             $chunk_parent = $page_parent->chunk($site->chunk);
-            $files_parent = fn_get_pages($folder_parent, 'page', $sort_parent, 'slug');
+            $files_parent = Get::pages($folder_parent, 'page', $sort_parent, 'slug');
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $page_parent->sort($sort);
             $chunk = $page_parent->chunk($chunk);
@@ -145,7 +145,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         ])) {
             if ($step !== null && File::exist($folder . DS . $step . $x)) {
                 // Has page with numeric file name!
-            } else if ($files = fn_get_pages($folder, 'page', $sort, 'path')) {
+            } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
                 if ($query = l(Request::get($config->q, ""))) {
                     Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                     $query = explode(' ', $query);

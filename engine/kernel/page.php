@@ -64,16 +64,16 @@ class Page extends Genome {
     }
 
     public function __call($key, $lot = []) {
-        if (!self::kin($key)) {
-            $fail = array_shift($lot);
-            $fail_alt = array_shift($lot);
-            $x = $this->__get($key);
-            if ($fail instanceof \Closure) {
-                return call_user_func($fail, $x !== null ? $x : $fail_alt, $this);
-            }
-            return $x !== null ? $x : $fail;
+        if (self::_($key)) {
+            return parent::__call($key, $lot);
         }
-        return parent::__call($key, $lot);
+        $fail = array_shift($lot);
+        $fail_alt = array_shift($lot);
+        $x = $this->__get($key);
+        if ($fail instanceof \Closure) {
+            return call_user_func($fail, $x !== null ? $x : $fail_alt, $this);
+        }
+        return $x !== null ? $x : $fail;
     }
 
     public function __set($key, $value = null) {

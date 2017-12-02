@@ -160,7 +160,7 @@ class Union extends Genome {
 
     public static function __callStatic($kin, $lot = []) {
         $that = new static;
-        if (!self::kin($kin) && method_exists($that, '_' . $kin)) {
+        if (!self::_($kin) && method_exists($that, '_' . $kin)) {
             return call_user_func_array([$that, '_' . $kin], $lot);
         }
         return parent::__callStatic($kin, $lot);

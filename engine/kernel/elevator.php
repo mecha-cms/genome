@@ -95,17 +95,17 @@ class Elevator extends Genome {
     }
 
     public function __call($kin, $lot = []) {
-        if (!self::kin($kin)) {
-            $text = array_shift($lot);
-            $u = $this->config['union'];
-            $d = array_search($kin, $this->config['direction']);
-            if ($d !== false && ($text || $text === "")) {
-                if ($text !== true) $u[$d][1] = $text;
-                return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
-            }
-            return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
         }
-        return parent::__call($kin, $lot);
+        $text = array_shift($lot);
+        $u = $this->config['union'];
+        $d = array_search($kin, $this->config['direction']);
+        if ($d !== false && ($text || $text === "")) {
+            if ($text !== true) $u[$d][1] = $text;
+            return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
+        }
+        return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
     }
 
     public function __toString() {

@@ -73,7 +73,7 @@ class Asset extends Genome {
     public static function __callStatic($kin, $lot = []) {
         $path = array_shift($lot);
         $attr = array_shift($lot) ?: [];
-        if ($fn = self::kin('.' . $kin)) {
+        if ($fn = self::_('.' . $kin)) {
             if (isset($path)) {
                 $s = self::get($path, [
                     'path' => null,

@@ -55,33 +55,33 @@ class Config extends Genome {
     }
 
     public static function __callStatic($kin, $lot = []) {
-        if (!self::kin($kin)) {
-            $fail = false;
-            if (count($lot)) {
-                $kin .= '.' . array_shift($lot);
-                $fail = array_shift($lot) ?: false;
-            }
-            return self::get($kin, $fail);
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
         }
-        return parent::__callStatic($kin, $lot);
+        $fail = false;
+        if (count($lot)) {
+            $kin .= '.' . array_shift($lot);
+            $fail = array_shift($lot) ?: false;
+        }
+        return self::get($kin, $fail);
     }
 
-    public function __call($key, $lot = []) {
-        if (!self::kin($key)) {
-            $fail = false;
-            if ($count = count($lot)) {
-                if ($count > 1) {
-                    $key = $key . '.' . array_shift($lot);
-                }
-                $fail = array_shift($lot) ?: false;
-                $fail_alt = array_shift($lot) ?: false;
-            }
-            if ($fail instanceof \Closure) {
-                return call_user_func($fail, self::get($key, $fail_alt), $this);
-            }
-            return self::get($key, $fail);
+    public function __call($kin, $lot = []) {
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
         }
-        return parent::__call($key, $lot);
+        $fail = false;
+        if ($count = count($lot)) {
+            if ($count > 1) {
+                $kin = $kin . '.' . array_shift($lot);
+            }
+            $fail = array_shift($lot) ?: false;
+            $fail_alt = array_shift($lot) ?: false;
+        }
+        if ($fail instanceof \Closure) {
+            return call_user_func($fail, self::get($kin, $fail_alt), $this);
+        }
+        return self::get($kin, $fail);
     }
 
     public function __set($key, $value = null) {

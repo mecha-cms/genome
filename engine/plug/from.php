@@ -1,53 +1,9 @@
 <?php
 
-From::plug('base64', 'base64_decode');
-From::plug('dec', 'html_entity_decode');
-From::plug('hex', 'html_entity_decode');
-From::plug('html', 'htmlspecialchars');
-
-From::plug('json', function($input) {
-    if (__is_anemon__($input)) {
-        return (object) o($input);
-    }
-    return json_decode($input);
-});
-
-From::plug('query', function($input, $c = []) {
-    $c = array_replace(['?', '&', '=', ""], $c);
-    if (!is_string($input)) {
-        return [];
-    }
-    $output = [];
-    foreach (explode($c[1], t($input, $c[0], $c[3])) as $v) {
-        $q = explode($c[2], $v, 2);
-        $q[0] = urldecode($q[0]);
-        if (isset($q[1])) {
-            $q[1] = urldecode($q[1]);
-            $q[1] = e(Anemon::alter($q[1], [
-                'TRUE' => '"true"', // `a=TRUE&b` → `['a' => 'true', 'b' => true]`
-                'true' => '"true"'  // `a=true&b` → `['a' => 'true', 'b' => true]`
-            ]));
-        } else {
-            $q[1] = true;
-        }
-        Anemon::set($output, str_replace(']', "", $q[0]), $q[1], '[');
-    }
-    return $output;
-});
-
-From::plug('url', function($input, $raw = false) {
-    return $raw ? rawurlencode($input) : urlencode($input);
-});
-
-$str_1 = "'(?:[^'\\\]|\\\.)*'";
-$str_2 = '"(?:[^"\\\]|\\\.)*"';
-$str_any = '(' . $str_1 . '|' . $str_2 . ')';
-
 // Get key and value pair…
 function __from_yaml_k__($s) {
-    global $str_any;
-    if ((strpos($s, "'") === 0 || strpos($s, '"') === 0) && preg_match('#' . $str_any . ' *: +([^\n]*)#', $s, $m)) {
-        $a = [t($m[1], '"'), $m[2]];
+    if ((strpos($s, "'") === 0 || strpos($s, '"') === 0) && preg_match('#(\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*") *: +([^\n]*)#', $s, $m)) {
+        $a = [t($m[1], $s[0]), $m[2]];
     } else {
         $a = explode(':', $s, 2);
     }
@@ -62,9 +18,8 @@ function __from_yaml_a__($s) {
     if (!is_string($s)) {
         return $s;
     }
-    global $str_1, $str_2;
     if (strpos($s, '[') === 0 && substr($s, -1) === ']' || strpos($s, '{') === 0 && substr($s, -1) === '}') {
-        $a = preg_split('#(\s*(?:' . $str_1 . '|' . $str_2 . '|[\[\]\{\}:,])\s*)#', $s, null, PREG_SPLIT_DELIM_CAPTURE);
+        $a = preg_split('#(\s*(?:\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*"|[\[\]\{\}:,])\s*)#', $s, null, PREG_SPLIT_DELIM_CAPTURE);
         $s = "";
         foreach ($a as $v) {
             if (($v = trim($v)) === "") {
@@ -88,43 +43,42 @@ function __from_yaml_a__($s) {
     return $s;
 }
 
-function __from_yaml__($input, $in = '  ', $ref = [], $e = true) {
+function __from_yaml__($in, $d = '  ', $ref = [], $e = true) {
     // Normalize white-space(s)…
-    $input = trim(n($input), "\n");
-    if ($input === "") {
+    $in = trim(n($in), "\n");
+    if ($in === "") {
         return [];
     }
-    $key = [];
-    $len = strlen($in);
-    $i = [];
+    $key = $out = $i = [];
+    $len = strlen($d);
     // Save `\:` as `\x1A`
-    $input = str_replace('\\:', X, $input);
-    $x = x($in);
-    if (strpos($input, '&') !== false) {
-        if (preg_match_all('#((?:' . $x . ')*)([^\n]+): +&(\S+)(\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)| *[^\n]*)#', $input, $m)) {
+    $in = str_replace('\\:', X, $in);
+    $x = x($d);
+    if (strpos($in, '&') !== false) {
+        if (preg_match_all('#((?:' . $x . ')*)([^\n]+): +&(\S+)(\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)| *[^\n]*)#', $in, $m)) {
             foreach ($m[3] as $k => $v) {
                 $ref[$v] = __from_yaml__($m[2][$k] . ':' . $m[4][$k], $in, $ref);
             }
         }
     }
-    if (strpos($input, ': ') !== false && (strpos($input, '|') !== false || strpos($input, '>') !== false)) {
-        $input = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)#', function($m) use($in) {
-            $s = trim(str_replace("\n" . $m[1] . $in, "\n", "\n" . $m[4]), "\n");
+    if (strpos($in, ': ') !== false && (strpos($in, '|') !== false || strpos($in, '>') !== false)) {
+        $in = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)#', function($m) use($d) {
+            $s = trim(str_replace("\n" . $m[1] . $d, "\n", "\n" . $m[4]), "\n");
             if ($m[3] === '>') {
                 // TODO
                 $s = preg_replace('#(\S)\n(\S)#', '$1 $2', $s);
             }
             return $m[1] . $m[2] . ': ' . json_encode($s) . "\n";
-        }, $input);
+        }, $in);
     }
-    foreach (explode("\n", $input) as $v) {
+    foreach (explode("\n", $in) as $v) {
         $test = trim($v);
         // Ignore empty line-break and comment(s)…
         if ($test === "" || strpos($test, '#') === 0) {
             continue;
         }
         $dent = 0;
-        while (substr($v, 0, $len) === $in) {
+        while (substr($v, 0, $len) === $d) {
             ++$dent;
             $v = substr($v, $len);
         }
@@ -172,7 +126,7 @@ function __from_yaml__($input, $in = '  ', $ref = [], $e = true) {
                 $a[1] = __from_yaml_a__($e ? e($s) : $s);
             }
         }
-        $parent =& $output;
+        $parent =& $out;
         foreach ($key as $kk) {
             if (!isset($parent[$kk])) {
                 $parent[$kk] = $a[1];
@@ -181,29 +135,71 @@ function __from_yaml__($input, $in = '  ', $ref = [], $e = true) {
             $parent =& $parent[$kk];
         }
     }
-    return $output;
+    return $out;
 }
 
-From::plug('yaml', function(...$lot) {
-    if (__is_anemon__($lot[0])) {
-        return a($lot[0]);
-    }
-    if (Is::path($lot[0], true)) {
-        $lot[0] = file_get_contents($lot[0]);
-    }
-    if (strpos($lot[0] = n($lot[0]), "---\n") === 0) {
-        $output = [];
-        $lot[0] = str_replace([X . "---\n", "\n..." . X, X], "", X . $lot[0] . X);
-        foreach (explode("\n---\n", $lot[0]) as $v) {
-            $output[] = call_user_func_array('__from_yaml__', $lot);
+foreach ([
+    'base64' => 'base64_decode',
+    'dec' => 'html_entity_decode',
+    'hex' => 'html_entity_decode',
+    'html' => 'htmlspecialchars',
+    'json' => function($in) {
+        if (__is_anemon__($in)) {
+            return (object) o($in);
         }
-        return $output;
+        return json_decode($in);
+    },
+    'query' => function($in, $c = []) {
+        $c = array_replace(['?', '&', '=', ""], $c);
+        if (!is_string($in)) {
+            return [];
+        }
+        $out = [];
+        foreach (explode($c[1], t($in, $c[0], $c[3])) as $v) {
+            $q = explode($c[2], $v, 2);
+            $q[0] = urldecode($q[0]);
+            if (isset($q[1])) {
+                $q[1] = urldecode($q[1]);
+                // `a=TRUE&b` → `['a' => 'true', 'b' => true]`
+                // `a=true&b` → `['a' => 'true', 'b' => true]`
+                $q[1] = e($q[1] === 'TRUE' || $q[1] === 'true' ? '"true"' : $q[1]);
+            } else {
+                $q[1] = true;
+            }
+            Anemon::set($out, str_replace(']', "", $q[0]), $q[1], '[');
+        }
+        return $out;
+    },
+    'url' => function($in, $raw = false) {
+        return $raw ? rawurlencode($in) : urlencode($in);
+    },
+    'yaml' => function(...$lot) {
+        if (__is_anemon__($lot[0])) {
+            return a($lot[0]);
+        }
+        if (Is::path($lot[0], true)) {
+            $lot[0] = file_get_contents($lot[0]);
+        }
+        if (strpos($lot[0] = n($lot[0]), "---\n") === 0) {
+            $out = [];
+            $lot[0] = str_replace([X . "---\n", "\n..." . X, X], "", X . $lot[0] . X);
+            foreach (explode("\n---\n", $lot[0]) as $v) {
+                $out[] = call_user_func_array('__from_yaml__', $lot);
+            }
+            return $out;
+        }
+        return call_user_func_array('__from_yaml__', $lot);
     }
-    return call_user_func_array('__from_yaml__', $lot);
-});
+] as $k => $v) {
+    From::_($k, $v);
+}
 
 // Alias(es)…
-From::plug('h_t_m_l', 'htmlspecialchars');
-From::plug('j_s_o_n', 'From::json');
-From::plug('u_r_l', 'From::url');
-From::plug('y_a_m_l', 'From::yaml');
+foreach ([
+    'h_t_m_l' => 'html',
+    'j_s_o_n' => 'json',
+    'u_r_l' => 'url',
+    'y_a_m_l' => 'yaml'
+] as $k => $v) {
+    From::_($k, From::_($v));
+}

@@ -64,4 +64,4 @@ function fn_get_pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $ke
     return false;
 }
 
-Get::plug('pages', 'fn_get_pages');
+Get::_('pages', 'fn_get_pages');

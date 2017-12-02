@@ -93,7 +93,7 @@ class Anemon extends Genome {
         if (isset($key)) {
             return self::get($this->bucket, $key, $fail);
         }
-        return !empty($this->bucket) ? $this->bucket : $fail;
+        return $this->bucket;
     }
 
     // Randomize array order

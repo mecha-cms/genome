@@ -8,7 +8,7 @@ class Form extends HTML {
             $attr['type'] = 'button';
         }
         $attr_o = ['value' => $value];
-        self::_($name, $attr_o);
+        self::__($name, $attr_o);
         unset(
             $attr_o['readonly'],
             $attr_o['required']
@@ -23,7 +23,7 @@ class Form extends HTML {
             'placeholder' => $placeholder,
             'type' => $type
         ];
-        self::_($name, $attr_o);
+        self::__($name, $attr_o);
         $attr_o['name'] = $name;
         $attr_o['value'] = Request::restore('post', $name, $value);
         return self::unite('input', false, array_replace_recursive($attr_o, $attr), $dent);
@@ -33,7 +33,7 @@ class Form extends HTML {
     public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
         $attr_o = [];
-        self::_($name, $attr_o);
+        self::__($name, $attr_o);
         unset($attr_o['required']);
         $select = (string) Request::restore('post', $name, $select);
         $attr_o['name'] = $name;
@@ -44,13 +44,13 @@ class Form extends HTML {
             if (is_array($value)) {
                 $s = [];
                 $key = (string) $key;
-                self::_($key, $s);
+                self::__($key, $s);
                 $s['label'] = trim(strip_tags($key));
                 $o .= N . $tag->begin('optgroup', $s, $dent + 1);
                 foreach ($value as $k => $v) {
                     $s = [];
                     $k = (string) $k;
-                    self::_($k, $s);
+                    self::__($k, $s);
                     unset($s['readonly'], $s['required']);
                     if ($select === $k) {
                         $s['selected'] = true;
@@ -63,7 +63,7 @@ class Form extends HTML {
             } else {
                 $s = [];
                 $key = (string) $key;
-                self::_($key, $s);
+                self::__($key, $s);
                 unset($s['readonly'], $s['required']);
                 if ($select === $key) {
                     $s['selected'] = true;
@@ -78,7 +78,7 @@ class Form extends HTML {
     // `<textarea>`
     public static function textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
-        self::_($name, $attr_o);
+        self::__($name, $attr_o);
         $attr_o['name'] = $name;
         // <https://www.w3.org/TR/html5/forms.html#the-placeholder-attribute>
         // The `placeholder` attribute represents a short hint (a word or short phrase) intended
@@ -92,7 +92,7 @@ class Form extends HTML {
         return self::unite('textarea', self::x(Request::restore('post', $name, $value)), array_replace_recursive($attr_o, $attr), $dent);
     }
 
-    private static function _(&$s, &$a) {
+    private static function __(&$s, &$a) {
         if ($s && strpos('.!*', $s[0]) !== false) {
             $a[Anemon::alter($s[0], [
                 '.' => 'disabled',

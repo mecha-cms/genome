@@ -89,7 +89,7 @@ class HTML extends Union {
     }
 
     public function __call($kin, $lot = []) {
-        if (!self::kin($kin) && !method_exists($this, '_' . $kin)) {
+        if (!self::_($kin) && !method_exists($this, '_' . $kin)) {
             array_unshift($lot, $kin);
             return call_user_func_array([$this, 'unite'], $lot);
         }
@@ -98,7 +98,7 @@ class HTML extends Union {
 
     public static function __callStatic($kin, $lot = []) {
         $that = new static;
-        if (!self::kin($kin) && !method_exists($that, '_' . $kin)) {
+        if (!self::_($kin) && !method_exists($that, '_' . $kin)) {
             array_unshift($lot, $kin);
             return call_user_func_array([$that, 'unite'], $lot);
         }

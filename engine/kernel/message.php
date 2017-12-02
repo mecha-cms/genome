@@ -84,11 +84,11 @@ class Message extends Genome {
     }
 
     public static function __callStatic($kin, $lot = []) {
-        if (!self::kin($kin)) {
-            array_unshift($lot, $kin);
-            return call_user_func_array('self::set', $lot);
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
         }
-        return parent::__callStatic($kin, $lot);
+        array_unshift($lot, $kin);
+        return call_user_func_array('self::set', $lot);
     }
 
 }

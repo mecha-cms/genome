@@ -18,9 +18,9 @@ class URL extends Genome {
             strpos($url, '#') !== 0 &&
             strpos($url, 'javascript:') !== 0
         ) {
-            return trim(($root && $b ? $a['protocol'] . $a['host'] : $a['url']) . '/' . self::_fix($url), '/');
+            return trim(($root && $b ? $a['protocol'] . $a['host'] : $a['url']) . '/' . self::__($url), '/');
         }
-        return self::_fix($url);
+        return self::__($url);
     }
 
     public static function short($url, $root = true) {
@@ -37,25 +37,25 @@ class URL extends Genome {
 
     // Initial URL (without the page offset)
     public static function I($url) {
-        if (strpos($url, ROOT) === 0) {
+        if (strpos($url, ROOT) === 0 || strpos($url, DS) !== false) {
             $url = To::url($url);
         }
-        return rtrim($url, '/0123456789');
+        return rtrim(rtrim(rtrim($url, '0123456789'), '-'), '/');
     }
 
-    protected static function _fix($s) {
+    protected static function __($s) {
         return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $s);
     }
 
     protected $lot = [];
 
     public static function __callStatic($kin, $lot = []) {
-        $a = $GLOBALS['URL'];
-        if (!self::kin($kin)) {
-            $fail = array_shift($lot) ?: false;
-            return array_key_exists($kin, $a) ? $a[$kin] : $fail;
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
         }
-        return parent::__callStatic($kin, $lot);
+        $a = $GLOBALS['URL'];
+        $fail = array_shift($lot) ?: false;
+        return array_key_exists($kin, $a) ? $a[$kin] : $fail;
     }
 
     public function __construct($input = null) {

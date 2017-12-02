@@ -69,11 +69,11 @@ class Language extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot = []) {
-        if (!self::kin($key)) {
-            return self::get($key, array_shift($lot), array_shift($lot) ?: false);
+    public function __call($kin, $lot = []) {
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
         }
-        return parent::__call($kin, $lot);
+        return self::get($kin, array_shift($lot), array_shift($lot) ?: false);
     }
 
     public function __set($key, $value = null) {
