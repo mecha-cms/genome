@@ -7,21 +7,21 @@ class Hook extends Genome {
     public static function set($id = null, $fn = null, $stack = null) {
         $c = static::class;
         $stack = isset($stack) ? $stack : 10;
-        if (!isset(self::$lot[0][$c][$id][$stack])) {
             if (!is_array($id)) {
-                if (!isset(self::$lot[1][$c][$id])) {
-                    self::$lot[1][$c][$id] = [];
+                if (!isset(self::$lot[0][$c][$id][$stack])) {
+                    if (!isset(self::$lot[1][$c][$id])) {
+                        self::$lot[1][$c][$id] = [];
+                    }
+                    self::$lot[1][$c][$id][] = [
+                        'fn' => $fn,
+                        'stack' => (float) $stack
+                    ];
                 }
-                self::$lot[1][$c][$id][] = [
-                    'fn' => $fn,
-                    'stack' => (float) $stack
-                ];
             } else {
                 foreach ($id as $v) {
                     self::set($v, $fn, $stack);
                 }
             }
-        }
         return new static;
     }
 
