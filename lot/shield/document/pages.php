@@ -6,7 +6,7 @@
     <header>
       <h3>
         <?php if ($page->link): ?>
-        <a href="<?php echo $page->link; ?>" rel="nofollow" target="_new"><?php echo $page->title; ?> &#x21E2;</a>
+        <a href="<?php echo $page->link; ?>" rel="nofollow" target="_blank"><?php echo $page->title; ?> &#x21E2;</a>
         <?php else: ?>
         <a href="<?php echo $page->url; ?>"><?php echo $page->title; ?></a>
         <?php endif; ?>

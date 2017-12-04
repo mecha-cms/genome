@@ -15,8 +15,8 @@ type: YAML
 #.
 #. Example:
 #.
-#.- `category`
-#.- `category(s)` → should be `categories`
+#.  - `category`
+#.  - `category(s)` → should be `categories`
 
 action: Action
 actions: Actions
