@@ -255,12 +255,15 @@ pre code {
   border:1px solid;
   padding:.25em .5em;
 }
+
 header {margin-bottom:5%}
 footer,
 nav {margin-top:5%}
+header + nav {margin-top:0}
 article:after,
 footer:after,
 header:after,
+main:after,
 nav:after,
 section:after {
   content:"";
@@ -289,6 +292,7 @@ article > header {
   margin-bottom:0;
 }
 main nav {text-align:center}
+
 .page-page article > footer,
 .page-404 aricle > footer {margin-top:5%}
 .page-page article > header,
