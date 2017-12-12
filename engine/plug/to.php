@@ -173,6 +173,7 @@ foreach([
 
 // Alias(es)…
 foreach ([
+    'files' => 'folder',
     'h_t_m_l' => 'html',
     'u_r_l' => 'url',
     'y_a_m_l' => 'yaml'

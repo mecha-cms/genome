@@ -27,7 +27,7 @@ function __is_anemon_a__($x) {
 }
 
 function __is_json__($x) {
-    if (!is_string($x) || !trim($x)) return false;
+    if (!is_string($x) || trim($x) === "") return false;
     return (
         // Maybe an empty string, array or object
         $x === '""' ||
@@ -43,7 +43,7 @@ function __is_json__($x) {
 }
 
 function __is_serialize__($x) {
-    if (!is_string($x) || !trim($x)) {
+    if (!is_string($x) || trim($x) === "") {
         return false;
     } else if ($x === 'N;') {
         return true;
