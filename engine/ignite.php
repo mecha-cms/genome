@@ -157,14 +157,13 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
 }
 
 // Convert class name to file name
-function __c2f__($x, $s = '-') {
-    return str_replace(['\\' . X, '_' . X, X], ['.', '_', $s], h($x, X, '_\\'));
+function __c2f__($x, $s = '-', $n = '.') {
+    return str_replace(['\\' . $s, '_' . $s], [$n, '_'], h($x, $s, '\\_'));
 }
 
 // Convert file name to class name
-function __f2c__($x, $s = '-') {
-    $x = str_replace($s, X, pathinfo($x, PATHINFO_FILENAME));
-    return str_replace(X, $s, p(str_replace('.', '\\', $x), "", '_\\' . X));
+function __f2c__($x, $s = '-', $n = '.') {
+    return str_replace([$n . $s, $s], ['\\', ""], p($x, $s, $n . '_'));
 }
 
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';

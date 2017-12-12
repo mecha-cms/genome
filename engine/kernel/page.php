@@ -9,8 +9,8 @@ class Page extends Genome {
     private $hash = "";
     private static $page = []; // Cache!
 
-    public function __construct($input = null, $lot = [], $NS = ['*', 'page']) {
-        $this->NS = $NS;
+    public function __construct($input = null, $lot = [], $NS = []) {
+        $this->NS = array_replace(['*', __c2f__(static::class, '_', '\\')], $NS);
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
         $id = $this->hash = md5(serialize($NS) . $path);
         if (isset(self::$page[$id])) {
@@ -197,7 +197,7 @@ class Page extends Genome {
 
     private static $data = [];
 
-    public static function open($path, $lot = [], $NS = ['*', 'page']) {
+    public static function open($path, $lot = [], $NS = []) {
         self::$data = ['path' => $path];
         return new static($path, $lot, $NS);
     }
