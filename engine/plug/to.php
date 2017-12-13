@@ -112,7 +112,7 @@ foreach([
             $v = $v !== true ? $c[2] . urlencode(s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`
             $out[] = $k . $v; // `['a' => 'null', 'b' => null]` → `a=null&b=null`
         }
-        return !empty($out) ? $c[0] . implode($c[1], $out) . $c[1] : "";
+        return !empty($out) ? $c[0] . implode($c[1], $out) . $c[3] : "";
     },
     'sentence' => function($in, $tail = '.') {
         $in = trim($in);

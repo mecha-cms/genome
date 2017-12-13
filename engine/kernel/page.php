@@ -10,7 +10,7 @@ class Page extends Genome {
     private static $page = []; // Cache!
 
     public function __construct($input = null, $lot = [], $NS = []) {
-        $this->NS = array_replace(['*', __c2f__(static::class, '_', '\\')], $NS);
+        $this->NS = is_array($NS) ? array_replace(['*', __c2f__(static::class, '_', '\\')], $NS) : $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
         $id = $this->hash = md5(serialize($NS) . $path);
         if (isset(self::$page[$id])) {
