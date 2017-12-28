@@ -200,7 +200,7 @@ $GLOBALS['URL'] = [
 ];
 
 // a: convert object to array
-// b:
+// b: keep value between `a` and `b`
 // c: convert text to camel case
 // d: declare class(es) with callback
 // e: evaluate string to their appropriate data type
@@ -241,7 +241,11 @@ function a($o, $safe = true) {
     return $o;
 }
 
-function b() {}
+function b($x, $a = 0, $b = null) {
+    if (isset($a) && $x < $a) return $x;
+    if (isset($b) && $x > $b) return $x;
+    return $x;
+}
 
 function c($x, $s = "", $X = "") {
     return f(preg_replace_callback('#(?<=[^\p{L}])([\p{Ll}\d])#u', function($m) use($s) {
@@ -1034,7 +1038,7 @@ function x($x, $c = "'", $d = '-+*/=:()[]{}<>^$.?!|\\') {
 
 function y($x, $a = []) {
     // By path
-    if (is_string($x) && file_exists($x)) {
+    if (is_string($x) && is_file($x)) {
         ob_start();
         extract($a);
         require $x;
