@@ -38,7 +38,12 @@ class Message extends Genome {
         if ($count === 1) {
             self::set('default', $kin);
         } else {
-            Session::set(self::$id, Session::get(self::$id, "") . __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, Hook::fire($c . '.set.' . $kin, [$o])]));
+            $s = Session::get(self::$id, "");
+            $ss = Hook::fire($c . '.set.' . $kin, [$o]);
+            if (strpos($s, $ss) === false) {
+                $s .= __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, $ss]);
+            }
+            Session::set(self::$id, $s);
         }
         return new static;
     }
@@ -49,7 +54,8 @@ class Message extends Genome {
     }
 
     public static function get($session_x = true) {
-        $output = Hook::fire(__c2f__(static::class, '_') . '.get', [Session::get(self::$id, "") !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : ""]);
+        $s = Session::get(self::$id, "");
+        $output = Hook::fire(__c2f__(static::class, '_') . '.get', [$s !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), $s) : ""]);
         if ($session_x) self::reset();
         return $output;
     }
