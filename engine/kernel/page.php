@@ -67,45 +67,43 @@ class Page extends Genome {
         if (self::_($key)) {
             return parent::__call($key, $lot);
         }
-        $x = $this->__get($key);
-        if (__is_instance__($x) && method_exists($x, '__invoke')) {
-            return call_user_func_array($x, $lot);
-        }
-        $fail = array_shift($lot);
-        $fail_alt = array_shift($lot);
-        if ($fail instanceof \Closure) {
-            return call_user_func($fail, $x !== null ? $x : $fail_alt, $this);
-        }
-        return $x !== null ? $x : $fail;
-    }
-
-    public function __set($key, $value = null) {
-        $this->lot[$key] = self::$page[$this->hash][1][$key] = $value;
-    }
-
-    public function __get($key) {
-        $lot = $this->lot;
-        $lot_c = $this->lot_c;
-        if (!array_key_exists($key, $lot)) {
-            if (isset($lot['path']) && is_file($lot['path'])) {
+        $a = $this->lot;
+        $a_c = $this->lot_c;
+        if (!array_key_exists($key, $a)) {
+            if (isset($a['path']) && is_file($a['path'])) {
                 // Prioritize data from a file…
-                if ($data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
-                    $lot[$key] = e($data);
-                } else if ($page = file_get_contents($lot['path'])) {
-                    $lot = array_replace($lot_c, $lot, e(self::apart($page), 'content'));
+                if ($data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
+                    $a[$key] = e($data);
+                } else if ($page = file_get_contents($a['path'])) {
+                    $a = array_replace($a_c, $a, e(self::apart($page), 'content'));
                 }
             }
-            if (!array_key_exists($key, $lot)) {
-                $lot[$key] = array_key_exists($key, $lot_c) ? e($lot_c[$key]) : null;
+            if (!array_key_exists($key, $a)) {
+                $a[$key] = array_key_exists($key, $a_c) ? e($a_c[$key]) : null;
             }
         }
         // Prioritize data from a file…
-        if (isset($lot['path']) && $data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
-            $lot[$key] = e($data);
+        if (isset($a['path']) && $data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
+            $a[$key] = e($data);
         }
-        $this->lot = $lot;
-        self::$page[$this->hash][1] = $lot;
-        if (is_array($this->NS)) {
+        $this->lot = $a;
+        self::$page[$this->hash][1] = $a;
+        if (isset($lot[0])) {
+            if ($lot[0] === false) {
+                return $a[$key]; // Disable hook(s) with `$page->key(false)`
+            } else {
+                if ($lot[0] instanceof \Closure) {
+                    // As function call with `$page->key(function($text) { … })`
+                    $a[$key] = call_user_func($lot[0], $a[$key], $this);
+                } else if ($a[$key] === null) {
+                    // Other(s)… `$page->key('default value')`
+                    $a[$key] = $lot[0];
+                }
+            }
+        }
+        if ($this->NS === false) {
+            return $a[$key]; // Disable hook(s) with `$page = new Page('path\to\file.page', [], false)`
+        } else if (is_array($this->NS)) {
             $name = [];
             foreach ($this->NS as $v) {
                 $name[] = $v . '.' . $key;
@@ -113,12 +111,20 @@ class Page extends Genome {
         } else {
             $name = $this->NS . '.' . $key;
         }
-        return Hook::fire($name, [$lot[$key], $lot, $this, $key]);
+        return Hook::fire($name, [$a[$key], $a, $this, $key]);
+    }
+
+    public function __set($key, $value = null) {
+        $this->lot[$key] = self::$page[$this->hash][1][$key] = $value;
+    }
+
+    public function __get($key) {
+        return $this->__call($key);
     }
 
     // Fix case for `isset($page->key)` or `!empty($page->key)`
     public function __isset($key) {
-        return !!$this->__get($key);
+        return !!$this->__call($key);
     }
 
     public function __unset($key) {
@@ -222,11 +228,11 @@ class Page extends Genome {
         if (is_array($key)) {
             $output = [];
             foreach ($key as $k => $v) {
-                $output[$k] = $this->{$k}($v);
+                $output[$k] = $this->__call($k, [$v]);
             }
             return $output;
         }
-        return $this->{$key}($fail);
+        return $this->__call($key, [$fail]);
     }
 
     public function saveTo($path, $consent = 0600) {
