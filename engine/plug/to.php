@@ -127,21 +127,66 @@ foreach([
     },
     'snippet' => function($in, $html = true, $x = [200, '&#x2026;']) {
         $s = w($in, $html ? HTML_WISE_I : []);
-        $t = extension_loaded('mbstring') ? mb_strlen($s) : strlen($s);
+        $utf8 = extension_loaded('mbstring');
         if (is_int($x)) {
             $x = [$x, '&#x2026;'];
         }
-        $s = extension_loaded('mbstring') ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
-        $s = str_replace('<br>', ' ', $s);
-        // Remove the unclosed HTML tag(s)…
-        if ($html && strpos($s, '<') !== false) {
-            $s = preg_replace('#<\/[^>]*$#', "", $s); // `foo bar </a`
-            $ss = '#<[^\/>]+?>([^<]*?)$#';
-            while (preg_match($ss, $s)) {
-                $s = preg_replace($ss, '$1', $s); // `foo bar <a href="">baz`
+        $utf8 = extension_loaded('mbstring');
+        // <https://stackoverflow.com/a/1193598/1163000>
+        if ($html && (strpos($s, '<') !== false || strpos($s, '&') !== false)) {
+            $out = "";
+            $done = $i = 0;
+            $tags = [];
+            while ($done < $x[0] && preg_match('#</?([a-z\d:.-]+)(?:\s[^<>]*?)?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*#i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
+                list($tag, $pos) = $m[0];
+                $str = substr($s, $i, $pos - $i);
+                if ($done + strlen($str) > $x[0]) {
+                    $out .= substr($str, 0, $x[0] - $done);
+                    $done = $x[0];
+                    break;
+                }
+                $out .= $str;
+                $done += strlen($str);
+                if ($done >= $x[0]) {
+                    break;
+                }
+                if ($tag[0] === '&' || ord($tag) >= 0x80) {
+                    $out .= $tag;
+                    ++$done;
+                } else {
+                    $n = $m[1][0];
+                    // `</tag>`
+                    if ($tag[1] === '/') {
+                        $open = array_pop($tags);
+                        assert($open == $n); // Check that tag(s) are properly nested!
+                        $out .= $tag;
+                    // `<tag/>`
+                    } else if (substr($tag, -2) === '/>' || preg_match('#<(?:hr|img|input|link|meta|svg)(?:\s[^<>]*?)?>#i', $tag)) {
+                        $out .= $tag;
+                    // `<tag>`
+                    } else {
+                        $out .= $tag;
+                        $tags[] = $n;
+                    }
+                }
+                // Continue after the tag…
+                $i = $pos + strlen($tag);
             }
-            $s = preg_replace('#<[^>]*$#', "", $s); // `foo bar <a href=`
+            // Print rest of the text…
+            if ($done < $x[0] && $i < strlen($s)) {
+                $out .= substr($s, $i, $x[0] - $done);
+            }
+            // Close any open tag(s)…
+            while (!empty($tags)) {
+                $out .= '</' . array_pop($tags) . '>';
+            }
+            $out = trim(str_replace('<br>', ' ', $out));
+            $s = trim(strip_tags($s));
+            $t = $utf8 ? mb_strlen($s) : strlen($s);
+            return $out . ($t > $x[0] ? $x[1] : "");
         }
+        $s = $utf8 ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
+        $t = $utf8 ? mb_strlen($s) : strlen($s);
         return trim($s) . ($t > $x[0] ? $x[1] : "");
     },
     'text' => 'w',
