@@ -154,14 +154,15 @@ foreach([
                     $out .= $tag;
                     ++$done;
                 } else {
+                    // `tag`
                     $n = $m[1][0];
                     // `</tag>`
                     if ($tag[1] === '/') {
                         $open = array_pop($tags);
-                        assert($open == $n); // Check that tag(s) are properly nested!
+                        assert($open === $n); // Check that tag(s) are properly nested!
                         $out .= $tag;
                     // `<tag/>`
-                    } else if (substr($tag, -2) === '/>' || preg_match('#<(?:hr|img|input|link|meta|svg)(?:\s[^<>]*?)?>#i', $tag)) {
+                    } else if (substr($tag, -2) === '/>' || preg_match('#<(?:br|hr|img|input|link|meta|svg)(?:\s[^<>]*?)?>#i', $tag)) {
                         $out .= $tag;
                     // `<tag>`
                     } else {
@@ -177,8 +178,8 @@ foreach([
                 $out .= substr($s, $i, $x[0] - $done);
             }
             // Close any open tag(s)…
-            while (!empty($tags)) {
-                $out .= '</' . array_pop($tags) . '>';
+            while ($close = array_pop($tags)) {
+                $out .= '</' . $close . '>';
             }
             $out = trim(str_replace('<br>', ' ', $out));
             $s = trim(strip_tags($s));
@@ -200,7 +201,7 @@ foreach([
     'url' => function($in, $raw = false) {
         $u = $GLOBALS['URL'];
         $s = str_replace(DS, '/', ROOT);
-        $in = str_replace([ROOT, DS, '\\', $s], [$u['url'], '/', '/', $u['url']], $in);
+        $in = str_replace([ROOT, DS, '\\', $s], [$u['$'], '/', '/', $u['$']], $in);
         return $raw ? rawurldecode($in) : urldecode($in);
     },
     'yaml' => function(...$lot) {

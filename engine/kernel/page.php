@@ -132,6 +132,9 @@ class Page extends Genome {
     }
 
     public function __toString() {
+        if ($s = $this->__call('$')) {
+            return $s;
+        }
         $path = isset($this->lot['path']) ? $this->lot['path'] : null;
         return $path && file_exists($path) ? file_get_contents($path) : "";
     }

@@ -208,6 +208,26 @@ figure,
 form,
 h1,h2,h3,h4,h5,h6,
 hr,nav,ol,p,.p,pre,table,ul {margin:1rem 0 0}
+blockquote:first-child,
+dl:first-child,
+fieldset:first-child,
+figcaption:first-child,
+figure:first-child,
+form:first-child,
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child,
+h6:first-child,
+hr:first-child,
+nav:first-child,
+ol:first-child,
+p:first-child,
+.p:first-child,
+pre:first-child,
+table:first-child,
+ul:first-child {margin-top:0}
 ol,ul,dd {margin-left:2em}
 ol ol,
 ol ul,
@@ -294,6 +314,7 @@ main + nav {text-align:center}
   margin-top:0;
   margin-bottom:0;
 }
+.page-pages article > div {margin:1em 0}
 .message {
   background:#fea;
   padding:.5em 1em;

@@ -140,6 +140,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         $x = '.' . $page->state;
         if (!File::exist([
+            $folder . DS . '$' . $x,
             $folder . DS . $name . $x,
             $folder . DS . $h . DS . $h . $x
         ])) {
@@ -177,7 +178,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
                 ]);
                 Shield::attach('pages/' . $path_f);
             // Redirect to parent page if user tries to access the placeholder page…
-            } else if ($name === $name_parent && File::exist($folder . $x)) {
+            } else if (($name === '$' || $name === $name_parent) && File::exist($folder . $x)) {
                 Message::info('kick', '<code>' . $url->current . '</code>');
                 Guardian::kick($path_parent);
             }

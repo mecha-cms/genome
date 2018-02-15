@@ -46,6 +46,10 @@ function fn_get_pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $ke
     $by = is_array($sort) && isset($sort[1]) ? $sort[1] : null;
     if ($input = g($folder, $state)) {
         foreach ($input as $v) {
+            $n = Path::N($v);
+            if ($n === '$' || $n === basename(dirname($v))) {
+                continue;
+            }
             $output[] = _fn_get_page($v, null, false, $by);
         }
         $output = $o = Anemon::eat($output)->sort($sort)->vomit();

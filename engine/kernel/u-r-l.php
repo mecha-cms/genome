@@ -50,12 +50,21 @@ class URL extends Genome {
     protected $lot = [];
 
     public static function __callStatic($kin, $lot = []) {
+        $u = $GLOBALS['URL'];
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
+        } else if ($kin === 'path' && isset($u[$kin]) && isset($lot[0])) {
+            return str_replace('/', $lot[0], $u[$kin]);
+        } else if ($kin === 'query' && isset($u[$kin]) && $lot) {
+            $a = array_shift($lot);
+            if (is_string($a)) {
+                $a = ['?', $a, '=', ""];
+            }
+            return str_replace(['?', '&', '=', X], $a, $u[$kin] . X);
+        } else if ($kin === 'hash' && isset($u[$kin]) && isset($lot[0])) {
+            return str_replace('#', $lot[0], $u[$kin]);
         }
-        $a = $GLOBALS['URL'];
-        $fail = array_shift($lot) ?: false;
-        return array_key_exists($kin, $a) ? $a[$kin] : $fail;
+        return array_key_exists($kin, $u) ? $u[$kin] : array_shift($lot);
     }
 
     public function __construct($input = null) {
@@ -81,12 +90,30 @@ class URL extends Genome {
         parent::__construct();
     }
 
+    public function __call($kin, $lot = []) {
+        $u = $this->lot;
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
+        } else if ($kin === 'path' && isset($u[$kin]) && isset($lot[0])) {
+            return str_replace('/', $lot[0], $u[$kin]);
+        } else if ($kin === 'query' && isset($u[$kin]) && $lot) {
+            $a = array_shift($lot);
+            if (is_string($a)) {
+                $a = ['?', $a, '=', ""];
+            }
+            return str_replace(['?', '&', '=', X], $a, $u[$kin] . X);
+        } else if ($kin === 'hash' && isset($u[$kin]) && isset($lot[0])) {
+            return str_replace('#', $lot[0], $u[$kin]);
+        }
+        return array_key_exists($kin, $u) ? $u[$kin] : array_shift($lot);
+    }
+
     public function __set($key, $value = null) {
         $this->lot[$key] = $value;
     }
 
     public function __get($key) {
-        return isset($this->lot[$key]) ? $this->lot[$key] : null;
+        return $this->__call($key);
     }
 
     // Fix case for `isset($url->key)` or `!empty($url->key)`
