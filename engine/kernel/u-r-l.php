@@ -4,7 +4,7 @@ class URL extends Genome {
 
     public static function long($url, $root = true) {
         if (!is_string($url)) return $url;
-        $a = $GLOBALS['URL'];
+        $u = $GLOBALS['URL'];
         $b = false;
         if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
             $url = ltrim($url, '/');
@@ -18,21 +18,21 @@ class URL extends Genome {
             strpos($url, '#') !== 0 &&
             strpos($url, 'javascript:') !== 0
         ) {
-            return trim(($root && $b ? $a['protocol'] . $a['host'] : $a['$']) . '/' . self::__($url), '/');
+            return trim(($root && $b ? $u['protocol'] . $u['host'] : $u['$']) . '/' . self::__($url), '/');
         }
         return self::__($url);
     }
 
     public static function short($url, $root = true) {
-        $a = $GLOBALS['URL'];
-        if (strpos($url, '//') === 0 && strpos($url, '//' . $a['host']) !== 0) {
+        $u = $GLOBALS['URL'];
+        if (strpos($url, '//') === 0 && strpos($url, '//' . $u['host']) !== 0) {
             return $url; // Ignore external URL
         }
         $url = X . $url;
         if ($root) {
-            return str_replace([X . $a['protocol'] . $a['host'], X . '//' . $a['host'], X], "", $url);
+            return str_replace([X . $u['protocol'] . $u['host'], X . '//' . $u['host'], X], "", $url);
         }
-        return ltrim(str_replace([X . $a['$'], X . '//' . rtrim($a['host'] . '/' . $a['directory'], '/'), X], "", $url), '/');
+        return ltrim(str_replace([X . $u['$'], X . '//' . rtrim($u['host'] . '/' . $u['directory'], '/'), X], "", $url), '/');
     }
 
     // Initial URL (without the page offset)
@@ -69,21 +69,18 @@ class URL extends Genome {
 
     public function __construct($input = null) {
         if (isset($input)) {
-            $a = parse_url($input);
-            if (isset($a['path'])) {
-                $a['path'] = trim($a['path'], '/');
+            $u = parse_url($input);
+            if (isset($u['path'])) {
+                $u['path'] = trim($u['path'], '/');
             }
-            if (isset($a['query']) && strpos($a['query'], '?') !== 0) {
-                $a['query'] = '?' . str_replace('&amp;', '&', $a['query']);
+            if (isset($u['query'])) {
+                $u['query'] = (strpos($u['query'], '?') !== 0 ? '?' : "") . str_replace('&amp;', '&', $u['query']);
             }
-            if (isset($a['fragment'])) {
-                if (strpos($a['fragment'], '#') !== 0) {
-                    $a['fragment'] = '#' . $a['fragment'];
-                }
-                $a['hash'] = $a['fragment'];
+            if (isset($u['fragment'])) {
+                $u['hash'] = (strpos($u['fragment'], '#') !== 0 ? '#' : "") . $u['fragment'];
             }
-            unset($a['fragment']);
-            $this->lot = $a;
+            unset($u['fragment']);
+            $this->lot = $u;
         } else {
             $this->lot = $GLOBALS['URL'];
         }
