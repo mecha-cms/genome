@@ -4,7 +4,7 @@ $path = $url->path;
 $format = ['<span>%{0}%</span>', '<a href="%{1}%">%{0}%</a>'];
 
 $a = explode('/', $path);
-$b = __replace__($format[!$path || $path === $config->slug ? 0 : 1], [$language->home, $url]);
+$b = __replace__($format[!$path || $path === $site->path ? 0 : 1], [$language->home, $url]);
 $c = "";
 
 while ($d = array_shift($a)) {

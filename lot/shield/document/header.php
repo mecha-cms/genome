@@ -24,5 +24,5 @@
         <?php endif; ?>
       </h1>
       <p><?php echo $site->description; ?></p>
-      <nav><?php Shield::get('nav'); ?></nav>
+      <nav><?php get('nav'); ?></nav>
     </header>
