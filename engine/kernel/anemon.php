@@ -1,6 +1,6 @@
 <?php
 
-class Anemon extends Genome {
+class Anemon extends Genome implements \ArrayAccess {
 
     protected $bucket = [];
     protected $separator = "";
@@ -300,6 +300,26 @@ class Anemon extends Genome {
         $this->bucket = $array;
         $this->separator = $separator;
         parent::__construct();
+    }
+
+    public function offsetSet($i, $value) {
+        if (!isset($i)) {
+            $this->bucket[] = $value;
+        } else {
+            $this->bucket[$i] = $value;
+        }
+    }
+
+    public function offsetExists($i) {
+        return isset($this->bucket[$i]);
+    }
+
+    public function offsetUnset($i) {
+        unset($this->bucket[$i]);
+    }
+
+    public function offsetGet($i) {
+        return isset($this->bucket[$i]) ? $this->bucket[$i] : null;
     }
 
     public function __set($key, $value = null) {
