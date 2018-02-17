@@ -3,7 +3,7 @@ title: Page
 description: Add basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.3.0
+version: 1.4.0
 ...
 
 This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.

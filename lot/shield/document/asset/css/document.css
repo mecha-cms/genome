@@ -305,8 +305,11 @@ nav ul {
   padding:0;
   list-style:none;
 }
-nav li {display:inline-block}
-nav li + li {margin-left:1em}
+nav li {
+  display:inline-block;
+  margin-right:1em;
+}
+nav li:last-child {margin-right:0}
 main + nav {text-align:center}
 
 .page-pages article > footer,

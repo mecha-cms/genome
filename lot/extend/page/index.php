@@ -83,7 +83,9 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
     // Placeholder…
     Lot::set([
         'pager' => new Elevator([], 1, 0, true, $elevator, $site->is),
-        'page' => new Page
+        'page' => new Page,
+        'pages' => [],
+        'parent' => new Page
     ]);
     // --ditto
     $pages = $page = [];
@@ -135,7 +137,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         }
         Lot::set([
             'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->is),
-            'page' => $page
+            'page' => $page,
+            'parent' => new Page($file_parent)
         ]);
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         $x = '.' . $page->state;
@@ -173,8 +176,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
                     $site->is = 'pages';
                 }
                 Lot::set([
-                    'pages' => $pages,
-                    'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_f, $elevator, $site->is)
+                    'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_f, $elevator, $site->is),
+                    'pages' => $pages
                 ]);
                 Shield::attach('pages/' . $path_f);
             // Redirect to parent page if user tries to access the placeholder page…
