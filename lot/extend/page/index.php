@@ -107,14 +107,22 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         }
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
+        $sort = $site->sort;
+        $chunk = $site->chunk;
         foreach (explode('/', '/' . $path) as $v) {
             $k .= $v ? DS . $v : "";
+            if ($f = File::exist([
+                $k . '.page',
+                $k . '.archive'
+            ])) {
+                $f = new Page($f);
+                $sort = $f->sort($sort);
+                $chunk = $f->chunk($chunk);
+            }
             if ($fn = File::exist($k . DS . 'index.php')) include $fn;
             if ($fn = File::exist($k . DS . 'index__.php')) include $fn;
         }
         $page = new Page($file);
-        $sort = $page->sort($site->sort);
-        $chunk = $page->chunk($site->chunk);
         // Create elevator for single page mode
         $folder_parent = Path::D($folder);
         $path_parent = Path::D($path);
