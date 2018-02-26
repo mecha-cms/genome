@@ -8,9 +8,9 @@ return [
     'title' => 'Site Title',
     'description' => 'Site description.',
     'page' => [
-        'title' => "",
-        'description' => "",
-        'author' => "",
+        'title' => null,
+        'description' => null,
+        'author' => null,
         'type' => 'HTML'
     ],
     'shield' => 'document'
