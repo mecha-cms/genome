@@ -6,7 +6,7 @@ foreach([
     'anemon_a' => '__is_anemon_a__',
     'json' => '__is_json__',
     'j_s_o_n' => '__is_json__' , // alias
-    'serialize' => '__is_serialize__'
+    'serial' => '__is_serial__'
 ] as $k => $v) {
     Is::_($k, $v);
 }

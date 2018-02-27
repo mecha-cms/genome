@@ -3,7 +3,7 @@
 // __is_anemon__: check for valid data collection (array or object)
 // __is_instance__: check for valid class instance
 // __is_json__: check for valid JSON string format
-// __is_serialize__: check for valid serialized string format
+// __is_serial__: check for valid serialized string format
 
 function __is_anemon__($x) {
     return is_array($x) || is_object($x);
@@ -42,7 +42,7 @@ function __is_json__($x) {
     ) && json_decode($x) !== null;
 }
 
-function __is_serialize__($x) {
+function __is_serial__($x) {
     if (!is_string($x) || trim($x) === "") {
         return false;
     } else if ($x === 'N;') {
