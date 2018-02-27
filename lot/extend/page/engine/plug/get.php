@@ -1,7 +1,7 @@
 <?php
 
 // Hard-coded data key(s) which the value must be standardized: `time`, `slug`
-function _fn_get_page_property($v, $n = null) {
+function _fn_get_page_fix($v, $n = null) {
     $n = $n ?: Path::N($v);
     $v = file_get_contents($v);
     if ($n === 'time') {
@@ -32,10 +32,10 @@ function _fn_get_page($path, $key = null, $fail = false, $for = null) {
         if ($for === null) {
             foreach (g($data, 'data') as $v) {
                 $n = Path::N($v);
-                $output[$n] = e(_fn_get_page_property($v, $n));
+                $output[$n] = e(_fn_get_page_fix($v, $n));
             }
         } else if ($v = File::exist($data . DS . $for . '.data')) {
-            $output[$for] = e(_fn_get_page_property($v, $for));
+            $output[$for] = e(_fn_get_page_fix($v, $for));
         }
     }
     return !isset($key) ? $output : (array_key_exists($key, $output) ? $output[$key] : $fail);

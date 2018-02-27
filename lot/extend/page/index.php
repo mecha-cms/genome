@@ -9,7 +9,6 @@ if ($state = Extend::state(__DIR__)) {
 }
 
 $path = $url->path;
-$b = DS . Path::B($path);
 $folder = PAGE . DS . $path;
 
 $site->is = '404'; // default is `404`
@@ -20,12 +19,12 @@ if (!$path || $path === $site->path) {
 } else if ($file = File::exist([
     $folder . '.page',
     $folder . '.archive',
-    $folder . $b . '.page',
-    $folder . $b . '.archive'
+    $folder . DS . '$.page',
+    $folder . DS . '$.archive'
 ])) {
     $site->is = 'page';
     $site->state = Path::X($file);
-    if (!File::exist($folder . $b . '.page') && Get::pages($folder, 'page')) {
+    if (!File::exist($folder . DS . '$.page') && Get::pages($folder, 'page')) {
         $site->is = 'pages';
     }
 }
