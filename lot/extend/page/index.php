@@ -94,13 +94,13 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         // Check for page that has numeric file name…
         $folder . DS . $h . '.page', // `lot\page\page-slug\1.page`
         $folder . DS . $h . '.archive', // `lot\page\page-slug\1.archive`
-        $folder . DS . $h . DS . $h . '.page', // `lot\page\page-slug\1\1.page`
-        $folder . DS . $h . DS . $h . '.archive', // `lot\page\page-slug\1\1.archive`
+        $folder . DS . $h . DS . '$.page', // `lot\page\page-slug\1\$.page`
+        $folder . DS . $h . DS . '$.archive', // `lot\page\page-slug\1\$.archive`
         // Else…
         $folder . '.page', // `lot\page\page-slug.page`
         $folder . '.archive', // `lot\page\page-slug.archive`
-        $folder . DS . $name . '.page', // `lot\page\page-slug\page-slug.page`
-        $folder . DS . $name . '.archive' // `lot\page\page-slug\page-slug.archive`
+        $folder . DS . '$.page', // `lot\page\page-slug\$.page`
+        $folder . DS . '$.archive' // `lot\page\page-slug\$.archive`
     ])) { // File does exist, then …
         if ($path !== "") {
             $site->is = 'page';
@@ -128,10 +128,10 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         $path_parent = Path::D($path);
         $name_parent = Path::B($folder_parent);
         if ($file_parent = File::exist([
-            $folder_parent . '.page',
-            $folder_parent . '.archive',
-            $folder_parent . DS . $name_parent . '.page',
-            $folder_parent . DS . $name_parent . '.archive'
+            $folder_parent . '.page', // `lot\page\parent-slug.page`
+            $folder_parent . '.archive', // `lot\page\parent-slug.archive`
+            $folder_parent . DS . '$.page', // `lot\page\parent-slug\$.page`
+            $folder_parent . DS . '$.archive' // `lot\page\parent-slug\$.archive`
         ])) {
             $page_parent = new Page($file_parent);
             $sort_parent = $page_parent->sort($site->sort);
@@ -151,11 +151,13 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         $x = '.' . $page->state;
         if (!File::exist([
-            $folder . DS . '$' . $x,
-            $folder . DS . $name . $x,
-            $folder . DS . $h . DS . $h . $x
+            $folder . DS . '$' . $x, // `lot\page\page-slug\$.{page,archive}`
+            $folder . DS . $h . DS . '$' . $x // `lot\page\page-slug\1\$.{page,archive}`
         ])) {
-            if ($step !== null && File::exist($folder . DS . $step . $x)) {
+            if (
+                $step !== null &&
+                File::exist($folder . DS . $step . $x) // `lot\page\page-slug\1.{page,archive}`
+            ) {
                 // Has page with numeric file name!
             } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
                 if ($query = l(Request::get($config->q, ""))) {
@@ -189,7 +191,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
                 ]);
                 Shield::attach('pages/' . $path_f);
             // Redirect to parent page if user tries to access the placeholder page…
-            } else if (($name === '$' || $name === $name_parent) && File::exist($folder . $x)) {
+            } else if ($name === '$' && File::exist($folder . $x)) {
                 Message::info('kick', '<code>' . $url->current . '</code>');
                 Guardian::kick($path_parent);
             }
