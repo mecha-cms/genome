@@ -121,6 +121,7 @@ foreach([
         }
         return ucfirst(strtolower($in)) . $tail;
     },
+    'serial' => 'serialize',
     'slug' => 'h',
     'snake' => function($in) {
         return h($in, '_');

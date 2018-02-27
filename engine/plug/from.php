@@ -170,6 +170,7 @@ foreach ([
         }
         return $out;
     },
+    'serial' => 'unserialize',
     'url' => function($in, $raw = false) {
         return $raw ? rawurlencode($in) : urlencode($in);
     },
