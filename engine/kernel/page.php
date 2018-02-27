@@ -67,6 +67,12 @@ class Page extends Genome {
         if (self::_($key)) {
             return parent::__call($key, $lot);
         }
+        // Example: `$page->__call('date.year')`
+        if (strpos($key, '.') !== false) {
+            list($key, $keys) = explode('.', $key, 2);
+        } else {
+            $keys = null;
+        }
         $a = $this->lot;
         $a_c = $this->lot_c;
         if (!array_key_exists($key, $a)) {
@@ -88,21 +94,20 @@ class Page extends Genome {
         }
         $this->lot = $a;
         self::$page[$this->hash][1] = $a;
-        if (isset($lot[0])) {
-            if ($lot[0] === false) {
-                return $a[$key]; // Disable hook(s) with `$page->key(false)`
-            } else {
-                if ($lot[0] instanceof \Closure) {
-                    // As function call with `$page->key(function($text) { … })`
-                    $a[$key] = call_user_func($lot[0], $a[$key], $this);
-                } else if ($a[$key] === null) {
-                    // Other(s)… `$page->key('default value')`
-                    $a[$key] = $lot[0];
-                }
+        $fail = array_shift($lot);
+        if ($fail === false) {
+            return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key]; // Disable hook(s) with `$page->key(false)`
+        } else {
+            if ($fail instanceof \Closure) {
+                // As function call with `$page->key(function($text) { … })`
+                $a[$key] = call_user_func($fail, $a[$key], $this);
+            } else if ($a[$key] === null) {
+                // Other(s)… `$page->key('default value')`
+                $a[$key] = $fail;
             }
         }
         if ($this->NS === false) {
-            return $a[$key]; // Disable hook(s) with `$page = new Page('path\to\file.page', [], false)`
+            return isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key]; // Disable hook(s) with `$page = new Page('path\to\file.page', [], false)`
         } else if (is_array($this->NS)) {
             $name = [];
             foreach ($this->NS as $v) {
@@ -111,7 +116,7 @@ class Page extends Genome {
         } else {
             $name = $this->NS . '.' . $key;
         }
-        return Hook::fire($name, [$a[$key], $a, $this, $key]);
+        return Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key], $a, $this, $key]);
     }
 
     public function __set($key, $value = null) {
