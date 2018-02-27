@@ -218,22 +218,6 @@ class File extends Genome {
         return $self;
     }
 
-    // Serialize `$data` before save
-    public static function serialize($data) {
-        $self = new static;
-        $self->content = serialize($data);
-        return $self;
-    }
-
-    // Unserialize the serialized `$data` to output
-    public function unserialize($fail = []) {
-        if ($this->path !== false) {
-            $data = file_get_contents($this->path);
-            return __is_serialize__($data) ? unserialize($data) : $fail;
-        }
-        return $fail;
-    }
-
     // Save the `$data`
     public static function save($consent = null) {
         $this->saveTo($this->path, $consent);
