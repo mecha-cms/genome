@@ -10,7 +10,8 @@ class Page extends Genome {
     private static $page = []; // Cache!
 
     public function __construct($input = null, $lot = [], $NS = []) {
-        $this->NS = is_array($NS) ? array_replace(['*', __c2f__(static::class, '_', '\\')], $NS) : $NS;
+        $key = __c2f__(static::class, '_', '\\');
+        $this->NS = is_array($NS) ? array_replace(['*', $key], $NS) : $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
         $id = $this->hash = md5(serialize($NS) . $path);
         if (isset(self::$page[$id])) {
@@ -30,7 +31,7 @@ class Page extends Genome {
                 'state' => $x,
                 'id' => (string) $t,
                 'url' => To::url($path)
-            ], (array) a(Config::get('page', [])), $lot);
+            ], (array) a(Config::get($key, [])), $lot);
             $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
             // Set `time` value from the page’s file name
             if (
@@ -67,7 +68,7 @@ class Page extends Genome {
         if (self::_($key)) {
             return parent::__call($key, $lot);
         }
-        // Example: `$page->__call('date.year')`
+        // Example: `$page->__call('foo.bar')`
         if (strpos($key, '.') !== false) {
             list($key, $keys) = explode('.', $key, 2);
         } else {
@@ -81,7 +82,7 @@ class Page extends Genome {
                 if ($data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
                     $a[$key] = e($data);
                 } else if ($page = file_get_contents($a['path'])) {
-                    $a = array_replace($a_c, $a, e(self::apart($page), 'content'));
+                    $a = array_replace($a_c, $a, e(self::apart($page), ['$', 'content']));
                 }
             }
             if (!array_key_exists($key, $a)) {
@@ -96,7 +97,8 @@ class Page extends Genome {
         self::$page[$this->hash][1] = $a;
         $fail = array_shift($lot);
         if ($fail === false) {
-            return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key]; // Disable hook(s) with `$page->key(false)`
+            // Disable hook(s) with `$page->key(false)`
+            return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key];
         } else {
             if ($fail instanceof \Closure) {
                 // As function call with `$page->key(function($text) { … })`
@@ -107,7 +109,8 @@ class Page extends Genome {
             }
         }
         if ($this->NS === false) {
-            return isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key]; // Disable hook(s) with `$page = new Page('path\to\file.page', [], false)`
+            // Disable hook(s) with `$page = new Page('path\to\file.page', [], false)`
+            return isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key];
         } else if (is_array($this->NS)) {
             $name = [];
             foreach ($this->NS as $v) {
@@ -166,7 +169,7 @@ class Page extends Genome {
                         }
                     }
                     fclose($o);
-                    return $eval ? e($output) : $output;
+                    return $eval ? e($output, is_array($eval) ? $eval : []) : $output;
                 }
                 return $fail;
             }
@@ -177,7 +180,7 @@ class Page extends Genome {
             if ($s !== false && $ss !== false && $ss < $s) {
                 $input = substr($input, $ss + strlen($k)) . "\n";
                 $output = trim(substr($input, 0, strpos($input, "\n")));
-                return $eval ? e($output) : $output;
+                return $eval ? e($output, is_array($eval) ? $eval : []) : $output;
             }
             return $fail;
         }
@@ -190,7 +193,8 @@ class Page extends Genome {
             $input = str_replace([X . "---\n", X], "", X . $input . "\n\n");
             $input = explode("\n...\n\n", $input, 2);
             // Do data…
-            $data = From::yaml($input[0], '  ', [], $eval);
+            $data = From::yaml($input[0], '  ', [], false);
+            $data = $eval ? e($data, is_array($eval) ? $eval : []) : $data;
             // Do content…
             if (!isset($data['content'])) {
                 $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");
