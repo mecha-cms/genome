@@ -133,12 +133,10 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
             $folder_parent . DS . '$.archive' // `lot\page\parent-slug\$.archive`
         ])) {
             $page_parent = new Page($file_parent);
-            $sort_parent = $page_parent->sort($site->sort);
-            $chunk_parent = $page_parent->chunk($site->chunk);
-            $files_parent = Get::pages($folder_parent, 'page', $sort_parent, 'slug');
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $page_parent->sort($sort);
             $chunk = $page_parent->chunk($chunk);
+            $files_parent = Get::pages($folder_parent, 'page', $sort, 'slug');
         } else {
             $files_parent = [];
         }
@@ -157,7 +155,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
                 $step !== null &&
                 File::exist($folder . DS . $step . $x) // `lot\page\page-slug\1.{page,archive}`
             ) {
-                // Has page with numeric file name!
+            // Has page with numeric file name!
             } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
                 if ($query = l(Request::get($config->q, ""))) {
                     Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
