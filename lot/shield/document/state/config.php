@@ -1,3 +1,7 @@
 <?php
 
-return ['sort' => [1, 'slug']];
+return [
+    'page' => [
+        'sort' => [1, 'slug']
+    ]
+];

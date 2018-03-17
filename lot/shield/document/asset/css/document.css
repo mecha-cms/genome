@@ -322,6 +322,7 @@ main + nav {text-align:center}
   background:#fea;
   padding:.5em 1em;
 }
+.messages + article {margin-top:1em}
 
 @media (max-width:800px) {
   html {font-size:15px}
