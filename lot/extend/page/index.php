@@ -4,7 +4,7 @@
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 
 // Store page state to registry…
-if ($state = Extend::state(__DIR__)) {
+if ($state = Extend::state('page')) {
     Config::extend($state);
 }
 
@@ -42,10 +42,14 @@ Hook::set('page.url', 'fn_page_url', 1);
 
 Lot::set([
     'message' => Message::get(),
+    'page' => new Page,
+    'pager' => new Elevator([], 1, 0, true, [], $site->is),
+    'pages' => [],
+    'parent' => new Page,
     'token' => Guardian::token()
 ]);
 
-Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
+Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state) {
     // Include global variable(s)…
     extract(Lot::get(null, []));
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
@@ -79,14 +83,6 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
             ]
         ]
     ];
-    // Placeholder…
-    Lot::set([
-        'pager' => new Elevator([], 1, 0, true, $elevator, $site->is),
-        'page' => new Page,
-        'pages' => [],
-        'parent' => new Page
-    ]);
-    // --ditto
     $pages = $page = [];
     Config::set('page.title', new Anemon([$site->title], ' &#x00B7; '));
     if ($file = File::exist([
@@ -106,8 +102,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
         }
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
-        $sort = $site->sort;
-        $chunk = $site->chunk;
+        $sort = isset($site->page->sort) ? $site->page->sort : [1, 'path'];
+        $chunk = isset($site->page->chunk) ? $site->page->chunk : 5;
         foreach (explode('/', '/' . $path) as $v) {
             $k .= $v ? DS . $v : "";
             if ($f = File::exist([
@@ -141,8 +137,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
             $files_parent = [];
         }
         Lot::set([
-            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->is),
             'page' => $page,
+            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->is),
             'parent' => new Page($file_parent)
         ]);
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
@@ -181,6 +177,10 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) {
                 }
                 if ($path !== "") {
                     $site->is = 'pages';
+                    $site->page = $page;
+                    foreach ((array) $state['page'] as $k => $v) {
+                        $site->page->{'_' . $k} = $v;
+                    }
                 }
                 Lot::set([
                     'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_f, $elevator, $site->is),
