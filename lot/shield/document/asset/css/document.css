@@ -312,12 +312,12 @@ nav li {
 nav li:last-child {margin-right:0}
 main + nav {text-align:center}
 
-.page-pages article > footer,
-.page-pages article > header {
+.is-pages article > footer,
+.is-pages article > header {
   margin-top:0;
   margin-bottom:0;
 }
-.page-pages article > div {margin:1em 0}
+.is-pages article > div {margin:1em 0}
 .message {
   background:#fea;
   padding:.5em 1em;

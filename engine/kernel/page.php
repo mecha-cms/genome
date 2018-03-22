@@ -3,7 +3,6 @@
 class Page extends Genome {
 
     protected $lot = [];
-    protected $lot_c = [];
 
     private $NS = "";
     private $hash = "";
@@ -15,24 +14,27 @@ class Page extends Genome {
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
         $id = $this->hash = md5(serialize($NS) . $path);
         if (isset(self::$page[$id])) {
-            $this->lot = self::$page[$id][1];
-            $this->lot_c = self::$page[$id][0];
+            $this->lot = self::$page[$id];
         } else {
-            $t = File::T($path, time());
-            $date = date(DATE_WISE, $t);
             $n = $path ? Path::N($path) : null;
             $x = Path::X($path);
-            $this->lot_c = array_replace([
-                'time' => $date,
-                'update' => $date,
-                'slug' => $n,
+            $c = $m = $_SERVER['REQUEST_TIME'];
+            if (file_exists($path)) {
+                $c = filectime($path); // File creation time
+                $m = filemtime($path); // File modification time
+            }
+            $this->lot = array_replace([
+                'time' => date(DATE_WISE, $c),
+                'update' => date(DATE_WISE, $m),
+                'slug' => (string) $n,
                 'title' => To::title($n), // Fake `title` data from the page’s file name
-                'type' => u($x), // Fake `type` data from the page’s file extension
-                'state' => $x,
-                'id' => (string) $t,
+                'type' => u($x) . "", // Fake `type` data from the page’s file extension
+                'state' => (string) $x,
+                'id' => (string) $c,
                 'url' => To::url($path)
-            ], (array) a(Config::get($key, [])), $lot);
-            $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
+            ], is_array($input) ? $input : (isset($input) ? [
+                'path' => $input
+            ] : []), (array) a(Config::get($key, [])), $lot);
             // Set `time` value from the page’s file name
             if (
                 $n &&
@@ -52,14 +54,14 @@ class Page extends Genome {
                 $this->lot['id'] = $t->format('U');
             // else, set `time` value by page’s file modification time
             } else {
-                $t = new Date(File::open(Path::F($path) . DS . 'time.data')->read($date));
+                $t = new Date(File::open(Path::F($path) . DS . 'time.data')->read($c));
                 $this->lot['time'] = $t->format();
                 $this->lot['id'] = $t->format('U');
             }
             if (!array_key_exists('date', $this->lot)) {
                 $this->lot['date'] = new Date($this->lot['time']);
             }
-            self::$page[$id] = [$this->lot_c, $this->lot];
+            self::$page[$id] = $this->lot;
         }
         parent::__construct();
     }
@@ -75,26 +77,22 @@ class Page extends Genome {
             $keys = null;
         }
         $a = $this->lot;
-        $a_c = $this->lot_c;
+        if (isset($a['path']) && is_file($a['path'])) {
+            // Prioritize data from a file…
+            if ($data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
+                $a[$key] = e($data);
+            } else if ($page = file_get_contents($a['path'])) {
+                $a = array_replace($a, e(self::apart($page), ['$', 'content']));
+            }
+        }
         if (!array_key_exists($key, $a)) {
-            if (isset($a['path']) && is_file($a['path'])) {
-                // Prioritize data from a file…
-                if ($data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
-                    $a[$key] = e($data);
-                } else if ($page = file_get_contents($a['path'])) {
-                    $a = array_replace($a_c, $a, e(self::apart($page), ['$', 'content']));
-                }
-            }
-            if (!array_key_exists($key, $a)) {
-                $a[$key] = array_key_exists($key, $a_c) ? e($a_c[$key]) : null;
-            }
+            $a[$key] = null;
         }
         // Prioritize data from a file…
         if (isset($a['path']) && $data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
             $a[$key] = e($data);
         }
-        $this->lot = $a;
-        self::$page[$this->hash][1] = $a;
+        self::$page[$this->hash] = $this->lot = $a;
         $fail = array_shift($lot);
         if ($fail === false) {
             // Disable hook(s) with `$page->key(false)`
@@ -123,7 +121,7 @@ class Page extends Genome {
     }
 
     public function __set($key, $value = null) {
-        $this->lot[$key] = self::$page[$this->hash][1][$key] = $value;
+        $this->lot[$key] = self::$page[$this->hash][$key] = $value;
     }
 
     public function __get($key) {

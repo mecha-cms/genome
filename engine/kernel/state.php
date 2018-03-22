@@ -32,9 +32,9 @@ class State extends Genome {
             return call_user_func_array($x, $lot);
         }
         $fail = array_shift($lot);
-        $fail_alt = array_shift($lot);
+        $alt = array_shift($lot);
         if ($fail instanceof \Closure) {
-            return call_user_func(\Closure::bind($fail, $this), $x !== null ? $x : $fail_alt);
+            return call_user_func(\Closure::bind($fail, $this), $x !== null ? $x : $alt);
         }
         return $x !== null ? $x : $fail;
     }

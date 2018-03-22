@@ -35,14 +35,6 @@ class URL extends Genome {
         return ltrim(str_replace([X . $u['$'], X . '//' . rtrim($u['host'] . '/' . $u['directory'], '/'), X], "", $url), '/');
     }
 
-    // Initial URL (without the page offset)
-    public static function I($url) {
-        if (strpos($url, ROOT) === 0 || strpos($url, DS) !== false) {
-            $url = To::url($url);
-        }
-        return rtrim(rtrim(rtrim($url, '0123456789'), '-'), '/');
-    }
-
     protected static function __($s) {
         return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $s);
     }

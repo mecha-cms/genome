@@ -180,9 +180,16 @@ if ($path !== "") {
 }
 
 $query = http_build_query($_GET);
-$current = rtrim($url . '/' . $path, '/');
+$a = explode('/', $path);
+$i = null;
+if (is_numeric(end($a))) {
+    $i = (int) array_pop($a);
+    $path = implode('/', $a);
+}
+$clean = rtrim($url . '/' . $path, '/');
 
 $GLOBALS['URL'] = [
+    'i' => $i,
     'scheme' => $scheme,
     'protocol' => $protocol,
     'host' => $host,
@@ -191,12 +198,12 @@ $GLOBALS['URL'] = [
     'pass' => isset($_SESSION['url']['pass']) ? $_SESSION['url']['pass'] : null,
     'directory' => $directory,
     '$' => $url,
-    'url' => $url, // alias for `$`
     'path' => $path,
     'query' => $query ? '?' . $query : "",
     'previous' => isset($_SESSION['url']['previous']) ? $_SESSION['url']['previous'] : null,
-    'current' => $current,
     'next' => isset($_SESSION['url']['next']) ? $_SESSION['url']['next'] : null,
+    'clean' => $clean,
+    'current' => rtrim($clean . '/' . $i, '/'),
     'hash' => isset($_COOKIE['url']['hash']) ? $_COOKIE['url']['hash'] : null
 ];
 
@@ -243,8 +250,8 @@ function a($o, $safe = true) {
 }
 
 function b($x, $a = 0, $b = null) {
-    if (isset($a) && $x < $a) return $x;
-    if (isset($b) && $x > $b) return $x;
+    if (isset($a) && $x < $a) return $a;
+    if (isset($b) && $x > $b) return $b;
     return $x;
 }
 

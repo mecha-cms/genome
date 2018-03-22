@@ -30,7 +30,7 @@ d($f . 'kernel', function($w, $n) use($f) {
 });
 
 $x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
-File::$config['extensions'] = array_unique(explode(',', $x));
+File::$config['extension'] = array_unique(explode(',', $x));
 
 Session::ignite();
 Config::ignite();
@@ -38,8 +38,16 @@ Config::ignite();
 $config = new Config;
 $url = new URL;
 
+// Set default page conditional statement(s)
+Config::set('is.$', !$GLOBALS['URL']['path']);
+Config::set('is.home', !$GLOBALS['URL']['path']); // alias for `is.$`
+Config::set('is.error', false);
+
 // Set default date time zone
 Date::zone($config->zone);
+
+// Set default document status: OK
+HTTP::status(200);
 
 // Must be set after date time zone set
 Language::ignite();

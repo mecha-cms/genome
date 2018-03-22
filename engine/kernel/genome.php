@@ -31,8 +31,11 @@ abstract class Genome {
     // Call the added method with `$genome->foo()`
     public function __call($kin, $lot = []) {
         $c = static::class;
-        if (!empty(self::$_[$c][$kin]) && is_callable(self::$_[$c][$kin])) {
-            return call_user_func_array(\Closure::bind(self::$_[$c][$kin], $this), $lot);
+        if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
+            if (is_callable(self::$_[$c][$kin])) {
+                return call_user_func_array(\Closure::bind(self::$_[$c][$kin], $this), $lot);
+            }
+            return self::$_[$c][$kin];
         } else if (defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>-&gt;' . $kin . '()</code> does not exist.</p>';
         }
@@ -42,8 +45,11 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot = []) {
         $c = static::class;
-        if (!empty(self::$_[$c][$kin]) && is_callable(self::$_[$c][$kin])) {
-            return call_user_func_array(self::$_[$c][$kin], $lot);
+        if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
+            if (is_callable(self::$_[$c][$kin])) {
+                return call_user_func_array(self::$_[$c][$kin], $lot);
+            }
+            return self::$_[$c][$kin];
         } else if (defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
         }

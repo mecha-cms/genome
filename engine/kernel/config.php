@@ -48,7 +48,7 @@ class Config extends Genome {
         return new static;
     }
 
-    public static function extend(...$lot) {
+    public static function alt(...$lot) {
         self::set(...$lot);
         self::$bucket = array_replace_recursive(self::$bucket, State::config());
         return new static;
@@ -58,10 +58,14 @@ class Config extends Genome {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
-        $fail = false;
+        $fail = $alt = false;
         if (count($lot)) {
             $kin .= '.' . array_shift($lot);
             $fail = array_shift($lot) ?: false;
+            $alt = array_shift($lot) ?: false;
+        }
+        if ($fail instanceof \Closure) {
+            return call_user_func($fail, self::get($kin, $alt));
         }
         return self::get($kin, $fail);
     }
@@ -70,16 +74,14 @@ class Config extends Genome {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        $fail = false;
-        if ($count = count($lot)) {
-            if ($count > 1) {
-                $kin = $kin . '.' . array_shift($lot);
-            }
+        $fail = $alt = false;
+        if (count($lot)) {
+            $kin .= '.' . array_shift($lot);
             $fail = array_shift($lot) ?: false;
-            $fail_alt = array_shift($lot) ?: false;
+            $alt = array_shift($lot) ?: false;
         }
         if ($fail instanceof \Closure) {
-            return call_user_func(\Closure::bind($fail, $this), self::get($kin, $fail_alt));
+            return call_user_func(\Closure::bind($fail, $this), self::get($kin, $alt));
         }
         return self::get($kin, $fail);
     }

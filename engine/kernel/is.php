@@ -13,6 +13,16 @@ class Is extends Genome {
         return new static($input);
     }
 
+    // Any of these…
+    public static function any(array $input, ...$lot) {
+        foreach ($input as $v) {
+            if ($output = call_user_func('self::' . $v, ...$lot)) {
+                return $output;
+            }
+        }
+        return false;
+    }
+
     // Check for empty string, array or object
     public static function void($x) {
         return (
@@ -118,6 +128,16 @@ class Is extends Genome {
     // Is greater than or equal to `$x`
     public function ge($x) {
         return q($this->bucket) >= $x;
+    }
+
+    public function __call($kin, $lot = []) {
+        if (!self::_($kin)) return null; // Disable error message!
+        return parent::__call($kin, $lot);
+    }
+
+    public static function __callStatic($kin, $lot = []) {
+        if (!self::_($kin)) return null; // Disable error message!
+        return parent::__callStatic($kin, $lot);
     }
 
 }

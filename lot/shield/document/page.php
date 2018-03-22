@@ -18,7 +18,7 @@
     </footer>
   </article>
 </main>
-<?php if (strpos($url->path, '/') !== false): ?>
+<?php if (!$site->has('parent')): ?>
 <nav><?php echo $pager; ?></nav>
 <?php endif; ?>
 <?php get('footer'); ?>

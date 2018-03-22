@@ -102,8 +102,8 @@ foreach([
     'pascal' => 'p',
     'path' => function($in) {
         $u = $GLOBALS['URL'];
-        $s = str_replace('/', DS, $u['url']);
-        return str_replace([$u['url'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $in);
+        $s = str_replace('/', DS, $u['$']);
+        return str_replace([$u['$'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $in);
     },
     'query' => function($in, $c = []) {
         $c = array_replace(['?', '&', '=', ""], $c);

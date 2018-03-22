@@ -8,19 +8,37 @@ version: 1.5.0
 
 This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.
 
-### Property
+### Conditional Statements
 
- - `$site->is` → Return an empty string on home page, `page` on item page and `pages` on index page. Default is `404`.
- - `$site->state` → Return the current page state. Default is `page`.
- - `$site->step` → Return the current index page’s offset. Default is `null`.
+ - `$site->has('next')` → Return `true` if it is possible to go to the next page.
+ - `$site->has('page')` → Return `1` if there is a page to load.
+ - `$site->has('pages')` → Return the pages count if there are pages to load.
+ - `$site->has('parent')` → Return `true` if current page has parent page.
+ - `$site->has('previous')` → Return `true` if it is possible to go to the previous page.
+ - `$site->has('step')` → Return `true` if page URL contains the page offset.
+ - `$site->is('$')` → Return `true` on home page.
+ - `$site->is('error')` → Return `404` if there is no page or pages to load.
+ - `$site->is('home')` → Return `true` on home page.
+ - `$site->is('page')` → Return `true` if page is available.
+ - `$site->is('pages')` → Return `true` if current page contains children.
+ - `$site->is('search')` → Return `true` on search results page.
 
-### Hook
+### HTML Classes
 
- - `elevator.page` → Will affect the configuration data of the item page’s pagination.
- - `elevator.pages` → Will affect the configuration data of the index page’s pagination.
- - `elevator.page.links` → Will affect the generated links of the item page’s pagination.
- - `elevator.pages.links` → Will affect the generated links of the index page’s pagination.
- - `elevator.page.unit` → Will affect the generated HTML of the item page’s pagination.
- - `elevator.pages.unit` → Will affect the generated HTML of the index page’s pagination.
+These HTML classes will be added automatically if your `<html>` element has `class` attribute:
+
+ - `error-404` → Will be added if there is no page or pages to load.
+ - `has-next` → Will be added if it is possible to go to the next page.
+ - `has-page` → Will be added if there is a page to load.
+ - `has-pages` → Will be added if there are pages to load.
+ - `has-parent` → Will be added if current page has parent page.
+ - `has-previous` → Will be added if it is possible to go to the previous page.
+ - `has-step` → Will be added if page URL contains the page offset.
+ - `is-$` → Will be added on home page.
+ - `is-error` → Will be added if there is no page or pages to load.
+ - `is-home` → Will be added on home page.
+ - `is-page` → Will be added if page is available.
+ - `is-pages` → Will be added if current page contains children.
+ - `is-search` → Will be added on search results page.
 
 <!-- block:donate -->

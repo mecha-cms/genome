@@ -11,8 +11,8 @@ class File extends Genome {
     private static $explore = [];
 
     const config = [
-        'sizes' => [0, 2097152], // Range of allowed file size(s)
-        'extensions' => ['txt'] // List of allowed file extension(s)
+        'size' => [0, 2097152], // Range of allowed file size(s)
+        'extension' => ['txt'] // List of allowed file extension(s)
     ];
 
     public static $config = self::config;
@@ -34,22 +34,28 @@ class File extends Genome {
         $path = To::path($input);
         $n = Path::N($path);
         $x = Path::X($path);
-        $update = self::T($path);
-        $update_date = isset($update) ? date(DATE_WISE, $update) : null;
+        $exist = file_exists($path);
+        $create = $exist ? filectime($path) : null;
+        $update = $exist ? filemtime($path) : null;
+        $create_date = $create ? date(DATE_WISE, $create) : null;
+        $update_date = $update ? date(DATE_WISE, $update) : null;
         $output = [
             'path' => $path,
             'name' => $n,
             'url' => To::url($path),
             'extension' => is_file($path) ? $x : null,
+            'create' => $create_date,
             'update' => $update_date,
-            'size' => file_exists($path) ? self::size($path) : null,
+            'size' => $exist ? self::size($path) : null,
             'is' => [
+                'exist' => $exist,
                 // Hidden file/folder only
                 'hidden' => $n === "" || strpos($n, '.') === 0 || strpos($n, '_') === 0,
                 'file' => is_file($path),
                 'files' => is_dir($path),
                 'folder' => is_dir($path) // alias for `is.files`
             ],
+            '_create' => $create,
             '_update' => $update,
             '_size' => file_exists($path) ? filesize($path) : null
         ];
@@ -357,16 +363,16 @@ class File extends Genome {
                 Message::error('file_type');
             }
             // Bad file extension
-            $xx = X . implode(X, $c['extensions']) . X;
+            $xx = X . implode(X, $c['extension']) . X;
             if (strpos($xx, X . $x . X) === false) {
                 Message::error('file_x', '<em>' . $x . '</em>');
             }
             // Too small
-            if ($f['size'] < $c['sizes'][0]) {
+            if ($f['size'] < $c['size'][0]) {
                 Message::error('file_size.0', self::size($f['size']));
             }
             // Too large
-            if ($f['size'] > $c['sizes'][1]) {
+            if ($f['size'] > $c['size'][1]) {
                 Message::error('file_size.1', self::size($f['size']));
             }
         }

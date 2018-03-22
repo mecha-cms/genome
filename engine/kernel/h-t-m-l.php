@@ -74,14 +74,19 @@ class HTML extends Union {
             foreach ($output[2] as $k => $v) {
                 if (strpos($k, 'data-') === 0) {
                     $output[2]['data[]'][substr($k, 5)] = $v;
+                    unset($output[2][$k]);
                 } else if ($k === 'class') {
-                    $output[2]['class[]'] = array_unique(explode(' ', $v));
+                    $output[2]['class[]'] = $v === 'class' ? [] : array_unique(explode(' ', $v));
+                    unset($output[2][$k]);
                 } else if ($k === 'style') {
-                    if (preg_match_all('#(?:^|;)\s*([a-z\d-]+)\s*:\s*(.*?)\s*(?:;|$)#', $v, $m)) {
+                    if ($v !== 'style' && preg_match_all('#(?:^|;)\s*([a-z\d-]+)\s*:\s*(.*?)\s*(?:;|$)#', $v, $m)) {
                         foreach ($m[1] as $k => $v) {
                             $output[2]['style[]'][$v] = $m[2][$k];
                         }
+                    } else {
+                        $output[2]['style[]'] = [];
                     }
+                    unset($output[2][$k]);
                 }
             }
         }

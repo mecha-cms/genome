@@ -1,6 +1,6 @@
 <ul><!--
   --><li>
-    <?php if (!$url->path || $url->path === $site->path): ?>
+    <?php if ($site->is('home')): ?>
     <span><?php echo $language->home; ?></span>
     <?php else: ?>
     <a href="<?php echo $url; ?>"><?php echo $language->home; ?></a>

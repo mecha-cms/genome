@@ -1,33 +1,13 @@
 <?php
 
 // Require the plug manually…
-require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
+r(__DIR__ . DS . 'engine' . DS . 'plug', [
+    'config.php',
+    'get.php',
+    'hook.php'
+], null, Lot::get(null, []));
 
-// Store page state to registry…
-if ($state = Extend::state('page')) {
-    Config::extend($state);
-}
-
-$path = $url->path;
-$folder = PAGE . DS . $path;
-
-$site->is = '404'; // default is `404`
-$site->state = 'page'; // default is `page`
-
-if (!$path || $path === $site->path) {
-    $site->is = ""; // home page type is ``
-} else if ($file = File::exist([
-    $folder . '.page',
-    $folder . '.archive',
-    $folder . DS . '$.page',
-    $folder . DS . '$.archive'
-])) {
-    $site->is = 'page';
-    $site->state = Path::X($file);
-    if (!File::exist($folder . DS . '$.page') && Get::pages($folder, 'page')) {
-        $site->is = 'pages';
-    }
-}
+$state = Extend::state('page');
 
 function fn_page_url($content, $lot = []) {
     if (!isset($lot['path'])) {
@@ -43,7 +23,7 @@ Hook::set('page.url', 'fn_page_url', 1);
 Lot::set([
     'message' => Message::get(),
     'page' => new Page,
-    'pager' => new Elevator([], 1, 0, true, [], $site->is),
+    'pager' => new Elevator([], 1, 0, true, [], $site->is('pages') ? 'pages' : 'page'),
     'pages' => [],
     'parent' => new Page,
     'token' => Guardian::token()
@@ -55,7 +35,6 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
     $path_f = ltrim($path === "" ? $site->path : $path, '/');
-    Config::set('step', $step); // 1–based index…
     if ($step === 1 && !$url->query && $path === $site->path) {
         Message::info('kick', '<code>' . $url->current . '</code>');
         Guardian::kick(""); // Redirect to home page…
@@ -85,7 +64,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
     ];
     $pages = $page = [];
     Config::set('page.title', new Anemon([$site->title], ' &#x00B7; '));
-    if ($file = File::exist([
+    if ($site->is('page') && $file = File::exist([
         // Check for page that has numeric file name…
         $folder . DS . $h . '.page', // `lot\page\page-slug\1.page`
         $folder . DS . $h . '.archive', // `lot\page\page-slug\1.archive`
@@ -96,10 +75,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
         $folder . '.archive', // `lot\page\page-slug.archive`
         $folder . DS . '$.page', // `lot\page\page-slug\$.page`
         $folder . DS . '$.archive' // `lot\page\page-slug\$.archive`
-    ])) { // File does exist, then …
-        if ($path !== "") {
-            $site->is = 'page';
-        }
+    ])) {
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
         $sort = isset($site->page->sort) ? $site->page->sort : [1, 'path'];
@@ -138,60 +114,46 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
         }
         Lot::set([
             'page' => $page,
-            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, $site->is),
+            'pager' => new Elevator($files_parent, null, $page->slug, $url . '/' . $path_parent, $elevator, 'page'),
             'parent' => new Page($file_parent)
         ]);
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
-        $x = '.' . $page->state;
-        if (!File::exist([
-            $folder . DS . '$' . $x, // `lot\page\page-slug\$.{page,archive}`
-            $folder . DS . $h . DS . '$' . $x // `lot\page\page-slug\1\$.{page,archive}`
-        ])) {
-            if (
-                $step !== null &&
-                File::exist($folder . DS . $step . $x) // `lot\page\page-slug\1.{page,archive}`
-            ) {
-            // Has page with numeric file name!
-            } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
-                if ($query = l(Request::get($config->q, ""))) {
-                    Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
-                    $query = explode(' ', $query);
-                    Config::set('search', new Page(null, ['query' => $query], ['*', 'search']));
-                    $files = array_filter($files, function($v) use($query) {
-                        $v = Path::N($v);
-                        foreach ($query as $q) {
-                            if (strpos($v, $q) !== false) {
-                                return true;
-                            }
+        if (!$site->is('pages')) {
+            // Page(s) view has been disabled
+        } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
+            if ($query = l(Request::get($site->q, ""))) {
+                Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
+                $query = explode(' ', $query);
+                Config::set('is.search', true);
+                $files = array_filter($files, function($v) use($query) {
+                    $v = Path::N($v);
+                    foreach ($query as $q) {
+                        if (strpos($v, $q) !== false) {
+                            return true;
                         }
-                        return false;
-                    });
-                }
-                foreach (Anemon::eat($files)->chunk($chunk, $i) as $file) {
-                    $pages[] = new Page($file);
-                }
-                if (empty($pages)) {
-                    // Greater than the maximum step or less than `1`, abort!
-                    $site->is = '404';
-                    Shield::abort('404/' . $path_f);
-                }
-                if ($path !== "") {
-                    $site->is = 'pages';
-                    $site->page = $page;
-                    foreach ((array) $state['page'] as $k => $v) {
-                        $site->page->{'_' . $k} = $v;
                     }
-                }
-                Lot::set([
-                    'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_f, $elevator, $site->is),
-                    'pages' => $pages
-                ]);
-                Shield::attach('pages/' . $path_f);
-            // Redirect to parent page if user tries to access the placeholder page…
-            } else if ($name === '$' && File::exist($folder . $x)) {
-                Message::info('kick', '<code>' . $url->current . '</code>');
-                Guardian::kick($path_parent);
+                    return false;
+                });
             }
+            foreach (Anemon::eat($files)->chunk($chunk, $i) as $file) {
+                $pages[] = new Page($file);
+            }
+            Config::set('has.next', count($files) > $h * $chunk);
+            if (empty($pages)) {
+                // Greater than the maximum step or less than `1`, abort!
+                Config::set('is.error', 404);
+                Config::set('has.next', false);
+                Shield::abort('404/' . $path_f);
+            }
+            Lot::set([
+                'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_f, $elevator, 'pages'),
+                'pages' => $pages
+            ]);
+            Shield::attach('pages/' . $path_f);
+        // Redirect to parent page if user tries to access the placeholder page…
+        } else if ($name === '$' && File::exist($folder . '.' . $page->state)) {
+            Message::info('kick', '<code>' . $url->current . '</code>');
+            Guardian::kick($path_parent);
         }
         Shield::attach('page/' . $path_f);
     }
