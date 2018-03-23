@@ -33,6 +33,6 @@ return [
         'target' => '_blank'
     ],
     'table_class' => 'table',
-	'table_align_class' => 'text-%s',
+    'table_align_class' => 'text-%s',
     'footnote_class' => 'notes p'
 ];

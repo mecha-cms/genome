@@ -144,7 +144,5 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
         }
         return Shield::attach('page/' . $path_canon);
     }
-    $f = PAGE . DS . To::path($site->path);
-    echo '<p>Missing <code>' . $f . '.page</code> or <code>' . $f . '.archive</code> file.</p>';
-    return true;
+    return Shield::abort('404/' . $path_canon);
 }, 20);
