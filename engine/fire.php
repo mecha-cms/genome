@@ -39,15 +39,17 @@ $config = new Config;
 $url = new URL;
 
 // Set default page conditional statement(s)
-Config::set('is.$', !$GLOBALS['URL']['path']);
-Config::set('is.home', !$GLOBALS['URL']['path']); // alias for `is.$`
-Config::set('is.error', false);
+Config::set('is', [
+    '$' => ($s = !$GLOBALS['URL']['path']),
+    'home' => $s, // alias for `is.$`
+    'error' => false
+]);
 
 // Set default date time zone
 Date::zone($config->zone);
 
-// Set default document status: OK
-HTTP::status(200);
+// Set default document status
+HTTP::status(200); // “OK”
 
 // Must be set after date time zone set
 Language::ignite();
@@ -59,7 +61,9 @@ $seeds = [
     'config' => $config,
     'date' => $date,
     'language' => $language,
+    'message' => Message::get(),
     'site' => $config,
+    'token' => Guardian::token(),
     'url' => $url,
     'u_r_l' => $url
 ];
@@ -142,12 +146,4 @@ if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
 if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
 // Load all route(s)…
-function on_ready() {
-    // Matching the current route…
-    Route::fire();
-    // No match, abort!
-    Shield::abort();
-}
-
-// Set and trigger `on.ready` hook!
-Hook::set('on.ready', 'on_ready')->fire('on.ready');
+Hook::set('on.ready', 'Route::fire', 20)->fire('on.ready');

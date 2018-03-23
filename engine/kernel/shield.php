@@ -30,6 +30,7 @@ class Shield extends Genome {
 
     public static function get($input, $fail = false, $buffer = true) {
         $NS = __c2f__(static::class, '_') . '.get.';
+        $out = "";
         $lot_a__ = ['lot' => []];
         if (is_array($fail)) {
             $lot_a__['lot'] = $fail;
@@ -41,7 +42,6 @@ class Shield extends Genome {
             $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
-            $out = "";
             // Begin shield part
             Hook::fire($NS . 'lot.enter', [$out, $G]);
             extract(Hook::fire($NS . 'lot', [$lot__, $G]));
@@ -62,10 +62,12 @@ class Shield extends Genome {
             // End shield part
             Hook::fire($NS . 'exit', [$out, $G]);
         }
+        return $out;
     }
 
     public static function attach($input, $fail = false, $buffer = true) {
         $NS = __c2f__(static::class, '_') . '.';
+        $out = "";
         $lot_a__ = ['lot' => []];
         if (is_array($fail)) {
             $lot_a__['lot'] = $fail;
@@ -77,7 +79,6 @@ class Shield extends Genome {
             $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
             $G['lot'] = $lot__;
             $G['path'] = $path__;
-            $out = "";
             // Begin shield
             Hook::fire($NS . 'lot.enter', [$out, $G]);
             extract(Hook::fire($NS . 'lot', [$lot__, $G]));
@@ -100,10 +101,10 @@ class Shield extends Genome {
             }
             // End shield
             Hook::fire($NS . 'exit', [$out, $G]);
-            exit;
         } else {
-            Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
+            Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')', false);
         }
+        return $out;
     }
 
     public static function abort($code = 404, $fail = false, $buffer = true) {
@@ -113,6 +114,7 @@ class Shield extends Genome {
         $s = is_numeric($s) ? $s : '404';
         HTTP::status((int) $s);
         self::attach($code, $fail, $buffer);
+        return false;
     }
 
     public static function exist($input, $fail = false) {

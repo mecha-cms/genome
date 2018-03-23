@@ -8,7 +8,9 @@ version: 1.5.0
 
 This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.
 
-### Conditional Statements
+### Condition
+
+These page conditional statements are available to quickly indicate what type of page we are currently in:
 
  - `$site->has('next')` → Return `true` if it is possible to go to the next page.
  - `$site->has('page')` → Return `1` if there is a page to load.
@@ -16,14 +18,14 @@ This extension enables basic features of a website by utilizing the structure of
  - `$site->has('parent')` → Return `true` if current page has parent page.
  - `$site->has('previous')` → Return `true` if it is possible to go to the previous page.
  - `$site->has('step')` → Return `true` if page URL contains the page offset.
- - `$site->is('$')` → Return `true` on home page.
+ - `$site->is('$')` → Return the home page’s file path on home page.
  - `$site->is('error')` → Return `404` if there is no page or pages to load.
- - `$site->is('home')` → Return `true` on home page.
- - `$site->is('page')` → Return `true` if page is available.
- - `$site->is('pages')` → Return `true` if current page contains children.
+ - `$site->is('home')` → Return the home page’s file path on home page.
+ - `$site->is('page')` → Return the current page’s file path if page is available.
+ - `$site->is('pages')` → Return the current page’s files path if current page contains children.
  - `$site->is('search')` → Return `true` on search results page.
 
-### HTML Classes
+### Class
 
 These HTML classes will be added automatically if your `<html>` element has `class` attribute:
 

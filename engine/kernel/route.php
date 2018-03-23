@@ -124,14 +124,14 @@ class Route extends Genome {
                 }
                 // Passed!
                 Hook::fire($s . 'enter', [self::$lot[1][$id], null]);
-                call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                $r = call_user_func_array(self::$lot[1][$id]['fn'], $lot);
                 Hook::fire($s . 'exit', [self::$lot[1][$id], null]);
-                return true;
+                return $r;
             } else {
                 $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort([1, 'stack'], true)->vomit();
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path, then …
-                    if ($route = self::is($k, false, $v['is']['pattern'])) {
+                    if (($route = self::is($k, false, $v['is']['pattern'])) !== false) {
                         // Loading hook(s)…
                         if (isset(self::$lot_o[1][$k])) {
                             Hook::fire($s . 'lot.enter', [self::$lot_o[1][$k], self::$lot[1][$k]]);
@@ -144,9 +144,9 @@ class Route extends Genome {
                         }
                         // Passed!
                         Hook::fire($s . 'enter', [self::$lot[1][$k], null]);
-                        call_user_func_array($v['fn'], $route['lot']);
+                        $r = call_user_func_array($v['fn'], $route['lot']);
                         Hook::fire($s . 'exit', [self::$lot[1][$k], null]);
-                        return true;
+                        return $r;
                     }
                 }
             }
