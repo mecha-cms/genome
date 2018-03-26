@@ -158,12 +158,12 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
 
 // Convert class name to file name
 function __c2f__($x, $s = '-', $n = '.') {
-    return str_replace(['\\' . $s, '_' . $s], [$n, '_'], h($x, $s, '\\_'));
+    return ltrim(str_replace(['\\', $n . $s], $n, h($x, $s, false, '\\')), $s);
 }
 
 // Convert file name to class name
 function __f2c__($x, $s = '-', $n = '.') {
-    return str_replace([$n . $s, $s], ['\\', ""], p($x, $s, $n . '_'));
+    return str_replace($n, '\\', p($x, false, $n));
 }
 
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
@@ -255,10 +255,10 @@ function b($x, $a = 0, $b = null) {
     return $x;
 }
 
-function c($x, $s = "", $X = "") {
-    return f(preg_replace_callback('#(?<=[^\p{L}])([\p{Ll}\d])#u', function($m) use($s) {
-        return $s . u($m[1]);
-    }, $x), $s, false, 'a-zA-Z\d' . x($X));
+function c($s, $a = false, $x = "") {
+    return preg_replace_callback('# ([\p{L}\p{N}' . $x . '])#u', function($m) {
+        return u($m[1]);
+    }, f($s, $a, $x));
 }
 
 function d($f, $fn = null, $s__ = []) {
@@ -314,20 +314,20 @@ function e($s, $x = []) {
     return $s;
 }
 
-function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
-    $sx = x($s, '#');
-    $X .= $sx;
-    $x = preg_replace([
-        '#<.*?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);#i',
-        '#[^' . $X . ']#u',
-        '#[' . $sx . ']+#u',
-        '#^[' . $sx . ']|[' . $sx . ']$#u'
-    ], [
-        $s,
-        $s,
-        $s,
-        ""
-    ], $f === 1 ? strtr($x, [
+// $s: the string input
+// $a: replace multi-byte string into their accent
+// $x: character(s) white-list
+function f($s, $a = true, $x = "") {
+    // this function does not trim white-space at the start and end of the string
+    $s = preg_replace([
+        // remove HTML tag(s) and character(s) reference
+        '#<[^<>]*?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);#i',
+        // remove anything except character(s) white-list
+        '#[^\p{L}\p{N}\s' . $x . ']#u',
+        // convert multiple white-space to single space
+        '#\s+#'
+    ], ' ', $s);
+    return $a ? strtr($s, [
         '¹' => '1',
         '²' => '2',
         '³' => '3',
@@ -810,8 +810,7 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
         'Ỵ' => 'Y',
         'Ỷ' => 'Y',
         'Ỹ' => 'Y'
-    ]) : $x);
-    return $x ? ($l ? l($x) : $x) : $s . $s;
+    ]) : $s;
 }
 
 // $s: directory path
@@ -858,10 +857,10 @@ function g($s = ROOT, $x = '*', $q = "", $o = false, $h = true) {
     return $r;
 }
 
-function h($x, $s = '-', $X = "") {
-    return f(preg_replace_callback('#(?<=[\p{Ll}\D])([\p{Lu}])#u', function($m) use($s) {
-        return $s . l($m[1]);
-    }, $x), $s, true, 'a-zA-Z\d' . x($X));
+function h($s, $h = '-', $a = false, $x = "") {
+    return preg_replace_callback('#\p{Lu}#', function($m) use($h) {
+        return $h . l($m[0]);
+    }, f($s, $a, x($h . $x)));
 }
 
 // If `$fn` is a function, the function will be executed after file include.
@@ -928,8 +927,8 @@ function o($a, $safe = true) {
     return $a;
 }
 
-function p($x, $s = "", $X = "") {
-    return c('-' . $x, $s, $X);
+function p($s, $a = false, $x = "") {
+    return c(' ' . $s, $a, $x);
 }
 
 function q($x, $deep = false) {
@@ -1021,12 +1020,12 @@ function w($x, $c = [], $n = false) {
     }
     // [1]. Replace `+` with ` `
     // [2]. Replace `-` with ` `
-    // [3]. Replace `-----` with ` - `
-    // [4]. Replace `---` with `-`
+    // [3]. Replace `---` with ` - `
+    // [4]. Replace `--` with `-`
     return preg_replace([
-        '#^([._]+)|([._]+)$#', // remove `.` and `__` prefix/suffix in file name
-        '#-{5}#',
-        '#-{3}#',
+        '#^[._]+|[._]+$#', // remove `.` and `__` prefix/suffix of file name
+        '#---#',
+        '#--#',
         '#-#',
         '#\s+#',
         '#' . X . '#'
