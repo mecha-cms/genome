@@ -14,4 +14,4 @@ Hook::set('asset:body', function($content) {
     return $content . Hook::fire('asset.js', [Asset::js()]);
 });
 
-Hook::set('shield.input', 'fn_asset', 0);
+Hook::set('shield.yield', 'fn_asset', 0);

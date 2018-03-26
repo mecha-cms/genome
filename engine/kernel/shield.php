@@ -29,11 +29,11 @@ class Shield extends Genome {
     }
 
     public static function get($input, $fail = false, $buffer = true) {
-        $NS = __c2f__(static::class, '_') . '.get.';
+        $NS = __c2f__(static::class, '_') . '.' . __FUNCTION__ . '.';
         $out = "";
-        $lot_a__ = ['lot' => []];
+        $_ = ['lot' => []];
         if (is_array($fail)) {
-            $lot_a__['lot'] = $fail;
+            $_['lot'] = $fail;
             $fail = false;
         }
         if ($path__ = Hook::fire($NS . 'path', [self::path($input, $fail), $input])) {
@@ -45,14 +45,12 @@ class Shield extends Genome {
             // Begin shield part
             Hook::fire($NS . 'lot.enter', [$out, $G]);
             extract(Hook::fire($NS . 'lot', [$lot__, $G]));
-            extract($lot_a__);
+            extract($_);
             Hook::fire($NS . 'lot.exit', [$out, $G]);
             Hook::fire($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
-                    $content = Hook::fire($NS . 'input', [$content, $G]);
-                    $out = Hook::fire($NS . 'output', [$content, $G]);
-                    return $out;
+                    return ($out = Hook::fire($NS . 'yield', [$content, $G]));
                 });
                 require $path__;
                 ob_end_flush();
@@ -65,12 +63,12 @@ class Shield extends Genome {
         return $out;
     }
 
-    public static function attach($input, $fail = false, $buffer = true) {
+    public static function read($input, $fail = false, $buffer = true) {
         $NS = __c2f__(static::class, '_') . '.';
         $out = "";
-        $lot_a__ = ['lot' => []];
+        $_ = ['lot' => []];
         if (is_array($fail)) {
-            $lot_a__['lot'] = $fail;
+            $_['lot'] = $fail;
             $fail = false;
         }
         if ($path__ = Hook::fire($NS . 'path', [self::path($input, $fail), $input])) {
@@ -82,7 +80,7 @@ class Shield extends Genome {
             // Begin shield
             Hook::fire($NS . 'lot.enter', [$out, $G]);
             extract(Hook::fire($NS . 'lot', [$lot__, $G]));
-            extract($lot_a__);
+            extract($_);
             if (is_array($fail)) {
                 extract($fail);
             }
@@ -90,9 +88,7 @@ class Shield extends Genome {
             Hook::fire($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
-                    $content = Hook::fire($NS . 'input', [$content, $G]);
-                    $out = Hook::fire($NS . 'output', [$content, $G]);
-                    return $out;
+                    return ($out = Hook::fire($NS . 'yield', [$content, $G]));
                 });
                 require $path__;
                 ob_end_flush();
@@ -107,6 +103,11 @@ class Shield extends Genome {
         return $out;
     }
 
+    public static function attach($input, $fail = false, $buffer = true) {
+        self::read($input, $fail, $buffer);
+        exit;
+    }
+
     public static function abort($code = 404, $fail = false, $buffer = true) {
         $path = self::path((string) $code);
         $s = explode('/', $path);
@@ -114,7 +115,6 @@ class Shield extends Genome {
         $s = is_numeric($s) ? $s : '404';
         HTTP::status((int) $s);
         self::attach($code, $fail, $buffer);
-        return false;
     }
 
     public static function exist($input, $fail = false) {

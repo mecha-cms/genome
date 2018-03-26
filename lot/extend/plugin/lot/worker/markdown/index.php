@@ -8,22 +8,18 @@ function fn_markdown_replace($in, $mode = 'text') {
     return $x->{$mode}($in);
 }
 
-function fn_markdown($in = "", $lot = []) {
-    if (!isset($lot['type']) || $lot['type'] !== 'Markdown') {
+function fn_markdown($in = "", $lot = [], $that) {
+    if ($that->get('type') !== 'Markdown') {
         return $in;
-    } else if (isset($lot['path']) && Page::apart($lot['path'], 'type') === 'Markdown') {
-        return fn_markdown_replace($in);
     }
-    return $in;
+    return fn_markdown_replace($in);
 }
 
-function fn_markdown_span($in, $lot = []) {
-    if (!isset($lot['type']) || $lot['type'] !== 'Markdown') {
+function fn_markdown_span($in, $lot = [], $that) {
+    if ($that->get('type') !== 'Markdown') {
         return $in;
-    } else if (isset($lot['path']) && Page::apart($lot['path'], 'type') === 'Markdown') {
-        return fn_markdown_replace($in, 'line');
     }
-    return $in;
+    return fn_markdown_replace($in, 'line');
 }
 
 From::_('markdown', function($in, $span = false) {
