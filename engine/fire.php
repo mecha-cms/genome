@@ -33,7 +33,7 @@ $x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
 File::$config['extension'] = array_unique(explode(',', $x));
 
 Session::ignite();
-Config::ignite();
+Config::ignite(STATE . DS . 'config.php');
 
 $config = new Config;
 $url = new URL;
