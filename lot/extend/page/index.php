@@ -1,9 +1,11 @@
 <?php
 
 // Require the plug manually…
-r(__DIR__ . DS . 'engine' . DS . 'plug', [
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
+
+// Include worker(s)…
+r(__DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', [
     'config.php',
-    'get.php',
     'hook.php'
 ], null, Lot::get(null, []));
 
@@ -129,7 +131,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
                 // Greater than the maximum step or less than `1`, abort!
                 Config::set('is.error', 404);
                 Config::set('has.next', false);
-                return Shield::abort('404/' . $path_canon);
+                Shield::abort('404/' . $path_canon);
             }
             Lot::set([
                 'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_canon, $elevator, 'pages'),
@@ -142,7 +144,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
             Message::info('kick', '<code>' . $url->current . '</code>');
             Guardian::kick($_path);
         }
-        return Shield::attach('page/' . $path_canon);
+        Shield::attach('page/' . $path_canon);
     }
-    return Shield::abort('404/' . $path_canon);
+    Shield::abort('404/' . $path_canon);
 }, 20);
