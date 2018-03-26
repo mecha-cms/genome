@@ -118,7 +118,7 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function mime($mime, $charset = null) {
+    public static function MIME($mime, $charset = null) {
         header('Content-Type: ' . $mime . (isset($charset) ? '; charset=' . $charset : ""));
         return new static;
     }

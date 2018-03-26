@@ -73,7 +73,7 @@ class Date extends Genome {
         $AM_PM = strtoupper($AM_PM);
         $output = [
             'W3C' => $this->format('c'),
-            'GMT' => $this->GMT(DATE_WISE),
+            'GMT' => $this->GMT(),
             'unix' => (int) $this->format('U'),
             'slug' => $year . '-' . $month . '-' . $day . '-' . $hour_24 . '-' . $minute . '-' . $second,
             'year' => $year,

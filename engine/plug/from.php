@@ -197,10 +197,10 @@ foreach ([
 
 // Alias(es)…
 foreach ([
-    'h_t_m_l' => 'html',
-    'j_s_o_n' => 'json',
-    'u_r_l' => 'url',
-    'y_a_m_l' => 'yaml'
+    'HTML' => 'html',
+    'JSON' => 'json',
+    'URL' => 'url',
+    'YAML' => 'yaml'
 ] as $k => $v) {
     From::_($k, From::_($v));
 }

@@ -44,13 +44,8 @@ class Cache extends Genome {
         return is_string($t) && $t !== $x[0] || $t > $x[0];
     }
 
-    public static function id($from, $fail = -1) {
+    public static function ID($from, $fail = -1) {
         return File::open(self::__($from))->import([$fail])[0];
-    }
-
-    // alias of `id`
-    public static function i_d($from, $fail = -1) {
-        return self::id($from, $fail);
     }
 
     private static function __($s) {

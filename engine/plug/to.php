@@ -221,9 +221,9 @@ foreach([
 // Alias(es)…
 foreach ([
     'files' => 'folder',
-    'h_t_m_l' => 'html',
-    'u_r_l' => 'url',
-    'y_a_m_l' => 'yaml'
+    'HTML' => 'html',
+    'URL' => 'url',
+    'YAML' => 'yaml'
 ] as $k => $v) {
     To::_($k, To::_($v));
 }
