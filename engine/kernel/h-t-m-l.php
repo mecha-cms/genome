@@ -51,7 +51,10 @@ class HTML extends Union {
                     if (isset($a['class'])) {
                         $v = array_merge(explode(' ', $a['class']), $v);
                     }
-                    $a['class'] = implode(' ', array_filter(array_unique($v)));
+                    $v = array_filter(array_unique($v));
+                    sort($v);
+                    $v = implode(' ', $v);
+                    $a['class'] = $v !== "" ? $v : null;
                     unset($a[$k]);
                 // Inline CSS via `style[]` attribute
                 } else if ($k === 'style[]') {
@@ -60,7 +63,7 @@ class HTML extends Union {
                         if (!isset($vv)) continue;
                         $css .= $kk . ':' . $vv . ';';
                     }
-                    $a['style'] = $css;
+                    $a['style'] = $css !== "" ? $css : null;
                     unset($a[$k]);
                 }
             }
@@ -79,9 +82,12 @@ class HTML extends Union {
                     $output[2]['class[]'] = $v === 'class' ? [] : array_unique(explode(' ', $v));
                     unset($output[2][$k]);
                 } else if ($k === 'style') {
-                    if ($v !== 'style' && preg_match_all('#(?:^|;)\s*([a-z\d-]+)\s*:\s*(.*?)\s*(?:;|$)#', $v, $m)) {
-                        foreach ($m[1] as $k => $v) {
-                            $output[2]['style[]'][$v] = $m[2][$k];
+                    if ($v !== 'style') {
+                        foreach (explode(';', $v) as $vv) {
+                            if (trim($vv) === "") continue;
+                            $a = explode(':', $vv . ':');
+                            if (trim($a[1]) === "") continue;
+                            $output[2]['style[]'][trim($a[0])] = e(trim($a[1]));
                         }
                     } else {
                         $output[2]['style[]'] = [];
