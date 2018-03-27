@@ -2,6 +2,8 @@
 
 class Date extends Genome {
 
+    protected $date = "";
+
     protected static $zone = false;
     protected static $format = [];
 
@@ -30,13 +32,6 @@ class Date extends Genome {
             self::$format = [];
         }
         return new static;
-    }
-
-    protected $date = "";
-
-    public function __construct($date = null) {
-        $this->date = isset($date) ? $date : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
-        parent::__construct();
     }
 
     public function format($format = DATE_WISE) {
@@ -132,6 +127,11 @@ class Date extends Genome {
         $date_GMT = new \DateTime($this->format('c'));
         $date_GMT->setTimeZone(new \DateTimeZone('UTC'));
         return $date_GMT->format($format);
+    }
+
+    public function __construct($date = null) {
+        $this->date = isset($date) ? $date : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
+        parent::__construct();
     }
 
     public function __set($key, $value = null) {

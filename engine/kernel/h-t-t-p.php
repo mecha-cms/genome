@@ -99,7 +99,15 @@ class HTTP extends Genome {
         return $output;
     }
 
-    public static function header($key, $value = null) {
+    public static function header($key = null, $value = null) {
+        if (!isset($ket)) {
+            $output = [];
+            foreach (headers_list() as $v) {
+                $a = explode(':', $v, 2);
+                $output[$a[0]] = e(trim($a[1]));
+            }
+            return $output;
+        }
         if (!is_array($key)) {
             if (is_int($key)) {
                 self::status($key);

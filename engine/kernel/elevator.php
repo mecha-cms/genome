@@ -13,6 +13,12 @@ class Elevator extends Genome {
     protected $bucket = [];
     protected $NS = "";
 
+    protected function _unite($input, $alt = ['span']) {
+        if (!$alt || !$input) return "";
+        $input = array_replace_recursive($alt, $input);
+        return call_user_func_array('HTML::unite', $input);
+    }
+
     public function __construct($input, $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
         $key = __c2f__(static::class, '_') . ($NS ? '.' . $NS : "");
         $c = [
@@ -42,13 +48,10 @@ class Elevator extends Genome {
                     1 => self::SOUTH
                 ]
             ],
-            'input' => $input,
-            'chunk' => $chunk,
-            'index' => $index,
-            'path' => $path
+            'lot' => [$input, $chunk, $index, $path, $config, $NS]
         ];
         $cc = array_replace_recursive($c, $config);
-        $this->config = Hook::fire($key, [$cc, $c]);
+        $this->config = Hook::fire($key, [$cc, $c, $this]);
         $d = $this->config['direction'];
         global $url;
         if (isset($chunk)) {
@@ -71,14 +74,8 @@ class Elevator extends Genome {
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
         $this->NS = $key;
-        $this->bucket = Hook::fire($key . '.links', [$this->bucket, $cc, $c]);
+        $this->bucket = Hook::fire($key . '.a', [$cc, $c, $this]);
         parent::__construct();
-    }
-
-    protected function _unite($input, $alt = ['span']) {
-        if (!$alt || !$input) return "";
-        $input = array_replace_recursive($alt, $input);
-        return call_user_func_array('HTML::unite', $input);
     }
 
     public function __get($key) {
@@ -117,7 +114,7 @@ class Elevator extends Genome {
         if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
         if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
         if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
-        return Hook::fire($this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
+        return Hook::fire($this->NS . '.yield', [implode(' ', $html), $this]);
     }
 
 }

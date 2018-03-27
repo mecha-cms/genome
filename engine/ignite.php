@@ -158,7 +158,7 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
 
 // Convert class name to file name
 function __c2f__($x, $s = '-', $n = '.') {
-    return ltrim(str_replace(['\\', $n . $s], $n, h($x, $s, false, '\\')), $s);
+    return ltrim(str_replace(['\\', $n . $s], $n, h($x, $s, false, '\\\\')), $s);
 }
 
 // Convert file name to class name
@@ -255,10 +255,10 @@ function b($x, $a = 0, $b = null) {
     return $x;
 }
 
-function c($s, $a = false, $x = "") {
-    return preg_replace_callback('# ([\p{L}\p{N}' . $x . '])#u', function($m) {
+function c($x, $a = false, $i = "") {
+    return preg_replace_callback('# ([\p{L}\p{N}' . $i . '])#u', function($m) {
         return u($m[1]);
-    }, f($s, $a, $x));
+    }, f($x, $a, $i));
 }
 
 function d($f, $fn = null, $s__ = []) {
@@ -314,20 +314,20 @@ function e($s, $x = []) {
     return $s;
 }
 
-// $s: the string input
+// $x: the string input
 // $a: replace multi-byte string into their accent
-// $x: character(s) white-list
-function f($s, $a = true, $x = "") {
+// $i: character(s) white-list
+function f($x, $a = true, $i = "") {
     // this function does not trim white-space at the start and end of the string
-    $s = preg_replace([
+    $x = preg_replace([
         // remove HTML tag(s) and character(s) reference
         '#<[^<>]*?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);#i',
         // remove anything except character(s) white-list
-        '#[^\p{L}\p{N}\s' . $x . ']#u',
+        '#[^\p{L}\p{N}\s' . $i . ']#u',
         // convert multiple white-space to single space
         '#\s+#'
-    ], ' ', $s);
-    return $a ? strtr($s, [
+    ], ' ', $x);
+    return $a ? strtr($x, [
         '¹' => '1',
         '²' => '2',
         '³' => '3',
@@ -810,7 +810,7 @@ function f($s, $a = true, $x = "") {
         'Ỵ' => 'Y',
         'Ỷ' => 'Y',
         'Ỹ' => 'Y'
-    ]) : $s;
+    ]) : $x;
 }
 
 // $s: directory path
@@ -857,10 +857,10 @@ function g($s = ROOT, $x = '*', $q = "", $o = false, $h = true) {
     return $r;
 }
 
-function h($s, $h = '-', $a = false, $x = "") {
+function h($x, $h = '-', $a = false, $i = "") {
     return preg_replace_callback('#\p{Lu}#', function($m) use($h) {
         return $h . l($m[0]);
-    }, f($s, $a, x($h . $x)));
+    }, f($x, $a, x($h) . $i));
 }
 
 // If `$fn` is a function, the function will be executed after file include.
@@ -927,8 +927,8 @@ function o($a, $safe = true) {
     return $a;
 }
 
-function p($s, $a = false, $x = "") {
-    return c(' ' . $s, $a, $x);
+function p($x, $a = false, $i = "") {
+    return ltrim(c(' ' . $x, $a, $i), ' ');
 }
 
 function q($x, $deep = false) {

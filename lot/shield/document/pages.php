@@ -1,4 +1,4 @@
-<?php get('header'); ?>
+<?php Shield::get('header'); ?>
 <main>
   <?php echo $message; ?>
   <?php foreach ($pages as $page): ?>
@@ -17,4 +17,4 @@
   <?php endforeach; ?>
 </main>
 <nav><?php echo $pager; ?></nav>
-<?php get('footer'); ?>
+<?php Shield::get('footer'); ?>

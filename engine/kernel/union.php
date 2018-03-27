@@ -21,13 +21,13 @@ class Union extends Genome {
         ]
     ];
 
-    public static $config = self::config;
-
     public $union = [];
     public $data = [];
 
     protected $unit = [];
     protected $dent = [];
+
+    public static $config = self::config;
 
     // Build union attribute(s)…
     protected function _data($a, $unit = "") {
@@ -136,9 +136,18 @@ class Union extends Genome {
         return Hook::fire(__c2f__(static::class, '_') . '.end:' . $unit, [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
     }
 
-    public function __construct() {
-        $this->union = static::$config['union'];
-        $this->data = static::$config['data'];
+    public static function hook(...$lot) {
+        if (isset($lot[0])) {
+            $s = __c2f__(static::class) . '.';
+            if (is_string($lot[0])) {
+                $lot[0] = $s . $lot[0];
+            } else if (is_array($lot[0])) {
+                foreach ($lot[0] as &$v) {
+                    $v = $s . $v;
+                }
+            }
+        }
+        return Hook::set(...$lot);
     }
 
     // Indent…
@@ -149,6 +158,11 @@ class Union extends Genome {
     // Encode all union’s special character(s)…
     public static function x($v) {
         return is_string($v) ? From::html($v) : $v;
+    }
+
+    public function __construct() {
+        $this->union = static::$config['union'];
+        $this->data = static::$config['data'];
     }
 
     public function __call($kin, $lot = []) {

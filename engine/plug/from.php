@@ -142,8 +142,8 @@ foreach ([
     'base64' => 'base64_decode',
     'dec' => 'html_entity_decode',
     'hex' => 'html_entity_decode',
-    'html' => 'htmlspecialchars',
-    'json' => function($in) {
+    'HTML' => 'htmlspecialchars',
+    'JSON' => function($in) {
         if (__is_anemon__($in)) {
             return (object) o($in);
         }
@@ -171,10 +171,10 @@ foreach ([
         return $out;
     },
     'serial' => 'unserialize',
-    'url' => function($in, $raw = false) {
+    'URL' => function($in, $raw = false) {
         return $raw ? rawurlencode($in) : urlencode($in);
     },
-    'yaml' => function(...$lot) {
+    'YAML' => function(...$lot) {
         if (__is_anemon__($lot[0])) {
             return a($lot[0]);
         }
@@ -197,10 +197,10 @@ foreach ([
 
 // Alias(es)…
 foreach ([
-    'HTML' => 'html',
-    'JSON' => 'json',
-    'URL' => 'url',
-    'YAML' => 'yaml'
+    'html' => 'HTML',
+    'json' => 'JSON',
+    'url' => 'URL',
+    'yaml' => 'YAML'
 ] as $k => $v) {
     From::_($k, From::_($v));
 }

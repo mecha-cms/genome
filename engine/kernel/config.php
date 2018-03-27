@@ -64,22 +64,6 @@ class Config extends Genome {
         return new static;
     }
 
-    public static function __callStatic($kin, $lot = []) {
-        if (self::_($kin)) {
-            return parent::__callStatic($kin, $lot);
-        }
-        $fail = $alt = false;
-        if (count($lot)) {
-            $kin .= '.' . array_shift($lot);
-            $fail = array_shift($lot) ?: false;
-            $alt = array_shift($lot) ?: false;
-        }
-        if ($fail instanceof \Closure) {
-            return call_user_func($fail, self::get($kin, $alt));
-        }
-        return self::get($kin, $fail);
-    }
-
     public function __call($kin, $lot = []) {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
@@ -119,6 +103,22 @@ class Config extends Genome {
 
     public function __invoke($fail = []) {
         return self::get(null, o($fail));
+    }
+
+    public static function __callStatic($kin, $lot = []) {
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
+        }
+        $fail = $alt = false;
+        if (count($lot)) {
+            $kin .= '.' . array_shift($lot);
+            $fail = array_shift($lot) ?: false;
+            $alt = array_shift($lot) ?: false;
+        }
+        if ($fail instanceof \Closure) {
+            return call_user_func($fail, self::get($kin, $alt));
+        }
+        return self::get($kin, $fail);
     }
 
 }

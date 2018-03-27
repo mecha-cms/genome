@@ -93,11 +93,11 @@ foreach([
         }
         return $out;
     },
-    'html' => 'htmlspecialchars_decode',
-    'json' => 'json_encode',
-    'key' => function($in, $low = true) {
-        $s = f($in, '_', $low);
-        return is_numeric($s[0]) ? '_' . $s : $s;
+    'HTML' => 'htmlspecialchars_decode',
+    'JSON' => 'json_encode',
+    'key' => function($in, $a = true) {
+        $s = trim(h($in, '_', $a), '_');
+        return $s && is_numeric($s[0]) ? '_' . $s : $s;
     },
     'pascal' => 'p',
     'path' => function($in) {
@@ -122,9 +122,11 @@ foreach([
         return ucfirst(strtolower($in)) . $tail;
     },
     'serial' => 'serialize',
-    'slug' => 'h',
-    'snake' => function($in) {
-        return h($in, '_');
+    'slug' => function($in, $s = '-', $a = true) {
+        return trim(h($in, $s, $a), $s);
+    },
+    'snake' => function($in, $a = true) {
+        return trim(h($in, '_', $a), '_');
     },
     'snippet' => function($in, $html = true, $x = [200, '&#x2026;']) {
         $s = w($in, $html ? HTML_WISE_I : []);
@@ -199,13 +201,13 @@ foreach([
         }
         return ucwords($in);
     },
-    'url' => function($in, $raw = false) {
+    'URL' => function($in, $raw = false) {
         $u = $GLOBALS['URL'];
         $s = str_replace(DS, '/', ROOT);
         $in = str_replace([ROOT, DS, '\\', $s], [$u['$'], '/', '/', $u['$']], $in);
         return $raw ? rawurldecode($in) : urldecode($in);
     },
-    'yaml' => function(...$lot) {
+    'YAML' => function(...$lot) {
         if (!__is_anemon__($lot[0])) {
             return s($lot[0]);
         }
@@ -221,9 +223,9 @@ foreach([
 // Alias(es)…
 foreach ([
     'files' => 'folder',
-    'HTML' => 'html',
-    'URL' => 'url',
-    'YAML' => 'yaml'
+    'html' => 'HTML',
+    'url' => 'URL',
+    'yaml' => 'YAML'
 ] as $k => $v) {
     To::_($k, To::_($v));
 }

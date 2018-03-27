@@ -10,7 +10,7 @@ foreach ([
             return '<!-- ' . $key . ' -->';
         }
         return HTML::unite('link', false, Anemon::extend($attr, [
-            'href' => $path === false ? $url : __replace__($state, [$url, File::T($path, 0)]),
+            'href' => $path === false ? $url : __replace__($state, [$url, file_exists($path) ? filemtime($path) : 0]),
             'rel' => 'stylesheet'
         ]));
     },
@@ -21,7 +21,7 @@ foreach ([
             return '<!-- ' . $key . ' -->';
         }
         return HTML::unite('script', "", Anemon::extend($attr, [
-            'src' => $path === false ? $url : __replace__($state, [$url, File::T($path, 0)])
+            'src' => $path === false ? $url : __replace__($state, [$url, file_exists($path) ? filemtime($path) : 0])
         ]));
     }
 ] as $k => $v) {
@@ -42,7 +42,7 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
         }
         return HTML::unite('img', false, Anemon::extend($attr, [
             'alt' => "",
-            'src' => __replace__($state, [$url, File::T($path, 0)])
+            'src' => __replace__($state, [$url, file_exists($path) ? filemtime($path) : 0])
         ]));
     });
 }

@@ -1,4 +1,4 @@
-<?php get('header'); ?>
+<?php Shield::get('header'); ?>
 <main>
   <?php echo $message; ?>
   <article id="page-<?php echo $page->id; ?>">
@@ -21,4 +21,4 @@
 <?php if ($site->has('parent')): ?>
 <nav><?php echo $pager; ?></nav>
 <?php endif; ?>
-<?php get('footer'); ?>
+<?php Shield::get('footer'); ?>

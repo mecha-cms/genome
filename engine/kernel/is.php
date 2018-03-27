@@ -3,13 +3,6 @@
 class Is extends Genome {
 
     protected $bucket = [];
-    protected $alt = [
-        
-    ];
-
-    public function __construct($input) {
-        $this->bucket = $input;
-    }
 
     // Initialize…
     public static function this($input) {
@@ -109,6 +102,10 @@ class Is extends Genome {
     // Is greater than or equal to `$x`
     public function GE($x) {
         return q($this->bucket) >= $x;
+    }
+
+    public function __construct($input) {
+        $this->bucket = $input;
     }
 
     public function __call($kin, $lot = []) {

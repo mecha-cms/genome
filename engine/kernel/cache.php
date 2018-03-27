@@ -6,7 +6,7 @@ class Cache extends Genome {
 
     public static function set($from, $content = null, $id = null) {
         $n = self::__($from);
-        $t = $id ? (string) $id : File::T($from, 0);
+        $t = $id ? (string) $id : (file_exists($from) ? filemtime($from) : 0);
         if ($t || $content) {
             $x = File::open($n)->import([-1]);
             if ((is_string($t) && $t !== $x[0]) || $t > $x[0]) {
@@ -39,7 +39,7 @@ class Cache extends Genome {
         if (!file_exists($n)) {
             return true;
         }
-        $t = $id ? (string) $id : File::T($from, 0);
+        $t = $id ? (string) $id : (file_exists($from) ? filemtime($from) : 0);
         $x = File::open($n)->import([-1]);
         return is_string($t) && $t !== $x[0] || $t > $x[0];
     }
@@ -54,7 +54,7 @@ class Cache extends Genome {
             File::write("")->saveTo($s, 0600);
         }
         $f = str_replace(ROOT, CACHE, $s) . '.php';
-        self::$cache[$f] = File::T($f, false);
+        self::$cache[$f] = filemtime($f);
         return $f;
     }
 

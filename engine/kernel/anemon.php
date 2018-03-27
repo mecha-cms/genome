@@ -296,12 +296,6 @@ class Anemon extends Genome implements \ArrayAccess {
         return $this->__invoke($s);
     }
 
-    public function __construct(array $array = [], $separator = ', ') {
-        $this->bucket = $array;
-        $this->separator = $separator;
-        parent::__construct();
-    }
-
     public function offsetSet($i, $value) {
         if (!isset($i)) {
             $this->bucket[] = $value;
@@ -320,6 +314,12 @@ class Anemon extends Genome implements \ArrayAccess {
 
     public function offsetGet($i) {
         return isset($this->bucket[$i]) ? $this->bucket[$i] : null;
+    }
+
+    public function __construct(array $array = [], $separator = ', ') {
+        $this->bucket = $array;
+        $this->separator = $separator;
+        parent::__construct();
     }
 
     public function __set($key, $value = null) {

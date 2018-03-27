@@ -17,13 +17,6 @@ class File extends Genome {
 
     public static $config = self::config;
 
-    public function __construct($path = true, $c = []) {
-        $this->path = file_exists($path) ? realpath($path) : false;
-        $this->content = "";
-        $this->c = !empty($c) ? $c : self::$config;
-        parent::__construct();
-    }
-
     // Inspect file path
     public static function inspect($input, $key = null, $fail = false) {
         $id = json_encode(func_get_args());
@@ -333,11 +326,6 @@ class File extends Genome {
         }
     }
 
-    // Get file modification time
-    public static function T($input, $fail = null) {
-        return file_exists($input) ? filemtime($input) : $fail;
-    }
-
     // Set file permission
     public function consent($consent) {
         if ($this->path !== false) {
@@ -347,7 +335,7 @@ class File extends Genome {
     }
 
     // Upload the file
-    public static function upload($f, $path = ROOT, $fn = null, $fail = false, $c = []) {
+    public static function push($f, $path = ROOT, $fn = null, $fail = false, $c = []) {
         $path = To::path($path);
         $c = !empty($c) ? $c : self::$config;
         // Sanitize file name
@@ -398,6 +386,21 @@ class File extends Genome {
         return $fail;
     }
 
+    // Download the file
+    public static function pull($file, $mime = null) {
+        HTTP::header([
+            'Content-Description' => 'File Transfer',
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . basename($file) . '"',
+            'Content-Length' => filesize($file),
+            'Expires' => 0,
+            'Pragma' => 'public'
+        ]);
+        // Show the browser saving dialog!
+        readfile($file);
+        exit;
+    }
+
     // Convert file size to …
     public static function size($file, $unit = null, $prec = 2) {
         $size = is_numeric($file) ? $file : filesize($file);
@@ -408,6 +411,13 @@ class File extends Genome {
         }
         $output = round($size / pow(1024, $u), $prec);
         return $output < 0 ? Language::unknown() : trim($output . ' ' . $x[$u]);
+    }
+
+    public function __construct($path = true, $c = []) {
+        $this->path = file_exists($path) ? realpath($path) : false;
+        $this->content = "";
+        $this->c = !empty($c) ? $c : self::$config;
+        parent::__construct();
     }
 
 }

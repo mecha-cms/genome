@@ -16,17 +16,14 @@ function _fn_get_page($path, $key = null, $fail = false, $for = null) {
     if (!file_exists($path)) {
         return $fail;
     }
-    $date = date(DATE_WISE, File::T($path, time()));
-    $o = [
+    $output = Page::open($path)->get([
+        $for => null,
         'path' => $path,
-        'time' => $date,
-        'update' => $date,
-        'slug' => Path::N($path),
-        'state' => Path::X($path)
-    ];
-    $output = Page::open($path, array_replace([
-        $for => null
-    ], $o))->get($o);
+        'time' => null,
+        'update' => null,
+        'slug' => null,
+        'state' => null
+    ]);
     $data = Path::F($path);
     if (is_dir($data)) {
         if ($for === null) {

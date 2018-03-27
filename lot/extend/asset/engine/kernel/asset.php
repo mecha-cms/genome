@@ -24,13 +24,9 @@ class Asset extends Genome {
         ], $fail);
     }
 
-    public static function url($url, $fail = false) {
+    public static function URL($url, $fail = false) {
         $path = self::path($url, false);
         return $path !== false ? To::url($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : $fail);
-    }
-
-    public static function u_r_l($url, $fail = false) {
-        return self::url($url, $fail);
     }
 
     public static function set($path, $stack = null) {
@@ -41,7 +37,7 @@ class Asset extends Genome {
             if (!isset(self::$lot[$x][0][$v])) {
                 self::$lot[$x][1][$v] = [
                     'path' => self::path($v),
-                    'url' => self::url($v),
+                    'url' => self::URL($v),
                     'id' => $v,
                     'stack' => (float) (isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10) + $i)
                 ];
@@ -99,7 +95,6 @@ class Asset extends Genome {
                 }
                 return strlen(N) ? substr($output, 0, -strlen(N)) : $output;
             }
-            return parent::__callStatic($kin, $lot);
         }
         return parent::__callStatic($kin, $lot);
     }
