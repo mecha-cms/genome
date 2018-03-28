@@ -19,7 +19,7 @@ class Elevator extends Genome {
         return call_user_func_array('HTML::unite', $input);
     }
 
-    public function __construct($input, $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
+    public function __construct($input = [], $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
         $key = __c2f__(static::class, '_') . ($NS ? '.' . $NS : "");
         $c = [
             // -1: previous

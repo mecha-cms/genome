@@ -24,7 +24,7 @@ function fn_document_if($content) {
                     sort($c);
                     $a[2]['class[]'] = $c;
                 }
-                return call_user_func_array('HTML::unite', $a);
+                return HTML::unite($a);
             }
             return $m[0];
         }, $content);

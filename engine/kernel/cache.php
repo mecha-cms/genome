@@ -54,7 +54,7 @@ class Cache extends Genome {
             File::write("")->saveTo($s, 0600);
         }
         $f = str_replace(ROOT, CACHE, $s) . '.php';
-        self::$cache[$f] = filemtime($f);
+        self::$cache[$f] = file_exists($f) ? filemtime($f) : 0;
         return $f;
     }
 

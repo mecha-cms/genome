@@ -9,7 +9,7 @@ class Page extends Genome {
 
     private static $page = []; // Cache!
 
-    public function __construct($input = null, $lot = [], $NS = []) {
+    public function __construct($input = [], $lot = [], $NS = []) {
         $key = __c2f__(static::class, '_', '\\');
         $this->NS = is_array($NS) ? array_replace(['*', $key], $NS) : $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
@@ -24,6 +24,8 @@ class Page extends Genome {
                 $c = filectime($path); // File creation time
                 $m = filemtime($path); // File modification time
             }
+            $def = STATE . DS . 'config.php';
+            $def = file_exists($def) ? require $def : [];
             $this->lot = array_replace([
                 'time' => date(DATE_WISE, $c),
                 'update' => date(DATE_WISE, $m),
@@ -32,10 +34,10 @@ class Page extends Genome {
                 'type' => u($x) . "", // Fake `type` data from the page’s file extension
                 'state' => (string) $x,
                 'id' => (string) $c,
-                'url' => To::url($path)
+                'url' => To::URL($path)
             ], is_array($input) ? $input : (isset($input) ? [
                 'path' => $input
-            ] : []), (array) a(Config::get($key, [])), $lot);
+            ] : []), isset($def[$key]) ? (array) $def[$key] : [], $lot);
             // Set `time` value from the page’s file name
             if (
                 $n &&
@@ -192,7 +194,7 @@ class Page extends Genome {
             $input = str_replace([X . "---\n", X], "", X . $input . "\n\n");
             $input = explode("\n...\n\n", $input, 2);
             // Do data…
-            $data = From::yaml($input[0], '  ', [], false);
+            $data = From::YAML($input[0], '  ', [], false);
             $data = $eval ? e($data, is_array($eval) ? $eval : []) : $data;
             // Do content…
             if (!isset($data['content'])) {
@@ -208,7 +210,7 @@ class Page extends Genome {
             $content = $input['content'];
             unset($input['content']);
         }
-        $header = To::yaml($input);
+        $header = To::YAML($input);
         return ($header ? "---\n" . $header . "\n..." : "") . ($content ? "\n\n" . $content : "");
     }
 

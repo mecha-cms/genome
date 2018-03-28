@@ -15,7 +15,7 @@ These page conditional statements are available to quickly indicate what type of
  - `$site->has('next')` → Return `true` if it is possible to go to the next page.
  - `$site->has('page')` → Return `1` if there is a page to load.
  - `$site->has('pages')` → Return the pages count if there are pages to load.
- - `$site->has('parent')` → Return `true` if current page has parent page.
+ - `$site->has('parent')` → Return the parent page’s file path if current page has parent page.
  - `$site->has('previous')` → Return `true` if it is possible to go to the previous page.
  - `$site->has('step')` → Return `true` if page URL contains the page offset.
  - `$site->is('$')` → Return the home page’s file path on home page.

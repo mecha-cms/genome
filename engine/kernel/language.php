@@ -64,7 +64,7 @@ class Language extends Genome {
 
     public function __construct($input = []) {
         if ($input) {
-            self::set(From::yaml($input));
+            self::set(From::YAML($input));
         }
         parent::__construct();
     }
@@ -94,7 +94,7 @@ class Language extends Genome {
     }
 
     public function __toString() {
-        return To::yaml(Config::get('_' . __c2f__(static::class, '_')));
+        return To::YAML(Config::get('_' . __c2f__(static::class, '_')));
     }
 
     public function __invoke($fail = []) {

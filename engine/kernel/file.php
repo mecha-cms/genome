@@ -35,7 +35,7 @@ class File extends Genome {
         $output = [
             'path' => $path,
             'name' => $n,
-            'url' => To::url($path),
+            'url' => To::URL($path),
             'extension' => is_file($path) ? $x : null,
             'create' => $create_date,
             'update' => $update_date,

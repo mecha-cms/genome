@@ -26,7 +26,7 @@ class Asset extends Genome {
 
     public static function URL($url, $fail = false) {
         $path = self::path($url, false);
-        return $path !== false ? To::url($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : $fail);
+        return $path !== false ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : $fail);
     }
 
     public static function set($path, $stack = null) {

@@ -50,6 +50,19 @@ class Union extends Genome {
 
     // Base union constructor
     protected function _unite($unit, $content = "", $data = [], $dent = 0) {
+        // `$union->unite(['div', "", ['id' => 'foo']], 1)`
+        if (is_array($unit)) {
+            $dent = $content ?: 0;
+            $unit = array_replace([
+                0 => null,
+                1 => "",
+                2 => []
+            ], $unit);
+            $data = $unit[2];
+            $content = $unit[1];
+            $unit = $unit[0];
+        }
+        // `$union->unite('div', "", ['id' => 'foo'], 0)`
         $dent = static::dent($dent);
         $u = $this->union[1][0];
         $s  = $dent . $u[0] . $unit . $this->_data($data, $unit);
@@ -87,7 +100,7 @@ class Union extends Genome {
             $output[1] = isset($m[4]) ? $m[3] : false;
             if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $d[4] . ')(?:' . $d0 . $d1 . '((?:[^' . $d[1] . $d[2] . '\\\]|\\\.)*)' . $d2 . ')?/s', $m[2], $mm)) {
                 foreach ($mm[1] as $k => $v) {
-                    $s = To::html(v($mm[2][$k]));
+                    $s = To::HTML(v($mm[2][$k]));
                     $s = $eval ? e($s) : $s;
                     if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
                         $s = $v;
@@ -136,20 +149,6 @@ class Union extends Genome {
         return Hook::fire(__c2f__(static::class, '_') . '.end:' . $unit, [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
     }
 
-    public static function hook(...$lot) {
-        if (isset($lot[0])) {
-            $s = __c2f__(static::class) . '.';
-            if (is_string($lot[0])) {
-                $lot[0] = $s . $lot[0];
-            } else if (is_array($lot[0])) {
-                foreach ($lot[0] as &$v) {
-                    $v = $s . $v;
-                }
-            }
-        }
-        return Hook::set(...$lot);
-    }
-
     // Indent…
     public static function dent($i) {
         return is_numeric($i) ? str_repeat(DENT, (int) $i) : $i;
@@ -157,7 +156,7 @@ class Union extends Genome {
 
     // Encode all union’s special character(s)…
     public static function x($v) {
-        return is_string($v) ? From::html($v) : $v;
+        return is_string($v) ? From::HTML($v) : $v;
     }
 
     public function __construct() {

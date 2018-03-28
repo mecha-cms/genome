@@ -61,7 +61,7 @@ class Message extends Genome {
     }
 
     public static function send($from, $to, $subject, $message) {
-        if (empty($to) || (!is_array($to) && !Is::email($to))) {
+        if (empty($to) || (!is_array($to) && !Is::EMail($to))) {
             return false;
         }
         if (is_array($to)) {

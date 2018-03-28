@@ -17,16 +17,16 @@ function fn_page_url($content, $lot = []) {
     }
     global $url;
     $s = Path::F($lot['path'], PAGE);
-    return rtrim($url . '/' . ltrim(To::url($s), '/'), '/');
+    return rtrim($url . '/' . ltrim(To::URL($s), '/'), '/');
 }
 
 Hook::set('page.url', 'fn_page_url', 1);
 
 Lot::set([
-    'page' => new Page([]),
-    'pager' => new Elevator([]),
+    'page' => new Page,
+    'pager' => new Elevator,
     'pages' => [],
-    'parent' => new Page([])
+    'parent' => new Page
 ]);
 
 Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state) {
@@ -123,6 +123,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
                     return false;
                 });
             }
+            $files = array_values($files);
             foreach (Anemon::eat($files)->chunk($chunk, $i) as $file) {
                 $pages[] = new Page($file);
             }
