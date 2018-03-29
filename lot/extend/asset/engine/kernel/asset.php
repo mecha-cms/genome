@@ -5,23 +5,15 @@ class Asset extends Genome {
     public static $lot = [];
 
     public static function path($path, $fail = false) {
-        global $config, $url;
+        global $url;
         if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
             // External URL, nothing to check!
             if (strpos($path, '://' . $url->host) === false && strpos($path, '//' . $url->host) !== 0) {
                 return $fail;
             }
         }
-        // Full path, be quick!
-        if (strpos($path, ROOT) === 0) {
-            return File::exist($path, $fail);
-        }
-        return File::exist([
-            // Relative to `asset` folder of the current shield
-            SHIELD . DS . $config->shield . DS . 'asset' . DS . ltrim($path, '/'),
-            // Relative to `lot\asset` folder
-            ASSET . DS . ltrim($path, '/')
-        ], $fail);
+        // Return the path if exist!
+        return File::exist($path, $fail);
     }
 
     public static function URL($url, $fail = false) {
