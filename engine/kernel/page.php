@@ -217,24 +217,24 @@ class Page extends Genome {
     private static $data = [];
 
     public static function open($path, $lot = [], $NS = []) {
-        self::$data = ['path' => $path];
+        self::$data = [['path' => $path], $lot, $NS];
         return new static($path, $lot, $NS);
     }
 
-    public static function data($input, $fn = null) {
+    public static function set($input, $fn = null) {
         if (!is_array($input)) {
             if (is_callable($fn)) {
-                self::$data[$input] = call_user_func($fn, self::$data);
+                self::$data[0][$input] = call_user_func_array($fn, self::$data);
                 $input = [];
             } else {
                 $input = ['content' => $input];
             }
         }
-        self::$data = array_replace(self::$data, $input);
-        foreach (self::$data as $k => $v) {
-            if ($v === false) unset(self::$data[$k]);
+        self::$data[0] = array_replace(self::$data[0], $input);
+        foreach (self::$data[0] as $k => $v) {
+            if ($v === false) unset(self::$data[0][$k]);
         }
-        return new static(isset(self::$data['path']) ? self::$data['path'] : null, $input);
+        return new static(...self::$data);
     }
 
     public function get($key, $fail = null) {
@@ -249,27 +249,13 @@ class Page extends Genome {
     }
 
     public function saveTo($path, $consent = 0600) {
-        $data = self::$data;
+        $data = self::$data[0];
         unset($data['path']);
-        File::write(self::unite($data))->saveTo($path, $consent);
+        File::set(self::unite($data))->saveTo($path, $consent);
     }
 
     public function save($consent = 0600) {
-        return self::saveTo(self::$data['path'], $consent);
-    }
-
-    public static function hook(...$lot) {
-        if (isset($lot[0])) {
-            $s = __c2f__(static::class) . '.';
-            if (is_string($lot[0])) {
-                $lot[0] = $s . $lot[0];
-            } else if (is_array($lot[0])) {
-                foreach ($lot[0] as &$v) {
-                    $v = $s . $v;
-                }
-            }
-        }
-        return Hook::set(...$lot);
+        return self::saveTo(self::$data[0]['path'], $consent);
     }
 
 }

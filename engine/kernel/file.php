@@ -196,7 +196,7 @@ class File extends Genome {
     }
 
     // Write `$data` before save
-    public static function write($data) {
+    public static function set($data) {
         $self = new static;
         $self->content = $data;
         return $self;
