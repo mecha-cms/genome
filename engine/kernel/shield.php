@@ -140,18 +140,4 @@ class Shield extends Genome {
         return isset($key) ? (array_key_exists($key, $state) ? $state[$key] : $fail) : $state;
     }
 
-    public static function hook(...$lot) {
-        if (isset($lot[0])) {
-            $s = __c2f__(static::class) . '.';
-            if (is_string($lot[0])) {
-                $lot[0] = $s . $lot[0];
-            } else if (is_array($lot[0])) {
-                foreach ($lot[0] as &$v) {
-                    $v = $s . $v;
-                }
-            }
-        }
-        return Hook::set(...$lot);
-    }
-
 }
