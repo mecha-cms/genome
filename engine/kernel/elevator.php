@@ -9,6 +9,7 @@ class Elevator extends Genome {
     const EAST = '&#x25B6;';
 
     public $config = [];
+    public $c = [];
 
     protected $bucket = [];
     protected $NS = "";
@@ -16,12 +17,12 @@ class Elevator extends Genome {
     protected function _unite($input, $alt = ['span']) {
         if (!$alt || !$input) return "";
         $input = array_replace_recursive($alt, $input);
-        return call_user_func_array('HTML::unite', $input);
+        return HTML::unite($input);
     }
 
-    public function __construct($input = [], $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
-        $key = __c2f__(static::class, '_') . ($NS ? '.' . $NS : "");
-        $c = [
+    public function __construct($input = [], $chunk = [5, 0], $path = true, $config = []) {
+        $key = __c2f__(static::class, '_');
+        $this->c = [
             // -1: previous
             //  0: parent
             //  1: next
@@ -48,33 +49,42 @@ class Elevator extends Genome {
                     1 => self::SOUTH
                 ]
             ],
-            'lot' => [$input, $chunk, $index, $path, $config, $NS]
+            'lot' => [$input, $chunk, $path, $config]
         ];
-        $cc = array_replace_recursive($c, $config);
-        $this->config = Hook::fire($key, [$cc, $c, $this]);
-        $d = $this->config['direction'];
-        global $url;
-        if (isset($chunk)) {
-            $input = Anemon::eat($input)->chunk($chunk);
+        $c = array_replace_recursive($this->c, $config);
+        $d = $c['direction'];
+        $p = $GLOBALS['URL']['path'];
+        $r = $GLOBALS['URL']['current'];
+        if (is_array($chunk)) {
+            $chunk = array_replace([5, 0], $chunk);
+            $input = Anemon::eat($input)->chunk($chunk[0]);
         }
         if ($path === true) {
-            $path = $url->current;
+            $path = $r;
         }
         $path = rtrim($path, '/');
         $parent = Path::D($path);
-        if (!isset($chunk)) {
-            $i = $input ? array_search($index, $input) : 0;
-            $i = isset($i) ? $i : 0;
-            if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null;
-            if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
-            if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] : null;
+        // @pages
+        if (is_array($chunk)) {
+            $i = $chunk[1];
+            if ($d['-1'] !== false)
+                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $i : null;
+            if ($d['0'] !== false)
+                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) : null;
+            if ($d['1'] !== false)
+                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) : null;
+        // @page
         } else {
-            if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$index - 1]) ? $path . '/' . $index : null;
-            if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
-            if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
+            $i = ($input ? array_search($chunk, $input) : 0) ?: 0;
+            if ($d['-1'] !== false)
+                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null;
+            if ($d['0'] !== false)
+                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) : null;
+            if ($d['1'] !== false)
+                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] : null;
         }
+        $this->config = $c;
         $this->NS = $key;
-        $this->bucket = Hook::fire($key . '.a', [$cc, $c, $this]);
         parent::__construct();
     }
 
@@ -111,9 +121,12 @@ class Elevator extends Genome {
         $d = $c['direction'];
         $u = $c['union'];
         $html = [];
-        if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
-        if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
-        if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
+        if ($d['-1'] !== false)
+            $html[] = $this->{$d['-1']}(true);
+        if ($d['0'] !== false)
+            $html[] = $this->{$d['0']}(true);
+        if ($d['1'] !== false)
+            $html[] = $this->{$d['1']}(true);
         return Hook::fire($this->NS . '.yield', [implode(' ', $html), $this]);
     }
 
