@@ -9,7 +9,7 @@ Hook::set('page.description', function($content) {
 });
 
 // Add CSS file to the `<head>` section…
-Asset::set('css/document.min.css');
+Asset::set('css/document.min.css', 20);
 
 // Add JS file to the `<body>` section…
-Asset::set('js/document.min.js');
+Asset::set('js/document.min.js', 20);
