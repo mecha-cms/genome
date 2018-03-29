@@ -3,7 +3,7 @@
 class Mecha extends Genome {
 
     // Current version
-    const version = '2.0.1';
+    const version = '2.1.0';
 
     // Compare with current version
     public static function version($v = null, $c = null) {
