@@ -25,7 +25,7 @@ class Form extends HTML {
         ];
         self::__($name, $attr_o);
         $attr_o['name'] = $name;
-        $attr_o['value'] = Request::restore('post', $name, $value);
+        $attr_o['value'] = HTTP::restore('post', $name, $value);
         return self::unite('input', false, array_replace_recursive($attr_o, $attr), $dent);
     }
 
@@ -35,7 +35,7 @@ class Form extends HTML {
         $attr_o = [];
         self::__($name, $attr_o);
         unset($attr_o['required']);
-        $select = (string) Request::restore('post', $name, $select);
+        $select = (string) HTTP::restore('post', $name, $select);
         $attr_o['name'] = $name;
         $attr_o = array_replace_recursive($attr_o, $attr);
         foreach ($option as $key => $value) {
@@ -89,7 +89,7 @@ class Form extends HTML {
             $placeholder = explode("\n", n($placeholder), 2)[0];
         }
         $attr_o['placeholder'] = $placeholder;
-        return self::unite('textarea', self::x(Request::restore('post', $name, $value)), array_replace_recursive($attr_o, $attr), $dent);
+        return self::unite('textarea', self::x(HTTP::restore('post', $name, $value)), array_replace_recursive($attr_o, $attr), $dent);
     }
 
     private static function __(&$s, &$a) {

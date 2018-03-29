@@ -70,7 +70,7 @@ Config::set('is', [
     'home' => $if_0 ? $if_1 : false, // alias for `$`
     'page' => $path === "" && $if_1 || $path !== "" && $if_3 ? ($path === "" ? $if_1 : $if_3) : false,
     'pages' => $path === "" && $if_4 || $path !== "" && !$if_2 && $if_5 ? ($path === "" ? $if_4 : $if_5) : false,
-    'search' => Request::is('get', Config::get('q'))
+    'search' => HTTP::is('get', Config::get('q'))
 ]);
 
 $pages = $path === "" ? count($if_4) : count($if_5);

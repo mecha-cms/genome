@@ -27,7 +27,7 @@ function fn_art($content) {
     return $content;
 }
 
-if (!Request::is('get', 'art') || Request::get('art')) {
+if (!HTTP::is('get', 'art') || HTTP::get('art')) {
     Hook::set('page.css', 'fn_page_css', 2);
     Hook::set('page.js', 'fn_page_js', 2);
     Hook::set('shield.yield', 'fn_art', 1);

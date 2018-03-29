@@ -102,14 +102,14 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
         }
         Lot::set([
             'page' => $page,
-            'pager' => new Elevator($_files, null, $page->slug, $url . '/' . $_path, $elevator, 'page'),
+            'pager' => new Elevator($_files, $page->slug, $url . '/' . $_path, $elevator),
             'parent' => new Page($_file)
         ]);
         Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         if (!$site->is('pages')) {
             // Page(s) view has been disabled!
         } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
-            if ($query = l(Request::get($site->q, ""))) {
+            if ($query = l(HTTP::get($site->q, ""))) {
                 Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                 $query = explode(' ', $query);
                 Config::set('is.search', true);
@@ -135,7 +135,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
                 Shield::abort('404/' . $path_canon);
             }
             Lot::set([
-                'pager' => new Elevator($files, $chunk, $i, $url . '/' . $path_canon, $elevator, 'pages'),
+                'pager' => new Elevator($files, [$chunk, $i], $url . '/' . $path_canon, $elevator),
                 'pages' => $pages
             ]);
             return Shield::attach('pages/' . $path_canon);

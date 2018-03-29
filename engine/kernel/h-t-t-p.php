@@ -2,6 +2,14 @@
 
 class HTTP extends Genome {
 
+    const config = [
+        'session' => [
+            'request' => 'mecha.request'
+        ]
+    ];
+
+    public static $config = self::config;
+
     public static $message = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -65,13 +73,15 @@ class HTTP extends Genome {
         511 => 'Network Authentication Required' // RFC6585
     ];
 
-    public static function status($i = 200) {
+    public static function status($i = null) {
         if (is_int($i) && isset(self::$message[$i])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
                 header('Status: ' . $i . ' ' . self::$message[$i]);
             } else {
                 header($_SERVER['SERVER_PROTOCOL'] . ' ' . $i . ' ' . self::$message[$i]);
             }
+        } else if (!isset($i)) {
+            return http_response_code();
         }
         return new static;
     }
@@ -126,45 +136,75 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function MIME($mime, $charset = null) {
+    public static function is($id = null, $key = null) {
+        $r = strtoupper($_SERVER['REQUEST_METHOD']);
+        if (isset($id)) {
+            $id = strtoupper($id);
+            if (isset($key)) {
+                return array_key_exists($key, $GLOBALS['_' . $id]);
+            }
+            return $id === $r;
+        }
+        return $r;
+    }
+
+    public static function type($mime, $charset = null) {
         header('Content-Type: ' . $mime . (isset($charset) ? '; charset=' . $charset : ""));
         return new static;
     }
 
-    public static function post($url, $fields = []) {
-        if (!extension_loaded('curl')) {
-            exit('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
+    // Save state
+    public static function save($id, $key = null, $value = null) {
+        $data = self::__callStatic($id, [$key, $value]);
+        if (isset($key)) {
+            if (!is_array($key)) {
+                $key = [$key => $value];
+            }
+        } else {
+            $key = $data;
         }
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $fields);
-        $output = curl_exec($curl);
-        curl_close($curl);
-        return $output;
+        $s = self::$config['session']['request'] . '.' . $id;
+        $cache = Session::get($s, []);
+        Session::set($s, array_replace_recursive($cache, $key));
+        return new static;
     }
 
-    public static function get($url, $fields = []) {
-        if (is_string($fields)) {
-            $url .= '?' . str_replace([X . '?', X], "", X . $fields);
-        } else {
-            $url .= '?' . http_build_query($fields);
+    // Restore state
+    public static function restore($id, $key = null, $fail = null) {
+        $s = self::$config['session']['request'] . '.' . $id;
+        $cache = Session::get($s, []);
+        if (isset($key)) {
+            self::delete($id, $key);
+            return Anemon::get($cache, $key, $fail);
         }
-        if (extension_loaded('curl')) {
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_HEADER, 0);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-            $output = curl_exec($curl);
-            curl_close($curl);
-            return $output;
-        } else {
-            return file_get_contents($url);
+        self::delete($id);
+        return $cache;
+    }
+
+    // Delete state
+    public static function delete($id, $key = null) {
+        Session::reset(self::$config['session']['request'] . '.' . $id . (isset($key) ? '.' . $key : ""));
+        return new static;
+    }
+
+    public static function __callStatic($kin, $lot = []) {
+        if (!self::_($kin)) {
+            $data = $GLOBALS['_' . strtoupper($kin)];
+            $data = isset($data) ? $data : [];
+            $key = array_shift($lot);
+            $fail = array_shift($lot);
+            $eval = array_shift($lot);
+            if (!isset($eval)) {
+                $eval = true;
+            }
+            if (isset($key)) {
+                $o = Anemon::get($data, $key, $fail);
+                $o = $eval ? e($o) : $o;
+                return $o === 0 || $o === '0' || !empty($o) ? $o : $fail;
+            }
+            return !empty($data) ? ($eval ? e($data) : $data) : $fail;
         }
+        return parent::__callStatic($kin, $lot);
     }
 
 }
