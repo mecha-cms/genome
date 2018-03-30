@@ -26,7 +26,8 @@ class Config extends Genome {
                 Anemon::set($cargo, $k, $v);
             }
         }
-        self::$bucket[$c] = array_replace_recursive(self::$bucket[$c], $cargo);
+        $o = isset(self::$bucket[$c]) ? (array) self::$bucket[$c] : [];
+        self::$bucket[$c] = array_replace_recursive($o, $cargo);
         return new static;
     }
 
@@ -42,7 +43,8 @@ class Config extends Genome {
             }
             return o($output);
         }
-        return o(Anemon::get(self::$bucket[$c], $key, $fail));
+        $output = isset(self::$bucket[$c]) ? (array) self::$bucket[$c] : [];
+        return o(Anemon::get($output, $key, $fail));
     }
 
     public static function reset($key = null) {
@@ -116,7 +118,7 @@ class Config extends Genome {
             $alt = array_shift($lot) ?: false;
         }
         if ($fail instanceof \Closure) {
-            return call_user_func($fail, self::get($kin, $alt));
+            return $fail(self::get($kin, $alt));
         }
         return self::get($kin, $fail);
     }

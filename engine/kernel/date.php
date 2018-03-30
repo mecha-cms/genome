@@ -152,7 +152,7 @@ class Date extends Genome {
     }
 
     public function __toString() {
-        return $this->__invoke();
+        return $this->format();
     }
 
     public function __invoke($format = DATE_WISE) {

@@ -136,10 +136,10 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
                                     $v = isset($v[$b]) ? $v[$b] : $m[0];
                                 }
                             }
-                            return $fn ? $fn($v) : $v;
+                            return $fn ? call_user_func($fn, $v) : $v;
                         }
                     }
-                    return $fn ? $fn($v) : $v;
+                    return $fn ? call_user_func($fn, $v) : $v;
                 }, $s);
             }
             // `%{$}%`
@@ -1053,7 +1053,7 @@ function y($x, $a = []) {
     // By function
     } else if (is_callable($x)) {
         ob_start();
-        call_user_func_array($x, $a);
+        call_user_func($x, ...$a);
         return ob_get_clean();
     }
     return false;

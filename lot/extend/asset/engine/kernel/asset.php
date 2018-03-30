@@ -12,8 +12,12 @@ class Asset extends Genome {
                 return $fail;
             }
         }
-        // Return the path if exist!
-        return File::exist($path, $fail);
+        // Full path, be quick!
+        if (strpos($path = To::path($path), ROOT) === 0) {
+            return File::exist($path, $fail);
+        }
+        // Return the path relative to the `.\lot\asset` folder if exist!
+        return File::exist(ASSET . DS . ltrim($path, DS), $fail);
     }
 
     public static function URL($url, $fail = false) {
@@ -26,8 +30,8 @@ class Asset extends Genome {
         $stack = (array) $stack;
         foreach ((array) $path as $k => $v) {
             $x = Path::X($v);
-            if (!isset(self::$lot[$x][0][$v])) {
-                self::$lot[$x][1][$v] = [
+            if (!isset(self::$lot[0][$x][$v])) {
+                self::$lot[1][$x][$v] = [
                     'path' => self::path($v),
                     'url' => self::URL($v),
                     'id' => $v,
@@ -39,19 +43,19 @@ class Asset extends Genome {
         return new static;
     }
 
-    public static function get($path = null, $fail = false) {
+    public static function get($path = null, $fail = false, $i = 1) {
         if (isset($path)) {
             $x = Path::X($path);
-            return isset(self::$lot[$x][1][$path]) ? self::$lot[$x][1][$path] : $fail;
+            return isset(self::$lot[$i][$x][$path]) ? self::$lot[$i][$x][$path] : $fail;
         }
-        return !empty(self::$lot) ? self::$lot : $fail;
+        return !empty(self::$lot[$i]) ? self::$lot[$i] : $fail;
     }
 
     public static function reset($path = null) {
         if (isset($path)) {
             $x = Path::X($path);
-            self::$lot[$x][0][$path] = 1;
-            unset(self::$lot[$x][1][$path]);
+            self::$lot[0][$x][$path] = 1;
+            unset(self::$lot[1][$x][$path]);
         } else {
             self::$lot = [];
         }
@@ -71,8 +75,8 @@ class Asset extends Genome {
                 ]);
                 return is_callable($fn) ? call_user_func($fn, $s, $path, $attr) : ($s['path'] ? file_get_contents($s['path']) : "");
             }
-            if (isset(self::$lot[$kin][1])) {
-                $assets = Anemon::eat(self::$lot[$kin][1])->sort([1, 'stack'], true)->vomit();
+            if (isset(self::$lot[1][$kin])) {
+                $assets = Anemon::eat(self::$lot[1][$kin])->sort([1, 'stack'], true)->vomit();
                 $output = "";
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {

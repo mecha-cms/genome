@@ -214,7 +214,7 @@ foreach([
         if (is_string($lot[0]) && Is::path($lot[0], true)) {
             $lot[0] = include $lot[0];
         }
-        return call_user_func_array('__to_yaml__', $lot);
+        return __to_yaml__(...$lot);
     }
 ] as $k => $v) {
     To::_($k, $v);

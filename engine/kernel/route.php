@@ -107,7 +107,7 @@ class Route extends Genome {
         if (isset($id)) {
             $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
-                call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                call_user_func(self::$lot[1][$id]['fn'], ...$lot);
                 return true;
             }
         } else {
@@ -115,16 +115,14 @@ class Route extends Genome {
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s)…
                 if (isset(self::$lot_o[1][$id])) {
-                    Hook::fire($s . 'lot.enter', [self::$lot_o[1][$id], self::$lot[1][$id]]);
                     $fn = Anemon::eat(self::$lot_o[1][$id])->sort([1, 'stack'])->vomit();
                     foreach ($fn as $v) {
-                        call_user_func_array($v['fn'], $lot);
+                        call_user_func($v['fn'], ...$lot);
                     }
-                    Hook::fire($s . 'lot.exit', [self::$lot_o[1][$id], self::$lot[1][$id]]);
                 }
                 // Passed!
                 Hook::fire($s . 'enter', [self::$lot[1][$id], null]);
-                $r = call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                $r = call_user_func(self::$lot[1][$id]['fn'], ...$lot);
                 Hook::fire($s . 'exit', [self::$lot[1][$id], null]);
                 return $r;
             } else {
@@ -134,17 +132,15 @@ class Route extends Genome {
                     if (($route = self::is($k, false, $v['is']['pattern'])) !== false) {
                         // Loading hook(s)…
                         if (isset(self::$lot_o[1][$k])) {
-                            Hook::fire($s . 'lot.enter', [self::$lot_o[1][$k], self::$lot[1][$k]]);
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack'])->vomit();
                             foreach ($fn as $f) {
                                 if (!is_callable($f['fn'])) continue;
-                                call_user_func_array($f['fn'], $route['lot']);
+                                call_user_func($f['fn'], ...$route['lot']);
                             }
-                            Hook::fire($s . 'lot.exit', [self::$lot_o[1][$k], self::$lot[1][$k]]);
                         }
                         // Passed!
                         Hook::fire($s . 'enter', [self::$lot[1][$k], null]);
-                        $r = call_user_func_array($v['fn'], $route['lot']);
+                        $r = call_user_func($v['fn'], ...$route['lot']);
                         Hook::fire($s . 'exit', [self::$lot[1][$k], null]);
                         return $r;
                     }

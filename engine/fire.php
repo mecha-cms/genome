@@ -38,13 +38,6 @@ Config::ignite(STATE . DS . 'config.php');
 $config = new Config;
 $url = new URL;
 
-// Set default page conditional statement(s)
-Config::set('is', [
-    '$' => ($s = !$GLOBALS['URL']['path']),
-    'home' => $s, // alias for `is.$`
-    'error' => false
-]);
-
 // Set default date time zone
 Date::zone($config->zone);
 
@@ -106,7 +99,7 @@ if (Cache::expire(EXTEND, $id)) {
     $content = [];
     foreach ($c as $k => $v) {
         $i18n = new Page($k, [], ['*', 'language']);
-        $fn = 'From::' . __c2f__($i18n->type, '_');
+        $fn = 'From::' . p($i18n->type);
         $c = $i18n->content;
         $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
     }
@@ -118,7 +111,7 @@ if (Cache::expire(EXTEND, $id)) {
 // Load extension(s)’ language…
 Language::set($content);
 
-// Load all extension(s)…
+// Load extension(s)…
 foreach (array_keys($extends) as $v) {
     if (Path::B($v) !== '__index.php') {
         call_user_func(function() use($v) {
@@ -127,23 +120,6 @@ foreach (array_keys($extends) as $v) {
         });
     }
 }
-
-// Load user language(s) from the current shield folder if any
-$folder_shield = SHIELD . DS . $config->shield . DS;
-$i18n = $folder_shield . 'language' . DS;
-if ($l = File::exist([
-    $i18n . $config->language . '.page',
-    $i18n . 'en-us.page'
-])) {
-    $i18n = new Page($l, [], ['*', 'language']);
-    $fn = 'From::' . __c2f__($i18n->type, '_');
-    $c = $i18n->content;
-    Language::set(is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
-}
-
-// Load user function(s) from the current shield folder if any
-if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
-if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
 // Load all route(s)…
 Hook::set('on.ready', 'Route::fire', 20)->fire('on.ready');

@@ -33,7 +33,7 @@ abstract class Genome {
         $c = static::class;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             if (is_callable(self::$_[$c][$kin])) {
-                return call_user_func_array(\Closure::bind(self::$_[$c][$kin], $this), $lot);
+                return call_user_func(\Closure::bind(self::$_[$c][$kin], $this), ...$lot);
             }
             return self::$_[$c][$kin];
         } else if (defined('DEBUG') && DEBUG) {
@@ -47,7 +47,7 @@ abstract class Genome {
         $c = static::class;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             if (is_callable(self::$_[$c][$kin])) {
-                return call_user_func_array(self::$_[$c][$kin], $lot);
+                return call_user_func(self::$_[$c][$kin], ...$lot);
             }
             return self::$_[$c][$kin];
         } else if (defined('DEBUG') && DEBUG) {

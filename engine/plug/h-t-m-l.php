@@ -42,7 +42,7 @@ foreach (['ol', 'ul'] as $kin) {
         foreach ($list as $k => $v) {
             if (is_array($v)) {
                 $html .= $tag->begin('li', [], $dent + 1) . $k . N;
-                $html .= call_user_func('HTML::' . $kin, $v, $attr, $dent + 2) . N;
+                $html .= HTML::unite($kin, $v, $attr, $dent + 2) . N;
                 $html .= $tag->end('li', $dent + 1) . N;
             } else {
                 $html .= HTML::unite('li', $v, [], $dent + 1) . N;

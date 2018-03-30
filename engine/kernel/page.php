@@ -24,8 +24,6 @@ class Page extends Genome {
                 $c = filectime($path); // File creation time
                 $m = filemtime($path); // File modification time
             }
-            $def = STATE . DS . 'config.php';
-            $def = file_exists($def) ? require $def : [];
             $this->lot = array_replace([
                 'time' => date(DATE_WISE, $c),
                 'update' => date(DATE_WISE, $m),
@@ -37,7 +35,7 @@ class Page extends Genome {
                 'url' => To::URL($path)
             ], is_array($input) ? $input : (isset($input) ? [
                 'path' => $input
-            ] : []), isset($def[$key]) ? (array) $def[$key] : [], $lot);
+            ] : []), (array) a(Config::get($key, [])), $lot);
             // Set `time` value from the page’s file name
             if (
                 $n &&
@@ -96,6 +94,9 @@ class Page extends Genome {
             $a[$key] = e($data);
         }
         self::$page[$this->hash] = $this->lot = $a;
+        if (__is_instance__($a[$key]) && method_exists($a[$key], '__invoke')) {
+            $a[$key] = $a[$key](...$lot);
+        }
         $fail = array_shift($lot);
         if ($fail === false) {
             // Disable hook(s) with `$page->key(false)`
@@ -103,7 +104,7 @@ class Page extends Genome {
         } else {
             if ($fail instanceof \Closure) {
                 // As function call with `$page->key(function($text) { … })`
-                $a[$key] = call_user_func($fail, $a[$key], $this);
+                $a[$key] = $fail($a[$key], $this);
             } else if ($a[$key] === null) {
                 // Other(s)… `$page->key('default value')`
                 $a[$key] = $fail;
@@ -224,7 +225,7 @@ class Page extends Genome {
     public static function set($input, $fn = null) {
         if (!is_array($input)) {
             if (is_callable($fn)) {
-                self::$data[0][$input] = call_user_func_array($fn, self::$data);
+                self::$data[0][$input] = call_user_func($fn, ...self::$data);
                 $input = [];
             } else {
                 $input = ['content' => $input];

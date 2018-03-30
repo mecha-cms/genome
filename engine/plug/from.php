@@ -185,11 +185,11 @@ foreach ([
             $out = [];
             $lot[0] = str_replace([X . "---\n", "\n..." . X, X], "", X . $lot[0] . X);
             foreach (explode("\n---\n", $lot[0]) as $v) {
-                $out[] = call_user_func_array('__from_yaml__', $lot);
+                $out[] = __from_yaml__(...$lot);
             }
             return $out;
         }
-        return call_user_func_array('__from_yaml__', $lot);
+        return __from_yaml__(...$lot);
     }
 ] as $k => $v) {
     From::_($k, $v);

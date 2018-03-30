@@ -185,7 +185,7 @@ class File extends Genome {
                     is_int($stop) && $stop === $i ||
                     is_string($stop) && strpos($chunk, $stop) !== false ||
                     is_array($stop) && strpos($chunk, $stop[0]) === $stop[1] ||
-                    is_callable($stop) && call_user_func($stop, [$chunk, $i], $output)
+                    is_callable($stop) && call_user_func([$chunk, $i], $output)
                 ) break;
                 ++$i;
             }

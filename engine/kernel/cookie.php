@@ -19,7 +19,7 @@ class Cookie extends Genome {
         $value = self::x($value);
         $_COOKIE[$key] = $value;
         array_unshift($cc, $key, $value);
-        call_user_func_array('setcookie', $cc);
+        setcookie(...$cc);
         return new static;
     }
 

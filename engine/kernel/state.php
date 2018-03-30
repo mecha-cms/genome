@@ -14,9 +14,6 @@ class State extends Genome {
             return parent::__call($key, $lot);
         }
         $x = $this->__get($key);
-        if (__is_instance__($x) && method_exists($x, '__invoke')) {
-            return call_user_func_array($x, $lot);
-        }
         $fail = array_shift($lot);
         $alt = array_shift($lot);
         if ($fail instanceof \Closure) {
