@@ -11,7 +11,7 @@
     <meta name="robots" content="noindex">
     <?php endif; ?>
     <meta name="author" content="<?php echo $page->author; ?>">
-    <title><?php echo To::text($site->page->title); ?></title>
+    <title><?php echo To::text($site->trace); ?></title>
     <link href="<?php echo $url; ?>/favicon.ico" rel="shortcut icon">
     <link href="<?php echo $url->clean; ?>" rel="canonical">
   </head>

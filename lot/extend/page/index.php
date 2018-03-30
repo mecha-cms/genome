@@ -63,7 +63,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
         ]
     ];
     $pages = $page = [];
-    Config::set('page.title', new Anemon([$site->title], ' &#x00B7; '));
+    Config::set('trace', new Anemon([$site->title], ' &#x00B7; '));
     if ($file = $site->is('page')) {
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
@@ -105,12 +105,12 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
             'pager' => new Elevator($_files, $page->slug, $url . '/' . $_path, $elevator),
             'parent' => new Page($_file)
         ]);
-        Config::set('page.title', new Anemon([$page->title, $site->title], ' &#x00B7; '));
+        Config::set('trace', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         if (!$site->is('pages')) {
             // Page(s) view has been disabled!
         } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
             if ($query = l(HTTP::get($site->q, ""))) {
-                Config::set('page.title', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
+                Config::set('trace', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                 $query = explode(' ', $query);
                 Config::set('is.search', true);
                 $files = array_filter($files, function($v) use($query) {
