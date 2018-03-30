@@ -33,11 +33,11 @@ class Union extends Genome {
     protected function _data($a, $unit = "") {
         if (!is_array($a)) {
             $a = trim((string) $a);
-            return strlen($a) ? ' ' . $a : ""; // No hook(s) applied!
+            return strlen($a) ? ' ' . $a : "";
         }
         $output = "";
         $u = $this->union[1][1];
-        $a = Hook::fire(__c2f__(static::class, '_') . '.data' . ($unit ? ':' . $unit : ""), [array_replace_recursive($this->data, $a), $unit]);
+        $a = array_replace_recursive($this->data, $a);
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
             if (__is_anemon__($v)) {
@@ -65,9 +65,8 @@ class Union extends Genome {
         // `$union->unite('div', "", ['id' => 'foo'], 0)`
         $dent = static::dent($dent);
         $u = $this->union[1][0];
-        $s  = $dent . $u[0] . $unit . $this->_data($data, $unit);
-        $s .= $content === false ? $u[1] : $u[1] . ($content ? $content : "") . $u[0] . $u[2] . $unit . $u[1];
-        return Hook::fire(__c2f__(static::class, '_') . '.unit:' . $unit, [$s, [$unit, $content, $data]]);
+        $s = $dent . $u[0] . $unit . $this->_data($data, $unit);
+        return $s . ($content === false ? $u[1] : $u[1] . ($content ? $content : "") . $u[0] . $u[2] . $unit . $u[1]);
     }
 
     // Inverse version of `Union::unite()`
@@ -121,7 +120,7 @@ class Union extends Genome {
             $end = $block . $dent;
         }
         $u = $this->union[1][2];
-        return Hook::fire(__c2f__(static::class, '_') . '.unit:#', [$dent . $u[0] . $begin . $content . $end . $u[1], [null, $content, []]]);
+        return $dent . $u[0] . $begin . $content . $end . $u[1];
     }
 
     // Base union unit open
@@ -130,7 +129,7 @@ class Union extends Genome {
         $this->unit[] = $unit;
         $this->dent[] = $dent;
         $u = $this->union[1][0];
-        return Hook::fire(__c2f__(static::class, '_') . '.begin:' . $unit, [$dent . $u[0] . $unit . $this->_data($data, $unit) . $u[1], [$unit, null, $data]]);
+        return $dent . $u[0] . $unit . $this->_data($data, $unit) . $u[1];
     }
 
     // Base union unit close
@@ -138,7 +137,7 @@ class Union extends Genome {
         if ($unit === true) {
             // Close all!
             $s = "";
-            foreach ($this->unit as $u) {
+            while (array_pop($this->unit)) {
                 $s .= $this->_end() . ($dent ?: N);
             }
             return $s;
@@ -146,7 +145,7 @@ class Union extends Genome {
         $unit = isset($unit) ? $unit : array_pop($this->unit);
         $dent = isset($dent) ? static::dent($dent) : array_pop($this->dent);
         $u = $this->union[1][0];
-        return Hook::fire(__c2f__(static::class, '_') . '.end:' . $unit, [$unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "", [$unit, null, []]]);
+        return $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "";
     }
 
     // Indent…
@@ -166,7 +165,9 @@ class Union extends Genome {
 
     public function __call($kin, $lot = []) {
         if (method_exists($this, '_' . $kin)) {
-            return call_user_func_array([$this, '_' . $kin], $lot);
+            if (!(new ReflectionMethod($this, '_' . $kin))->isPublic()) {
+                return $this->{'_' . $kin}(...$lot);
+            }
         }
         return parent::__call($kin, $lot);
     }
@@ -174,7 +175,9 @@ class Union extends Genome {
     public static function __callStatic($kin, $lot = []) {
         $that = new static;
         if (!self::_($kin) && method_exists($that, '_' . $kin)) {
-            return call_user_func_array([$that, '_' . $kin], $lot);
+            if (!(new ReflectionMethod($that, '_' . $kin))->isPublic()) {
+                return $that->{$kin}(...$lot);
+            }
         }
         return parent::__callStatic($kin, $lot);
     }

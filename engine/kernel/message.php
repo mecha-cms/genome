@@ -41,7 +41,7 @@ class Message extends Genome {
             $s = Session::get(self::$id, "");
             $ss = Hook::fire($c . '.set.' . $kin, [$o]);
             if (strpos($s, $ss) === false) {
-                $s .= __replace__(call_user_func_array('HTML::unite', self::$config['message']), [$kin, $ss]);
+                $s .= __replace__(HTML::unite(...self::$config['message']), [$kin, $ss]);
             }
             Session::set(self::$id, $s);
         }
@@ -55,7 +55,7 @@ class Message extends Genome {
 
     public static function get($session_x = true) {
         $s = Session::get(self::$id, "");
-        $output = Hook::fire(__c2f__(static::class, '_') . '.get', [$s !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), $s) : ""]);
+        $output = Hook::fire(__c2f__(static::class, '_') . '.' . __FUNCTION__, [$s !== "" ? __replace__(HTML::unite(...self::$config['messages']), $s) : ""]);
         if ($session_x) self::reset();
         return $output;
     }
@@ -94,7 +94,7 @@ class Message extends Genome {
             return parent::__callStatic($kin, $lot);
         }
         array_unshift($lot, $kin);
-        return call_user_func_array('self::set', $lot);
+        return self::set(...$lot);
     }
 
 }

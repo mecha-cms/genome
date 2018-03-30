@@ -43,10 +43,8 @@ class Shield extends Genome {
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             // Begin shield part
-            Hook::fire($NS . 'lot.enter', [$out, $G]);
-            extract(Hook::fire($NS . 'lot', [$lot__, $G]));
+            extract($lot__);
             extract($_);
-            Hook::fire($NS . 'lot.exit', [$out, $G]);
             Hook::fire($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
@@ -78,13 +76,11 @@ class Shield extends Genome {
             $G['lot'] = $lot__;
             $G['path'] = $path__;
             // Begin shield
-            Hook::fire($NS . 'lot.enter', [$out, $G]);
-            extract(Hook::fire($NS . 'lot', [$lot__, $G]));
+            extract($lot__);
             extract($_);
             if (is_array($fail)) {
                 extract($fail);
             }
-            Hook::fire($NS . 'lot.exit', [$out, $G]);
             Hook::fire($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {

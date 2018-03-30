@@ -101,8 +101,10 @@ class HTML extends Union {
 
     public function __call($kin, $lot = []) {
         if (!self::_($kin) && !method_exists($this, '_' . $kin)) {
-            array_unshift($lot, $kin);
-            return call_user_func_array([$this, 'unite'], $lot);
+            if (!(new ReflectionMethod($that, '_' . $kin))->isPublic()) {
+                array_unshift($lot, $kin);
+                return $this->unite(...$lot);
+            }
         }
         return parent::__call($kin, $lot);
     }
@@ -110,8 +112,10 @@ class HTML extends Union {
     public static function __callStatic($kin, $lot = []) {
         $that = new static;
         if (!self::_($kin) && !method_exists($that, '_' . $kin)) {
-            array_unshift($lot, $kin);
-            return call_user_func_array([$that, 'unite'], $lot);
+            if (!(new ReflectionMethod($that, '_' . $kin))->isPublic()) {
+                array_unshift($lot, $kin);
+                return $that->unite(...$lot);
+            }
         }
         return parent::__callStatic($kin, $lot);
     }
