@@ -94,8 +94,10 @@ class Page extends Genome {
             $a[$key] = e($data);
         }
         self::$page[$this->hash] = $this->lot = $a;
-        if (__is_instance__($a[$key]) && method_exists($a[$key], '__invoke')) {
-            $a[$key] = $a[$key](...$lot);
+        if (count($lot) && $x = __is_instance__($a[$key])) {
+            if (method_exists($x, '__invoke')) {
+                $a[$key] = call_user_func([$x, '__invoke'], ...$lot);
+            }
         }
         $fail = array_shift($lot);
         if ($fail === false) {

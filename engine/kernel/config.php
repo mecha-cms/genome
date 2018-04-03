@@ -72,6 +72,11 @@ class Config extends Genome {
         }
         $fail = $alt = false;
         if (count($lot)) {
+            if ($fn = __is_instance__(self::get($kin))) {
+                if (method_exists($fn, '__invoke')) {
+                    return call_user_func([$fn, '__invoke'], ...$lot);
+                }
+            }
             $kin .= '.' . array_shift($lot);
             $fail = array_shift($lot) ?: false;
             $alt = array_shift($lot) ?: false;
