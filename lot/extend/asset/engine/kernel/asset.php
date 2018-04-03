@@ -16,8 +16,9 @@ class Asset extends Genome {
         if (strpos($path = To::path($path), ROOT) === 0) {
             return File::exist($path, $fail);
         }
-        // Return the path relative to the `.\lot\asset` folder if exist!
-        return File::exist(ASSET . DS . ltrim($path, DS), $fail);
+        // Return the path relative to the `.\lot\asset` or `.` folder if exist!
+        $s = ltrim($path, DS);
+        return File::exist([ASSET . DS . $s, ROOT . DS . $s], $fail);
     }
 
     public static function URL($url, $fail = false) {
@@ -91,6 +92,7 @@ class Asset extends Genome {
                 }
                 return strlen(N) ? substr($output, 0, -strlen(N)) : $output;
             }
+            return "";
         }
         return parent::__callStatic($kin, $lot);
     }

@@ -10,7 +10,6 @@ class Shield extends Genome {
     }
 
     public static function path($input, $fail = false) {
-        global $config;
         // Full path, be quick!
         if (is_string($input) && strpos($input, ROOT) === 0) {
             return File::exist(self::__($input), $fail);
@@ -19,98 +18,95 @@ class Shield extends Genome {
         }
         $input = Anemon::step($input, '/');
         array_unshift($input, str_replace('/', '.', $input[0]));
-        foreach ($input as $k => $v) {
+        foreach ($input as &$v) {
             // Full path, skip!
-            if (strpos($v, ROOT) === 0) continue;
-            $v = To::path($v);
-            $input[$k] = self::__(SHIELD . DS . $config->shield . DS . trim($v, DS));
+            if (strpos($v = To::path($v), ROOT) === 0) continue;
+            $v = self::__($v);
         }
-        return File::exist($input, $fail);
+        return File::exist(Hook::fire(__c2f__(static::class, '_') . '.' . __FUNCTION__, [$input, $input]), $fail);
     }
 
-    public static function get($input, $fail = false, $buffer = true) {
+    public static function get($input, $fail = false, $print = true) {
         $NS = __c2f__(static::class, '_') . '.' . __FUNCTION__ . '.';
         $out = "";
-        $_ = ['lot' => []];
+        Lot::set('lot', []);
         if (is_array($fail)) {
-            $_['lot'] = $fail;
+            Lot::set('lot', $fail);
             $fail = false;
         }
-        if ($path__ = Hook::fire($NS . 'path', [self::path($input, $fail), $input])) {
-            global $config;
-            $G = ['source' => $input];
-            $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
-            $G['lot'] = $lot__;
-            $G['path'] = $path__;
+        if ($path = self::path($input, $fail)) {
+            $G = [
+                'path' => $path,
+                'source' => $input
+            ];
             // Begin shield part
-            extract($lot__);
-            extract($_);
+            extract(Lot::get(null, []));
             Hook::fire($NS . 'enter', [$out, $G]);
-            if ($buffer) {
-                ob_start(function($content) use($G, $NS, &$out) {
-                    return ($out = Hook::fire($NS . 'yield', [$content, $G]));
-                });
-                require $path__;
-                ob_end_flush();
+            if (function_exists('ob_start')) {
+                ob_start();
+                require $path;
+                $out = ob_get_clean();
             } else {
-                require $path__;
+                $out = require $path;
             }
+            $out = Hook::fire($NS . 'yield', [$out, $G]);
             // End shield part
             Hook::fire($NS . 'exit', [$out, $G]);
         }
-        return $out;
+        if (!$print) {
+            return $out;
+        }
+        echo $out;
     }
 
-    public static function read($input, $fail = false, $buffer = true) {
+    public static function read($input, $fail = false, $print = true) {
         $NS = __c2f__(static::class, '_') . '.';
         $out = "";
-        $_ = ['lot' => []];
+        Lot::set('lot', []);
         if (is_array($fail)) {
-            $_['lot'] = $fail;
+            Lot::set('lot', $fail);
             $fail = false;
         }
-        if ($path__ = Hook::fire($NS . 'path', [self::path($input, $fail), $input])) {
-            global $config;
-            $G = ['source' => $input];
-            $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
-            $G['lot'] = $lot__;
-            $G['path'] = $path__;
+        if ($path = self::path($input, $fail)) {
+            $G = [
+                'path' => $path,
+                'source' => $input
+            ];
             // Begin shield
-            extract($lot__);
-            extract($_);
-            if (is_array($fail)) {
-                extract($fail);
-            }
+            extract(Lot::get(null, []));
             Hook::fire($NS . 'enter', [$out, $G]);
-            if ($buffer) {
-                ob_start(function($content) use($G, $NS, &$out) {
-                    return ($out = Hook::fire($NS . 'yield', [$content, $G]));
-                });
-                require $path__;
-                ob_end_flush();
+            if (function_exists('ob_start')) {
+                ob_start();
+                require $path;
+                $out = ob_get_clean();
             } else {
-                require $path__;
+                $out = require $path;
             }
+            $out = Hook::fire($NS . 'yield', [$out, $G]);
             // End shield
             Hook::fire($NS . 'exit', [$out, $G]);
         } else {
-            Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')', false);
+            $out = '<code>' . __METHOD__ . '(' . v(json_encode($input)) . ')</code>';
         }
-        return $out;
+        if (!$print) {
+            return $out;
+        }
+        echo $out;
     }
 
-    public static function attach($input, $fail = false, $buffer = true) {
-        self::read($input, $fail, $buffer);
+    public static function attach($input, $fail = false) {
+        self::read($input, $fail, true);
         exit;
     }
 
-    public static function abort($code = 404, $fail = false, $buffer = true) {
+    public static function abort($code = 404, $fail = false) {
         $path = self::path((string) $code);
         $s = explode('/', $path);
         $s = array_shift($s);
         $s = is_numeric($s) ? $s : '404';
         HTTP::status((int) $s);
-        self::attach($code, $fail, $buffer);
+        self::read($code, $fail, true);
+        exit;
     }
 
     public static function exist($input, $fail = false) {

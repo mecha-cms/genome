@@ -1,5 +1,17 @@
 <?php
 
+// Generate relative shield path to the `.\lot\shield\*` folder
+Hook::set('shield.path', function($path) use($config) {
+    if (!$path) {
+        return $path;
+    }
+    foreach ((array) $path as &$v) {
+        if (strpos($v, ROOT) === 0) continue;
+        $v = SHIELD . DS . $config->shield . DS . str_replace(SHIELD . DS, "", $v);
+    }
+    return $path;
+}, 0);
+
 Hook::set('on.ready', function() {
 
     // Include global variable(s)…
@@ -16,6 +28,11 @@ Hook::set('on.ready', function() {
         $fn = 'From::' . p($i18n->type);
         $c = $i18n->content;
         Language::set(is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
+    }
+
+    // Load current shield state if any
+    if ($state = File::exist($folder . 'state' . DS . 'config.php')) {
+        Lot::set('state', new State($state));
     }
 
     // Load user function(s) from the current shield folder if any
