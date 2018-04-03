@@ -11,7 +11,7 @@ function __is_anemon__($x) {
 
 function __is_instance__($x) {
     if (!is_object($x)) return false;
-    return ($x = get_class($x)) && $x !== 'stdClass';
+    return ($s = get_class($x)) && $s !== 'stdClass' ? $x : false;
 }
 
 function __is_anemon_0__($x) {
