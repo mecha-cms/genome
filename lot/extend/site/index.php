@@ -5,11 +5,11 @@ Hook::set('shield.path', function($path) use($config) {
     if (!$path) {
         return $path;
     }
-    foreach ((array) $path as &$v) {
-        if (strpos($v, ROOT) === 0) continue;
-        $v = SHIELD . DS . $config->shield . DS . str_replace(SHIELD . DS, "", $v);
+    $o = [];
+    foreach ($path = (array) $path as $v) {
+        $o[] = SHIELD . DS . $config->shield . DS . str_replace(SHIELD . DS, "", $v);
     }
-    return $path;
+    return array_merge($o, $path);
 }, 0);
 
 Hook::set('on.ready', function() {

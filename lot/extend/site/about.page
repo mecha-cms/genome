@@ -1,0 +1,14 @@
+---
+title: Site
+description: Common automation used to simplify development process for front-end users.
+author: Taufik Nurrohman
+type: Markdown
+version: 1.0.0
+...
+
+### Features
+
+ - Detect asset path relative to the `lot\asset` folder.
+ - Detect shield path relative to the `lot\shield\{$folder}` folder, where `{$folder}` is the active shield folder.
+
+<!-- block:donate -->
