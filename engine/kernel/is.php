@@ -56,7 +56,7 @@ class Is extends Genome {
     }
 
     // Check if `$this->bucket` contains `$s`
-    public function contain($s, $all = false, $x = X) {
+    public function has($s, $all = false, $x = X) {
         $input = $x . implode($x, $this->bucket) . $x;
         if (is_array($s)) {
             if (!$all) {
