@@ -1,16 +1,7 @@
 <?php
 
-// Generate relative shield path to the `.\lot\shield\*` folder
-Hook::set('shield.path', function($path) use($config) {
-    if (!$path) {
-        return $path;
-    }
-    $o = [];
-    foreach ($path = (array) $path as $v) {
-        $o[] = SHIELD . DS . $config->shield . DS . str_replace(SHIELD . DS, "", $v);
-    }
-    return array_merge($o, $path);
-}, 0);
+// Include worker(s)…
+require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'hook.php';
 
 Hook::set('on.ready', function() {
 
