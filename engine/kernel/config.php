@@ -16,8 +16,12 @@ class Config extends Genome {
 
     public static function set($key, $value = null) {
         $c = static::class;
-        if (__is_anemon__($key)) $key = a($key);
-        if (__is_anemon__($value)) $value = a($value);
+        if (is_object($key)) {
+            $key = a($key);
+            if (is_object($value)) {
+                $value = a($value);
+            }
+        }
         $cargo = [];
         if (!is_array($key)) {
             Anemon::set($cargo, $key, $value);
@@ -35,8 +39,7 @@ class Config extends Genome {
         $c = static::class;
         if (!isset($key)) {
             return !empty(self::$bucket[$c]) ? o(self::$bucket[$c]) : $fail;
-        }
-        if (__is_anemon__($key)) {
+        } else if (is_array($key) || is_object($key)) {
             $output = [];
             foreach ($key as $k => $v) {
                 $output[$k] = self::get($k, $v);
@@ -72,11 +75,17 @@ class Config extends Genome {
         }
         $fail = $alt = false;
         if (count($lot)) {
-            if ($fn = __is_instance__(self::get($kin))) {
+            $test = self::get($kin);
+            // Asynchronous value with function closure
+            if ($test instanceof \Closure) {
+                return call_user_func($test, ...$lot);
+            // Rich asynchronous value with class instance
+            } else if ($fn = __is_instance__($test)) {
                 if (method_exists($fn, '__invoke')) {
                     return call_user_func([$fn, '__invoke'], ...$lot);
                 }
             }
+            // Else, static value
             $kin .= '.' . array_shift($lot);
             $fail = array_shift($lot) ?: false;
             $alt = array_shift($lot) ?: false;
@@ -118,12 +127,23 @@ class Config extends Genome {
         }
         $fail = $alt = false;
         if (count($lot)) {
+            $test = self::get($kin);
+            // Asynchronous value with function closure
+            if ($test instanceof \Closure) {
+                return call_user_func($test, ...$lot);
+            // Rich asynchronous value with class instance
+            } else if ($fn = __is_instance__($test)) {
+                if (method_exists($fn, '__invoke')) {
+                    return call_user_func([$fn, '__invoke'], ...$lot);
+                }
+            }
+            // Else, static value
             $kin .= '.' . array_shift($lot);
             $fail = array_shift($lot) ?: false;
             $alt = array_shift($lot) ?: false;
         }
         if ($fail instanceof \Closure) {
-            return $fail(self::get($kin, $alt));
+            return call_user_func($fail, self::get($kin, $alt));
         }
         return self::get($kin, $fail);
     }
