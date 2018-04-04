@@ -5,7 +5,12 @@
 // __is_json__: check for valid JSON string format
 // __is_serial__: check for valid serialized string format
 
-function __is_anemon__($x) {
+function __is_anemon__($x, $t = null) {
+    if (is_string($t)) {
+        return __is_anemon_a__($x);
+    } else if (is_int($t)) {
+        return __is_anemon_0__($x);
+    }
     return is_array($x) || is_object($x);
 }
 
@@ -858,9 +863,9 @@ function g($s = ROOT, $x = '*', $q = "", $o = false, $h = true) {
 }
 
 function h($x, $h = '-', $a = false, $i = "") {
-    return preg_replace_callback('#\p{Lu}#', function($m) use($h) {
+    return str_replace([' ', $h . $h], $h, preg_replace_callback('#\p{Lu}#', function($m) use($h) {
         return $h . l($m[0]);
-    }, f($x, $a, x($h) . $i));
+    }, f($x, $a, x($h) . $i)));
 }
 
 // If `$fn` is a function, the function will be executed after file include.

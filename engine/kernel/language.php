@@ -24,6 +24,7 @@ class Language extends Config {
         }
         $v = isset(self::$bucket[$c]) ? (array) self::$bucket[$c] : [];
         $v = Anemon::get($v, $key, $key);
+        $vars = array_replace([""], $vars);
         if (is_string($v)) {
             if (!$preserve_case && strpos($v, '%') !== 0 && u($vars[0]) !== $vars[0]) {
                 $vars[0] = l($vars[0]);

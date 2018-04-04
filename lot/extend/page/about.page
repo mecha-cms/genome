@@ -4,6 +4,10 @@ description: Add basic features of a website by utilizing the structure of the p
 author: Taufik Nurrohman
 type: Markdown
 version: 1.5.0
+
+dependency:
+  extension:
+    - shield
 ...
 
 This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.
@@ -24,23 +28,5 @@ These page conditional statements are available to quickly indicate what type of
  - `$site->is('page')` → Return the current page’s file path if page is available.
  - `$site->is('pages')` → Return the current page’s files path if current page contains children.
  - `$site->is('search')` → Return `true` on search results page.
-
-### Class
-
-These HTML classes will be added automatically if your `<html>` element has `class` attribute:
-
- - `error-404` → Will be added if there is no page or pages to load.
- - `has-next` → Will be added if it is possible to go to the next page.
- - `has-page` → Will be added if there is a page to load.
- - `has-pages` → Will be added if there are pages to load.
- - `has-parent` → Will be added if current page has parent page.
- - `has-previous` → Will be added if it is possible to go to the previous page.
- - `has-step` → Will be added if page URL contains the page offset.
- - `is-$` → Will be added on home page.
- - `is-error` → Will be added if there is no page or pages to load.
- - `is-home` → Will be added on home page.
- - `is-page` → Will be added if page is available.
- - `is-pages` → Will be added if current page contains children.
- - `is-search` → Will be added on search results page.
 
 <!-- block:donate -->

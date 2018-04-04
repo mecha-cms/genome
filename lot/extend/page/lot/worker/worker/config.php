@@ -74,6 +74,7 @@ Config::set('is', [
 ]);
 
 $pages = $path === "" ? count($if_4) : count($if_5);
+
 Config::set('has', [
     'next' => Config::is('pages') && $pages > ($i ?: 1) * Config::page('chunk', 5),
     'page' => Config::is('page') ? 1 : 0,
@@ -82,3 +83,5 @@ Config::set('has', [
     'previous' => Config::is('pages') && $i > 1,
     'step' => Config::is('pages') && $i !== null ? $i : false
 ]);
+
+Config::set('not', []);

@@ -29,10 +29,11 @@ class Asset extends Genome {
     public static function set($path, $stack = null) {
         $i = 0;
         $stack = (array) $stack;
+        $c = static::class;
         foreach ((array) $path as $k => $v) {
             $x = Path::X($v);
-            if (!isset(self::$lot[0][$x][$v])) {
-                self::$lot[1][$x][$v] = [
+            if (!isset(self::$lot[$c][0][$x][$v])) {
+                self::$lot[$c][1][$x][$v] = [
                     'path' => self::path($v),
                     'url' => self::URL($v),
                     'id' => $v,
@@ -45,27 +46,34 @@ class Asset extends Genome {
     }
 
     public static function get($path = null, $fail = false, $i = 1) {
+        $c = static::class;
         if (isset($path)) {
             $x = Path::X($path);
-            return isset(self::$lot[$i][$x][$path]) ? self::$lot[$i][$x][$path] : $fail;
+            return isset(self::$lot[$c][$i][$x][$path]) ? self::$lot[$c][$i][$x][$path] : $fail;
         }
-        return !empty(self::$lot[$i]) ? self::$lot[$i] : $fail;
+        return !empty(self::$lot[$c][$i]) ? self::$lot[$c][$i] : $fail;
     }
 
     public static function reset($path = null) {
-        if (isset($path)) {
-            $x = Path::X($path);
-            self::$lot[0][$x][$path] = 1;
-            unset(self::$lot[1][$x][$path]);
+        $c = static::class;
+        if (!isset($path)) {
+            self::$lot[$c] = [];
+        } else if (is_array($path)) {
+            foreach ($path as $v) {
+                self::reset($v);
+            }
         } else {
-            self::$lot = [];
+            $x = Path::X($path);
+            self::$lot[$c][0][$x][$path] = 1;
+            unset(self::$lot[$c][1][$x][$path]);
         }
         return new static;
     }
 
     public static function __callStatic($kin, $lot = []) {
         $path = array_shift($lot);
-        $attr = array_shift($lot) ?: [];
+        $a = array_shift($lot) ?: [];
+        $c = static::class;
         if ($fn = self::_('.' . $kin)) {
             if (isset($path)) {
                 $s = self::get($path, [
@@ -74,14 +82,14 @@ class Asset extends Genome {
                     'id' => null,
                     'stack' => null
                 ]);
-                return is_callable($fn) ? call_user_func($fn, $s, $path, $attr) : ($s['path'] ? file_get_contents($s['path']) : "");
+                return is_callable($fn) ? call_user_func($fn, $s, $path, $a) : ($s['path'] ? file_get_contents($s['path']) : "");
             }
-            if (isset(self::$lot[1][$kin])) {
-                $assets = Anemon::eat(self::$lot[1][$kin])->sort([1, 'stack'], true)->vomit();
+            if (isset(self::$lot[$c][1][$kin])) {
+                $assets = Anemon::eat(self::$lot[$c][1][$kin])->sort([1, 'stack'], true)->vomit();
                 $output = "";
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {
-                        $output .= call_user_func($fn, $v, $k, $attr) . N;
+                        $output .= call_user_func($fn, $v, $k, $a) . N;
                     }
                 } else {
                     foreach ($assets as $k => $v) {

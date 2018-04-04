@@ -3,7 +3,7 @@
 class Lot extends Genome {
 
     public static function set($key, $value = null, $scope = null) {
-        if (__is_anemon__($key)) {
+        if (is_array($key) || is_object($key)) {
             $scope = '.' . md5($value ?: static::class);
             foreach ($key as $k => $v) {
                 $GLOBALS[$scope][$k] = $v;
