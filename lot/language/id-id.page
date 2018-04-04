@@ -753,7 +753,7 @@ message_error_file_type: Tipe berkas %{0}% tidak diperbolehkan.
 message_error_search: Tidak ada temuan untuk %{0}%.
 
 message_info_are: %{0}% Anda adalah %{1}%.
-message_info_file_upload:
+message_info_file_push:
   0: Tidak ada kesalahan, berkas berhasil diunggah dengan sukses.
   1: Berkas yang diunggah melebihi direktif <code>upload_max_filesize</code> dalam <code>php.ini</code>.
   2: Berkas yang diunggah melebihi direktif <code>MAX_FILE_SIZE</code> yang telah ditentukan dalam <abbr title="Hyper Text Markup Language">HTML</abbr> formulir.
@@ -767,7 +767,7 @@ message_info_is: %{0}% Anda adalah %{1}%.
 message_info_search: Hasil penelusuran untuk %{0}%.
 message_info_void: Belum ada %{0}%.
 
-message_success_file_upload: %{0}% berhasil diunggah.
+message_success_file_push: %{0}% berhasil diunggah.
 
 _active: Tidak Aktif
 _activate: Tidak Diaktifkan

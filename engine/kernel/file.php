@@ -50,7 +50,7 @@ class File extends Genome {
             ],
             '_create' => $create,
             '_update' => $update,
-            '_size' => file_exists($path) ? filesize($path) : null
+            '_size' => $exist ? filesize($path) : null
         ];
         self::$inspect[$id] = $output;
         return isset($key) ? Anemon::get($output, $key, $fail) : $output;
@@ -137,34 +137,6 @@ class File extends Genome {
         return new static(...$lot);
     }
 
-    // Append `$data` to the file content
-    public function append($data) {
-        if ($this->path === false) {
-            return $this;
-        }
-        if (is_array($this->content)) {
-            $data = (array) $data;
-            $this->content = $this->content + $data;
-            return $this;
-        }
-        $this->content = file_get_contents($this->path) . $data;
-        return $this;
-    }
-
-    // Prepend `$data` to the file content
-    public function prepend($data) {
-        if ($this->path === false) {
-            return $this;
-        }
-        if (is_array($this->content)) {
-            $data = (array) $data;
-            $this->content = $data + $this->content;
-            return $this;
-        }
-        $this->content = $data . file_get_contents($this->path);
-        return $this;
-    }
-
     // Print the file content
     public function read($fail = null) {
         if ($this->path !== false) {
@@ -172,6 +144,13 @@ class File extends Genome {
             return $content !== false ? $content : $fail;
         }
         return $fail;
+    }
+
+    // Write `$data` before save
+    public static function set($data) {
+        $self = new static;
+        $self->content = $data;
+        return $self;
     }
 
     // Print the file content line by line
@@ -195,12 +174,8 @@ class File extends Genome {
         return $fail;
     }
 
-    // Write `$data` before save
-    public static function set($data) {
-        $self = new static;
-        $self->content = $data;
-        return $self;
-    }
+    // Reserved
+    public function reset() {}
 
     // Import the exported PHP file
     public function import($fail = []) {
@@ -336,12 +311,18 @@ class File extends Genome {
 
     // Upload the file
     public static function push($f, $path = ROOT, $fn = null, $fail = false, $c = []) {
+        global $language;
         $path = To::path($path);
         $c = !empty($c) ? $c : self::$config;
+        if (!is_array($f)) {
+            $f = isset($_FILES[$f]) ? $_FILES[$f] : [
+                'error' => 4 // No file was uploaded
+            ];
+        }
         // Sanitize file name
         $f['name'] = To::file($f['name']);
         $x = Path::X($f['name']);
-        $e = Language::message_info_file_upload();
+        $e = $language->message_info_file_push;
         // Something goes wrong
         if ($f['error'] > 0 && isset($e[$f['error']])) {
             Message::error($e[$f['error']]);
@@ -358,23 +339,22 @@ class File extends Genome {
             // Too small
             if ($f['size'] < $c['size'][0]) {
                 Message::error('file_size.0', self::size($f['size']));
-            }
             // Too large
-            if ($f['size'] > $c['size'][1]) {
+            } else if ($f['size'] > $c['size'][1]) {
                 Message::error('file_size.1', self::size($f['size']));
             }
         }
         if (!Message::$x) {
             // Destination not found
             if (!file_exists($path)) {
-                Folder::set($path);
+                Folder::set($path, 0700);
             }
             // Move the uploaded file to the destination folder
             if (!file_exists($path . DS . $f['name'])) {
                 // Move…
                 $path .= DS . $f['name'];
                 move_uploaded_file($f['tmp_name'], $path);
-                Message::success('file_upload', '<code>' . $f['name'] . '</code>');
+                Message::success('file_push', '<code>' . $f['name'] . '</code>');
                 if (is_callable($fn)) {
                     return call_user_func($fn, self::inspect($path));
                 }

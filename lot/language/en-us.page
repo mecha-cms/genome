@@ -786,7 +786,7 @@ message_error_file_type: File type %{0}% is not allowed.
 message_error_search: No results for %{0}%.
 
 message_info_are: Your %{0}% are %{1}%.
-message_info_file_upload:
+message_info_file_push:
   0: There is no error, the file uploaded with success.
   1: The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.
   2: The uploaded file exceeds the <code>MAX_FILE_SIZE</code> directive that was specified in the <abbr title="Hyper Text Markup Language">HTML</abbr> form.
@@ -800,7 +800,7 @@ message_info_is: Your %{0}% is %{1}%.
 message_info_search: Search results for %{0}%.
 message_info_void: No %{0}% yet.
 
-message_success_file_upload: File %{0}% uploaded.
+message_success_file_push: File %{0}% uploaded.
 
 
 #. Negation…
