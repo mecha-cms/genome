@@ -23,4 +23,24 @@ lot\
 
 Write custom CSS code in `css.data` file, and custom JavaScript code in `js.data` file.
 
+---
+
+### Condition
+
+These page conditional statements are available:
+
+ - `$site->has('css')` → Return `true` if current page has custom CSS.
+ - `$site->has('js')` → Return `true` if current page has custom JS.
+ - `$site->is('art')` → Return `true` if current page has custom CSS or JS.
+ - `$site->not('art')` → Return `true` if current page don’t have custom CSS and JS.
+
+### Class
+
+These HTML classes will be added automatically if your `<html>` element has `class` attribute:
+
+ - `has-css` → Will be added if custom CSS data of current page isn’t empty.
+ - `has-js` → Will be added if custom JS data of current page isn’t empty.
+ - `is-art` → Will be added if custom CSS or JS data of current page aren’t empty.
+ - `not-art` → Will be added if custom CSS and JS data of current page are empty.
+
 <!-- block:donate -->

@@ -16,6 +16,22 @@ function fn_page_js($content) {
     return $content;
 }
 
+function fn_art_if() {
+    global $site;
+    if ($path = $site->is('page')) {
+        extract(Page::open($path)->get([
+            'css' => null,
+            'js' => null
+        ]));
+        Config::set('has', [
+            'css' => !!$css,
+            'js' => !!$js
+        ]);
+        Config::set('is.art', $css || $js);
+        Config::set('not.art', !$css && !$js);
+    }
+}
+
 function fn_art($content) {
     if (!$page = Lot::get('page')) {
         return $content;
@@ -28,6 +44,7 @@ function fn_art($content) {
 }
 
 if (!HTTP::is('get', 'art') || HTTP::get('art')) {
+    Hook::set('on.ready', 'fn_art_if', 0);
     Hook::set('page.css', 'fn_page_css', 2);
     Hook::set('page.js', 'fn_page_js', 2);
     Hook::set('shield.yield', 'fn_art', 1);
