@@ -23,7 +23,7 @@ class Folder extends File {
     public static function size($folder, $unit = null, $prec = 2) {
         if (!is_dir($folder)) return false;
         $pool = 0;
-        foreach (parent::explore($folder, true, true, []) as $k => $v) {
+        foreach (parent::explore($folder, true, []) as $k => $v) {
             if ($v === 1) {
                 $pool += filesize($k);
             }
