@@ -5,7 +5,6 @@ class URL extends Genome {
     protected $lot = [];
 
     public static function long($url, $root = true) {
-        if (!is_string($url)) return $url;
         $u = $GLOBALS['URL'];
         $b = false;
         if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
@@ -101,21 +100,10 @@ class URL extends Genome {
     }
 
     public static function __callStatic($kin, $lot = []) {
-        $u = $GLOBALS['URL'];
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
-        } else if ($kin === 'path' && isset($u[$kin]) && isset($lot[0])) {
-            return str_replace('/', $lot[0], $u[$kin]);
-        } else if ($kin === 'query' && isset($u[$kin]) && $lot) {
-            $a = array_shift($lot);
-            if (is_string($a)) {
-                $a = ['?', $a, '=', ""];
-            }
-            return str_replace(['?', '&', '=', X], $a, $u[$kin] . X);
-        } else if ($kin === 'hash' && isset($u[$kin]) && isset($lot[0])) {
-            return str_replace('#', $lot[0], $u[$kin]);
         }
-        return array_key_exists($kin, $u) ? $u[$kin] : array_shift($lot);
+        return (new static)->__call($kin, $lot);
     }
 
 }
