@@ -99,16 +99,20 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
         }
         Lot::set([
             'page' => $page,
-            'pager' => new Elevator($_files, $page->slug, $url . '/' . $_path, $elevator),
+            'pager' => ($pager = new Elevator($_files, $page->slug, $url . '/' . $_path, $elevator)),
             'parent' => new Page($_file)
         ]);
         Config::set('trace', new Anemon([$page->title, $site->title], ' &#x00B7; '));
+        Config::set('has', [
+            'next' => !!$pager->{$elevator['direction']['1']},
+            'previous' => !!$pager->{$elevator['direction']['-1']}
+        ]);
         if (!$site->is('pages')) {
             // Page(s) view has been disabled!
         } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
             if ($query = l(HTTP::get($site->q, ""))) {
-                Config::set('trace', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                 $query = explode(' ', $query);
+                Config::set('trace', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                 Config::set('is.search', true);
                 $files = array_filter($files, function($v) use($query) {
                     $v = Path::N($v);
