@@ -19,7 +19,7 @@ abstract class Genome {
             unset(self::$_[$c][$lot[0]]);
             return true;
         }
-        self::$_[$c][$lot[0]] = $lot[1];
+        self::$_[$c][$lot[0]] = (array) $lot[1];
         return true;
     }
 
@@ -32,12 +32,21 @@ abstract class Genome {
     public function __call($kin, $lot = []) {
         $c = static::class;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
-            if (is_callable(self::$_[$c][$kin])) {
-                return call_user_func(\Closure::bind(self::$_[$c][$kin], $this), ...$lot);
+            $a = self::$_[$c][$kin];
+            if (is_callable($a[0])) {
+                // Alter default function argument(s)
+                if (isset($a[1])) {
+                    $lot = array_replace_recursive((array) $a[1], $lot);
+                }
+                // Limit function argument(s)
+                if (isset($a[2])) {
+                    $lot = array_slice($lot, 0, $a[2]);
+                }
+                return call_user_func(\Closure::bind($a[0], $this), ...$lot);
             }
-            return self::$_[$c][$kin];
+            return $a[0];
         } else if (defined('DEBUG') && DEBUG) {
-            echo '<p>Method <code>-&gt;' . $kin . '()</code> does not exist.</p>';
+            echo '<p>Method <code>$' . __c2f__($c, '_') . '-&gt;' . $kin . '()</code> does not exist.</p>';
         }
         return false;
     }
@@ -46,10 +55,19 @@ abstract class Genome {
     public static function __callStatic($kin, $lot = []) {
         $c = static::class;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
-            if (is_callable(self::$_[$c][$kin])) {
-                return call_user_func(self::$_[$c][$kin], ...$lot);
+            $a = self::$_[$c][$kin];
+            if (is_callable($a[0])) {
+                // Alter default function argument(s)
+                if (isset($a[1])) {
+                    $lot = array_replace_recursive((array) $a[1], $lot);
+                }
+                // Limit function argument(s)
+                if (isset($a[2])) {
+                    $lot = array_slice($lot, 0, $a[2]);
+                }
+                return call_user_func($a[0], ...$lot);
             }
-            return self::$_[$c][$kin];
+            return $a[0];
         } else if (defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
         }

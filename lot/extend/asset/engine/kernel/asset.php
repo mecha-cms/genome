@@ -75,6 +75,7 @@ class Asset extends Genome {
         $a = array_shift($lot) ?: [];
         $c = static::class;
         if ($fn = self::_('.' . $kin)) {
+            $fn = $fn[0];
             if (isset($path)) {
                 $s = self::get($path, [
                     'path' => null,
