@@ -64,7 +64,7 @@ class Route extends Genome {
                 'lot' => []
             ] : $fail;
         }
-        if (preg_match(!$pattern ? '#^' . __format__($id, '\/\n', '#', false) . '$#' : $id, $path, $m)) {
+        if (preg_match($pattern ? $id : '#^' . __format__($id, '\/\n', '#', false) . '$#', $path, $m)) {
             array_shift($m);
             return [
                 'pattern' => $id,
@@ -82,7 +82,7 @@ class Route extends Genome {
         return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
     }
 
-    public static function contain($id = null, $stack = null, $fail = false) {
+    public static function has($id = null, $stack = null, $fail = false) {
         if (isset($id)) {
             if (isset($stack)) {
                 $routes = [];
