@@ -10,8 +10,7 @@ class View extends Genome {
     }
 
     public static function path($input, $fail = false) {
-        $NS = __c2f__(static::class, '_') . '.' . __FUNCTION__;
-        $c = static::class;
+        $NS = __c2f__($c = static::class, '_') . '.' . __FUNCTION__;
         $output = [];
         if (is_string($input)) {
             if (strpos($input, ROOT) !== 0) {
@@ -55,19 +54,15 @@ class View extends Genome {
             $fail = false;
         }
         if ($path = self::path($input, $fail)) {
-            $G = [
-                'path' => $path,
-                'source' => $input
-            ];
             // Begin view
-            Hook::fire($NS . '.enter', [$output, $G]);
+            Hook::fire($NS . '.enter', [$output, $input, $path]);
             ob_start();
             extract(Lot::get(null, []));
             require $path;
             $output = ob_get_clean();
-            $output = Hook::fire($NS . '.' . __FUNCTION__, [$output, $G]);
+            $output = Hook::fire($NS . '.' . __FUNCTION__, [$output, $input, $path]);
             // End view
-            Hook::fire($NS . '.exit', [$output, $G]);
+            Hook::fire($NS . '.exit', [$output, $input, $path]);
         }
         if (!$print) {
             return $output;
