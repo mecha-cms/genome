@@ -12,7 +12,7 @@ class Shield extends View {
         $i = explode('/', str_replace(DS, '/', (string) $code))[0];
         $i = is_numeric($i) ? $i : '404';
         HTTP::status((int) $i);
-        self::attach($code, $fail);
+        self::fire($code, $fail);
     }
 
     public static function exist($input, $fail = false) {

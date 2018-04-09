@@ -2,5 +2,5 @@
 
 return [
     'if' => ['html'],
-    'name' => 'document'
+    'default' => 'document'
 ];

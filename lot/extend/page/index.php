@@ -64,8 +64,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
     if ($file = $site->is('page')) {
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
-        $sort = isset($site->page->sort) ? $site->page->sort : [1, 'path'];
-        $chunk = isset($site->page->chunk) ? $site->page->chunk : 5;
+        $sort = $site->page('sort', [1, 'path']);
+        $chunk = $site->page('chunk', 5);
         foreach (explode('/', '/' . $path) as $v) {
             $k .= $v ? DS . $v : "";
             if ($f = File::exist([

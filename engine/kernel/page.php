@@ -13,7 +13,7 @@ class Page extends Genome {
         $key = __c2f__(static::class, '_', '\\');
         $this->NS = is_array($NS) ? array_replace(['*', $key], $NS) : $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
-        $id = $this->hash = md5(serialize($NS) . $path);
+        $id = $this->hash = md5(json_encode(array_merge((array) $lot, (array) $NS)) . $path);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id];
         } else {
@@ -33,9 +33,9 @@ class Page extends Genome {
                 'state' => (string) $x,
                 'id' => (string) $c,
                 'url' => To::URL($path)
-            ], is_array($input) ? $input : (isset($input) ? [
-                'path' => $input
-            ] : []), (array) a(Config::get($key, [])), $lot);
+            ], is_array($input) ? $input : [
+                'path' => $path
+            ], (array) a(Config::get($key, [])), $lot);
             // Set `time` value from the page’s file name
             if (
                 $n &&

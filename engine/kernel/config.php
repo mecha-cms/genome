@@ -16,13 +16,9 @@ class Config extends Genome {
 
     public static function set($key, $value = null) {
         $c = static::class;
-        if (is_object($key)) {
-            $key = a($key);
-            if (is_object($value)) {
-                $value = a($value);
-            }
-        }
         $cargo = [];
+        $key = a($key);
+        $value = a($value);
         if (!is_array($key)) {
             Anemon::set($cargo, $key, $value);
         } else {

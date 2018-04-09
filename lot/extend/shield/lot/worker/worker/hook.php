@@ -1,9 +1,9 @@
 <?php
 
 // Store default shield folder state to registry…
-if ($name = Extend::state('shield', 'name')) {
+if ($default = Extend::state('shield', 'default')) {
     // Prioritize default state
-    Config::alt(['shield' => $name]);
+    Config::alt(['shield' => $default]);
 }
 
 // Generate relative shield path to the `.\lot\shield\*` folder

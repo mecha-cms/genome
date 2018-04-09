@@ -24,7 +24,7 @@ class Language extends Config {
         }
         $v = isset(self::$bucket[$c]) ? (array) self::$bucket[$c] : [];
         $v = Anemon::get($v, $key, $key);
-        $vars = array_replace([""], $vars);
+        $vars = array_replace([""], (array) $vars);
         if (is_string($v)) {
             if (!$preserve_case && strpos($v, '%') !== 0 && u($vars[0]) !== $vars[0]) {
                 $vars[0] = l($vars[0]);
@@ -36,6 +36,27 @@ class Language extends Config {
 
     public function __construct($input = []) {
         parent::__construct(is_array($input) ? $input : From::YAML($input));
+    }
+
+    public function __call($kin, $lot = []) {
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
+        }
+        $fail = $alt = false;
+        if (count($lot)) {
+            $test = self::get($kin);
+            // Asynchronous value with function closure
+            if ($test instanceof \Closure) {
+                return call_user_func($test, ...$lot);
+            // Rich asynchronous value with class instance
+            } else if ($fn = __is_instance__($test)) {
+                if (method_exists($fn, '__invoke')) {
+                    return call_user_func([$fn, '__invoke'], ...$lot);
+                }
+            }
+            // Else, static value
+            return self::get($kin, ...$lot);
+        }
     }
 
     public function __toString() {
