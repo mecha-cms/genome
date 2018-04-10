@@ -101,10 +101,8 @@ class HTML extends Union {
 
     public function __call($kin, $lot = []) {
         if (!self::_($kin) && !method_exists($this, '_' . $kin)) {
-            if (!(new ReflectionMethod($that, '_' . $kin))->isPublic()) {
-                array_unshift($lot, $kin);
-                return $this->unite(...$lot);
-            }
+            array_unshift($lot, $kin);
+            return $this->unite(...$lot);
         }
         return parent::__call($kin, $lot);
     }

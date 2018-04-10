@@ -26,7 +26,13 @@ class Lot extends Genome {
     public static function reset($key = null, $scope = null) {
         $scope = '.' . md5($scope ?: static::class);
         if (isset($key)) {
-            unset($GLOBALS[$scope][$key]);
+            if (is_array($key)) {
+                foreach ($key as $v) {
+                    self::reset($v);
+                }
+            } else {
+                unset($GLOBALS[$scope][$key]);
+            }
         } else {
             $GLOBALS[$scope] = [];
         }

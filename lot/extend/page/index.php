@@ -8,6 +8,27 @@ require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'config.php'
 
 $state = Extend::state('page');
 
+// Horizontal elevator…
+$elevator = [
+    'direction' => [
+       '-1' => 'previous',
+        '1' => 'next'
+    ],
+    'union' => [
+       '-2' => [
+            2 => ['rel' => null]
+        ],
+       '-1' => [
+            1 => Elevator::WEST,
+            2 => ['rel' => 'prev']
+        ],
+        '1' => [
+            1 => Elevator::EAST,
+            2 => ['rel' => 'next']
+        ]
+    ]
+];
+
 function fn_page_url($content, $lot = []) {
     if (!isset($lot['path'])) {
         return $content;
@@ -21,12 +42,12 @@ Hook::set('page.url', 'fn_page_url', 1);
 
 Lot::set([
     'page' => new Page,
-    'pager' => new Elevator,
+    'pager' => new Elevator([], [], true, $elevator),
     'pages' => [],
     'parent' => new Page
 ]);
 
-Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state) {
+Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($elevator, $state) {
     // Include global variable(s)…
     extract(Lot::get(null, []));
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
@@ -39,26 +60,6 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state
     $folder = rtrim(PAGE . DS . To::path($path_canon), DS);
     $name = Path::B($folder);
     $i = ($h = $step ?: 1) - 1; // 0-based index…
-    // Horizontal elevator…
-    $elevator = [
-        'direction' => [
-           '-1' => 'previous',
-            '1' => 'next'
-        ],
-        'union' => [
-           '-2' => [
-                2 => ['rel' => null]
-            ],
-           '-1' => [
-                1 => Elevator::WEST,
-                2 => ['rel' => 'prev']
-            ],
-            '1' => [
-                1 => Elevator::EAST,
-                2 => ['rel' => 'next']
-            ]
-        ]
-    ];
     $pages = $page = [];
     Config::set('trace', new Anemon([$site->title], ' &#x00B7; '));
     if ($file = $site->is('page')) {
