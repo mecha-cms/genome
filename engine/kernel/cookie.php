@@ -3,50 +3,46 @@
 class Cookie extends Genome {
 
     public static function set($key, $value = "", $config = []) {
-        $c = static::class;
         if (is_numeric($config)) {
             $config = ['expire' => (int) $config];
         }
         $config = array_replace([
-            'expire' => 1,
+            'expire' => 1, // 1 day
             'path' => '/',
             'domain' => "",
             'secure' => false,
             'http_only' => false
         ], $config);
-        $config = array_values($config);
-        $config[0] = time() + 60 * 60 * 24 * $config[0]; // 1 day
-        $v = [];
-        Anemon::set($v, $key, $value);
-        setcookie($c, base64_encode(json_encode([
-            0 => $v, // the cookie value
-            1 => $config // the cookie setting(s)
-        ])), ...$config);
+        $config['expire'] = time() + (60 * 60 * 24 * $config['expire']);
+        // TODO: update cookie value in array
+        setcookie('_' . dechex(crc32(static::class . ':' . $key)), base64_encode(json_encode($value)), ...array_values($config));
         return new static;
     }
 
-    public static function get($key = null, $fail = null, $i = 0) {
-        $value = json_decode(base64_decode(HTTP::cookie(static::class, 'W10=')), true);
-        $value = array_replace([$i => []], (array) $value);
-        return isset($key) ? Anemon::get($value[$i], $key, $fail) : $value[$i];
+    public static function get($key = null, $fail = null) {
+        if (!isset($key)) {
+            $o = [];
+            foreach ($_COOKIE as $k => $v) {
+                $o[$k] = e(strpos($k, '_') === 0 ? json_decode(base64_decode($v)) : $v);
+            }
+            return $o;
+        }
+        $key = '_' . dechex(crc32(static::class . ':' . $key));
+        $value = json_decode(base64_decode(isset($_COOKIE[$key]) ? $_COOKIE[$key] : 'bnVsbA=='));
+        return $value !== null ? $value : $fail;
     }
 
     public static function reset($key = null) {
-        $c = static::class;
         if (!isset($key)) {
-            setcookie($c, null, -1);
-            setcookie($c, null, -1, '/');
-            return new static;
-        }
-        $value = self::get(null, [], 0);
-        $config = self::get(null, [], 1);
-        if (is_array($key)) {
+            foreach ($_COOKIE as $k => $v) {
+                setcookie($k, null, -1);
+            }
+        } else if (is_array($key)) {
             foreach ($key as $v) {
                 self::reset($v);
             }
         } else {
-            Anemon::reset($value, $key);
-            self::set($key, $value, $config);
+            setcookie('_' . dechex(crc32(static::class . ':' . $key)), null, -1);
         }
         return new static;
     }
