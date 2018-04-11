@@ -36,13 +36,16 @@ class Cookie extends Genome {
         if (!isset($key)) {
             foreach ($_COOKIE as $k => $v) {
                 setcookie($k, null, -1);
+                setcookie($k, null, -1, '/');
             }
         } else if (is_array($key)) {
             foreach ($key as $v) {
                 self::reset($v);
             }
         } else {
-            setcookie('_' . dechex(crc32(static::class . ':' . $key)), null, -1);
+            $k = '_' . dechex(crc32(static::class . ':' . $key));
+            setcookie($k, null, -1);
+            setcookie($k, null, -1, '/');
         }
         return new static;
     }
