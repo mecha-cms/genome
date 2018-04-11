@@ -13,8 +13,7 @@
       <?php endif; ?>
     </div>
     <footer>
-      <?php $update = new Date($page->update); ?>
-      <p><strong><?php echo $language->updateed; ?>:</strong> <time datetime="<?php echo $update->W3C; ?>"><?php echo $update->{str_replace('-', '_', $site->language)}; ?></time></p>
+      <p><strong><?php echo $language->updateed; ?>:</strong> <time datetime="<?php echo $page->update->W3C; ?>"><?php echo $page->update->{str_replace('-', '_', $site->language)}; ?></time></p>
     </footer>
   </article>
 </main>

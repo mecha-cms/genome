@@ -25,13 +25,13 @@ class Page extends Genome {
                 $m = filemtime($path); // File modification time
             }
             $this->lot = array_replace([
-                'time' => date(DATE_WISE, $c),
-                'update' => date(DATE_WISE, $m),
+                'time' => new Date(date(DATE_WISE, $c)),
+                'update' => new Date(date(DATE_WISE, $m)),
                 'slug' => (string) $n,
                 'title' => To::title($n), // Fake `title` data from the page’s file name
                 'type' => u($x) . "", // Fake `type` data from the page’s file extension
                 'state' => (string) $x,
-                'id' => (string) $c,
+                'id' => sprintf('%u', $c),
                 'url' => To::URL($path)
             ], is_array($input) ? $input : [
                 'path' => $path
@@ -50,17 +50,12 @@ class Page extends Genome {
                 preg_match('#^\d{4,}(?:-\d{2}){2}(?:(?:-\d{2}){3})?$#', $n)
             ) {
                 $t = new Date($n);
-                $this->lot['time'] = $t->format();
+                $this->lot['time'] = new Date($t->format(DATE_WISE));
                 $this->lot['title'] = $t->F2;
-                $this->lot['id'] = $t->format('U');
             // else, set `time` value by page’s file modification time
             } else {
                 $t = new Date(File::open(Path::F($path) . DS . 'time.data')->read($c));
-                $this->lot['time'] = $t->format();
-                $this->lot['id'] = $t->format('U');
-            }
-            if (!array_key_exists('date', $this->lot)) {
-                $this->lot['date'] = new Date($this->lot['time']);
+                $this->lot['time'] = new Date($t->format(DATE_WISE));
             }
             self::$page[$id] = $this->lot;
         }
