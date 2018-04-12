@@ -14,8 +14,7 @@ class Cookie extends Genome {
             'http_only' => false
         ], $config);
         $config['expire'] = time() + (60 * 60 * 24 * $config['expire']);
-        // TODO: update cookie value in array
-        setcookie('_' . dechex(crc32(static::class . ':' . $key)), base64_encode(json_encode($value)), ...array_values($config));
+        setcookie(self::key($key), self::x($value), ...array_values($config));
         return new static;
     }
 
@@ -23,12 +22,12 @@ class Cookie extends Genome {
         if (!isset($key)) {
             $o = [];
             foreach ($_COOKIE as $k => $v) {
-                $o[$k] = e(strpos($k, '_') === 0 ? json_decode(base64_decode($v)) : $v);
+                $o[$k] = e(strpos($k, '_') === 0 ? self::v($v) : $v);
             }
             return $o;
         }
-        $key = '_' . dechex(crc32(static::class . ':' . $key));
-        $value = json_decode(base64_decode(isset($_COOKIE[$key]) ? $_COOKIE[$key] : 'bnVsbA=='));
+        $key = self::key($key);
+        $value = self::v(isset($_COOKIE[$key]) ? $_COOKIE[$key] : 'bnVsbA==');
         return $value !== null ? $value : $fail;
     }
 
@@ -43,11 +42,23 @@ class Cookie extends Genome {
                 self::reset($v);
             }
         } else {
-            $k = '_' . dechex(crc32(static::class . ':' . $key));
-            setcookie($k, null, -1);
-            setcookie($k, null, -1, '/');
+            $key = self::key($key);
+            setcookie($key, null, -1);
+            setcookie($key, null, -1, '/');
         }
         return new static;
+    }
+
+    private static function x($value) {
+        return base64_encode(json_encode($value));
+    }
+
+    private static function v($value) {
+        return json_decode(base64_decode($value));
+    }
+
+    private static function key($key) {
+        return '_' . dechex(crc32(static::class . ':' . $key));
     }
 
 }
