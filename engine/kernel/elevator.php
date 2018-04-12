@@ -54,6 +54,7 @@ class Elevator extends Genome {
         $c = array_replace_recursive($this->c, $config);
         $d = $c['direction'];
         $p = $GLOBALS['URL']['path'];
+        $q = str_replace('&', '&amp;', $GLOBALS['URL']['query']);
         $r = $GLOBALS['URL']['current'];
         if (is_array($chunk)) {
             $chunk = array_replace([5, 0], $chunk);
@@ -68,20 +69,20 @@ class Elevator extends Genome {
         if (is_array($chunk)) {
             $i = $chunk[1];
             if ($d['-1'] !== false)
-                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $i : null;
+                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $i . $q : null;
             if ($d['0'] !== false)
-                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) : null;
+                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
             if ($d['1'] !== false)
-                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) : null;
+                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) . $q : null;
         // @page
         } else {
             $i = ($input ? array_search($chunk, $input) : 0) ?: 0;
             if ($d['-1'] !== false)
-                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null;
+                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] . $q : null;
             if ($d['0'] !== false)
-                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) : null;
+                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
             if ($d['1'] !== false)
-                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] : null;
+                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] . $q : null;
         }
         $this->config = $c;
         $this->NS = $key;
