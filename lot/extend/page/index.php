@@ -112,9 +112,9 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
             // Page(s) view has been disabled!
         } else if ($files = Get::pages($folder, 'page', $sort, 'path')) {
             if ($query = l(HTTP::get($site->q, ""))) {
-                $query = explode(' ', $query);
-                Config::set('trace', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                 Config::set('is.search', true);
+                Config::set('trace', new Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
+                $query = explode(' ', $query);
                 $files = array_filter($files, function($v) use($query) {
                     $v = Path::N($v);
                     foreach ($query as $q) {

@@ -5,7 +5,7 @@ function _fn_get_page_fix($v, $n = null) {
     $n = $n ?: Path::N($v);
     $v = file_get_contents($v);
     if ($n === 'time') {
-        $v = (new Date($v))->format();
+        $v = new Date($v);
     } else if ($n === 'slug') {
         $v = h($v);
     }
