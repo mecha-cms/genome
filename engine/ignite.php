@@ -209,7 +209,7 @@ $GLOBALS['URL'] = [
     'next' => isset($_SESSION['url']['next']) ? $_SESSION['url']['next'] : null,
     'clean' => $clean,
     'current' => rtrim($clean . '/' . $i, '/'),
-    'hash' => isset($_COOKIE['url']['hash']) ? $_COOKIE['url']['hash'] : null
+    'hash' => null // TODO
 ];
 
 // a: convert object to array
