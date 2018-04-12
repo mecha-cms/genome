@@ -1075,7 +1075,7 @@ function z($a, $b = true, $safe = true) {
             if ($safe) {
                 $v = str_replace(['<?', '?>'], ['&lt;?', '?&gt;'], $v);
             }
-            $s .= "'" . $v . "'";
+            $s .= "'" . str_replace("'", '\'', $v) . "'";
         } else {
             $s .= str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
         }
