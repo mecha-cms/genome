@@ -84,12 +84,12 @@ class Hook extends Genome {
                 }
                 if (is_string($v['fn'])) {
                     if (!isset(self::$i[$c][$id][$v['fn']])) {
-                        self::$i[$c][$id][$v['fn']] = 1;
+                        self::$i[$c][$id][$v['fn']] = 0;
                     } else {
-                        ++self::$i[$c][$id][$v['fn']];
                         if (self::$i[$c][$id][$v['fn']] > $v['i']) {
-                            break;
+                            continue;
                         }
+                        ++self::$i[$c][$id][$v['fn']];
                     }
                 }
                 if (($s = call_user_func($v['fn'], ...$lot)) !== null) {
