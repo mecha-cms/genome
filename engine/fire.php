@@ -16,7 +16,13 @@ if (defined('DEBUG')) {
 }
 
 // Normalize line-break
-$vars = [&$_GET, &$_POST, &$_REQUEST, &$_COOKIE];
+$vars = [
+    &$_COOKIE,
+    &$_GET,
+    &$_POST,
+    &$_REQUEST,
+    &$_SESSION
+];
 array_walk_recursive($vars, function(&$v) {
     $v = str_replace(["\r\n", "\r"], "\n", $v);
 });
