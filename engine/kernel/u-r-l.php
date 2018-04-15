@@ -2,6 +2,7 @@
 
 class URL extends Genome {
 
+    protected $s = null;
     protected $lot = [];
 
     public static function long($url, $root = true) {
@@ -40,18 +41,29 @@ class URL extends Genome {
         return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $s);
     }
 
-    public function __construct($input = null) {
+    public function __construct($input = null, $s = '$') {
+        $this->s = $s;
         if (isset($input)) {
-            $u = parse_url($input);
-            if (isset($u['path'])) {
-                $u['path'] = trim($u['path'], '/');
+            $u = array_replace([
+                '$' => $input,
+                'fragment' => "",
+                'host' => "",
+                'pass' => null,
+                'path' => "",
+                'port' => null,
+                'query' => "",
+                'scheme' => "",
+                'user' => null
+            ], parse_url($input));
+            $u['path'] = trim($u['path'], '/');
+            $a = explode('/', $u['path']);
+            if (is_numeric(end($a))) {
+                $u['i'] = (int) array_pop($a);
+                $u['path'] = implode('/', $a);
             }
-            if (isset($u['query'])) {
-                $u['query'] = (strpos($u['query'], '?') !== 0 ? '?' : "") . str_replace('&amp;', '&', $u['query']);
-            }
-            if (isset($u['fragment'])) {
-                $u['hash'] = (strpos($u['fragment'], '#') !== 0 ? '#' : "") . $u['fragment'];
-            }
+            $u['clean'] = rtrim($u['scheme'] . '://' . $u['host'] . '/' . $u['path'], '/');
+            $u['query'] = ($u['query'] && strpos($u['query'], '?') !== 0 ? '?' : "") . str_replace('&amp;', '&', $u['query']);
+            $u['hash'] = ($u['fragment'] && strpos($u['fragment'], '#') !== 0 ? '#' : "") . $u['fragment'];
             unset($u['fragment']);
             $this->lot = $u;
         } else {
@@ -96,7 +108,7 @@ class URL extends Genome {
     }
 
     public function __toString() {
-        return $this->lot['$'];
+        return isset($this->lot[$this->s]) ? $this->lot[$this->s] : "";
     }
 
     public static function __callStatic($kin, $lot = []) {
