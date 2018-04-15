@@ -11,10 +11,12 @@ class HTTP extends Genome {
     public static $config = self::config;
 
     public static $message = [
+
         // Information Response(s)
         100 => 'Continue',
         101 => 'Switching Protocol',
         102 => 'Processing', // RFC2518
+
         // Successful Response(s)
         200 => 'OK',
         201 => 'Created',
@@ -26,6 +28,7 @@ class HTTP extends Genome {
         207 => 'Multi-Status', // RFC4918
         208 => 'Already Reported', // RFC5842
         226 => 'IM Used', // RFC3229
+
         // Redirection Message(s)
         300 => 'Multiple Choice',
         301 => 'Moved Permanently',
@@ -36,6 +39,7 @@ class HTTP extends Genome {
         306 => null, // Reserved!
         307 => 'Temporary Redirect',
         308 => 'Permanent Redirect', // RFC-reschke-http-status-308-07
+
         // Client Error Response(s)
         400 => 'Bad Request',
         401 => 'Unauthorized',
@@ -65,6 +69,7 @@ class HTTP extends Genome {
         429 => 'Too Many Requests', // RFC6585
         431 => 'Request Header Fields Too Large', // RFC6585
         451 => 'Unavailable For Legal Reasons',
+
         // Server Error Response(s)
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
@@ -77,10 +82,11 @@ class HTTP extends Genome {
         508 => 'Loop Detected', // RFC5842
         510 => 'Not Extended', // RFC2774
         511 => 'Network Authentication Required' // RFC6585
+
     ];
 
     public static function status($i = null) {
-        if (is_int($i) && isset(self::$message[$i])) {
+        if (is_numeric($i) && isset(self::$message[$i])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
                 header('Status: ' . $i . ' ' . self::$message[$i]);
             } else {

@@ -21,7 +21,7 @@ class Elevator extends Genome {
     }
 
     public function __construct($input = [], $chunk = [5, 0], $path = true, $config = []) {
-        $key = __c2f__(static::class, '_', '\\');
+        $key = __c2f__(static::class, '_', '/');
         $this->c = [
             // -1: previous
             //  0: parent

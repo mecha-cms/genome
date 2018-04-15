@@ -10,7 +10,7 @@ class Page extends Genome {
     private static $page = []; // Cache!
 
     public function __construct($input = [], $lot = [], $NS = []) {
-        $key = __c2f__(static::class, '_', '\\');
+        $key = __c2f__(static::class, '_', '/');
         $this->NS = is_array($NS) ? array_replace(['*', $key], $NS) : $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
         $id = $this->hash = md5(json_encode(array_merge((array) $lot, (array) $NS)) . $path);
@@ -96,7 +96,7 @@ class Page extends Genome {
             }
         }
         self::$page[$this->hash] = $this->lot = $a;
-        $fail = array_shift($lot);
+        $fail = isset($lot[0]) ? $lot[0] : null;
         if ($fail === false) {
             // Disable hook(s) with `$page->key(false)`
             return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key];

@@ -46,7 +46,7 @@ class View extends Genome {
     }
 
     public static function get($input, $fail = false, $print = true) {
-        $NS = __c2f__(static::class, '_', '\\');
+        $NS = __c2f__(static::class, '_', '/');
         $output = "";
         Lot::set('lot', []);
         if (is_array($fail)) {
@@ -92,7 +92,7 @@ class View extends Genome {
                 'message' => '<code>' . __METHOD__ . '(' . v(json_encode($input)) . ')</code>'
             ]);
         }
-        echo Hook::fire(__c2f__(static::class, '_', '\\') . '.yield', [$output, $input]);
+        echo Hook::fire(__c2f__(static::class, '_', '/') . '.yield', [$output, $input]);
         exit;
     }
 

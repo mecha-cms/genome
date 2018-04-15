@@ -15,7 +15,7 @@ class Extend extends Genome {
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: constant(u($c));
         $state = $folder . DS . $id . DS . 'lot' . DS . 'state' . DS . 'config.php';
-        $id = str_replace('.', '\\', $id);
+        $id = str_replace('.', '/', $id);
         if (!file_exists($state)) {
             return is_array($key) ? $key : $fail;
         }

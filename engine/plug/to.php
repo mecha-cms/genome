@@ -71,18 +71,18 @@ foreach([
         $x = array_pop($n);
         $s = "";
         foreach ($in as $v) {
-            $s .= f($v, '-', true, '\w') . DS;
+            $s .= h($v, '-', true, '_') . DS;
         }
-        return $s . f(implode('.', $n), '-', true, '\w.') . '.' . f($x, '-', true);
+        return $s . h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
     },
     'folder' => function($in) {
         $in = explode(DS, str_replace('/', DS, $in));
         $n = array_pop($in);
         $s = "";
         foreach ($in as $v) {
-            $s .= f($v, '-', true, '\w') . DS;
+            $s .= h($v, '-', true, '_') . DS;
         }
-        return $s . f($n, '-', true, '\w');
+        return $s . h($n, '-', true, '_');
     },
     'hex' => function($in, $z = false, $f = ['&#x', ';']) {
         $out = "";
