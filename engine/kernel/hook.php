@@ -2,9 +2,10 @@
 
 class Hook extends Genome {
 
+    protected static $i = [];
     protected static $lot = [];
 
-    public static function set($id = null, $fn = null, $stack = null) {
+    public static function set($id = null, $fn = null, $stack = null, $nest = 100) {
         $c = static::class;
         $stack = isset($stack) ? $stack : 10;
         if (!is_array($id)) {
@@ -14,7 +15,8 @@ class Hook extends Genome {
                 }
                 self::$lot[1][$c][$id][] = [
                     'fn' => $fn,
-                    'stack' => (float) $stack
+                    'stack' => (float) $stack,
+                    'i' => $nest
                 ];
             }
         } else {
@@ -77,7 +79,19 @@ class Hook extends Genome {
             }
             $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack'])->vomit();
             foreach ($hooks as $v) {
-                if (!is_callable($v['fn'])) continue;
+                if (!is_callable($v['fn'])) {
+                    continue;
+                }
+                if (is_string($v['fn'])) {
+                    if (!isset(self::$i[$c][$id][$v['fn']])) {
+                        self::$i[$c][$id][$v['fn']] = 1;
+                    } else {
+                        ++self::$i[$c][$id][$v['fn']];
+                        if (self::$i[$c][$id][$v['fn']] > $v['i']) {
+                            break;
+                        }
+                    }
+                }
                 if (($s = call_user_func($v['fn'], ...$lot)) !== null) {
                     $lot[0] = $s;
                 }
