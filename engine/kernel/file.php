@@ -64,6 +64,7 @@ class File extends Genome {
             return !empty($output) ? $output : $fail;
         }
         $x = null;
+        $fn = is_callable($x) ? $x : null;
         if (is_array($folder)) {
             $x = isset($folder[1]) ? $folder[1] : null;
             $folder = $folder[0];
@@ -77,10 +78,14 @@ class File extends Genome {
             foreach ($c as $v) {
                 $xx = $v->getExtension();
                 $vv = $v->getPathname();
-                if ($v->isDir()) {
-                    $output[$vv] = 0;
-                } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {
-                    $output[$vv] = 1;
+                if ($fn && call_user_func($fn, $vv, $v)) {
+                    $output[$vv] = $v->isDir() ? 0 : 1;
+                } else {
+                    if ($v->isDir()) {
+                        $output[$vv] = 0;
+                    } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {
+                        $output[$vv] = 1;
+                    }
                 }
             }
         } else {
@@ -105,12 +110,24 @@ class File extends Genome {
                     glob($folder . DS . '.*', GLOB_NOSORT)
                 );
             }
-            foreach ($files as $file) {
-                $b = basename($file);
-                if ($b === '.' || $b === '..') {
-                    continue;
+            if ($fn) {
+                foreach ($files as $file) {
+                    $b = basename($file);
+                    if ($b === '.' || $b === '..') {
+                        continue;
+                    }
+                    if (call_user_func($fn, $file, null)) {
+                        $output[$file] = is_file($file) ? 1 : 0;
+                    }
                 }
-                $output[$file] = is_file($file) ? 1 : 0;
+            } else {
+                foreach ($files as $file) {
+                    $b = basename($file);
+                    if ($b === '.' || $b === '..') {
+                        continue;
+                    }
+                    $output[$file] = is_file($file) ? 1 : 0;
+                }
             }
         }
         self::$explore[$id] = $output;
