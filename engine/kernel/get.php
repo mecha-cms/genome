@@ -21,4 +21,21 @@ class Get extends Genome {
         return !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : $fail;
     }
 
+    public static function __callStatic($kin, $lot = []) {
+        if (!self::_($kin)) {
+            $id = '_' . strtoupper($kin);
+            $key = array_shift($lot);
+            $fail = array_shift($lot);
+            if (is_array($key)) {
+                foreach ($key as $k => $v) {
+                    Anemon::get($GLOBALS, $id . '.' . $k, $fail);
+                }
+            } else {
+                Anemon::get($GLOBALS, $id . '.' . $key, $value);
+            }
+            return new static;
+        }
+        return parent::__callStatic($kin, $lot);
+    }
+
 }

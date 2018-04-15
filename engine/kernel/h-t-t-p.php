@@ -11,9 +11,11 @@ class HTTP extends Genome {
     public static $config = self::config;
 
     public static $message = [
+        // Information Response(s)
         100 => 'Continue',
-        101 => 'Switching Protocols',
+        101 => 'Switching Protocol',
         102 => 'Processing', // RFC2518
+        // Successful Response(s)
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',
@@ -24,15 +26,17 @@ class HTTP extends Genome {
         207 => 'Multi-Status', // RFC4918
         208 => 'Already Reported', // RFC5842
         226 => 'IM Used', // RFC3229
-        300 => 'Multiple Choices',
+        // Redirection Message(s)
+        300 => 'Multiple Choice',
         301 => 'Moved Permanently',
         302 => 'Found',
         303 => 'See Other',
         304 => 'Not Modified',
         305 => 'Use Proxy',
-        306 => 'Reserved',
+        306 => null, // Reserved!
         307 => 'Temporary Redirect',
         308 => 'Permanent Redirect', // RFC-reschke-http-status-308-07
+        // Client Error Response(s)
         400 => 'Bad Request',
         401 => 'Unauthorized',
         402 => 'Payment Required',
@@ -47,19 +51,21 @@ class HTTP extends Genome {
         411 => 'Length Required',
         412 => 'Precondition Failed',
         413 => 'Request Entity Too Large',
-        414 => 'Request-URI Too Long',
+        414 => 'URI Too Long',
         415 => 'Unsupported Media Type',
         416 => 'Requested Range Not Satisfiable',
         417 => 'Expectation Failed',
-        418 => 'I’m a teapot', // RFC2324
+        418 => 'I’m a Teapot', // RFC2324
         422 => 'Unprocessable Entity', // RFC4918
         423 => 'Locked', // RFC4918
         424 => 'Failed Dependency', // RFC4918
-        425 => 'Reserved for WebDAV advanced collections expired proposal', // RFC2817
+        425 => null, // Reserved for WebDAV advanced collections expired proposal (RFC2817)
         426 => 'Upgrade Required', // RFC2817
         428 => 'Precondition Required', // RFC6585
         429 => 'Too Many Requests', // RFC6585
         431 => 'Request Header Fields Too Large', // RFC6585
+        451 => 'Unavailable For Legal Reasons',
+        // Server Error Response(s)
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
         502 => 'Bad Gateway',
@@ -189,8 +195,8 @@ class HTTP extends Genome {
 
     public static function __callStatic($kin, $lot = []) {
         if (!self::_($kin)) {
-            $data = $GLOBALS['_' . strtoupper($kin)];
-            $data = isset($data) ? $data : [];
+            $id = '_' . strtoupper($kin);
+            $data = isset($GLOBALS[$id]) ? $GLOBALS[$id] : [];
             $key = array_shift($lot);
             $fail = array_shift($lot);
             $eval = array_shift($lot);

@@ -1,6 +1,6 @@
 <?php
 
-Hook::set('route.enter', function($out = "") {
+Hook::set('on.ready', function($out = "") {
     $key = str_replace('-', '_', Config::get('language'));
     if (!Date::get($key)) {
         Date::set($key, function($out) {

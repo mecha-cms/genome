@@ -55,7 +55,7 @@ class Message extends Genome {
 
     public static function get($session_x = true) {
         $s = Session::get(self::$id, "");
-        $output = Hook::fire(__c2f__(static::class, '_') . '.' . __FUNCTION__, [$s !== "" ? __replace__(HTML::unite(...self::$config['messages']), $s) : ""]);
+        $output = Hook::fire(__c2f__(static::class, '_', '\\') . '.' . __FUNCTION__, [$s !== "" ? __replace__(HTML::unite(...self::$config['messages']), $s) : ""]);
         if ($session_x) self::reset();
         return $output;
     }
@@ -83,7 +83,7 @@ class Message extends Genome {
         $lot .= 'Reply-To: ' . $from . N;
         $lot .= 'Return-Path: ' . $from . N;
         $lot .= 'X-Mailer: PHP/' . phpversion();
-        $s = __c2f__(static::class, '_') . '.' . __FUNCTION__;
+        $s = __c2f__(static::class, '_', '\\') . '.' . __FUNCTION__;
         $lot = Hook::fire($s . '.data', [$lot]);
         $data = Hook::fire($s . '.content', [$message]);
         return mail($to, $subject, $data, $lot);

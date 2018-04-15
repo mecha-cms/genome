@@ -8,9 +8,11 @@ class Set extends Genome {
             $key = array_shift($lot);
             $value = array_shift($lot);
             if (is_array($key)) {
-                Anemon::extend($GLOBALS[$id], $key);
+                foreach ($key as $k => $v) {
+                    Anemon::set($GLOBALS, $id . '.' . $k, $v);
+                }
             } else {
-                Anemon::set($GLOBALS[$id], $key, $value);
+                Anemon::set($GLOBALS, $id . '.' . $key, $value);
             }
             return new static;
         }

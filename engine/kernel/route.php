@@ -103,7 +103,7 @@ class Route extends Genome {
     }
 
     public static function fire($id = null, $lot = []) {
-        $s = __c2f__(static::class, '_') . '.';
+        $s = __c2f__(static::class, '_', '\\') . '.';
         if (isset($id)) {
             $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
