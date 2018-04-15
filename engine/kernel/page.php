@@ -25,8 +25,8 @@ class Page extends Genome {
                 $m = filemtime($path); // File modification time
             }
             $this->lot = array_replace([
-                'time' => new Date($c),
-                'update' => new Date($m),
+                'time' => date(DATE_WISE, $c),
+                'update' => date(DATE_WISE, $m),
                 'slug' => (string) $n,
                 'title' => To::title($n), // Fake `title` data from the page’s file name
                 'type' => u($x) . "", // Fake `type` data from the page’s file extension
@@ -50,15 +50,15 @@ class Page extends Genome {
                 preg_match('#^\d{4,}(?:-\d{2}){2}(?:(?:-\d{2}){3})?$#', $n)
             ) {
                 $t = new Date($n);
-                $this->lot['time'] = $t;
+                $this->lot['time'] = $t->format(DATE_WISE);
                 $this->lot['title'] = $t->F2;
-            // else, set `time` value by page’s file creation time
+            // Else, set `time` value from the page’s `time.data` if any
             } else if ($t = File::open(Path::F($path) . DS . 'time.data')->read()) {
-                $this->lot['time'] = new Date($t);
+                $this->lot['time'] = (new Date($t))->format(DATE_WISE);
             }
-            // Static `update` value
+            // Static `update` value from the page’s `update.data` if any
             if ($t = File::open(Path::F($path) . DS . 'update.data')->read()) {
-                $this->lot['update'] = new Date($t);
+                $this->lot['update'] = (new Date($t))->format(DATE_WISE);
             }
             self::$page[$id] = $this->lot;
         }
@@ -96,11 +96,6 @@ class Page extends Genome {
             }
         }
         self::$page[$this->hash] = $this->lot = $a;
-        if (count($lot) && $x = __is_instance__($a[$key])) {
-            if (method_exists($x, '__invoke')) {
-                $a[$key] = call_user_func([$x, '__invoke'], ...$lot);
-            }
-        }
         $fail = array_shift($lot);
         if ($fail === false) {
             // Disable hook(s) with `$page->key(false)`
@@ -125,7 +120,13 @@ class Page extends Genome {
         } else {
             $name = $this->NS . '.' . $key;
         }
-        return Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key], $a, $this, $key]);
+        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key], $a, $this, $key]);
+        if (count($lot) && $x = __is_instance__($v)) {
+            if (method_exists($x, '__invoke')) {
+                $v = call_user_func([$x, '__invoke'], ...$lot);
+            }
+        }
+        return $v;
     }
 
     public function __set($key, $value = null) {
