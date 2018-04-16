@@ -93,12 +93,23 @@ foreach([
         }
         return $out;
     },
-    'HTML' => 'htmlspecialchars_decode',
-    'JSON' => 'json_encode',
+    'HTML' => ['htmlspecialchars_decode', [null, ENT_HTML5]],
+    'JSON' => function($in, $tidy = false) {
+        if ($tidy) {
+            $i = JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
+        } else {
+            $i = JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE;
+        }
+        return json_encode($in, $i);
+    },
+    'kebab' => function($in, $a = true) {
+        return trim(h($in, '-', $a), '-');
+    },
     'key' => function($in, $a = true) {
         $s = trim(h($in, '_', $a), '_');
         return $s && is_numeric($s[0]) ? '_' . $s : $s;
     },
+    'lower' => 'l',
     'pascal' => 'p',
     'path' => function($in) {
         $u = $GLOBALS['URL'];
@@ -201,6 +212,7 @@ foreach([
         }
         return ucwords($in);
     },
+    'upper' => 'u',
     'URL' => function($in, $raw = false) {
         $u = $GLOBALS['URL'];
         $s = str_replace(DS, '/', ROOT);

@@ -29,12 +29,12 @@ function __from_yaml_a__($s) {
                 // Do nothing!
             } else if (strpos($v, '"') === 0 && substr($v, -1) === '"') {
                 if (json_decode($v) === null) {
-                    $v = '"' . str_replace('"', '\\"', $v) . '"';
+                    $v = json_encode(t($v, '"'));
                 }
             } else if (strpos($v, "'") === 0 && substr($v, -1) === "'") {
-                $v = '"' . t($v, "'") . '"';
+                $v = json_encode(t($v, "'"));
             } else {
-                $v = '"' . $v . '"';
+                $v = json_encode($v);
             }
             $s .= $v;
         }
@@ -140,9 +140,9 @@ function __from_yaml__($in, $d = '  ', $ref = [], $e = true) {
 
 foreach ([
     'base64' => 'base64_decode',
-    'dec' => 'html_entity_decode',
-    'hex' => 'html_entity_decode',
-    'HTML' => 'htmlspecialchars',
+    'dec' => ['html_entity_decode', [null, ENT_HTML5]],
+    'hex' => ['html_entity_decode', [null, ENT_HTML5]],
+    'HTML' => ['htmlspecialchars', [null, ENT_HTML5]],
     'JSON' => function($in) {
         if (__is_anemon__($in)) {
             return (object) o($in);
