@@ -26,7 +26,7 @@ class Asset extends Genome {
         return $path !== false ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : $fail);
     }
 
-    public static function set($path, $stack = null, $attr = []) {
+    public static function set($path, $stack = null, $data = []) {
         $i = 0;
         $stack = (array) $stack;
         $c = static::class;
@@ -37,7 +37,7 @@ class Asset extends Genome {
                     'path' => self::path($v),
                     'url' => self::URL($v),
                     'id' => $v,
-                    'data' => $attr,
+                    'data' => $data,
                     'stack' => (float) (isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10) + $i)
                 ];
                 $i += .1;
