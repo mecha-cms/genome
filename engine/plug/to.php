@@ -93,7 +93,7 @@ foreach([
         }
         return $out;
     },
-    'HTML' => ['htmlspecialchars_decode', [null, ENT_HTML5]],
+    'HTML' => ['htmlspecialchars_decode', [null, ENT_QUOTES | ENT_HTML5]],
     'JSON' => function($in, $tidy = false) {
         if ($tidy) {
             $i = JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
@@ -114,7 +114,8 @@ foreach([
     'path' => function($in) {
         $u = $GLOBALS['URL'];
         $s = str_replace('/', DS, $u['$']);
-        return str_replace([$u['$'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $in);
+        $in = str_replace([$u['$'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $in);
+        return file_exists($in) ? realpath($in) : $in;
     },
     'query' => function($in, $c = []) {
         $c = array_replace(['?', '&', '=', ""], $c);
@@ -216,6 +217,7 @@ foreach([
     'URL' => function($in, $raw = false) {
         $u = $GLOBALS['URL'];
         $s = str_replace(DS, '/', ROOT);
+        $in = file_exists($in) ? realpath($in) : $in;
         $in = str_replace([ROOT, DS, '\\', $s], [$u['$'], '/', '/', $u['$']], $in);
         return $raw ? rawurldecode($in) : urldecode($in);
     },

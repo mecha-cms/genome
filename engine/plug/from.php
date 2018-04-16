@@ -140,9 +140,9 @@ function __from_yaml__($in, $d = '  ', $ref = [], $e = true) {
 
 foreach ([
     'base64' => 'base64_decode',
-    'dec' => ['html_entity_decode', [null, ENT_HTML5]],
-    'hex' => ['html_entity_decode', [null, ENT_HTML5]],
-    'HTML' => ['htmlspecialchars', [null, ENT_HTML5]],
+    'dec' => ['html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
+    'hex' => ['html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
+    'HTML' => ['htmlspecialchars', [null, ENT_QUOTES | ENT_HTML5]],
     'JSON' => function($in) {
         if (__is_anemon__($in)) {
             return (object) o($in);
