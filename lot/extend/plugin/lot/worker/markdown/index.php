@@ -19,7 +19,8 @@ function fn_markdown_span($in, $lot = [], $that) {
     if ($that->get('type') !== 'Markdown') {
         return $in;
     }
-    return fn_markdown_replace($in, 'line');
+    // return fn_markdown_replace($in, 'line'); TODO
+    return t(fn_markdown_replace($in), '<p>', '</p>');
 }
 
 From::_('markdown', function($in, $span = false) {
