@@ -26,7 +26,7 @@ class Asset extends Genome {
         return $path !== false ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : $fail);
     }
 
-    public static function set($path, $stack = null) {
+    public static function set($path, $stack = null, $attr = []) {
         $i = 0;
         $stack = (array) $stack;
         $c = static::class;
@@ -37,6 +37,7 @@ class Asset extends Genome {
                     'path' => self::path($v),
                     'url' => self::URL($v),
                     'id' => $v,
+                    'data' => $attr,
                     'stack' => (float) (isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10) + $i)
                 ];
                 $i += .1;
@@ -74,23 +75,24 @@ class Asset extends Genome {
         $path = array_shift($lot);
         $a = array_shift($lot) ?: [];
         $c = static::class;
-        if ($fn = self::_('.' . $kin)) {
-            $fn = $fn[0];
+        if ($v = self::_('.' . $kin)) {
+            $fn = $v[0];
             if (isset($path)) {
-                $s = self::get($path, [
+                $g = self::get($path, [
                     'path' => null,
                     'url' => null,
                     'id' => null,
+                    'data' => [],
                     'stack' => null
                 ]);
-                return is_callable($fn) ? call_user_func($fn, $s, $path, $a) : ($s['path'] ? file_get_contents($s['path']) : "");
+                return is_callable($fn) ? call_user_func($fn, $g, $path, array_replace_recursive($a, $g['data'])) : ($g['path'] ? file_get_contents($g['path']) : "");
             }
             if (isset(self::$lot[$c][1][$kin])) {
                 $assets = Anemon::eat(self::$lot[$c][1][$kin])->sort([1, 'stack'], true)->vomit();
                 $output = "";
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {
-                        $output .= call_user_func($fn, $v, $k, $a) . N;
+                        $output .= call_user_func($fn, $v, $k, array_replace_recursive($a, $v['data'])) . N;
                     }
                 } else {
                     foreach ($assets as $k => $v) {
