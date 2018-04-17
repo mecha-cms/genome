@@ -40,7 +40,7 @@ class Union extends Genome {
         $a = array_replace_recursive($this->data, $a);
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
-            if (__is_anemon__($v)) {
+            if (is_array($v) || (is_object($v) && !__is_instance__($v))) {
                 $v = json_encode($v);
             }
             $output .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . static::x($v) . $u[2] : $k);

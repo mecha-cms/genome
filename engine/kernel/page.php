@@ -82,11 +82,6 @@ class Page extends Genome {
             if ($data = File::open($extern)->get()) {
                 $extern = null; // Stop!
                 $a[$key] = e($data);
-            } else if ($datas = glob(substr_replace($extern, '.*.data', -5, 5), GLOB_NOSORT)) {
-                $extern = null; // Stop!
-                foreach ($datas as $v) {
-                    Anemon::set($a, str_replace('-', '_', Path::N($v)), e(file_get_contents($v)));
-                }
             } else if ($page = file_get_contents($a['path'])) {
                 $a = array_replace($a, e(self::apart($page), ['$', 'content']));
             }
@@ -95,14 +90,8 @@ class Page extends Genome {
             $a[$key] = null;
         }
         // Prioritize data from a file…
-        if ($extern) {
-            if ($data = File::open($extern)->get()) {
-                $a[$key] = e($data);
-            } else if ($datas = glob(substr_replace($extern, '.*.data', -5, 5), GLOB_NOSORT)) {
-                foreach ($datas as $v) {
-                    Anemon::set($a, str_replace('-', '_', Path::N($v)), e(file_get_contents($v)));
-                }
-            }
+        if ($extern && $data = File::open($extern)->get()) {
+            $a[$key] = e($data);
         }
         self::$page[$this->hash] = $this->lot = $a;
         $fail = isset($lot[0]) ? $lot[0] : null;
