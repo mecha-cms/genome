@@ -76,23 +76,32 @@ class Page extends Genome {
             $keys = null;
         }
         $a = $this->lot;
-        if (isset($a['path']) && is_file($a['path'])) {
-            if ($key !== 'time' && $key !== 'update') {
-                // Prioritize data from a file…
-                if ($data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
-                    $a[$key] = e($data);
-                } else if ($page = file_get_contents($a['path'])) {
-                    $a = array_replace($a, e(self::apart($page), ['$', 'content']));
+        $extern = isset($a['path']) ? Path::F($a['path']) . DS . str_replace('_', '-', $key) . '.data' : null;
+        if ($extern && is_file($a['path'])) {
+            // Prioritize data from a file…
+            if ($data = File::open($extern)->get()) {
+                $extern = null; // Stop!
+                $a[$key] = e($data);
+            } else if ($datas = glob(substr_replace($extern, '.*.data', -5, 5), GLOB_NOSORT)) {
+                $extern = null; // Stop!
+                foreach ($datas as $v) {
+                    Anemon::set($a, str_replace('-', '_', Path::N($v)), e(file_get_contents($v)));
                 }
+            } else if ($page = file_get_contents($a['path'])) {
+                $a = array_replace($a, e(self::apart($page), ['$', 'content']));
             }
         }
         if (!array_key_exists($key, $a)) {
             $a[$key] = null;
         }
         // Prioritize data from a file…
-        if (isset($a['path']) && $data = File::open(Path::F($a['path']) . DS . $key . '.data')->get()) {
-            if ($key !== 'time' && $key !== 'update') {
+        if ($extern) {
+            if ($data = File::open($extern)->get()) {
                 $a[$key] = e($data);
+            } else if ($datas = glob(substr_replace($extern, '.*.data', -5, 5), GLOB_NOSORT)) {
+                foreach ($datas as $v) {
+                    Anemon::set($a, str_replace('-', '_', Path::N($v)), e(file_get_contents($v)));
+                }
             }
         }
         self::$page[$this->hash] = $this->lot = $a;
