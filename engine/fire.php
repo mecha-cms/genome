@@ -101,18 +101,16 @@ foreach ($extends as $k => $v) {
 }
 
 $id = array_sum($c);
-if (Cache::expire(EXTEND, $id)) {
+$content = Cache::expire(EXTEND, $id) ? Cache::set(EXTEND, function() use($c) {
     $content = [];
     foreach ($c as $k => $v) {
         $i18n = new Page($k, [], ['*', 'language']);
-        $fn = 'From::' . p($i18n->type);
-        $c = $i18n->content;
-        $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
+        $fn = 'From::' . $i18n->type;
+        $v = $i18n->content;
+        $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $v) : (array) $v);
     }
-    Cache::set(EXTEND, $content, $id);
-} else {
-    $content = Cache::get(EXTEND, []);
-}
+    return $content;
+}, $id) : Cache::get(EXTEND, []);
 
 // Load extension(s)’ language…
 Language::set($content);

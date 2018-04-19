@@ -33,18 +33,16 @@ call_user_func(function() {
         }
     }
     $id = array_sum($c);
-    if (Cache::expire(PLUGIN, $id)) {
+    $content = Cache::expire(PLUGIN, $id) ? Cache::set(PLUGIN, function() use($c) {
         $content = [];
         foreach ($c as $k => $v) {
             $i18n = new Page($k, [], ['*', 'language']);
-            $fn = 'From::' . p($i18n->type);
-            $c = $i18n->content;
-            $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
+            $fn = 'From::' . $i18n->type;
+            $v = $i18n->content;
+            $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $v) : (array) $v);
         }
-        Cache::set(PLUGIN, $content, $id);
-    } else {
-        $content = Cache::get(PLUGIN, []);
-    }
+        return $content;
+    }, $id) : Cache::get(PLUGIN, []);
     Language::set($content);
     foreach (array_keys($plugins) as $v) {
         if (Path::B($v) !== '__index.php') {

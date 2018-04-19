@@ -20,16 +20,20 @@ function fn_markdown_span($in, $lot = [], $that) {
         return $in;
     }
     // return fn_markdown_replace($in, 'line'); TODO
-    return t(fn_markdown_replace($in), '<p>', '</p>');
+    return w(fn_markdown_replace($in), HTML_WISE_I);
 }
 
-From::_('markdown', function($in, $span = false) {
+From::_('Markdown', function($in, $span = false) {
     return fn_markdown_replace($in, $span ? 'span' : 'text');
 });
 
-To::_('markdown', function($in) {
+To::_('Markdown', function($in) {
     return $in; // TODO
 });
+
+// Alias(es)
+From::_('markdown', From::_('Markdown'));
+To::_('markdown', To::_('Markdown'));
 
 Hook::set('*.title', 'fn_markdown_span', 2);
 Hook::set(['*.description', '*.content'], 'fn_markdown', 2);

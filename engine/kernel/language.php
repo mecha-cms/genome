@@ -5,15 +5,12 @@ class Language extends Config {
     public static function ignite(...$lot) {
         $language = Config::get('language');
         $f = LANGUAGE . DS . $language . '.page';
-        if (Cache::expire($f)) {
+        $content = Cache::expire($f) ? Cache::set($f, function($f) {
             $i18n = new Page($f, [], ['*', 'language']);
-            $fn = 'From::' . p($i18n->type);
+            $fn = 'From::' . $i18n->type;
             $c = $i18n->content;
-            $content = is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
-            Cache::set($f, $content);
-        } else {
-            $content = Cache::get($f);
-        }
+            return is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
+        }) : Cache::get($f);
         return self::set($content)->get();
     }
 
