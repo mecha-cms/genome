@@ -1,7 +1,17 @@
 <?php
 
+// Create a `shield` folder in `lot` if it is not there
+$f = LOT . DS . 'shield';
+if (!Folder::exist($f)) {
+    Folder::set($f, 0755);
+    Guardian::kick($url->current);
+}
+
 // Include worker(s)…
-require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'hook.php';
+r(__DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', [
+    'config.php',
+    'hook.php'
+], null, Lot::get(null, []));
 
 Hook::set('on.ready', function() {
 
@@ -16,7 +26,7 @@ Hook::set('on.ready', function() {
         $i18n . 'en-us.page'
     ])) {
         $i18n = new Page($l, [], ['*', 'language']);
-        $fn = 'From::' . p($i18n->type);
+        $fn = 'From::' . $i18n->type;
         $c = $i18n->content;
         Language::set(is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
     }
@@ -42,10 +52,8 @@ Hook::set('on.ready', function() {
                 ) {
                     continue;
                 }
-                if ($path = File::exist([
-                    // Relative to the `asset` folder of current shield
-                    SHIELD . DS . $config->shield . DS . 'asset' . DS . $kk
-                ])) {
+                // Relative to the `asset` folder of current shield
+                if ($path = File::exist(SHIELD . DS . $config->shield . DS . 'asset' . DS . $kk)) {
                     Asset::reset($kk)->set($path, $vv['stack']);
                 }
             }

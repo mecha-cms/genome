@@ -64,7 +64,6 @@ class File extends Genome {
             return !empty($output) ? $output : $fail;
         }
         $x = null;
-        $fn = is_callable($x) ? $x : null;
         if (is_array($folder)) {
             $x = isset($folder[1]) ? $folder[1] : null;
             $folder = $folder[0];
@@ -75,12 +74,18 @@ class File extends Genome {
             $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
             $b = $x === 1 || is_string($x) ? \RecursiveIteratorIterator::LEAVES_ONLY : \RecursiveIteratorIterator::SELF_FIRST;
             $c = new \RecursiveIteratorIterator($a, $b);
-            foreach ($c as $v) {
-                $xx = $v->getExtension();
-                $vv = $v->getPathname();
-                if ($fn && call_user_func($fn, $vv, $v)) {
-                    $output[$vv] = $v->isDir() ? 0 : 1;
-                } else {
+            if (is_callable($x)) {
+                foreach ($c as $v) {
+                    $xx = $v->getExtension();
+                    $vv = $v->getPathname();
+                    if (call_user_func($x, $vv, $v)) {
+                        $output[$vv] = $v->isDir() ? 0 : 1;
+                    }
+                }
+            } else {
+                foreach ($c as $v) {
+                    $xx = $v->getExtension();
+                    $vv = $v->getPathname();
                     if ($v->isDir()) {
                         $output[$vv] = 0;
                     } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {

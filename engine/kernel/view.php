@@ -4,13 +4,8 @@ class View extends Genome {
 
     protected static $lot = [];
 
-    protected static function __($input) {
-        $x = substr($input, -4) !== '.php' ? '.php' : "";
-        return $input . $x;
-    }
-
     public static function path($input, $fail = false) {
-        $NS = __c2f__($c = static::class, '_') . '.' . __FUNCTION__;
+        $NS = __c2f__($c = static::class, '_', '/') . '.' . __FUNCTION__;
         $output = [];
         if (is_string($input)) {
             if (strpos($input, ROOT) !== 0) {
@@ -21,7 +16,12 @@ class View extends Genome {
         foreach ($output ?: (array) $input as $k => $v) {
             $id = $v;
             $v = str_replace('/', DS, $v);
-            $v = self::__(strpos($v, ROOT) === 0 ? $v : ROOT . DS . $v);
+            if (strpos($v, ROOT) !== 0) {
+                if (substr($v, -4) !== '.php') {
+                    $v .= '.php';
+                }
+                $v = ROOT . DS . $v;
+            }
             if (!isset(self::$lot[$c][0][$id])) {
                 $v = isset(self::$lot[$c][1][$id]) ? self::$lot[$c][1][$id] : $v;
             }
@@ -86,7 +86,7 @@ class View extends Genome {
         return new static;
     }
 
-    public static function fire($input, $fail = false) {
+    public static function load($input, $fail = false) {
         if (!$output = self::get($input, $fail, false)) {
             $output = __replace__(Guardian::$config['message'], [
                 'message' => '<code>' . __METHOD__ . '(' . v(json_encode($input)) . ')</code>'

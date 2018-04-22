@@ -4,10 +4,7 @@
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 
 // Include worker(s)…
-r(__DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', [
-    'config.php',
-    'hook.php'
-], null, Lot::get(null, []));
+require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'config.php';
 
 $state = Extend::state('page');
 

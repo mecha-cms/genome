@@ -3,8 +3,8 @@
 // Store page state to registry…
 if ($state = Extend::state('page')) {
     // Prioritize current shield state
-    if ($alt = File::exist(SHIELD . DS . $config->shield . DS . 'state' . DS . 'config.php')) {
-        $state = array_replace_recursive($state, require $alt);
+    if ($alt = Shield::state($config->shield)) {
+        $state = array_replace_recursive($state, $alt);
     }
     // Prioritize default state
     Config::alt($state);

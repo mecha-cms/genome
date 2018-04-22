@@ -1,10 +1,22 @@
 <?php
 
-// Store default shield folder state to registry…
-if ($default = Extend::state('shield', 'default')) {
-    // Prioritize default state
-    Config::alt(['shield' => $default]);
-}
+// Fix missing date format: default to `en_us`
+Hook::set('on.ready', function() {
+    $key = str_replace('-', '_', Config::get('language'));
+    if (!Date::get($key)) {
+        Date::set($key, function($out) {
+            return $out['en_us'];
+        });
+    }
+}, 0);
+
+// Rich `time` and `update` data
+Hook::set([
+    '*.time',
+    '*.update'
+], function($v) {
+    return new Date($v);
+}, 0);
 
 // Generate relative shield path to the `.\lot\shield\*` folder
 function fn_shield_path($path) {
@@ -32,14 +44,10 @@ function fn_shield_yield($content) {
                 $a = HTML::apart($m[0]);
                 if (isset($a[2]['class[]'])) {
                     $c = [];
-                    foreach (array_filter((array) Config::get('has', [])) as $k => $v) {
-                        $c[] = 'has-' . $k;
-                    }
-                    foreach (array_filter((array) Config::get('is', [])) as $k => $v) {
-                        $c[] = 'is-' . $k;
-                    }
-                    foreach (array_filter((array) Config::get('not', [])) as $k => $v) {
-                        $c[] = 'not-' . $k;
+                    foreach (['has', 'is', 'not'] as $key) {
+                        foreach (array_filter((array) Config::get($key, [])) as $k => $v) {
+                            $c[] = $key . '-' . $k;
+                        }
                     }
                     if ($x = Config::get('is.error')) {
                         $c[] = 'error-' . $x;
