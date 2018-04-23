@@ -11,12 +11,10 @@ class Cache extends Genome {
             $x = File::open($n)->import([-1]);
             if ((is_string($t) && $t !== $x[0]) || $t > $x[0]) {
                 $content = null;
-                if (is_file($from)) {
-                    if (is_callable($fn)) {
-                        File::export([$t, $content = call_user_func($fn, $from, $t, $x)])->saveTo($n, 0600);
-                    } else {
-                        $content = require $from;
-                    }
+                if (is_callable($fn)) {
+                    File::export([$t, $content = call_user_func($fn, $from, $t, $x)])->saveTo($n, 0600);
+                } else {
+                    $content = require $from;
                 }
                 return $content;
             }
