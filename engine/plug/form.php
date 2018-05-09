@@ -55,11 +55,12 @@ foreach ([
     Form::_($k, $v);
 }
 
-foreach (['color', 'date', 'email', 'number', 'pass', 'password', 'search', 'tel', 'text', 'url'] as $kin) {
+foreach (['color', 'date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url'] as $kin) {
     Form::_($kin, function($name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) use($kin) {
-        if ($kin === 'pass') {
-            $kin = 'password';
-        }
         return Form::input($name, $kin, $value, $placeholder, $attr, $dent);
     });
 }
+
+// Alias(es)
+Form::_('check', Form::_('checkbox'));
+Form::_('pass', Form::_('password'));

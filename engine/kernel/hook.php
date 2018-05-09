@@ -5,7 +5,7 @@ class Hook extends Genome {
     protected static $i = [];
     protected static $lot = [];
 
-    public static function set($id = null, $fn = null, $stack = null, $nest = 100) {
+    public static function set($id = null, $fn = null, $stack = null, $i = 100) {
         $c = static::class;
         $stack = isset($stack) ? $stack : 10;
         if (!is_array($id)) {
@@ -16,7 +16,7 @@ class Hook extends Genome {
                 self::$lot[1][$c][$id][] = [
                     'fn' => $fn,
                     'stack' => (float) $stack,
-                    'i' => $nest
+                    'i' => $i
                 ];
             }
         } else {

@@ -9,11 +9,19 @@ class View extends Genome {
         $output = [];
         if (is_string($input)) {
             if (strpos($input, ROOT) !== 0) {
-                $output = Anemon::step(str_replace(DS, '/', $input), '/');
-                array_unshift($output, str_replace('/', '.', $output[0]));
+                $id = str_replace(DS, '/', $input);
+                if (!isset(self::$lot[$c][0][$id]) && isset(self::$lot[$c][1][$id])) {
+                    $output = self::$lot[$c][1][$id];
+                } else {
+                    $output = Anemon::step($id, '/');
+                    array_unshift($output, str_replace('/', '.', $output[0]));
+                    $output = array_unique($output);
+                }
             }
+        } else {
+            $output = (array) $input;
         }
-        foreach ($output ?: (array) $input as $k => $v) {
+        foreach ((array) $output as $k => $v) {
             $id = $v;
             $v = str_replace('/', DS, $v);
             if (strpos($v, ROOT) !== 0) {
@@ -21,9 +29,6 @@ class View extends Genome {
                     $v .= '.php';
                 }
                 $v = ROOT . DS . $v;
-            }
-            if (!isset(self::$lot[$c][0][$id])) {
-                $v = isset(self::$lot[$c][1][$id]) ? self::$lot[$c][1][$id] : $v;
             }
             $output[$k] = $v;
         }

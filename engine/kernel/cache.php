@@ -13,7 +13,7 @@ class Cache extends Genome {
                 $content = null;
                 if (is_callable($fn)) {
                     File::export([$t, $content = call_user_func($fn, $from, $t, $x)])->saveTo($n, 0600);
-                } else {
+                } else if (is_file($from)) {
                     $content = require $from;
                 }
                 return $content;
