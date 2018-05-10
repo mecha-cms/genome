@@ -45,9 +45,10 @@ class URL extends Genome {
         $this->s = $s;
         if (isset($input)) {
             $u = array_replace([
-                '$' => $input,
+                '$' => null,
                 'fragment' => "",
                 'host' => "",
+                'i' => null,
                 'pass' => null,
                 'path' => "",
                 'port' => null,
@@ -61,7 +62,13 @@ class URL extends Genome {
                 $u['i'] = (int) array_pop($a);
                 $u['path'] = implode('/', $a);
             }
-            $u['clean'] = rtrim($u['scheme'] . '://' . $u['host'] . '/' . $u['path'], '/');
+            $u['clean'] = rtrim(strtr(preg_replace('#[?&\#].*$#', "", $input), [
+                '<' => '%3C',
+                '>' => '%3E',
+                '&' => '%26',
+                '"' => '%22'
+            ]), '/');
+            $u['$'] = rtrim($u['clean'] . '/' . $u['i'], '/');
             $u['query'] = ($u['query'] && strpos($u['query'], '?') !== 0 ? '?' : "") . str_replace('&amp;', '&', $u['query']);
             $u['hash'] = ($u['fragment'] && strpos($u['fragment'], '#') !== 0 ? '#' : "") . $u['fragment'];
             unset($u['fragment']);

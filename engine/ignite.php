@@ -102,8 +102,8 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
     foreach ($a as $k => $v) {
         if (is_array($v) || is_object($v)) {
             // `%{$.a.b.c}%`
-            if (strpos($s, '%{' . $k . '.') !== false || strpos($s, '%{' . $k . '~') !== false) {
-                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)*(~\S+)?\}\%#i', function($m) use($v) {
+            if (strpos($s, '%{' . $k . '.') !== false) {
+                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)*\}\%#i', function($m) use($v) {
                     $a = explode('.', isset($m[1]) ? $m[1] : "");
                     $b = array_pop($a);
                     if (isset($m[2])) {
@@ -177,7 +177,14 @@ $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['
 $directory = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
 $directory = $directory === '.' ? "" : trim($directory, '/');
 $url = rtrim($protocol . $host  . '/' . $directory, '/');
-$path = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
+// [1]. Remove query string(s) and hash from URL
+// [2]. Remove possible XSS attack from URL
+$path = strtr(preg_replace('#[?&\#].*$#', "", trim($_SERVER['QUERY_STRING'], '/')), [
+    '<' => '%3C',
+    '>' => '%3E',
+    '&' => '%26',
+    '"' => '%22'
+]);
 $path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $directory . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
 
 if ($path !== "") {
@@ -1000,9 +1007,14 @@ function s($x) {
 }
 
 function t($x, $o = '"', $c = null) {
-    $c = isset($c) ? $c : $o;
-    if ($x && strpos($x, $o) === 0 && substr($x, -strlen($c)) === $c) {
-        return substr(substr($x, strlen($o)), 0, -strlen($c));
+    if ($x) {
+        if ($o !== "" && strpos($x, $o) === 0) {
+            $x = substr($x, strlen($o));
+        }
+        $c = isset($c) ? $c : $o;
+        if ($c !== "" && substr($x, $e = -strlen($c)) === $c) {
+            $x = substr($x, 0, $e);
+        }
     }
     return $x;
 }
