@@ -1062,7 +1062,7 @@ function x($x, $c = "'", $d = '-+*/=:()[]{}<>^$.?!|\\') {
 
 function y($x, $a = []) {
     // By path
-    if (is_string($x) && is_file($x)) {
+    if (is_string($x) && strlen($x) <= 260 && realpath($x) && is_file($x)) {
         ob_start();
         extract($a);
         require $x;

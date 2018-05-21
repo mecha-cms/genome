@@ -155,11 +155,11 @@ class Page extends Genome {
     public static function apart($input, $key = null, $fail = null, $eval = false) {
         // Get specific property…
         if ($key === 'content') {
-            $input = explode("\n...", n(is_file($input) ? file_get_contents($input) : $input), 2);
+            $input = explode("\n...", n(Is::file($input) ? file_get_contents($input) : $input), 2);
             return trim(isset($input[1]) ? $input[1] : $input[0], "\n");
         } else if (isset($key)) {
             // By path… (faster)
-            if (is_file($input)) {
+            if (Is::file($input)) {
                 if ($o = fopen($input, 'r')) {
                     $output = $fail;
                     while (($s = fgets($o, 1024)) !== false) {

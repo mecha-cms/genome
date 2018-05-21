@@ -10,7 +10,7 @@ class Config extends Genome {
         if (!isset($lot[0])) {
             return (self::$bucket[$c] = []);
         }
-        $a = is_string($lot[0]) && is_file($lot[0]) ? require $lot[0] : $lot[0];
+        $a = Is::file($lot[0]) ? require $lot[0] : $lot[0];
         return (self::$bucket[$c] = self::$a[$c] = (array) a($a));
     }
 

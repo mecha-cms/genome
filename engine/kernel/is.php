@@ -55,6 +55,16 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
+    // Check for valid file name
+    public static function file($x) {
+        return is_string($x) && strlen($x) <= 260 && realpath($x) && is_file($x);
+    }
+
+    // Check for valid folder name
+    public static function folder($x) {
+        return is_string($x) && strlen($x) <= 260 && realpath($x) && is_dir($x);
+    }
+
     // Check if `$this->bucket` contains `$s`
     public function has($s, $all = false, $x = X) {
         $input = $x . implode($x, $this->bucket) . $x;

@@ -85,7 +85,8 @@ class Asset extends Genome {
                     'data' => [],
                     'stack' => null
                 ]);
-                return is_callable($fn) ? call_user_func($fn, $g, $path, array_replace_recursive($a, $g['data'])) : ($g['path'] ? file_get_contents($g['path']) : "");
+                $data = is_array($a) && is_array($g['data']) ? array_replace_recursive($a, $g['data']) : $g['data'] ?: $a;
+                return is_callable($fn) ? call_user_func($fn, $g, $path, $data) : ($g['path'] ? file_get_contents($g['path']) : "");
             }
             if (isset(self::$lot[$c][1][$kin])) {
                 $assets = Anemon::eat(self::$lot[$c][1][$kin])->sort([1, 'stack'], true)->vomit();
