@@ -1,8 +1,8 @@
 @import url('//fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i|Roboto+Mono:400,400i,700,700i');
 
 *,
-:before,
-:after {
+::before,
+::after {
   margin:0;
   padding:0;
   font:inherit;
@@ -16,11 +16,11 @@
   color:inherit;
   opacity:.5;
 }
-::-moz-placeholder {
+:-moz-placeholder {
   color:inherit;
   opacity:.5;
 }
-:-moz-placeholder {
+::-moz-placeholder {
   color:inherit;
   opacity:.5;
 }
@@ -28,7 +28,11 @@
   color:inherit;
   opacity:.5;
 }
-:placeholder {
+::-ms-input-placeholder {
+  color:inherit;
+  opacity:.5;
+}
+::placeholder {
   color:inherit;
   opacity:.5;
 }
@@ -87,7 +91,7 @@ article,aside,footer,header,main,nav,section {display:block}
   color:#fff;
   width:12em;
   height:1.75em;
-  line-height:1.75em;
+  line-height:1.75;
   padding:0 .5em;
   text-align:left;
 }
@@ -254,7 +258,7 @@ fieldset {
   padding:0 1em 1em;
 }
 legend {padding:0 .5em}
-hr:before {content:'\2022\2002\2022\2002\2022'}
+hr::before {content:'\2022\2002\2022\2002\2022'}
 code,.code {font-family:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace}
 blockquote {
   padding-left:1em;
@@ -286,12 +290,12 @@ header {margin-bottom:5%}
 footer,
 nav {margin-top:5%}
 header + nav {margin-top:0}
-article:after,
-footer:after,
-header:after,
-main:after,
-nav:after,
-section:after {
+article::after,
+footer::after,
+header::after,
+main::after,
+nav::after,
+section::after {
   content:"";
   display:table;
   clear:both;
