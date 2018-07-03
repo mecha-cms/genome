@@ -17,9 +17,11 @@ class View extends Genome {
                     array_unshift($output, str_replace('/', '.', $output[0]));
                     $output = array_unique($output);
                 }
+            } else {
+                $output = $input;
             }
         } else {
-            $output = (array) $input;
+            $output = $input;
         }
         foreach ((array) $output as $k => $v) {
             $id = $v;
@@ -59,12 +61,12 @@ class View extends Genome {
             $fail = false;
         }
         if ($path = self::path($input, $fail)) {
-            // Begin view
-            Hook::fire($NS . '.enter', [$output, $input, $path]);
             ob_start();
             extract(Lot::get(null, []));
             require $path;
             $output = ob_get_clean();
+            // Begin view
+            Hook::fire($NS . '.enter', [$output, $input, $path]);
             $output = Hook::fire($NS . '.' . __FUNCTION__, [$output, $input, $path]);
             // End view
             Hook::fire($NS . '.exit', [$output, $input, $path]);
