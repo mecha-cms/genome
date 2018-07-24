@@ -253,10 +253,8 @@ class Page extends Genome {
     }
 
     public function has($key) {
-        if ($data = File::exist(Path::F($this->path) . DS . $key . '.data')) {
-            return true;
-        }
-        return $this->__get($key) !== null;
+        $data = Path::F($this->path) . DS . $key . '.data';
+        return file_exists($data) ? filesize($data) > 0 : self::apart($this->path, $key) !== null;
     }
 
     public function saveTo($path, $consent = 0600) {

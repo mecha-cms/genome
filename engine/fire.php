@@ -71,13 +71,13 @@ $seeds = [
 Lot::set($seeds);
 
 $extends = [];
-foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {
+foreach (g(EXTEND . DS . '*', 'index.php') as $v) {
     $extends[$v] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
 }
 
 asort($extends);
 extract($seeds);
-Config::set('+extend', $extends);
+Config::set('extend[]', $extends);
 $c = [];
 foreach ($extends as $k => $v) {
     $f = Path::D($k) . DS;
@@ -88,16 +88,14 @@ foreach ($extends as $k => $v) {
     ])) {
         $c[$l] = filemtime($l);
     }
-    if (Path::B($k) !== '__index.php') {
-        $f .= 'engine' . DS;
-        d($f . 'kernel', function($w, $n) use($f, $seeds) {
-            $f .= 'plug' . DS . $n . '.php';
-            if (file_exists($f)) {
-                extract($seeds);
-                require $f;
-            }
-        }, $seeds);
-    }
+    $f .= 'engine' . DS;
+    d($f . 'kernel', function($w, $n) use($f, $seeds) {
+        $f .= 'plug' . DS . $n . '.php';
+        if (file_exists($f)) {
+            extract($seeds);
+            require $f;
+        }
+    }, $seeds);
 }
 
 $id = array_sum($c);
@@ -117,12 +115,10 @@ Language::set($content);
 
 // Load extension(s)…
 foreach (array_keys($extends) as $v) {
-    if (Path::B($v) !== '__index.php') {
-        call_user_func(function() use($v) {
-            extract(Lot::get(null, []));
-            require $v;
-        });
-    }
+    call_user_func(function() use($v) {
+        extract(Lot::get(null, []));
+        require $v;
+    });
 }
 
 // Load all route(s)…

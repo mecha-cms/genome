@@ -3,7 +3,7 @@ title: Plugin
 description: A lower priority extensions.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.1.0
+version: 1.2.0
 ...
 
 Plugin files are stored in the `lot\worker` folder.

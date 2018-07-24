@@ -5,12 +5,12 @@ define('PLUGIN', __DIR__ . DS . 'lot' . DS . 'worker');
 call_user_func(function() {
     $plugins = [];
     $seeds = Lot::get(null, []);
-    foreach (g(PLUGIN . DS . '*', '{index__,index,__index}.php') as $v) {
+    foreach (g(PLUGIN . DS . '*', 'index.php') as $v) {
         $plugins[$v] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
     }
     asort($plugins);
     extract($seeds);
-    Config::set('+plugin', $plugins);
+    Config::set('plugin[]', $plugins);
     $c = [];
     foreach ($plugins as $k => $v) {
         $f = Path::D($k) . DS;
@@ -21,16 +21,14 @@ call_user_func(function() {
         ])) {
             $c[$l] = filemtime($l);
         }
-        if (Path::B($k) !== '__index.php') {
-            $f .= 'engine' . DS;
-            d($f . 'kernel', function($w, $n) use($f, $seeds) {
-                $f .= 'plug' . DS . $n . '.php';
-                if (file_exists($f)) {
-                    extract($seeds);
-                    require $f;
-                }
-            }, $seeds);
-        }
+        $f .= 'engine' . DS;
+        d($f . 'kernel', function($w, $n) use($f, $seeds) {
+            $f .= 'plug' . DS . $n . '.php';
+            if (file_exists($f)) {
+                extract($seeds);
+                require $f;
+            }
+        }, $seeds);
     }
     $id = array_sum($c);
     $content = Cache::expire(PLUGIN, $id) ? Cache::set(PLUGIN, function() use($c) {
@@ -45,8 +43,6 @@ call_user_func(function() {
     }, $id) : Cache::get(PLUGIN, []);
     Language::set($content);
     foreach (array_keys($plugins) as $v) {
-        if (Path::B($v) !== '__index.php') {
-            require $v;
-        }
+        require $v;
     }
 });
