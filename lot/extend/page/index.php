@@ -104,8 +104,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
         ]);
         Config::set('trace', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         Config::set('has', [
-            'next' => !!$pager->{$elevator['direction']['1']},
-            'previous' => !!$pager->{$elevator['direction']['-1']}
+            $elevator['direction']['1'] => !!$pager->{$elevator['direction']['1']},
+            $elevator['direction']['-1'] => !!$pager->{$elevator['direction']['-1']}
         ]);
         if (!$site->is('pages')) {
             // Page(s) view has been disabled!
@@ -132,8 +132,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
                 // Greater than the maximum step or less than `1`, abort!
                 Config::set('is.error', 404);
                 Config::set('has', [
-                    'next' => false,
-                    'previous' => false
+                    $elevator['direction']['1'] => false,
+                    $elevator['direction']['-1'] => false
                 ]);
                 Shield::abort('404/' . $path_canon);
             }
@@ -142,8 +142,8 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
                 'pages' => $pages
             ]);
             Config::set('has', [
-                'next' => !!$pager->{$elevator['direction']['1']},
-                'previous' => !!$pager->{$elevator['direction']['-1']}
+                $elevator['direction']['1'] => !!$pager->{$elevator['direction']['1']},
+                $elevator['direction']['-1'] => !!$pager->{$elevator['direction']['-1']}
             ]);
             return Shield::attach('pages/' . $path_canon);
         }
