@@ -38,7 +38,6 @@ Hook::set('on.ready', function() {
 
     // Load user function(s) from the current shield folder if any
     if ($fn = File::exist($folder . 'index.php')) require $fn;
-    if ($fn = File::exist($folder . 'index__.php')) require $fn;
 
     // Detect relative asset path to the `.\lot\shield\*` folder
     if (Extend::exist('asset') && $assets = Asset::get(null, [])) {

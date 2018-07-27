@@ -78,7 +78,6 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
                 $chunk = $f->chunk($chunk);
             }
             if ($fn = File::exist($k . DS . 'index.php')) include $fn;
-            if ($fn = File::exist($k . DS . 'index__.php')) include $fn;
         }
         $page = new Page($file);
         // Create elevator for single page mode
@@ -129,16 +128,22 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
             foreach (Anemon::eat($files)->chunk($chunk, $i) as $file) {
                 $pages[] = new Page($file);
             }
-            Config::set('has.next', count($files) > $h * $chunk);
             if (empty($pages)) {
                 // Greater than the maximum step or less than `1`, abort!
                 Config::set('is.error', 404);
-                Config::set('has.next', false);
+                Config::set('has', [
+                    'next' => false,
+                    'previous' => false
+                ]);
                 Shield::abort('404/' . $path_canon);
             }
             Lot::set([
-                'pager' => new Elevator($files, [$chunk, $i], $url . '/' . $path_canon, $elevator),
+                'pager' => ($pager = new Elevator($files, [$chunk, $i], $url . '/' . $path_canon, $elevator)),
                 'pages' => $pages
+            ]);
+            Config::set('has', [
+                'next' => !!$pager->{$elevator['direction']['1']},
+                'previous' => !!$pager->{$elevator['direction']['-1']}
             ]);
             return Shield::attach('pages/' . $path_canon);
         }
