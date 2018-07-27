@@ -23,28 +23,28 @@ class Elevator extends Genome {
     public function __construct($input = [], $chunk = [5, 0], $path = true, $config = []) {
         $key = __c2f__(static::class, '_', '/');
         $this->c = [
-            // -1: previous
-            //  0: parent
-            //  1: next
+            // <: previous
+            // =: parent or current
+            // >: next
             'direction' => [
-               '-1' => 'up',
-                '0' => "",
-                '1' => 'down'
+                '<' => 'up',
+                '=' => 'hub',
+                '>' => 'down'
             ],
             'union' => [
-               '-2' => [ // not active
+                '!' => [ // not active
                     0 => 'span',
                     2 => ['href' => null]
                 ],
-               '-1' => [
+                '<' => [
                     0 => 'a',
                     1 => self::NORTH
                 ],
-                '0' => [
+                '=' => [
                     0 => 'a',
                     1 => self::HUB
                 ],
-                '1' => [
+                '>' => [
                     0 => 'a',
                     1 => self::SOUTH
                 ]
@@ -68,21 +68,21 @@ class Elevator extends Genome {
         // @pages
         if (is_array($chunk)) {
             $i = $chunk[1];
-            if ($d['-1'] !== false)
-                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $i . $q : null;
-            if ($d['0'] !== false)
-                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
-            if ($d['1'] !== false)
-                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) . $q : null;
+            if ($d['<'] !== false)
+                $this->bucket[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $i . $q : null;
+            if ($d['='] !== false)
+                $this->bucket[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
+            if ($d['>'] !== false)
+                $this->bucket[$d['>']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) . $q : null;
         // @page
         } else {
             $i = ($input ? array_search($chunk, $input) : 0) ?: 0;
-            if ($d['-1'] !== false)
-                $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] . $q : null;
-            if ($d['0'] !== false)
-                $this->bucket[$d['0']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
-            if ($d['1'] !== false)
-                $this->bucket[$d['1']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] . $q : null;
+            if ($d['<'] !== false)
+                $this->bucket[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] . $q : null;
+            if ($d['='] !== false)
+                $this->bucket[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
+            if ($d['>'] !== false)
+                $this->bucket[$d['>']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] . $q : null;
         }
         $this->config = $c;
         $this->NS = $key;
@@ -111,7 +111,7 @@ class Elevator extends Genome {
         $d = array_search($kin, $this->config['direction']);
         if ($d !== false && ($text || $text === "")) {
             if ($text !== true) $u[$d][1] = $text;
-            return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
+            return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['!'], $u[$d]);
         }
         return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
     }
@@ -122,12 +122,12 @@ class Elevator extends Genome {
         $d = $c['direction'];
         $u = $c['union'];
         $html = [];
-        if ($d['-1'] !== false)
-            $html[] = $this->{$d['-1']}(true);
-        if ($d['0'] !== false)
-            $html[] = $this->{$d['0']}(true);
-        if ($d['1'] !== false)
-            $html[] = $this->{$d['1']}(true);
+        if ($d['<'] !== false)
+            $html[] = $this->{$d['<']}(true);
+        if ($d['='] !== false)
+            $html[] = $this->{$d['=']}(true);
+        if ($d['>'] !== false)
+            $html[] = $this->{$d['>']}(true);
         return Hook::fire($this->NS . '.yield', [implode(' ', $html), $this]);
     }
 

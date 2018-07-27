@@ -8,27 +8,6 @@ require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'config.php'
 
 $state = Extend::state('page');
 
-// Horizontal elevator…
-$elevator = [
-    'direction' => [
-       '-1' => 'previous',
-        '1' => 'next'
-    ],
-    'union' => [
-       '-2' => [
-            2 => ['rel' => null]
-        ],
-       '-1' => [
-            1 => Elevator::WEST,
-            2 => ['rel' => 'prev']
-        ],
-        '1' => [
-            1 => Elevator::EAST,
-            2 => ['rel' => 'next']
-        ]
-    ]
-];
-
 function fn_page_url($content, $lot = []) {
     if (!isset($lot['path'])) {
         return $content;
@@ -42,12 +21,12 @@ Hook::set('page.url', 'fn_page_url', 1);
 
 Lot::set([
     'page' => new Page,
-    'pager' => new Elevator([], [], true, $elevator),
+    'pager' => new Pager([], [], true),
     'pages' => [],
     'parent' => new Page
 ]);
 
-Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($elevator, $state) {
+Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state) {
     // Include global variable(s)…
     extract(Lot::get(null, []));
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
@@ -80,7 +59,7 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
             if ($fn = File::exist($k . DS . 'index.php')) include $fn;
         }
         $page = new Page($file);
-        // Create elevator for single page mode
+        // Create pager for single page mode
         $_folder = Path::D($folder);
         $_path = Path::D($path);
         if ($_file = File::exist([
@@ -99,13 +78,13 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
         }
         Lot::set([
             'page' => $page,
-            'pager' => ($pager = new Elevator($_files, $page->slug, $url . '/' . $_path, $elevator)),
+            'pager' => ($pager = new Pager($_files, $page->slug, $url . '/' . $_path)),
             'parent' => new Page($_file)
         ]);
         Config::set('trace', new Anemon([$page->title, $site->title], ' &#x00B7; '));
         Config::set('has', [
-            $elevator['direction']['1'] => !!$pager->{$elevator['direction']['1']},
-            $elevator['direction']['-1'] => !!$pager->{$elevator['direction']['-1']}
+            $pager->config['direction']['<'] => !!$pager->{$pager->config['direction']['<']},
+            $pager->config['direction']['>'] => !!$pager->{$pager->config['direction']['>']}
         ]);
         if (!$site->is('pages')) {
             // Page(s) view has been disabled!
@@ -132,18 +111,18 @@ Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($eleva
                 // Greater than the maximum step or less than `1`, abort!
                 Config::set('is.error', 404);
                 Config::set('has', [
-                    $elevator['direction']['1'] => false,
-                    $elevator['direction']['-1'] => false
+                    $pager->config['direction']['<'] => false,
+                    $pager->config['direction']['>'] => false
                 ]);
                 Shield::abort('404/' . $path_canon);
             }
             Lot::set([
-                'pager' => ($pager = new Elevator($files, [$chunk, $i], $url . '/' . $path_canon, $elevator)),
+                'pager' => ($pager = new Pager($files, [$chunk, $i], $url . '/' . $path_canon)),
                 'pages' => $pages
             ]);
             Config::set('has', [
-                $elevator['direction']['1'] => !!$pager->{$elevator['direction']['1']},
-                $elevator['direction']['-1'] => !!$pager->{$elevator['direction']['-1']}
+                $pager->config['direction']['<'] => !!$pager->{$pager->config['direction']['<']},
+                $pager->config['direction']['>'] => !!$pager->{$pager->config['direction']['>']}
             ]);
             return Shield::attach('pages/' . $path_canon);
         }
