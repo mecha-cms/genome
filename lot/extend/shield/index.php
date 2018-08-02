@@ -7,6 +7,9 @@ if (!Folder::exist($f)) {
     Guardian::kick($url->current);
 }
 
+// Include plug(s)…
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'shield.php';
+
 // Include worker(s)…
 r(__DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', [
     'config.php',

@@ -1,6 +1,6 @@
 <?php
 
-class View extends Genome {
+class Shield extends Genome {
 
     protected static $lot = [];
 
