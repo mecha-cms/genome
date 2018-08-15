@@ -72,7 +72,7 @@ Lot::set($seeds);
 
 $extends = [];
 foreach (g(EXTEND . DS . '*', 'index.php') as $v) {
-    $extends[$v] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
+    $extends[$v] = (float) File::open(Path::D($v) . DS . 'stack.data')->get(0, 10);
 }
 
 asort($extends);
@@ -113,10 +113,18 @@ $content = Cache::expire(EXTEND, $id) ? Cache::set(EXTEND, function() use($c) {
 // Load extension(s)’ language…
 Language::set($content);
 
+// Run main task if any
+if ($task = File::exist(ROOT . DS . 'task.php')) {
+    include $task;
+}
+
 // Load extension(s)…
 foreach (array_keys($extends) as $v) {
     call_user_func(function() use($v) {
         extract(Lot::get(null, []));
+        if ($k = File::exist(dirname($v) . DS . 'task.php')) {
+            include $k;
+        }
         require $v;
     });
 }

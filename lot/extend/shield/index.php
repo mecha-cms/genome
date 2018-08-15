@@ -1,12 +1,5 @@
 <?php
 
-// Create a `shield` folder in `lot` if it is not there
-$f = LOT . DS . 'shield';
-if (!Folder::exist($f)) {
-    Folder::set($f, 0755);
-    Guardian::kick($url->current);
-}
-
 // Include plug(s)…
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'shield.php';
 
@@ -37,6 +30,11 @@ Hook::set('on.ready', function() {
     // Load current shield state if any
     if ($state = File::exist($folder . 'state' . DS . 'config.php')) {
         Lot::set('state', new State($state));
+    }
+
+    // Run shield task if any
+    if ($task = File::exist($folder . 'task.php')) {
+        include $task;
     }
 
     // Load user function(s) from the current shield folder if any

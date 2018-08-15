@@ -1,13 +1,9 @@
 <?php
 
-Shield::_('attach', function($input, $fail = false) {
-    Shield::load($input, $fail);
-});
-
 Shield::_('abort', function($code = 404, $fail = false) {
     $i = is_string($code) ? explode('/', str_replace(DS, '/', $code))[0] : '404';
     HTTP::status((int) $i);
-    Shield::load($code, $fail);
+    Shield::attach($code, $fail);
 });
 
 Shield::_('exist', function($input, $fail = false) {

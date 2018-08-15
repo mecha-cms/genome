@@ -6,7 +6,7 @@ call_user_func(function() {
     $plugins = [];
     $seeds = Lot::get(null, []);
     foreach (g(PLUGIN . DS . '*', 'index.php') as $v) {
-        $plugins[$v] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
+        $plugins[$v] = (float) File::open(Path::D($v) . DS . 'stack.data')->get(0, 10);
     }
     asort($plugins);
     extract($seeds);
@@ -43,6 +43,9 @@ call_user_func(function() {
     }, $id) : Cache::get(PLUGIN, []);
     Language::set($content);
     foreach (array_keys($plugins) as $v) {
+        if ($k = File::exist(dirname($v) . DS . 'task.php')) {
+            include $k;
+        }
         require $v;
     }
 });

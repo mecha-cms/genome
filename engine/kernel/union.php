@@ -164,10 +164,17 @@ class Union extends Genome {
         return is_string($v) ? From::HTML($v) : $v;
     }
 
-    public function __construct() {
+    public function __construct($config = []) {
         $this->union = static::$config['union'];
         $this->data = static::$config['data'];
         $this->pattern = static::$config['pattern'];
+        if ($config) {
+            foreach (['union', 'data', 'pattern'] as $k) {
+                if (!empty($config[$k])) {
+                    $this->{$k} = array_replace_recursive($this->{$k}, $config[$k]);
+                }
+            }
+        }
     }
 
     public function __call($kin, $lot = []) {

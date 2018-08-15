@@ -65,10 +65,10 @@ class Shield extends Genome {
             extract(Lot::get(null, []));
             require $path;
             $output = ob_get_clean();
-            // Begin view
+            // Begin shield
             Hook::fire($NS . '.enter', [$output, $input, $path]);
             $output = Hook::fire($NS . '.' . __FUNCTION__, [$output, $input, $path]);
-            // End view
+            // End shield
             Hook::fire($NS . '.exit', [$output, $input, $path]);
         }
         if (!$print) {
@@ -93,7 +93,7 @@ class Shield extends Genome {
         return new static;
     }
 
-    public static function load($input, $fail = false) {
+    public static function attach($input, $fail = false) {
         if (!$output = self::get($input, $fail, false)) {
             $output = __replace__(Guardian::$config['message'], [
                 'message' => '<code>' . __METHOD__ . '(' . v(json_encode($input)) . ')</code>'
