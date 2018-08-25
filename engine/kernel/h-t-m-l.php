@@ -4,36 +4,6 @@ class HTML extends Union {
 
     public static $config = self::config;
 
-    public function __construct() {
-        parent::__construct();
-        $this->data = [
-            'class' => null,
-            'id' => null,
-            'src' => null,
-            'alt' => null,
-            'width' => null,
-            'height' => null,
-            'property' => null,
-            'name' => null, // [1]
-            'content' => null,
-            'href' => null,
-            'rel' => null,
-            'target' => null,
-            'type' => null, // [2]
-            'action' => null,
-            'method' => null,
-            'enctype' => null,
-            'value' => null, // [3]
-            'placeholder' => null, // [4]
-            'label' => null,
-            'selected' => null,
-            'checked' => null,
-            'disabled' => null,
-            'readonly' => null,
-            'style' => null
-        ];
-    }
-
     // Build HTML attribute(s)…
     protected function _data($a, $unit = "") {
         if (is_array($a)) {
@@ -41,6 +11,7 @@ class HTML extends Union {
                 if (!is_array($v)) continue;
                 // HTML5 `data-*` attribute
                 if ($k === 'data[]') {
+                    ksort($v);
                     foreach ($v as $kk => $vv) {
                         if (!isset($vv)) continue;
                         $a['data-' . $kk] = __is_anemon__($vv) ? json_encode($vv) : $vv;
@@ -59,6 +30,7 @@ class HTML extends Union {
                 // Inline CSS via `style[]` attribute
                 } else if ($k === 'style[]') {
                     $css = "";
+                    // ksort($v);
                     foreach ($v as $kk => $vv) {
                         if (!isset($vv)) continue;
                         $css .= $kk . ':' . $vv . ';';

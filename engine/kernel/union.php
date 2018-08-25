@@ -15,10 +15,6 @@ class Union extends Genome {
                 2 => ['<!--', '-->']
             ]
         ],
-        'data' => [
-            'class' => null,
-            'id' => null
-        ],
         'pattern' => [
             0 => ['[\w:.-]+'],
             1 => ['[\w:.-]+', '(?:[^"\\\]|\\\.)*']
@@ -42,7 +38,7 @@ class Union extends Genome {
         }
         $output = "";
         $u = $this->union[1][1];
-        $a = array_replace_recursive($this->data, $a);
+        ksort($a);
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
             if (is_array($v) || (is_object($v) && !__is_instance__($v))) {
@@ -166,7 +162,6 @@ class Union extends Genome {
 
     public function __construct($config = []) {
         $this->union = static::$config['union'];
-        $this->data = static::$config['data'];
         $this->pattern = static::$config['pattern'];
         if ($config) {
             foreach (['union', 'data', 'pattern'] as $k) {

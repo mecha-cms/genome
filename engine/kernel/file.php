@@ -115,7 +115,7 @@ class File extends Genome {
                     glob($folder . DS . '.*', GLOB_NOSORT)
                 );
             }
-            if ($fn) {
+            if (is_callable($x)) {
                 foreach ($files as $file) {
                     $b = basename($file);
                     if ($b === '.' || $b === '..') {

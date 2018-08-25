@@ -36,7 +36,7 @@ class Asset extends Genome {
                 self::$lot[$c][1][$x][$v] = [
                     'path' => self::path($v),
                     'url' => self::URL($v),
-                    'id' => $v,
+                    'id' => sprintf('%u', crc32($v)),
                     'data' => $data,
                     'stack' => (float) (isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10) + $i)
                 ];
@@ -79,13 +79,13 @@ class Asset extends Genome {
             $fn = $v[0];
             if (isset($path)) {
                 $g = self::get($path, [
-                    'path' => null,
-                    'url' => null,
-                    'id' => null,
+                    'path' => self::path($path),
+                    'url' => self::URL($path),
+                    'id' => sprintf('%u', crc32($path)),
                     'data' => [],
                     'stack' => null
                 ]);
-                $data = is_array($a) && is_array($g['data']) ? array_replace_recursive($a, $g['data']) : $g['data'] ?: $a;
+                $data = is_array($a) && is_array($g['data']) ? array_replace_recursive($a, $g['data']) : ($g['data'] ?: $a);
                 return is_callable($fn) ? call_user_func($fn, $g, $path, $data) : ($g['path'] ? file_get_contents($g['path']) : "");
             }
             if (isset(self::$lot[$c][1][$kin])) {

@@ -23,11 +23,15 @@ class Route extends Genome {
         return true;
     }
 
-    public static function reset($id) {
-        foreach ((array) $id as $v) {
-            $v = URL::short($v, false);
-            self::$lot[0][$v] = isset(self::$lot[1][$v]) ? self::$lot[1][$v] : 1;
-            unset($this->lot[1][$v]);
+    public static function reset($id = null) {
+        if (isset($id)) {
+            foreach ((array) $id as $v) {
+                $v = URL::short($v, false);
+                self::$lot[0][$v] = isset(self::$lot[1][$v]) ? self::$lot[1][$v] : 1;
+                unset(self::$lot[1][$v]);
+            }
+        } else {
+            self::$lot = [];
         }
         return true;
     }
