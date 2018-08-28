@@ -162,7 +162,7 @@ class File extends Genome {
     // Print the file content
     public function read($fail = null) {
         if ($this->path !== false) {
-            $content = file_get_contents($this->path);
+            $content = filesize($this->path) > 0 ? file_get_contents($this->path) : "";
             return $content !== false ? $content : $fail;
         }
         return $fail;
@@ -179,7 +179,7 @@ class File extends Genome {
     public function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
         $output = "";
-        if ($this->path !== false && ($hand = fopen($this->path, 'r'))) {
+        if ($this->path !== false && filesize($this->path) > 0 && ($hand = fopen($this->path, 'r'))) {
             while (($chunk = fgets($hand, $ch)) !== false) {
                 $output .= $chunk;
                 if (
