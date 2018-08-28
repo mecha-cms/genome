@@ -10,7 +10,13 @@ foreach([
         return HTML::unite('a', $text, $attr, $dent);
     },
     'img' => function($src = null, $alt = null, $attr = [], $dent = 0) {
-        $path = To::path($src);
+        if (strpos($src, ROOT) === 0) {
+            $path = $src;
+            $src = To::URL($src);
+        } else {
+            $path = To::path($src);
+            // $src = To::URL($src);
+        }
         if (file_exists($path)) {
             $z = getimagesize($path);
         } else {

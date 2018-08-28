@@ -122,7 +122,7 @@ function __from_yaml__($in, $d = '  ', $ref = [], $e = true) {
             } else {
                 $s = strpos($a[1], "'") === 0 || strpos($a[1], '"') === 0 ? $a[1] : explode('#', $a[1])[0];
                 $s = trim($s);
-                $s = $s === '~' ? 'null' : $s;
+                $s = $s === '~' ? null : $s;
                 $a[1] = __from_yaml_a__($e ? e($s) : $s);
             }
         }
