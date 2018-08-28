@@ -41,7 +41,7 @@ class Language extends Config {
         }
         $fail = $alt = false;
         if (count($lot)) {
-            $test = self::get($kin);
+            $test = self::get($kin, ...$lot);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
                 return call_user_func($test, ...$lot);
@@ -52,8 +52,13 @@ class Language extends Config {
                 }
             }
             // Else, static value
-            return self::get($kin, ...$lot);
+            return $test;
         }
+        return self::get($kin, $kin);
+    }
+
+    public function __get($key) {
+        return self::get($key, $key);
     }
 
     public function __toString() {
