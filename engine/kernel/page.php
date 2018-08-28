@@ -27,8 +27,8 @@ class Page extends Genome {
             $this->lot = array_replace([
                 'time' => date(DATE_WISE, $c),
                 'update' => date(DATE_WISE, $m),
-                'slug' => (string) $n,
-                'title' => To::title($n), // Fake `title` data from the page’s file name
+                'slug' => $n,
+                'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
                 'type' => u($x) . "", // Fake `type` data from the page’s file extension
                 'state' => (string) $x,
                 'id' => sprintf('%u', $c),
