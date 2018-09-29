@@ -192,7 +192,7 @@ if ($path !== "") {
 }
 
 $query = http_build_query($_GET);
-$a = explode('/', $path);
+$a = explode('/', rtrim($path, '/'));
 $i = null;
 if (is_numeric(end($a))) {
     $i = (int) array_pop($a);

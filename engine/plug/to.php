@@ -122,7 +122,7 @@ foreach([
         foreach (__to_query__($in, "") as $k => $v) {
             if ($v === false) continue; // `['a' => 'false', 'b' => false]` → `a=false`
             $v = $v !== true ? $c[2] . urlencode(s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`
-            $out[] = $k . $v; // `['a' => 'null', 'b' => null]` → `a=null&b=null`
+            $out[] = urlencode($k) . $v; // `['a' => 'null', 'b' => null]` → `a=null&b=null`
         }
         return !empty($out) ? $c[0] . implode($c[1], $out) . $c[3] : "";
     },

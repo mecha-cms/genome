@@ -104,7 +104,7 @@ class HTTP extends Genome {
             $query = $GLOBALS['URL']['query'];
             return str_replace(['?', '&', '='], $c, $query);
         }
-        return To::query($query ? array_replace_recursive($_GET, (array) $query) : $_GET);
+        return To::query($query ? array_replace_recursive($_GET, (array) $query) : $_GET, $c);
     }
 
     protected static function _q($a, $k) {

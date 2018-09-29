@@ -86,20 +86,14 @@ article,aside,footer,header,main,nav,section {display:block}
 .textarea {
   display:inline-block;
   vertical-align:middle;
-  background:#00a;
+  background:#eef;
   border:0;
-  color:#fff;
+  color:inherit;
   width:12em;
   height:1.75em;
   line-height:1.75;
   padding:0 .5em;
   text-align:left;
-}
-.input,
-.select,
-.textarea {
-  background:#eef;
-  color:inherit;
 }
 .button::-moz-focus-inner,
 .input::-moz-focus-inner {
@@ -111,11 +105,18 @@ article,aside,footer,header,main,nav,section {display:block}
 .button {
   text-align:center;
   width:auto;
+  background:#00a;
+  color:#fff;
   padding-right:.5em;
   padding-left:.5em;
   -webkit-user-select:none;
   -moz-user-select:none;
   user-select:none;
+}
+.button:focus,
+.button:active {
+  background:#a00;
+  color:#fff;
 }
 .input[type="checkbox"],
 .input[type="color"],
@@ -150,11 +151,6 @@ form label {
 .textarea {
   min-height:6em;
   resize:vertical;
-}
-.button:focus,
-.button:active {
-  background:#a00;
-  color:#fff;
 }
 .block {
   display:block;
