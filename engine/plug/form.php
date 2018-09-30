@@ -14,7 +14,7 @@ foreach ([
         return Form::input($name, 'hidden', $value, null, $attr, $dent);
     },
     'file' => function($name = null, $attr = [], $dent = 0) {
-        return Form::input('file', $name, null, null, $attr, $dent);
+        return Form::input($name, 'file', null, null, $attr, $dent);
     },
     'checkbox' => function($name = null, $value = null, $check = false, $text = "", $attr = [], $dent = 0) {
         $attr_o = ['checked' => $check ? true : null];
@@ -62,5 +62,6 @@ foreach (['color', 'date', 'email', 'number', 'password', 'search', 'tel', 'text
 }
 
 // Alias(es)
+Form::_('blob', Form::_('file'));
 Form::_('check', Form::_('checkbox'));
 Form::_('pass', Form::_('password'));
