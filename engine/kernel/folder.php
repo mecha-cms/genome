@@ -2,7 +2,7 @@
 
 class Folder extends File {
 
-    public static function set($input, $consent = 0777) {
+    public static function set($input, $consent = 0775) {
         foreach ((array) $input as $k => $v) {
             if (!file_exists($v)) {
                 if (is_array($consent)) {
