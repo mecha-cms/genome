@@ -36,7 +36,7 @@
   color:inherit;
   opacity:.5;
 }
-:focus {outline:0}
+:focus:not(:focus-visible) {outline:0}
 a {
   color:#00a;
   text-decoration:none;
@@ -337,6 +337,8 @@ main + nav {text-align:center}
     display:block;
     margin:1rem auto 0;
   }
+  .align-left:first-child,
+  .align-right:first-child {margin-top:0}
 }
 @media (min-width:501px) {
   body > footer p {
