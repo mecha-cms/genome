@@ -45,6 +45,7 @@ class Anemon extends Genome implements \ArrayAccess {
     public static function get(array &$input, $key, $fail = false, $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         foreach ($keys as $value) {
+            $value = str_replace(X, $NS, $value);
             if (!is_array($input) || !array_key_exists($value, $input)) {
                 return $fail;
             }

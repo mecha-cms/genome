@@ -62,6 +62,11 @@ foreach (['color', 'date', 'email', 'number', 'password', 'search', 'tel', 'text
 }
 
 // Alias(es)
-Form::_('blob', Form::_('file'));
-Form::_('check', Form::_('checkbox'));
-Form::_('pass', Form::_('password'));
+foreach ([
+    'blob' => 'file',
+    'check' => 'checkbox',
+    'pass' => 'password',
+    'toggle' => 'checkbox'
+] as $k => $v) {
+    Form::_($k, Form::_($v));
+}
