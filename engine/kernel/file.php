@@ -183,10 +183,14 @@ class File extends Genome {
             while (($chunk = fgets($hand, $ch)) !== false) {
                 $output .= $chunk;
                 if (
+                    // `->get(7)`
                     is_int($stop) && $stop === $i ||
+                    // `->get('$')`
                     is_string($stop) && strpos($chunk, $stop) !== false ||
+                    // `->get(['$', 7])`
                     is_array($stop) && strpos($chunk, $stop[0]) === $stop[1] ||
-                    is_callable($stop) && call_user_func([$chunk, $i], $output)
+                    // `->get(function($chunk, $i, $output) {})`
+                    is_callable($stop) && call_user_func($stop, $chunk, $i, $output)
                 ) break;
                 ++$i;
             }
@@ -225,7 +229,7 @@ class File extends Genome {
         $this->path = $path;
         $path = To::path($path);
         if (!file_exists($d = Path::D($path))) {
-            mkdir($d, 0777, true);
+            mkdir($d, 0775, true);
         }
         file_put_contents($path, $this->content);
         if (isset($consent)) {
@@ -253,7 +257,7 @@ class File extends Genome {
             $p = $this->path;
             $path = To::path($path);
             if (!file_exists($path)) {
-                mkdir($path, 0777, true);
+                mkdir($path, 0775, true);
             }
             if (is_file($p)) {
                 $path .= DS . Path::B($p);
@@ -278,12 +282,12 @@ class File extends Genome {
                 $v = To::path($v);
                 if (is_dir($v)) {
                     if (!file_exists($v)) {
-                        mkdir($v, 0777, true);
+                        mkdir($v, 0775, true);
                     }
                     $v .= $b;
                 } else {
                     if (!file_exists($d = Path::D($v))) {
-                        mkdir($d, 0777, true);
+                        mkdir($d, 0775, true);
                     }
                 }
                 if (!file_exists($v)) {
@@ -331,61 +335,29 @@ class File extends Genome {
         return $this;
     }
 
-    // Upload the file
-    public static function push($f, $path = ROOT, $fn = null, $fail = false, $c = []) {
-        global $language;
-        $path = To::path($path);
-        $c = !empty($c) ? $c : self::$config;
-        if (!is_array($f)) {
-            $f = isset($_FILES[$f]) ? $_FILES[$f] : [
-                'error' => 4 // No file was uploaded
-            ];
+    // Upload a file
+    public static function push($name, $path = ROOT, $fn = null) {
+        $path = rtrim(str_replace('/', DS, $path), DS);
+        if (!isset($_FILES[$name])) {
+            return 4; // No file was uploaded
         }
-        // Sanitize file name
-        $f['name'] = To::file($f['name']);
-        $x = Path::X($f['name']);
-        $e = $language->message_info_file_push;
-        // Something goes wrong
-        if ($f['error'] > 0 && isset($e[$f['error']])) {
-            Message::error($e[$f['error']]);
-        } else {
-            // Unknown file type
-            if (empty($f['type'])) {
-                Message::error('file_type');
-            }
-            // Bad file extension
-            $xx = X . implode(X, $c['extension']) . X;
-            if (strpos($xx, X . $x . X) === false) {
-                Message::error('file_x', '<em>' . $x . '</em>');
-            }
-            // Too small
-            if ($f['size'] < $c['size'][0]) {
-                Message::error('file_size.0', self::size($f['size']));
-            // Too large
-            } else if ($f['size'] > $c['size'][1]) {
-                Message::error('file_size.1', self::size($f['size']));
-            }
+        $data = $_FILES[$name];
+        if (is_callable($fn)) {
+            $data = call_user_func($fn, $data);
         }
-        if (!Message::$x) {
-            // Destination not found
-            if (!file_exists($path)) {
-                Folder::set($path, 0700);
-            }
-            // Move the uploaded file to the destination folder
-            if (!file_exists($path . DS . $f['name'])) {
-                // Move…
-                $path .= DS . $f['name'];
-                move_uploaded_file($f['tmp_name'], $path);
-                Message::success('file_push', '<code>' . $f['name'] . '</code>');
-                if (is_callable($fn)) {
-                    return call_user_func($fn, self::inspect($path));
-                }
-                return $path;
-            }
-            Message::error('file_exist', '<code>' . $f['name'] . '</code>');
-            return $fail;
+        if (file_exists($f = $path . DS . $data['name'])) {
+            return false; // File already exists
+        } else if (isset($data['error']) && $data['error'] > 0) {
+            return $data['error'];
+        } else if ($data['size'] > self::$config['size'][1]) {
+            return 1; // The uploaded file exceeds the `upload_max_filesize` directive in `php.ini`
         }
-        return $fail;
+        // Destination folder does not exist
+        if (!file_exists($path) || !is_dir($path)) {
+            mkdir($path, 0775, true); // Create one!
+        }
+        move_uploaded_file($data['tmp_name'], $f);
+        return $f; // There is no error, the file uploaded with success
     }
 
     // Download the file
