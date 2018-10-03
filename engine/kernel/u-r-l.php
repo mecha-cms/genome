@@ -20,9 +20,9 @@ class URL extends Genome {
             strpos($url, '#') !== 0 &&
             strpos($url, 'javascript:') !== 0
         ) {
-            return trim(($root && $b ? $u['protocol'] . $u['host'] : $u['$']) . '/' . self::__($url), '/');
+            return trim(($root && $b ? $u['protocol'] . $u['host'] : $u['$']) . '/' . self::v($url), '/');
         }
-        return self::__($url);
+        return self::v($url);
     }
 
     public static function short($url, $root = true) {
@@ -37,7 +37,7 @@ class URL extends Genome {
         return ltrim(str_replace([X . $u['$'], X . '//' . rtrim($u['host'] . '/' . $u['directory'], '/'), X], "", $url), '/');
     }
 
-    protected static function __($s) {
+    protected static function v($s) {
         return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $s);
     }
 
