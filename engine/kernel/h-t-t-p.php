@@ -153,7 +153,7 @@ class HTTP extends Genome {
         if (isset($id)) {
             $id = strtoupper($id);
             if (isset($key)) {
-                return array_key_exists($key, $GLOBALS['_' . $id]);
+                return Anemon::get($GLOBALS['_' . $id], $key, null) !== null;
             }
             return $id === $r;
         }
