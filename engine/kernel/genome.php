@@ -45,8 +45,10 @@ abstract class Genome {
                 return call_user_func(\Closure::bind($a[0], $this), ...$lot);
             }
             return $a[0];
+        } else if (method_exists($this, '_' . $kin) && !(new ReflectionMethod($this, '_' . $kin))->isPublic()) {
+            return $this->{'_' . $kin}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            echo '<p>Method <code>$' . __c2f__($c, '_') . '-&gt;' . $kin . '()</code> does not exist.</p>';
+            echo '<p>Method <code>$' . __c2f__($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.</p>';
         }
         return false;
     }
@@ -68,6 +70,8 @@ abstract class Genome {
                 return call_user_func($a[0], ...$lot);
             }
             return $a[0];
+        } else if (method_exists($that = new static, '_' . $kin) && !(new ReflectionMethod($that, '_' . $kin))->isPublic()) {
+            return $that->{'_' . $kin}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
         }

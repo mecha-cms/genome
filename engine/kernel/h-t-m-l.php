@@ -83,7 +83,7 @@ class HTML extends Union {
         $that = new static;
         if (!self::_($kin) && !method_exists($that, '_' . $kin)) {
             array_unshift($lot, $kin);
-            return $that->unite(...$lot);
+            return $that->__call($kin, $lot);
         }
         return parent::__callStatic($kin, $lot);
     }

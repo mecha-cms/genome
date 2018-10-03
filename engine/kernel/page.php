@@ -66,7 +66,7 @@ class Page extends Genome {
     }
 
     public function __call($key, $lot = []) {
-        if (self::_($key)) {
+        if (self::_($key) || $key === 'set') { // @see `protected function _set()`
             return parent::__call($key, $lot);
         }
         // Example: `$page->__call('foo.bar')`
@@ -218,27 +218,27 @@ class Page extends Genome {
         return ($header ? "---\n" . $header . "\n..." : "") . ($content ? "\n\n" . $content : "");
     }
 
-    private static $data = [];
-
     public static function open($path, $lot = [], $NS = []) {
-        self::$data = [['path' => $path], $lot, $NS];
         return new static($path, $lot, $NS);
     }
 
-    public static function set($input, $fn = null) {
+    protected function _set($input, $fn = null) {
+        $path = isset($this->lot['path']) ? $this->lot['path'] : null;
+        $data = is_file($path) ? self::apart(file_get_contents($path)) : [];
+        $this->lot = array_replace($data, ['path' => $path]);
         if (!is_array($input)) {
             if (is_callable($fn)) {
-                self::$data[0][$input] = call_user_func($fn, ...self::$data);
+                $this->lot[$input] = call_user_func($fn, ...$this->lot);
                 $input = [];
             } else {
                 $input = ['content' => $input];
             }
         }
-        self::$data[0] = array_replace(self::$data[0], $input);
-        foreach (self::$data[0] as $k => $v) {
-            if ($v === false) unset(self::$data[0][$k]);
+        $this->lot = array_replace($this->lot, $input);
+        foreach ($this->lot as $k => $v) {
+            if ($v === false) unset($this->lot[$k]);
         }
-        return new static(...self::$data);
+        return $this;
     }
 
     public function get($key, $fail = null) {
@@ -258,13 +258,12 @@ class Page extends Genome {
     }
 
     public function saveTo($path, $consent = 0600) {
-        $data = self::$data[0];
-        unset($data['path']);
-        File::set(self::unite($data))->saveTo($path, $consent);
+        unset($this->lot['path']);
+        File::set(self::unite($this->lot))->saveTo($path, $consent);
     }
 
     public function save($consent = 0600) {
-        return self::saveTo(self::$data[0]['path'], $consent);
+        return $this->saveTo($this->lot['path'], $consent);
     }
 
 }

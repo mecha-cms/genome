@@ -22,7 +22,6 @@ class Union extends Genome {
     ];
 
     public $union = [];
-    public $data = [];
     public $pattern = [];
 
     protected $unit = [];
@@ -164,31 +163,12 @@ class Union extends Genome {
         $this->union = static::$config['union'];
         $this->pattern = static::$config['pattern'];
         if ($config) {
-            foreach (['union', 'data', 'pattern'] as $k) {
+            foreach (['union', 'pattern'] as $k) {
                 if (!empty($config[$k])) {
                     $this->{$k} = array_replace_recursive($this->{$k}, $config[$k]);
                 }
             }
         }
-    }
-
-    public function __call($kin, $lot = []) {
-        if (method_exists($this, '_' . $kin)) {
-            if (!(new ReflectionMethod($this, '_' . $kin))->isPublic()) {
-                return $this->{'_' . $kin}(...$lot);
-            }
-        }
-        return parent::__call($kin, $lot);
-    }
-
-    public static function __callStatic($kin, $lot = []) {
-        $that = new static;
-        if (!self::_($kin) && method_exists($that, '_' . $kin)) {
-            if (!(new ReflectionMethod($that, '_' . $kin))->isPublic()) {
-                return $that->{$kin}(...$lot);
-            }
-        }
-        return parent::__callStatic($kin, $lot);
     }
 
 }
