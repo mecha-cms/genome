@@ -48,7 +48,7 @@ class Path extends Genome {
             $root = str_replace([DS, '/'], $s, $root);
             $f = str_replace([DS, '/', $root . $s, $root], [$s, $s, "", ""], $f);
         }
-        $f = ($f === '.' ? "" : $f) . $s . $n;
+        $f = ($f === '.' ? "" : $f) . $s . ($n === "" ? basename($path) : $n);
         if (isset($root)) {
             $f = trim($f, $s);
         } else {
