@@ -107,20 +107,6 @@ class HTTP extends Genome {
         return To::query($query ? array_replace_recursive($_GET, (array) $query) : $_GET, $c);
     }
 
-    protected static function _q($a, $k) {
-        $output = [];
-        $s = $k ? '%5D' : "";
-        foreach ($a as $kk => $vv) {
-            $kk = urlencode($kk);
-            if (is_array($vv)) {
-                $output = array_merge($output, self::_q($vv, $k . $kk . $s . '%5B'));
-            } else {
-                $output[$k . $kk . $s] = $vv;
-            }
-        }
-        return $output;
-    }
-
     public static function header($key = null, $value = null) {
         if (!isset($ket)) {
             $output = [];
@@ -153,7 +139,7 @@ class HTTP extends Genome {
         if (isset($id)) {
             $id = strtoupper($id);
             if (isset($key)) {
-                return Anemon::get($GLOBALS['_' . $id], $key, null) !== null;
+                return Anemon::get($GLOBALS['_' . $id], $key, X) !== X;
             }
             return $id === $r;
         }
