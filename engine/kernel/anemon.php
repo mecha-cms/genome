@@ -177,7 +177,7 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     public static function alter($input, array $replace = [], $fail = null) {
-        // return `$replace[$input]` value if exist
+        // Return `$replace[$input]` value if exist
         // or `$fail` value if `$replace[$input]` does not exist
         // or `$input` value if `$fail` is `null`
         return array_key_exists((string) $input, $replace) ? $replace[$input] : ($fail ?: $input);
@@ -287,14 +287,6 @@ class Anemon extends Genome implements \ArrayAccess {
     public function chunk($chunk = 5, $index = null, $fail = [], $preserve_key = false) {
         $chunks = array_chunk(__is_anemon__($this->bucket) ? (array) $this->bucket : [], $chunk, $preserve_key);
         return !isset($index) ? $chunks : (array_key_exists($index, $chunks) ? $chunks[$index] : $fail);
-    }
-
-    public function swap($a, $b = null) {
-        return array_column($this->bucket, $a, $b);
-    }
-
-    public function join($s = ', ') {
-        return $this->__invoke($s);
     }
 
     public function offsetSet($i, $value) {
