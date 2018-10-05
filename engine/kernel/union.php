@@ -66,7 +66,7 @@ class Union extends Genome {
         $dent = static::dent($dent);
         $u = $this->union[1][0];
         $s = $dent . $u[0] . $unit . $this->_data($data, $unit);
-        return $s . ($content === false ? $u[1] : $u[1] . ($content ? $content : "") . $u[0] . $u[2] . $unit . $u[1]);
+        return $s . ($content === false ? $u[1] : $u[1] . $content . $u[0] . $u[2] . $unit . $u[1]);
     }
 
     // Inverse version of `Union::unite()`
