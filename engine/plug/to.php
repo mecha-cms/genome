@@ -2,11 +2,11 @@
 
 function __to_query__($array, $key) {
     $out = [];
-    $s = $key ? '%5D' : "";
+    $s = $key ? ']' : "";
     foreach ($array as $k => $v) {
         $k = urlencode($k);
         if (is_array($v)) {
-            $out = array_merge($out, __to_query__($v, $key . $k . $s . '%5B'));
+            $out = array_merge($out, __to_query__($v, $key . $k . $s . '['));
         } else {
             $out[$key . $k . $s] = $v;
         }
@@ -66,20 +66,22 @@ foreach([
         return $out;
     },
     'file' => function($in) {
-        $in = explode(DS, str_replace('/', DS, $in));
-        $n = explode('.', array_pop($in));
+        $in = array_map('trim', explode(DS, str_replace('/', DS, $in)));
+        $n = array_map('trim', explode('.', array_pop($in)));
         $x = array_pop($n);
         $s = "";
         foreach ($in as $v) {
+            if ($v === "") continue;
             $s .= h($v, '-', true, '_') . DS;
         }
         return $s . h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
     },
     'folder' => function($in) {
-        $in = explode(DS, str_replace('/', DS, $in));
+        $in = array_map('trim', explode(DS, str_replace('/', DS, $in)));
         $n = array_pop($in);
         $s = "";
         foreach ($in as $v) {
+            if ($v === "") continue;
             $s .= h($v, '-', true, '_') . DS;
         }
         return $s . h($n, '-', true, '_');

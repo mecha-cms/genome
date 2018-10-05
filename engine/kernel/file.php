@@ -251,7 +251,7 @@ class File extends Genome {
         return $this;
     }
 
-    // Move the file/folder to …
+    // Move the file/folder to … (folder)
     public function moveTo($path = ROOT) {
         if ($this->path !== false) {
             $p = $this->path;
@@ -263,7 +263,9 @@ class File extends Genome {
                 $path .= DS . Path::B($p);
             }
             if ($p !== $path) {
-                self::open($path)->delete();
+                if (is_file($path)) {
+                    unlink($path);
+                }
                 rename($p, $path);
                 $this->path = $path;
             }

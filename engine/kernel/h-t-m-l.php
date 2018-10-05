@@ -55,6 +55,7 @@ class HTML extends Union {
                     unset($output[2][$k]);
                 } else if ($k === 'style') {
                     if ($v !== 'style') {
+                        // TODO: preserve `;` inside quote(s)
                         foreach (explode(';', $v) as $vv) {
                             if (trim($vv) === "") continue;
                             $a = explode(':', $vv . ':');
@@ -73,7 +74,6 @@ class HTML extends Union {
 
     public function __call($kin, $lot = []) {
         if (!self::_($kin) && !method_exists($this, '_' . $kin)) {
-            array_unshift($lot, $kin);
             return $this->unite(...$lot);
         }
         return parent::__call($kin, $lot);
