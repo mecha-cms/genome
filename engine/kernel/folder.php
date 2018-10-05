@@ -22,6 +22,9 @@ class Folder extends File {
 
     public static function size($folder, $unit = null, $prec = 2) {
         if (!is_dir($folder)) return false;
+        if (!glob($folder . DS . '*', GLOB_NOSORT)) {
+            return parent::size(0, $unit, $prec);
+        }
         $pool = 0;
         foreach (parent::explore($folder, true, []) as $k => $v) {
             if ($v === 1) {
