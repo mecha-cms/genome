@@ -2,9 +2,9 @@
 
 class File extends Genome {
 
-    protected $path = "";
-    protected $content = "";
-    protected $c = [];
+    public $path = "";
+    public $content = "";
+    public $c = [];
 
     // Cache!
     private static $inspect = [];
@@ -228,7 +228,7 @@ class File extends Genome {
     public function saveTo($path, $consent = null) {
         $this->path = $path;
         $path = To::path($path);
-        if (!file_exists($d = Path::D($path))) {
+        if (!file_exists($d = dirname($path))) {
             mkdir($d, 0775, true);
         }
         file_put_contents($path, $this->content);
@@ -241,69 +241,92 @@ class File extends Genome {
     // Rename the file/folder
     public function renameTo($name) {
         if ($this->path !== false) {
-            $a = Path::B($this->path);
-            $b = Path::D($this->path) . DS;
-            if ($name !== $a && !file_exists($b . $name)) {
-                rename($b . $a, $b . $name);
+            $b = basename($this->path);
+            $d = dirname($this->path) . DS;
+            if ($name !== $b && !file_exists($d . $name)) {
+                rename($d . $b, $d . $name);
             }
-            $this->path = $b . $name;
+            $this->path = $d . $name;
         }
         return $this;
     }
 
     // Move the file/folder to … (folder)
-    public function moveTo($path = ROOT) {
-        if ($this->path !== false) {
-            $p = $this->path;
-            $path = To::path($path);
-            if (!file_exists($path)) {
-                mkdir($path, 0775, true);
-            }
-            if (is_file($p)) {
-                $path .= DS . Path::B($p);
-            }
-            if ($p !== $path) {
-                if (is_file($path)) {
-                    unlink($path);
+    public function moveTo($folder = ROOT, $as = null) {
+        $path = $this->path;
+        if ($path !== false) {
+            $b = basename($path);
+            $o = [];
+            if (is_dir($path)) {
+                foreach (self::open($path)->copyTo($folder)->path as $k => $v) {
+                    $o[$k] = $v;
+                    unlink($k);
                 }
-                rename($p, $path);
-                $this->path = $path;
+                self::open($path)->delete();
+                if ($as !== null) {
+                    rename($k = $folder . DS . $b, $v = $folder . DS . $as);
+                    $o[$k] = $v;
+                }
+            } else {
+                if (!is_dir($folder)) {
+                    mkdir($folder, 0775, true);
+                }
+                if (rename($path, $to = $folder . DS . ($as ?: $b))) {
+                    $o = [$path => $to];
+                }
             }
+            $this->path = $o;
         }
         return $this;
     }
 
-    // Copy the file/folder to …
-    public function copyTo($path = ROOT, $s = '.%{0}%') {
-        // TODO: make it possible to copy folder with its content(s)
+    // Copy the file/folder to … (folder)
+    public function copyTo($folder = ROOT, $pattern = '%{name}%.%{i}%.%{extension}%') {
         $i = 1;
-        if ($this->path !== false) {
-            $b = DS . Path::B($this->path);
+        $path = $this->path;
+        if ($path !== false) {
             $o = [];
-            foreach ((array) $path as $v) {
-                $v = To::path($v);
-                if (is_dir($v)) {
-                    if (!file_exists($v)) {
-                        mkdir($v, 0775, true);
+            // Copy folder
+            if (is_dir($path)) {
+                foreach (self::explore([$path, 1], true, []) as $k => $v) {
+                    $dir = dirname($folder . DS . basename($path) . DS . str_replace($path . DS, "", $k));
+                    if (!is_dir($dir)) {
+                        mkdir($dir, 0775, true);
                     }
-                    $v .= $b;
-                } else {
-                    if (!file_exists($d = Path::D($v))) {
-                        mkdir($d, 0775, true);
-                    }
+                    $o = array_replace($o, self::open($k)->copyTo($dir, $pattern)->path);
                 }
-                if (!file_exists($v)) {
-                    copy($this->path, $v);
-                    $i = 1;
-                } else {
-                    $v = preg_replace('#\.([a-z\d]+)$#', __replace__($s, $i) . '.$1', $v);
-                    copy($this->path, $v);
-                    ++$i;
-                }
-                $o[] = $v;
+                $this->path = $o;
+                return $this;
             }
-            // Return sring if singular and array if plural…
-            $this->path = count($o) === 1 ? $o[0] : $o;
+            // Copy file
+            $b = DS . basename($path);
+            foreach ((array) $folder as $v) {
+                if (!is_dir($v)) {
+                    mkdir($v, 0775, true);
+                }
+                $v .= $b;
+                if (!file_exists($v)) {
+                    if (copy($path, $v)) {
+                        $o[$path] = $v;
+                    }
+                    $i = 1;
+                } else if ($pattern) {
+                    $v = dirname($v) . DS . __replace__($pattern, [
+                        'name' => pathinfo($v, PATHINFO_FILENAME),
+                        'i' => $i,
+                        'extension' => pathinfo($v, PATHINFO_EXTENSION)
+                    ]);
+                    if (copy($path, $v)) {
+                        $o[$path] = $v;
+                    }
+                    ++$i;
+                } else {
+                    if (copy($path, $v)) {
+                        $o[$path] = $v;
+                    }
+                }
+            }
+            $this->path = $o;
         }
         return $this;
     }
@@ -327,6 +350,7 @@ class File extends Genome {
                 unlink($path);
             }
         }
+        return $this;
     }
 
     // Set file permission
