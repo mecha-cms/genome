@@ -16,7 +16,13 @@ class Form extends HTML {
     // `<input>`
     public static function input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [
-            'placeholder' => $placeholder,
+            'placeholder' => strtr(html_entity_decode($placeholder), [
+                '&' => '&#x0026;',
+                '"' => '&#x0022;',
+                "'" => '&#x0027;',
+                '<' => '&#x003C;',
+                '>' => '&#x003E;'
+            ]),
             'type' => $type
         ];
         self::name($name, $attr_o);
@@ -79,7 +85,13 @@ class Form extends HTML {
         // value or a brief description of the expected format. The attribute, if specified, must
         // have a value that contains no “LF” (U+000A) or “CR” (U+000D) character(s).
         if (isset($placeholder)) {
-            $placeholder = explode("\n", n($placeholder), 2)[0];
+            $placeholder = strtr(html_entity_decode(explode("\n", n($placeholder), 2)[0]), [
+                '&' => '&#x0026;',
+                '"' => '&#x0022;',
+                "'" => '&#x0027;',
+                '<' => '&#x003C;',
+                '>' => '&#x003E;'
+            ]);
         }
         $attr_o['placeholder'] = $placeholder;
         return self::unite('textarea', self::x(HTTP::restore('post', self::key($name), $value)), array_replace_recursive($attr_o, $attr), $dent);
