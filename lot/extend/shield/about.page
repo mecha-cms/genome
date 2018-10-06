@@ -8,13 +8,13 @@ version: 1.0.0
 
 ### Features
 
- - Detect asset path relative to the `lot\asset` folder.
- - Detect shield path relative to the `lot\shield\{$folder}` folder, where `{$folder}` is the active shield folder.
+ - Detect asset path relative to the `.\lot\asset` folder.
+ - Detect shield path relative to the `.\lot\shield\{$folder}` folder, where `{$folder}` is the active shield folder.
  - Add HTML classes automatically to the `<html>` element based on the current page conditional statements.
 
 ### Class
 
-These HTML classes will be added automatically if your `<html>` element has `class` attribute:
+These HTML classes will be added to the `<html>` element that has a `class` attribute:
 
  - `error-404` → Will be added if there is no page or pages to load.
  - `has-next` → Will be added if it is possible to go to the next page.

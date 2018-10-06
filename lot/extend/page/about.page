@@ -1,6 +1,6 @@
 ---
 title: Page
-description: Add basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder.
+description: Convert file and folder structure into web pages.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.5.0
@@ -10,11 +10,11 @@ dependency:
     - shield
 ...
 
-This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.
+This extension activates the basic features of a website by utilizing the structure of the page file placement in the `.\lot\page` folder. This extension also adds some useful properties to the `$site` variable.
 
 ### Condition
 
-These page conditional statements are available to quickly indicate what type of page we are currently in:
+These page conditional statements are available to quickly determine the type of page we are currently in:
 
  - `$site->has('next')` → Return `true` if it is possible to go to the next page.
  - `$site->has('page')` → Return `1` if there is a page to load.

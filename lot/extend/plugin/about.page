@@ -6,6 +6,6 @@ type: Markdown
 version: 1.2.0
 ...
 
-Plugin files are stored in the `lot\worker` folder.
+All plugin files are located in `lot\worker` folder starting from the location of this file.
 
 <!-- block:donate -->
