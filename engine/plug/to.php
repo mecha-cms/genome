@@ -1,12 +1,12 @@
-<?php
+<?php namespace fn\to;
 
-function __to_query__($array, $key) {
+function query($array, $key) {
     $out = [];
     $s = $key ? ']' : "";
     foreach ($array as $k => $v) {
         $k = urlencode($k);
         if (is_array($v)) {
-            $out = array_merge($out, __to_query__($v, $key . $k . $s . '['));
+            $out = array_merge($out, query($v, $key . $k . $s . '['));
         } else {
             $out[$key . $k . $s] = $v;
         }
@@ -14,16 +14,16 @@ function __to_query__($array, $key) {
     return $out;
 }
 
-function __to_yaml__($in, $d = '  ', $safe = false, $dent = 0) {
-    if (__is_anemon__($in)) {
+function yaml($in, $d = '  ', $safe = false, $dent = 0) {
+    if (\__is_anemon__($in)) {
         $out = "";
-        $li = __is_anemon_0__($in) && !$safe; // is numeric array?
+        $li = \__is_anemon_0__($in) && !$safe; // is numeric array?
         $t = str_repeat($d, $dent);
         foreach ($in as $k => $v) {
             if (strpos($k, ':') !== false) {
                 $k = '"' . $k . '"';
             }
-            if (!__is_anemon__($v) || empty($v)) {
+            if (!\__is_anemon__($v) || empty($v)) {
                 if (is_array($v)) {
                     $v = '[]';
                 } else if (is_object($v)) {
@@ -31,7 +31,7 @@ function __to_yaml__($in, $d = '  ', $safe = false, $dent = 0) {
                 } else if ($v === "") {
                     $v = '""';
                 } else {
-                    $v = s($v);
+                    $v = \s($v);
                 }
                 $v = strpos($v, "\n") !== false ? "|\n" . $t . $d . str_replace("\n", "\n" . $t . $d, $v) : $v;
                 // Comment…
@@ -42,7 +42,7 @@ function __to_yaml__($in, $d = '  ', $safe = false, $dent = 0) {
                     $out .= $t . ($li ? '- ' : trim($k) . ': ') . $v . "\n";
                 }
             } else {
-                $out .= $t . $k . ":\n" . __to_yaml__($v, $d, $safe, $dent + 1) . "\n";
+                $out .= $t . $k . ":\n" . yaml($v, $d, $safe, $dent + 1) . "\n";
             }
         }
         return rtrim($out, "\n");
@@ -54,8 +54,8 @@ foreach([
     'anemon' => function($in) {
         return (array) (is_array($in) || is_object($in) ? a($in) : json_decode($in, true));
     },
-    'base64' => 'base64_encode',
-    'camel' => 'c',
+    'base64' => '\base64_encode',
+    'camel' => '\c',
     'dec' => function($in, $z = false, $f = ['&#', ';']) {
         $out = "";
         for($i = 0, $count = strlen($in); $i < $count; ++$i) {
@@ -72,9 +72,9 @@ foreach([
         $s = "";
         foreach ($in as $v) {
             if ($v === "") continue;
-            $s .= h($v, '-', true, '_') . DS;
+            $s .= \h($v, '-', true, '_') . DS;
         }
-        return $s . h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
+        return $s . \h(implode('.', $n), '-', true, '_.') . '.' . \h($x, '-', true);
     },
     'folder' => function($in) {
         $in = array_map('trim', explode(DS, str_replace('/', DS, $in)));
@@ -82,9 +82,9 @@ foreach([
         $s = "";
         foreach ($in as $v) {
             if ($v === "") continue;
-            $s .= h($v, '-', true, '_') . DS;
+            $s .= \h($v, '-', true, '_') . DS;
         }
-        return $s . h($n, '-', true, '_');
+        return $s . \h($n, '-', true, '_');
     },
     'hex' => function($in, $z = false, $f = ['&#x', ';']) {
         $out = "";
@@ -95,7 +95,7 @@ foreach([
         }
         return $out;
     },
-    'HTML' => ['htmlspecialchars_decode', [null, ENT_QUOTES | ENT_HTML5]],
+    'HTML' => ['\htmlspecialchars_decode', [null, ENT_QUOTES | ENT_HTML5]],
     'JSON' => function($in, $tidy = false) {
         if ($tidy) {
             $i = JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
@@ -105,14 +105,14 @@ foreach([
         return json_encode($in, $i);
     },
     'kebab' => function($in, $a = true) {
-        return trim(h($in, '-', $a), '-');
+        return trim(\h($in, '-', $a), '-');
     },
     'key' => function($in, $a = true) {
-        $s = trim(h($in, '_', $a), '_');
+        $s = trim(\h($in, '_', $a), '_');
         return $s && is_numeric($s[0]) ? '_' . $s : $s;
     },
-    'lower' => 'l',
-    'pascal' => 'p',
+    'lower' => '\l',
+    'pascal' => '\p',
     'path' => function($in) {
         $u = $GLOBALS['URL'];
         $s = str_replace('/', DS, $u['$']);
@@ -121,9 +121,9 @@ foreach([
     },
     'query' => function($in, $c = []) {
         $c = array_replace(['?', '&', '=', ""], $c);
-        foreach (__to_query__($in, "") as $k => $v) {
+        foreach (query($in, "") as $k => $v) {
             if ($v === false) continue; // `['a' => 'false', 'b' => false]` → `a=false`
-            $v = $v !== true ? $c[2] . urlencode(s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`
+            $v = $v !== true ? $c[2] . urlencode(\s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`
             $out[] = urlencode($k) . $v; // `['a' => 'null', 'b' => null]` → `a=null&b=null`
         }
         return !empty($out) ? $c[0] . implode($c[1], $out) . $c[3] : "";
@@ -137,13 +137,13 @@ foreach([
     },
     'serial' => 'serialize',
     'slug' => function($in, $s = '-', $a = true) {
-        return trim(h($in, $s, $a), $s);
+        return trim(\h($in, $s, $a), $s);
     },
     'snake' => function($in, $a = true) {
-        return trim(h($in, '_', $a), '_');
+        return trim(\h($in, '_', $a), '_');
     },
     'snippet' => function($in, $html = true, $x = [200, '&#x2026;']) {
-        $s = w($in, $html ? HTML_WISE_I : []);
+        $s = \w($in, $html ? HTML_WISE_I : []);
         $utf8 = extension_loaded('mbstring');
         if (is_int($x)) {
             $x = [$x, '&#x2026;'];
@@ -209,7 +209,7 @@ foreach([
     },
     'text' => 'w',
     'title' => function($in) {
-        $in = w($in);
+        $in = \w($in);
         if (extension_loaded('mbstring')) {
             return mb_convert_case($in, MB_CASE_TITLE);
         }
@@ -224,16 +224,16 @@ foreach([
         return $raw ? rawurldecode($in) : urldecode($in);
     },
     'YAML' => function(...$lot) {
-        if (!__is_anemon__($lot[0])) {
-            return s($lot[0]);
+        if (!\__is_anemon__($lot[0])) {
+            return \s($lot[0]);
         }
-        if (is_string($lot[0]) && Is::path($lot[0], true)) {
+        if (is_string($lot[0]) && \Is::path($lot[0], true)) {
             $lot[0] = include $lot[0];
         }
-        return __to_yaml__(...$lot);
+        return yaml(...$lot);
     }
 ] as $k => $v) {
-    To::_($k, $v);
+    \To::_($k, $v);
 }
 
 // Alias(es)…
@@ -243,5 +243,5 @@ foreach ([
     'url' => 'URL',
     'yaml' => 'YAML'
 ] as $k => $v) {
-    To::_($k, To::_($v));
+    \To::_($k, \To::_($v));
 }

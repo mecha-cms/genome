@@ -1,17 +1,17 @@
-<?php
+<?php namespace fn;
 
-function fn_asset($content) {
-    $content = str_replace('</head>', Hook::fire('asset:head', [""]) . '</head>', $content);
-    $content = str_replace('</body>', Hook::fire('asset:body', [""]) . '</body>', $content);
+function asset($content) {
+    $content = str_replace('</head>', \Hook::fire('asset:head', [""]) . '</head>', $content);
+    $content = str_replace('</body>', \Hook::fire('asset:body', [""]) . '</body>', $content);
     return $content;
 }
 
-Hook::set('asset:head', function($content) {
-    return $content . Hook::fire('asset.css', [Asset::css()]);
+\Hook::set('asset:head', function($content) {
+    return $content . \Hook::fire('asset.css', [\Asset::css()]);
 });
 
-Hook::set('asset:body', function($content) {
-    return $content . Hook::fire('asset.js', [Asset::js()]);
+\Hook::set('asset:body', function($content) {
+    return $content . \Hook::fire('asset.js', [\Asset::js()]);
 });
 
-Hook::set('shield.yield', 'fn_asset', 0);
+\Hook::set('shield.yield', __NAMESPACE__ . '\asset', 0);

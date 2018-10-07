@@ -1,25 +1,25 @@
-<?php
+<?php namespace fn\shield;
 
 // Fix missing date format: default to `en_us`
-Hook::set('on.ready', function() {
-    $key = str_replace('-', '_', Config::get('language'));
-    if (!Date::get($key)) {
-        Date::set($key, function($out) {
+\Hook::set('on.ready', function() {
+    $key = str_replace('-', '_', \Config::get('language'));
+    if (!\Date::get($key)) {
+        \Date::set($key, function($out) {
             return $out['en_us'];
         });
     }
 }, 0);
 
 // Rich `time` and `update` data
-Hook::set([
+\Hook::set([
     '*.time',
     '*.update'
 ], function($v) {
-    return new Date($v);
+    return new \Date($v);
 }, 0);
 
 // Generate relative shield path to the `.\lot\shield\*` folder
-function fn_shield_path($path) {
+function path($path) {
     if (!$path) {
         return $path;
     }
@@ -32,31 +32,31 @@ function fn_shield_path($path) {
 }
 
 // Generate HTML class(es) based on current page conditional statement(s)
-function fn_shield_yield($content) {
-    $if = Extend::state('shield', 'if');
+function classes($content) {
+    $if = \Extend::state('shield', 'if');
     if (strpos($content, '<' . $if[0] . ' ') !== false) {
-        return preg_replace_callback('#<' . x($if[0]) . '(?:\s[^<>]*?)?>#', function($m) use($if) {
+        return preg_replace_callback('#<' . \x($if[0]) . '(?:\s[^<>]*?)?>#', function($m) use($if) {
             if (
                 strpos($m[0], ' class="') !== false ||
                 strpos($m[0], ' class ') !== false ||
                 substr($m[0], -7) === ' class>'
             ) {
-                $a = HTML::apart($m[0]);
+                $a = \HTML::apart($m[0]);
                 if (isset($a[2]['class[]'])) {
                     $c = [];
                     foreach (['has', 'is', 'not'] as $key) {
-                        foreach (array_filter((array) Config::get($key, [])) as $k => $v) {
+                        foreach (array_filter((array) \Config::get($key, [])) as $k => $v) {
                             $c[] = $key . '-' . $k;
                         }
                     }
-                    if ($x = Config::get('is.error')) {
+                    if ($x = \Config::get('is.error')) {
                         $c[] = 'error-' . $x;
                     }
                     $c = array_unique(array_merge($a[2]['class[]'], $c));
                     sort($c);
                     $a[2]['class[]'] = $c;
                 }
-                return HTML::unite($a);
+                return \HTML::unite($a);
             }
             return $m[0];
         }, $content);
@@ -64,5 +64,5 @@ function fn_shield_yield($content) {
     return $content;
 }
 
-Hook::set('shield.path', 'fn_shield_path', 0);
-Hook::set('shield.yield', 'fn_shield_yield', 0);
+\Hook::set('shield.path', __NAMESPACE__ . '\path', 0);
+\Hook::set('shield.yield', __NAMESPACE__ . '\classes', 0);
