@@ -5,7 +5,7 @@ function _data($v, $n = null) {
     $n = $n ?: \Path::N($v);
     $v = file_get_contents($v);
     if ($n === 'time' || $n === 'update') {
-        $v = (new Date($v))->format(DATE_WISE);
+        $v = (new \Date($v))->format(DATE_WISE);
     } else if ($n === 'slug') {
         $v = \h($v);
     }
