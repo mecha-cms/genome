@@ -6,7 +6,7 @@ class Cookie extends Genome {
         if (is_numeric($config)) {
             $config = ['expire' => (int) $config];
         }
-        $config = array_replace([
+        $config = extend([
             'expire' => 1, // 1 day
             'path' => '/',
             'domain' => "",

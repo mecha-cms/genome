@@ -5,7 +5,7 @@ class URL extends Genome {
     protected $s = null;
     protected $lot = [];
 
-    public static function long($url, $root = true) {
+    public static function long(string $url = "", $root = true) {
         $u = $GLOBALS['URL'];
         $b = false;
         if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
@@ -25,7 +25,7 @@ class URL extends Genome {
         return self::v($url);
     }
 
-    public static function short($url, $root = true) {
+    public static function short(string $url = "", $root = true) {
         $u = $GLOBALS['URL'];
         if (strpos($url, '//') === 0 && strpos($url, '//' . $u['host']) !== 0) {
             return $url; // Ignore external URL
@@ -37,14 +37,14 @@ class URL extends Genome {
         return ltrim(str_replace([X . $u['$'], X . '//' . rtrim($u['host'] . '/' . $u['directory'], '/'), X], "", $url), '/');
     }
 
-    protected static function v($s) {
-        return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $s);
+    protected static function v(string $path = "") {
+        return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $path);
     }
 
-    public function __construct($input = null, $s = '$') {
-        $this->s = $s;
+    public function __construct($input = null, string $self = '$') {
+        $this->s = $self;
         if (isset($input)) {
-            $u = array_replace([
+            $u = extend([
                 '$' => null,
                 'fragment' => "",
                 'host' => "",
@@ -115,7 +115,7 @@ class URL extends Genome {
     }
 
     public function __toString() {
-        return isset($this->lot[$this->s]) ? $this->lot[$this->s] : "";
+        return (string) $this->lot[$this->s] ?? "";
     }
 
     public static function __callStatic($kin, $lot = []) {

@@ -95,6 +95,17 @@ class Hook extends Genome {
                     if (!is_callable($v['fn'])) {
                         continue;
                     }
+                    /*
+                    if (is_string($v['fn'])) {
+                        if (!isset(self::$lot[1][$c][$id][$v['fn']])) {
+                            self::$lot[1][$c][$id][$v['fn']] = 0;
+                        }
+                        if (self::$lot[1][$c][$id][$v['fn']] > $v['i']) {
+                            continue;
+                        }
+                        ++self::$lot[1][$c][$id][$v['fn']];
+                    }
+                    */
                     if (($r = fn($v['fn'], null, $lot)) !== null) {
                         $lot[0] = $r;
                     }

@@ -85,7 +85,7 @@ class Asset extends Genome {
                     'data' => [],
                     'stack' => null
                 ]);
-                $data = is_array($a) && is_array($g['data']) ? array_replace_recursive($a, $g['data']) : ($g['data'] ?: $a);
+                $data = is_array($a) && is_array($g['data']) ? extend($a, $g['data']) : ($g['data'] ?: $a);
                 return is_callable($fn) ? call_user_func($fn, $g, $path, $data) : ($g['path'] ? file_get_contents($g['path']) : "");
             }
             if (isset(self::$lot[$c][1][$kin])) {
@@ -93,7 +93,7 @@ class Asset extends Genome {
                 $output = "";
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {
-                        $output .= call_user_func($fn, $v, $k, array_replace_recursive($a, $v['data'])) . N;
+                        $output .= call_user_func($fn, $v, $k, extend($a, $v['data'])) . N;
                     }
                 } else {
                     foreach ($assets as $k => $v) {

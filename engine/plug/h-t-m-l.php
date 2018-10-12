@@ -5,7 +5,7 @@ foreach([
         $attr_o = [
             'target' => $target === true ? '_blank' : ($target === false ? null : $target)
         ];
-        $attr = array_replace_recursive($attr_o, $attr);
+        $attr = extend($attr_o, $attr);
         $attr['href'] = URL::long(str_replace('&amp;', '&', $href));
         return HTML::unite('a', $text, $attr, $dent);
     },
@@ -27,7 +27,7 @@ foreach([
             'width' => $z[0],
             'height' => $z[1]
         ];
-        $attr = array_replace_recursive($attr_o, $attr);
+        $attr = extend($attr_o, $attr);
         $attr['src'] = URL::long(str_replace('&amp;', '&', $src));
         return HTML::unite('img', false, $attr, $dent);
     }

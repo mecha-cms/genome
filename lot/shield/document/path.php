@@ -3,7 +3,7 @@
 $format = ['<span>%{0}%</span>', '<a href="%{1}%">%{0}%</a>'];
 
 $a = explode('/', $url->path);
-$b = __replace__($format[$site->is('home') ? 0 : 1], [$language->home, $url]);
+$b = candy($format[$site->is('home') ? 0 : 1], [$language->home, $url]);
 $c = "";
 
 array_pop($a); // remove the last path
@@ -18,9 +18,9 @@ while ($d = array_shift($a)) {
         continue;
     }
     $d = Page::open($f)->get('title', To::title($d));
-    $b .= ' / ' . __replace__($format[1], [$d, $url . $c]);
+    $b .= ' / ' . candy($format[1], [$d, $url . $c]);
 }
 
-$b .= ' / ' . __replace__($format[0], [$page->title ?: $language->error]);
+$b .= ' / ' . candy($format[0], [$page->title ?: $language->error]);
 
 echo $b;

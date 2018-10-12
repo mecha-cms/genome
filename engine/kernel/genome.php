@@ -41,7 +41,7 @@ abstract class Genome {
             if (is_callable($a[0])) {
                 // Alter default function argument(s)
                 if (isset($a[1])) {
-                    $lot = array_replace_recursive((array) $a[1], $lot);
+                    $lot = extend((array) $a[1], $lot);
                 }
                 // Limit function argument(s)
                 if (isset($a[2])) {
@@ -69,7 +69,7 @@ abstract class Genome {
             if (is_callable($a[0])) {
                 // Alter default function argument(s)
                 if (isset($a[1])) {
-                    $lot = array_replace_recursive((array) $a[1], $lot);
+                    $lot = extend((array) $a[1], $lot);
                 }
                 // Limit function argument(s)
                 if (isset($a[2])) {

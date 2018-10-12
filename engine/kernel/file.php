@@ -99,17 +99,17 @@ class File extends Genome {
                 } else {
                     $x = '*.{' . $x . '}';
                 }
-                $files = array_filter(array_merge(
+                $files = is(concat(
                     glob($folder . DS . $x, GLOB_BRACE | GLOB_NOSORT),
                     glob($folder . DS . substr($x, 1), GLOB_BRACE | GLOB_NOSORT)
                 ), 'is_file');
             } else if ($x === 0) {
-                $files = array_merge(
+                $files = concat(
                     glob($folder . DS . '*', GLOB_ONLYDIR | GLOB_NOSORT),
                     glob($folder . DS . '.*', GLOB_ONLYDIR | GLOB_NOSORT)
                 );
             } else {
-                $files = array_merge(
+                $files = concat(
                     glob($folder . DS . '*', GLOB_NOSORT),
                     glob($folder . DS . '.*', GLOB_NOSORT)
                 );
@@ -213,7 +213,7 @@ class File extends Genome {
     // Export value to a PHP file
     public static function export(array $data, $format = '<?php return %{0}%;') {
         $self = new static;
-        $self->content = replace($format, z($data));
+        $self->content = candy($format, z($data));
         return $self;
     }
 
@@ -295,7 +295,7 @@ class File extends Genome {
                     if (!is_dir($dir)) {
                         mkdir($dir, 0775, true);
                     }
-                    $out = array_replace($out, self::open($k)->copyTo($dir, $pattern));
+                    $out = extend($out, self::open($k)->copyTo($dir, $pattern));
                 }
                 $this->path = $folder . DS . $b;
                 return $out;
@@ -312,7 +312,7 @@ class File extends Genome {
                     }
                     $i = 1;
                 } else if ($pattern) {
-                    $v = dirname($v) . DS . replace($pattern, [
+                    $v = dirname($v) . DS . candy($pattern, [
                         'name' => pathinfo($v, PATHINFO_FILENAME),
                         'i' => $i,
                         'extension' => pathinfo($v, PATHINFO_EXTENSION)

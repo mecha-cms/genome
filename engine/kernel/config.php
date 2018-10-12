@@ -2,16 +2,16 @@
 
 class Config extends Genome {
 
-    protected static $bucket = [];
+    protected static $lot = [];
     protected static $a = [];
 
     public static function ignite(...$lot) {
         $c = static::class;
         if (!isset($lot[0])) {
-            return (self::$bucket[$c] = []);
+            return (self::$lot[$c] = []);
         }
         $a = Is::file($lot[0]) ? require $lot[0] : $lot[0];
-        return (self::$bucket[$c] = self::$a[$c] = a($a));
+        return (self::$lot[$c] = self::$a[$c] = a($a));
     }
 
     public static function set($key, $value = null) {
@@ -26,15 +26,15 @@ class Config extends Genome {
                 Anemon::set($cargo, $k, $v);
             }
         }
-        $o = (array) (self::$bucket[$c] ?? []);
-        self::$bucket[$c] = array_replace_recursive($o, $cargo);
+        $o = (array) (self::$lot[$c] ?? []);
+        self::$lot[$c] = extend($o, $cargo);
         return new static;
     }
 
     public static function get($key = null, $fail = false, $array = false) {
         $c = static::class;
         if (!isset($key)) {
-            $output = !empty(self::$bucket[$c]) ? self::$bucket[$c] : $fail;
+            $output = !empty(self::$lot[$c]) ? self::$lot[$c] : $fail;
             return $array ? $output : o($output);
         } else if (is_array($key) || is_object($key)) {
             $output = [];
@@ -45,7 +45,7 @@ class Config extends Genome {
             return $fail ? $output : o($output);
         }
         // `get($key = null, $fail = false, $array = false)`
-        $output = (array) (self::$bucket[$c] ?? []);
+        $output = (array) (self::$lot[$c] ?? []);
         $output = Anemon::get($output, $key, $fail);
         return $array ? $output : o($output);
     }
@@ -54,10 +54,10 @@ class Config extends Genome {
         $c = static::class;
         if (isset($key)) {
             foreach ((array) $key as $value) {
-                Anemon::reset(self::$bucket[$c], $value);
+                Anemon::reset(self::$lot[$c], $value);
             }
         } else {
-            self::$bucket[$c] = [];
+            self::$lot[$c] = [];
         }
         return new static;
     }
@@ -65,7 +65,7 @@ class Config extends Genome {
     public static function alt(...$lot) {
         $c = static::class;
         self::set(...$lot);
-        self::$bucket[$c] = array_replace_recursive(self::$bucket[$c], self::$a[$c]);
+        self::$lot[$c] = extend(self::$lot[$c], self::$a[$c]);
         return new static;
     }
 
@@ -118,7 +118,7 @@ class Config extends Genome {
     }
 
     public function __invoke($fail = []) {
-        return self::get(null, o($fail));
+        return self::get(null, $fail, true);
     }
 
     public static function __callStatic($kin, $lot = []) {

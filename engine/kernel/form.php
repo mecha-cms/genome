@@ -10,7 +10,7 @@ class Form extends HTML {
         $attr_o = ['value' => $value];
         self::name($name, $attr_o);
         unset($attr_o['readonly'], $attr_o['required']);
-        return self::unite('button', $text, array_replace_recursive($attr_o, $attr), $dent);
+        return self::unite('button', $text, extend($attr_o, $attr), $dent);
     }
 
     // `<input>`
@@ -27,7 +27,7 @@ class Form extends HTML {
         ];
         self::name($name, $attr_o);
         $attr_o['value'] = HTTP::restore('post', self::key($name), $value);
-        return self::unite('input', false, array_replace_recursive($attr_o, $attr), $dent);
+        return self::unite('input', false, extend($attr_o, $attr), $dent);
     }
 
     // `<select>`
@@ -37,7 +37,7 @@ class Form extends HTML {
         self::name($name, $attr_o);
         unset($attr_o['required']);
         $select = (string) HTTP::restore('post', self::key($name), $select);
-        $attr_o = array_replace_recursive($attr_o, $attr);
+        $attr_o = extend($attr_o, $attr);
         foreach ($option as $key => $value) {
             $tag = new static;
             // option list group
@@ -94,7 +94,7 @@ class Form extends HTML {
             ]);
         }
         $attr_o['placeholder'] = $placeholder;
-        return self::unite('textarea', self::x(HTTP::restore('post', self::key($name), $value)), array_replace_recursive($attr_o, $attr), $dent);
+        return self::unite('textarea', self::x(HTTP::restore('post', self::key($name), $value)), extend($attr_o, $attr), $dent);
     }
 
     public static function key($key) {

@@ -15,7 +15,7 @@
     <footer>
       <p><strong><?php echo $language->updateed; ?>:</strong> <time datetime="<?php echo $page->update->W3C; ?>"><?php echo $page->update->{str_replace('-', '_', $site->language)}; ?></time></p>
     </footer>
-  </article>
+  </article><?php Shield::get('comments'); ?>
 </main>
 <?php if ($site->has('parent')): ?>
 <nav><?php echo $pager; ?></nav>

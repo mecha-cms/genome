@@ -99,12 +99,12 @@ class HTTP extends Genome {
     }
 
     public static function query($query = null, $c = []) {
-        $c = array_replace(['?', '&amp;', '=', ""], $c);
+        $c = extend(['?', '&amp;', '=', ""], $c);
         if (!isset($query)) {
             $query = $GLOBALS['URL']['query'];
             return str_replace(['?', '&', '='], $c, $query);
         }
-        return To::query($query ? array_replace_recursive($_GET, (array) $query) : $_GET, $c);
+        return To::query($query ? extend($_GET, (array) $query) : $_GET, $c);
     }
 
     public static function header($key = null, $value = null) {
@@ -163,7 +163,7 @@ class HTTP extends Genome {
         }
         $s = self::$config['session']['gate'] . '.' . $id;
         $cache = Session::get($s, []);
-        Session::set($s, array_replace_recursive($cache, $key));
+        Session::set($s, extend($cache, $key));
         return new static;
     }
 

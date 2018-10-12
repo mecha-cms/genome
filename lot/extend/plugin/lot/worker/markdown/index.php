@@ -8,12 +8,12 @@ namespace fn\markdown {
         }
         return $x->{$mode}($in);
     }
-    function i(string $in = "", array $lot = []) {
+    function i($in = "", array $lot = []) {
         if ($this->type !== 'Markdown') {
             return $in;
         }
         return \w(b($in, $lot), HTML_WISE_I);
-        // return replace($in, 'line'); // TODO
+        // return b($in, 'line'); // TODO
     }
     \Hook::set('*.title', __NAMESPACE__ . '\i', 2);
     \Hook::set(['*.description', '*.content'], __NAMESPACE__, 2);
@@ -39,7 +39,7 @@ namespace {
     From::_('markdown', From::_('Markdown'));
     To::_('markdown', To::_('Markdown'));
     // Add `markdown` to the allowed file extension(s)
-    File::$config['extension'] = array_merge(File::$config['extension'], [
+    File::$config['extension'] = concat(File::$config['extension'], [
         'markdown',
         'md',
         'mkd'

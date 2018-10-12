@@ -28,7 +28,7 @@ function path($path) {
     foreach ($path = (array) $path as $v) {
         $o[] = SHIELD . DS . $config->shield . DS . str_replace(ROOT . DS, "", $v);
     }
-    return array_merge($o, $path);
+    return concat($o, $path);
 }
 
 // Generate HTML class(es) based on current page conditional statement(s)
@@ -52,7 +52,7 @@ function classes($content) {
                     if ($x = \Config::get('is.error')) {
                         $c[] = 'error-' . $x;
                     }
-                    $c = array_unique(array_merge($a[2]['class[]'], $c));
+                    $c = array_unique(concat($a[2]['class[]'], $c));
                     sort($c);
                     $a[2]['class[]'] = $c;
                 }

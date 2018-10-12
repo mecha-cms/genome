@@ -95,7 +95,7 @@ class Shield extends Genome {
 
     public static function attach($input, $fail = false) {
         if (!$output = self::get($input, $fail, false)) {
-            $output = replace(Guardian::$config['message'], [
+            $output = candy(Guardian::$config['message'], [
                 'message' => '<code>' . __METHOD__ . '(' . v(json_encode($input)) . ')</code>'
             ]);
         }

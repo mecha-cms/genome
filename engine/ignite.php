@@ -1,11 +1,7 @@
 <?php
 
-// fn\is\anemon: check for valid data collection (array or object)
-// fn\is\instance: check for valid class instance
-// fn\is\json: check for valid JSON string format
-// fn\is\serial: check for valid serialized string format
-
 namespace fn\is {
+    // Check for valid data collection (array or object)
     function anemon($x = null, $t = null) {
         if (is_string($t)) {
             return anemon_a($x);
@@ -14,20 +10,24 @@ namespace fn\is {
         }
         return is_array($x) || is_object($x);
     }
-    function instance($x = null) {
-        if (!is_object($x)) return false;
-        return ($s = get_class($x)) && $s !== 'stdClass' ? $x : false;
-    }
+    // `[1,2,3]`
     function anemon_0($x = null) {
         $a = (array) $x;
         $count = count($a);
         return $count && array_keys($a) === range(0, $count - 1);
     }
+    // `{"a":1,"b":2,"c":3}`
     function anemon_a($x = null) {
         $a = (array) $x;
         $count = count($a);
         return $count && array_keys($a) !== range(0, $count - 1);
     }
+    // Check for any valid class instance
+    function instance($x = null) {
+        if (!is_object($x)) return false;
+        return ($s = get_class($x)) && $s !== 'stdClass' ? $x : false;
+    }
+    // Check for valid JSON string format
     function json($x = null) {
         if (!is_string($x) || trim($x) === "") return false;
         return (
@@ -43,6 +43,7 @@ namespace fn\is {
             $x[0] === '{' && substr($x, -1) === '}'
         ) && json_decode($x) !== null;
     }
+    // Check for valid serialized string format
     function serial($x = null) {
         if (!is_string($x) || trim($x) === "") {
             return false;
@@ -61,80 +62,20 @@ namespace {
     // Check if array contains …
     function any(array $a = [], callable $fn) {
         foreach ($a as $k => $v) {
-            if (call_user_func($fn, $v, $k, $a)) {
+            if (call_user_func($fn, $v, $k)) {
                 return true;
             }
         }
         return false;
     }
-    // TODO
-    function but(array $a = [], callable $fn) {}
-    // Convert class name to file name
-    function c2f(string $s = "", string $h = '-', string $n = '.') {
-        return ltrim(str_replace(['\\', $n . $h], $n, h($s, $h, false, '\\\\')), $h);
+    // Filter out element(s) that does not pass the function test
+    function but(array $a = [], callable $fn) {
+        return array_filter($a, function($v, $k) use($fn) {
+            return !call_user_func($fn, $v, $k);
+        }, ARRAY_FILTER_USE_BOTH);
     }
-    // Convert file name to class name
-    function f2c(string $s = "", string $h = '-', string $n = '.') {
-        return str_replace($n, '\\', p($s, false, $n));
-    }
-    // Return array value that meet the condition
-    function find(array $a = [], callable $fn) {
-        foreach ($a as $k => $v) {
-            if (call_user_func($fn, $v, $k, $a)) {
-                return $v;
-            }
-        }
-        return false;
-    }
-    // Trigger function with scope and parameter(s)
-    function fn($fn = null, $t = null, array $a = []) {
-        if (is_callable($fn)) {
-            $fn = \Closure::fromCallable($fn);
-            return call_user_func($t ? $fn->bindTo($t) : $fn, ...$a);
-        }
-        return false;
-    }
-    // Replace pattern to regular expression
-    function format($s = "", $x = "\n", $d = '#', $r = true) {
-        if (!$s || strpos($s, '%') === false) return $s;
-        $r = $r ? "" : '?';
-        // group: `%[foo,bar,baz]%`
-        if (($i = strpos($s, '%[')) !== false && strpos($s, ']%') > $i) {
-            $s = preg_replace_callback('#%\[([\s\S]+?)' . $r . '\]%#', function($m) {
-                $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
-                return '(' . $m[1] . ')';
-            }, $s);
-        }
-        return str_replace([
-            '%s%', // any string excludes `$x`
-            '%i%', // any string number(s)
-            '%f%', // any string number(s) includes float(s)
-            '%b%', // any string boolean(s)
-           '%\*%', // any string includes `$x`
-             X
-        ], [
-            '([^' . $x . ']+)' . $r,
-            '(\-?\d+)' . $r,
-            '(\-?(?:(?:\d+)?\.)?\d+)' . $r,
-            '(\b(?:TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b)' . $r,
-            '([\s\S]+)' . $r,
-            ','
-        ], x($s, $d)); // return a regular expression string without the delimiter(s)
-    }
-    // Check if array item does exist
-    function has(array $a = [], $s = "") {
-        return strpos(X . implode(X, $a) . X, X . $s . X) !== false;
-    }
-    // Filter array
-    function is(array $a = [], $fn = null) {
-        return array_filter($a, $fn);
-    }
-    // Manipulate array value(s)
-    function map(array $a = [], callable $fn) {
-        return array_map($fn, $a);
-    }
-    // Replace pattern to a value
-    function replace(string $s = "", $a = [], $x = "\n", $r = true) {
+    // Replace pattern to its value
+    function candy(string $s = "", $a = [], $x = "\n", $r = true) {
         if (!$s || strpos($s, '%') === false) return $s;
         $a = (array) $a;
         foreach ($a as $k => $v) {
@@ -198,6 +139,75 @@ namespace {
         }
         return $s;
     }
+    // Convert class name to file name
+    function c2f(string $s = "", string $h = '-', string $n = '.') {
+        return ltrim(str_replace(['\\', $n . $h], $n, h($s, $h, false, '\\\\')), $h);
+    }
+    // Merge array value(s)
+    function concat(array $a = [], ...$b) {
+        return array_merge_recursive($a, ...$b);
+    }
+    // Extend array value(s)
+    function extend(array $a = [], ...$b) {
+        return array_replace_recursive($a, ...$b);
+    }
+    // Convert file name to class name
+    function f2c(string $s = "", string $h = '-', string $n = '.') {
+        return str_replace($n, '\\', p($s, false, $n));
+    }
+    // Return the first element found in array that passed the function test
+    function find(array $a = [], callable $fn) {
+        foreach ($a as $k => $v) {
+            if (call_user_func($fn, $v, $k)) {
+                return $v;
+            }
+        }
+        return false;
+    }
+    // Trigger function with scope and parameter(s)
+    function fn(callable $fn, $t = null, array $a = []) {
+        $fn = \Closure::fromCallable($fn);
+        return call_user_func($t ? $fn->bindTo($t) : $fn, ...$a);
+    }
+    // Replace pattern to regular expression
+    function format(string $s = "", string $x = "\n", string $d = '#', $r = true) {
+        if (!$s || strpos($s, '%') === false) return $s;
+        $r = $r ? "" : '?';
+        // group: `%[foo,bar,baz]%`
+        if (($i = strpos($s, '%[')) !== false && strpos($s, ']%') > $i) {
+            $s = preg_replace_callback('#%\[([\s\S]+?)' . $r . '\]%#', function($m) {
+                $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
+                return '(' . $m[1] . ')';
+            }, $s);
+        }
+        return str_replace([
+            '%s%', // any string excludes `$x`
+            '%i%', // any string number(s)
+            '%f%', // any string number(s) includes float(s)
+            '%b%', // any string boolean(s)
+           '%\*%', // any string includes `$x`
+             X
+        ], [
+            '([^' . $x . ']+)' . $r,
+            '(\-?\d+)' . $r,
+            '(\-?(?:(?:\d+)?\.)?\d+)' . $r,
+            '(\b(?:TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b)' . $r,
+            '([\s\S]+)' . $r,
+            ','
+        ], x($s, $d)); // return a regular expression string without the delimiter(s)
+    }
+    // Check if an element exists in array
+    function has(array $a = [], $s = "") {
+        return strpos(X . implode(X, $a) . X, X . $s . X) !== false;
+    }
+    // Filter out element(s) that pass the function test
+    function is(array $a = [], $fn = null) {
+        return $fn ? array_filter($a, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($a);
+    }
+    // Manipulate array value(s)
+    function map(array $a = [], callable $fn) {
+        return array_map($fn, $a);
+    }
     // Dump PHP code
     function test(...$a) {
         foreach ($a as $b) {
@@ -240,7 +250,7 @@ namespace {
     function a($o = [], $safe = true) {
         if (fn\is\anemon($o)) {
             if ($safe) {
-                $o = !fn\is\instance($o) ? (array) $o : $o;
+                $o = fn\is\instance($o) ? $o : (array) $o;
             } else {
                 $o = (array) $o;
             }
@@ -261,7 +271,7 @@ namespace {
             return u($m[1]);
         }, f($x, $a, $i));
     }
-    function d($f = null, $fn = null, $s__ = []) {
+    function d(string $f = "", $fn = null, array $s__ = []) {
         spl_autoload_register(function($w) use($f, $fn, $s__) {
             $n = c2f($w);
             $f = $f . DS . $n . '.php';
@@ -274,7 +284,7 @@ namespace {
             }
         });
     }
-    function e($s = "", $x = []) {
+    function e($s = "", array $x = []) {
         if (is_string($s)) {
             if ($s === "") return $s;
             if (is_numeric($s)) {
@@ -305,7 +315,7 @@ namespace {
             $x = X . implode(X, (array) $x) . X;
             foreach ($s as $k => &$v) {
                 if (strpos($x, X . $k . X) === false) {
-                    $v = e($v, $x);
+                    $v = e($v, (array) $x);
                 }
             }
             unset($v);
@@ -315,7 +325,7 @@ namespace {
     // $x: the string input
     // $a: replace multi-byte string into their accent
     // $i: character(s) white-list
-    function f(string $x = "", $a = true, $i = "") {
+    function f(string $x = "", $a = true, string $i = "") {
         // this function does not trim white-space at the start and end of the string
         $x = preg_replace([
             // remove HTML tag(s) and character(s) reference
@@ -815,7 +825,7 @@ namespace {
     // $q: filter by query
     // $o: order?
     // $h: include hidden file(s)?
-    function g($s = ROOT, $x = '*', $q = "", $o = false, $h = true) {
+    function g(string $s = ROOT, string $x = '*', $q = "", $o = false, $h = true) {
         $s = rtrim($s, DS) . DS;
         $x = str_replace(' ', "", $x);
         $f = GLOB_BRACE | GLOB_NOSORT;
@@ -828,16 +838,18 @@ namespace {
         }
         $g = glob($s . $x, $f);
         if ($h) {
-            $g = array_merge(glob($s . '.' . $x, $f), $g);
+            $g = concat($g, glob($s . '.' . $x, $f));
         }
         if (!$q) {
-            if ($o) natsort($g);
+            if ($o) {
+                natsort($g);
+            }
             return $g;
         }
         $r = [];
         if (is_callable($q)) {
             foreach ($g as $k => $v) {
-                if (call_user_func($q, $v, $k, $q)) {
+                if (call_user_func($q, $v, $k)) {
                     $r[] = $v;
                 }
             }
@@ -849,7 +861,9 @@ namespace {
                 }
             }
         }
-        if ($o) natsort($r);
+        if ($o) {
+            natsort($r);
+        }
         unset($g);
         return $r;
     }
@@ -861,7 +875,7 @@ namespace {
     // If `$fn` is a function, the function will be executed after file include.
     // If `$fn` is array of function, the first function will be executed before
     // file include, and the rest will be executed after file include.
-    function i($a = null, $b = [], $fn = [null, null], $s__ = []) {
+    function i(string $a = "", $b = [], $fn = [null, null], array $s__ = []) {
         if (!is_array($fn)) {
             $fn = [null, $fn];
         } else if (!isset($fn[1])) {
@@ -924,15 +938,15 @@ namespace {
             return $x;
         } else if (is_string($x)) {
             return extension_loaded('mbstring') ? mb_strlen($x) : strlen($x);
-        } else if (fn\is\anemon($x)) {
-            return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+        } else if (is_object($x)) {
+            $x = a($x, false);
         }
-        return count($x);
+        return count($x, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
     // If `$fn` is a function, the function will be executed after file require.
     // If `$fn` is array of function, the first function will be executed before
     // file require, and the rest will be executed after file require.
-    function r($a = null, $b = [], $fn = [null, null], $s__ = []) {
+    function r(string $a = "", $b = [], $fn = [null, null], array $s__ = []) {
         if (!is_array($fn)) {
             $fn = [null, $fn];
         } else if (!isset($fn[1])) {
@@ -1028,7 +1042,7 @@ namespace {
     function x(string $x = "", string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
         return addcslashes($x, $d . $c);
     }
-    function y($x = null, $a = []) {
+    function y($x = null, array $a = []) {
         // By path
         if (is_string($x) && strlen($x) <= 260 && realpath($x) && is_file($x)) {
             ob_start();

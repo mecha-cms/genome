@@ -6,7 +6,7 @@ function query($array, $key) {
     foreach ($array as $k => $v) {
         $k = urlencode($k);
         if (is_array($v)) {
-            $out = array_merge($out, query($v, $key . $k . $s . '['));
+            $out = concat($out, query($v, $key . $k . $s . '['));
         } else {
             $out[$key . $k . $s] = $v;
         }
@@ -120,7 +120,7 @@ foreach([
         return file_exists($in) ? realpath($in) : $in;
     },
     'query' => function($in, $c = []) {
-        $c = array_replace(['?', '&', '=', ""], $c);
+        $c = extend(['?', '&', '=', ""], $c);
         foreach (query($in, "") as $k => $v) {
             if ($v === false) continue; // `['a' => 'false', 'b' => false]` → `a=false`
             $v = $v !== true ? $c[2] . urlencode(\s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`

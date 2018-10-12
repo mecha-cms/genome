@@ -1,8 +1,5 @@
 <?php
 
-foreach (['error', 'warn'] as $kin) {
-    Message::_($kin, function($text, $vars = [], $preserve_case = false) use($kin) {
-        ++Message::$x;
-        return Message::set($kin, $text, $vars, $preserve_case);
-    });
-}
+Message::_('error', function($text, $vars = [], $preserve_case = false) {
+    return Message::halt('error', $text, $vars, $preserve_case);
+});

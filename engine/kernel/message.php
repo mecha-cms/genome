@@ -41,16 +41,15 @@ class Message extends Genome {
             $s = Session::get(self::$id, "");
             $ss = Hook::fire($c . '.set.' . $kin, [$o]);
             if (strpos($s, $ss) === false) {
-                $s .= replace(HTML::unite(...self::$config['message']), [$kin, $ss]);
+                $s .= candy(HTML::unite(...self::$config['message']), [$kin, $ss]);
             }
             Session::set(self::$id, $s);
         }
         return new static;
     }
 
-    public static function warn(...$lot) {
+    public static function halt(...$lot) {
         ++self::$x;
-        array_unshift($lot, __METHOD__);
         return self::set(...$lot);
     }
 
@@ -61,7 +60,7 @@ class Message extends Genome {
 
     public static function get($session_x = true) {
         $s = Session::get(self::$id, "");
-        $output = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$s !== "" ? replace(HTML::unite(...self::$config['messages']), $s) : ""]);
+        $output = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$s !== "" ? candy(HTML::unite(...self::$config['messages']), $s) : ""]);
         if ($session_x) self::reset();
         return $output;
     }

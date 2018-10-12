@@ -40,7 +40,7 @@ class Guardian extends Genome {
     }
 
     public static function abort($message, $exit = true) {
-        echo replace(self::$config['message'], ['message' => $message]);
+        echo candy(self::$config['message'], ['message' => $message]);
         if ($exit) exit;
     }
 

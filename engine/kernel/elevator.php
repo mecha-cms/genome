@@ -11,16 +11,16 @@ class Elevator extends Genome {
     public $config = [];
     public $c = [];
 
-    protected $bucket = [];
+    protected $lot = [];
     protected $NS = "";
 
     protected function unite($input, $alt = ['span']) {
         if (!$alt || !$input) return "";
-        $input = array_replace_recursive($alt, $input);
+        $input = extend($alt, $input);
         return HTML::unite($input);
     }
 
-    public function __construct($input = [], $chunk = [5, 0], $path = true, $config = []) {
+    public function __construct(array $input = [], $chunk = [5, 0], $path = true, $config = []) {
         $key = c2f(static::class, '_', '/');
         $this->c = [
             // <: previous
@@ -51,13 +51,13 @@ class Elevator extends Genome {
             ],
             'lot' => [$input, $chunk, $path, $config]
         ];
-        $c = array_replace_recursive($this->c, $config);
+        $c = extend($this->c, $config);
         $d = $c['direction'];
         $p = $GLOBALS['URL']['path'];
         $q = str_replace('&', '&amp;', $GLOBALS['URL']['query']);
         $r = $GLOBALS['URL']['current'];
         if (is_array($chunk)) {
-            $chunk = array_replace([5, 0], $chunk);
+            $chunk = extend([5, 0], $chunk);
             $input = Anemon::eat($input)->chunk($chunk[0]);
         }
         if ($path === true) {
@@ -69,20 +69,20 @@ class Elevator extends Genome {
         if (is_array($chunk)) {
             $i = $chunk[1];
             if ($d['<'] !== false)
-                $this->bucket[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $i . $q : null;
+                $this->lot[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $i . $q : null;
             if ($d['='] !== false)
-                $this->bucket[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
+                $this->lot[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
             if ($d['>'] !== false)
-                $this->bucket[$d['>']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) . $q : null;
+                $this->lot[$d['>']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) . $q : null;
         // @page
         } else {
             $i = ($input ? array_search($chunk, $input) : 0) ?: 0;
             if ($d['<'] !== false)
-                $this->bucket[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] . $q : null;
+                $this->lot[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] . $q : null;
             if ($d['='] !== false)
-                $this->bucket[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
+                $this->lot[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
             if ($d['>'] !== false)
-                $this->bucket[$d['>']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] . $q : null;
+                $this->lot[$d['>']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] . $q : null;
         }
         $this->config = $c;
         $this->NS = $key;
@@ -90,7 +90,7 @@ class Elevator extends Genome {
     }
 
     public function __get($key) {
-        return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : null;
+        return array_key_exists($key, $this->lot) ? $this->lot[$key] : null;
     }
 
     // Fix case for `isset($elevator->key)` or `!empty($elevator->key)`
@@ -99,7 +99,7 @@ class Elevator extends Genome {
     }
 
     public function __unset($key) {
-        unset($this->bucket[$key]);
+        unset($this->lot[$key]);
     }
 
     public function __call($kin, $lot = []) {
@@ -111,9 +111,9 @@ class Elevator extends Genome {
         $d = array_search($kin, $this->config['direction']);
         if ($d !== false && ($text || $text === "")) {
             if ($text !== true) $u[$d][1] = $text;
-            return isset($this->bucket[$kin]) ? $this->unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->unite($u['!'], $u[$d]);
+            return isset($this->lot[$kin]) ? $this->unite(extend($u[$d], [2 => ['href' => $this->lot[$kin]]])) : $this->unite($u['!'], $u[$d]);
         }
-        return $this->bucket[$kin] ?? $text;
+        return $this->lot[$kin] ?? $text;
     }
 
     public function __toString() {

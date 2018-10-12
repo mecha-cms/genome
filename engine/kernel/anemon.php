@@ -2,7 +2,7 @@
 
 class Anemon extends Genome implements \ArrayAccess {
 
-    public $bucket = [];
+    public $lot = [];
     public $separator = "";
     public $i = 0;
 
@@ -69,45 +69,35 @@ class Anemon extends Genome implements \ArrayAccess {
         return $input;
     }
 
-    // Extend two or more array
-    public static function extend(array &$input, ...$b) {
-        return ($input = array_replace_recursive($input, ...$b));
-    }
-
-    // Concatenate two or more array
-    public static function concat(array &$input, ...$b) {
-        return ($input = array_merge_recursive($input, ...$b));
-    }
-
     public static function eat(array $input) {
         return new static($input);
     }
 
     public function vomit($key = null, $fail = false) {
         if (isset($key)) {
-            return self::get($this->bucket, $key, $fail);
+            return self::get($this->lot, $key, $fail);
         }
-        return $this->bucket;
+        return $this->lot;
     }
 
     // Randomize array order
     public function shake($preserve_key = true) {
         if (is_callable($preserve_key)) {
             // `$preserve_key` as `$fn`
-            $this->bucket = call_user_func($preserve_key, $this->bucket);
+            $this->lot = call_user_func($preserve_key, $this->lot);
         } else {
             // <http://php.net/manual/en/function.shuffle.php#94697>
             if ($preserve_key) {
-                $k = array_keys($this->bucket);
+                $k = array_keys($this->lot);
                 $v = [];
                 shuffle($k);
                 foreach ($k as $kk) {
-                    $v[$kk] = $this->bucket[$kk];
+                    $v[$kk] = $this->lot[$kk];
                 }
-                $this->bucket = $v;
+                $this->lot = $v;
                 unset($k, $v);
             } else {
-                shuffle($this->bucket);
+                shuffle($this->lot);
             }
         }
         return $this;
@@ -117,32 +107,32 @@ class Anemon extends Genome implements \ArrayAccess {
     public function sort($sort = 1, $preserve_key = false) {
         if (is_array($sort) && isset($sort[1])) {
             $before = $after = [];
-            if (!empty($this->bucket)) {
-                foreach ($this->bucket as $k => $v) {
+            if (!empty($this->lot)) {
+                foreach ($this->lot as $k => $v) {
                     $v = (array) $v;
                     if (array_key_exists($sort[1], $v)) {
                         $before[$k] = $v[$sort[1]];
                     } else if (!is_bool($preserve_key)) {
                         $before[$k] = (string) $preserve_key;
-                        $this->bucket[$k][$sort[1]] = (string) $preserve_key;
+                        $this->lot[$k][$sort[1]] = (string) $preserve_key;
                     }
                 }
                 $sort[0] === -1 ? arsort($before) : asort($before);
                 foreach ($before as $k => $v) {
-                    $after[$k] = $this->bucket[$k];
+                    $after[$k] = $this->lot[$k];
                 }
             }
-            $this->bucket = $after;
+            $this->lot = $after;
             unset($before, $after);
         } else {
             if (is_array($sort)) {
                 $sort = $sort[0];
             }
-            $this->bucket = (array) $this->bucket;
-            $sort === -1 ? arsort($this->bucket) : asort($this->bucket);
+            $this->lot = (array) $this->lot;
+            $sort === -1 ? arsort($this->lot) : asort($this->lot);
         }
         if ($preserve_key === false) {
-            $this->bucket = array_values($this->bucket);
+            $this->lot = array_values($this->lot);
         }
         return $this;
     }
@@ -175,7 +165,7 @@ class Anemon extends Genome implements \ArrayAccess {
     // Insert `$value` before current array index
     public function before($value, $key = null) {
         $key = $key ?: $this->i;
-        $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $value] + array_slice($this->bucket, $this->i, null, true);
+        $this->lot = array_slice($this->lot, 0, $this->i, true) + [$key => $value] + array_slice($this->lot, $this->i, null, true);
         $this->i = b($this->i - 1, 0, $this->count() - 1);
         return $this;
     }
@@ -183,7 +173,7 @@ class Anemon extends Genome implements \ArrayAccess {
     // Insert `$value` after current array index
     public function after($value, $key = null) {
         $key = $key ?: $this->i + 1;
-        $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $value] + array_slice($this->bucket, $this->i + 1, null, true);
+        $this->lot = array_slice($this->lot, 0, $this->i + 1, true) + [$key => $value] + array_slice($this->lot, $this->i + 1, null, true);
         $this->i = b($this->i + 1, 0, $this->count() - 1);
         return $this;
     }
@@ -191,9 +181,9 @@ class Anemon extends Genome implements \ArrayAccess {
     // Replace current array index value with `$value`
     public function replace($value) {
         $i = 0;
-        foreach ($this->bucket as $k => $v) {
+        foreach ($this->lot as $k => $v) {
             if ($i === $this->i) {
-                $this->bucket[$k] = $value;
+                $this->lot[$k] = $value;
                 break;
             }
             ++$i;
@@ -216,21 +206,21 @@ class Anemon extends Genome implements \ArrayAccess {
     // Get first array value
     public function first() {
         $this->i = 0;
-        return reset($this->bucket);
+        return reset($this->lot);
     }
 
     // Get last array value
     public function last() {
         $this->i = $this->count() - 1;
-        return end($this->bucket);
+        return end($this->lot);
     }
 
     // Get current array value
     public function current($fail = false) {
         $i = 0;
-        foreach ($this->bucket as $k => $v) {
+        foreach ($this->lot as $k => $v) {
             if ($i === $this->i) {
-                return $this->bucket[$k];
+                return $this->lot[$k];
             }
             ++$i;
         }
@@ -239,59 +229,59 @@ class Anemon extends Genome implements \ArrayAccess {
 
     // Get array length
     public function count($deep = false) {
-        return count($this->bucket, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+        return count($this->lot, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
 
     // Get array key by position
     public function key(int $index, $fail = false) {
-        $array = array_keys($this->bucket);
+        $array = array_keys($this->lot);
         return array_key_exists($index, $array) ? $array[$index] : $fail;
     }
 
     // Get position by array key
     public function index(string $key, $fail = false) {
-        $search = array_search($key, array_keys($this->bucket));
+        $search = array_search($key, array_keys($this->lot));
         return $search !== false ? $search : $fail;
     }
 
     // Generate chunk(s) of array
     public function chunk(int $chunk = 5, $index = null, $fail = [], $preserve_key = false) {
-        $chunks = array_chunk(fn\is\anemon($this->bucket) ? (array) $this->bucket : [], $chunk, $preserve_key);
+        $chunks = array_chunk(fn\is\anemon($this->lot) ? (array) $this->lot : [], $chunk, $preserve_key);
         return !isset($index) ? $chunks : (array_key_exists($index, $chunks) ? $chunks[$index] : $fail);
     }
 
     public function offsetSet($i, $value) {
         if (!isset($i)) {
-            $this->bucket[] = $value;
+            $this->lot[] = $value;
         } else {
-            $this->bucket[$i] = $value;
+            $this->lot[$i] = $value;
         }
     }
 
     public function offsetExists($i) {
-        return isset($this->bucket[$i]);
+        return isset($this->lot[$i]);
     }
 
     public function offsetUnset($i) {
-        unset($this->bucket[$i]);
+        unset($this->lot[$i]);
     }
 
     public function offsetGet($i) {
-        return $this->bucket[$i] ?? null;
+        return $this->lot[$i] ?? null;
     }
 
     public function __construct(array $array = [], string $separator = ', ') {
-        $this->bucket = $array;
+        $this->lot = $array;
         $this->separator = $separator;
         parent::__construct();
     }
 
     public function __set($key, $value = null) {
-        $this->bucket[$key] = $value;
+        $this->lot[$key] = $value;
     }
 
     public function __get($key) {
-        return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : null;
+        return array_key_exists($key, $this->lot) ? $this->lot[$key] : null;
     }
 
     // Fix case for `isset($a->key)` or `!empty($a->key)`
@@ -300,7 +290,7 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     public function __unset($key) {
-        unset($this->bucket[$key]);
+        unset($this->lot[$key]);
     }
 
     public function __toString() {
@@ -308,10 +298,10 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     public function __invoke(string $s = ', ', $filter = true) {
-        return implode($s, /*$filter ? is($this->bucket, function($v, $k) {
+        return implode($s, $filter ? is($this->lot, function($v, $k) {
             // Ignore `null` value and item with key prefixed by a `_`
             return isset($v) && strpos($k, '_') !== 0;
-        }) : */$this->bucket);
+        }) : $this->lot);
     }
 
 }

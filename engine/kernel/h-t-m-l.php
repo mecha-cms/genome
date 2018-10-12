@@ -5,7 +5,7 @@ class HTML extends Union {
     public static $config = self::config;
 
     // Build HTML attribute(s)…
-    protected function Genome_data($a, $unit = "") {
+    protected function Genome_data($a = []) {
         if (is_array($a)) {
             foreach ($a as $k => $v) {
                 if (!is_array($v)) continue;
@@ -20,9 +20,9 @@ class HTML extends Union {
                 // Class value as array
                 } else if ($k === 'class[]') {
                     if (isset($a['class'])) {
-                        $v = array_merge(explode(' ', $a['class']), $v);
+                        $v = concat(explode(' ', $a['class']), $v);
                     }
-                    $v = array_filter(array_unique($v));
+                    $v = is(array_unique($v));
                     sort($v);
                     $v = implode(' ', $v);
                     $a['class'] = $v !== "" ? $v : null;
@@ -40,10 +40,10 @@ class HTML extends Union {
                 }
             }
         }
-        return parent::Genome_data($a, $unit);
+        return parent::Genome_data($a);
     }
 
-    protected function Genome_apart($input, $eval = true) {
+    protected function Genome_apart(string $input = "", $eval = true) {
         $output = parent::Genome_apart($input, $eval);
         if (!empty($output[2])) {
             foreach ($output[2] as $k => $v) {

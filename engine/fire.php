@@ -1,5 +1,46 @@
 <?php
 
+// Enable/disable debug mode (default is `null`)
+if (defined('DEBUG')) {
+    ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
+    if (DEBUG === true) {
+        error_reporting(E_ALL | E_STRICT);
+        ini_set('display_errors', true);
+        ini_set('display_startup_errors', true);
+        ini_set('html_errors', 1);
+    } else if (DEBUG === false) {
+        error_reporting(0);
+        ini_set('display_errors', false);
+        ini_set('display_startup_errors', false);
+    }
+}
+
+// Normalize line-break
+$vars = [
+    &$_COOKIE,
+    &$_GET,
+    &$_POST,
+    &$_REQUEST,
+    &$_SESSION
+];
+array_walk_recursive($vars, function(&$v) {
+    $v = str_replace(["\r\n", "\r"], "\n", $v);
+});
+
+$f = ENGINE . DS;
+d($f . 'kernel', function($w, $n) use($f) {
+    $f .= 'plug' . DS . $n . '.php';
+    if (file_exists($f)) {
+        require $f;
+    }
+});
+
+$x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
+File::$config['extension'] = array_unique(explode(',', $x));
+
+Session::ignite();
+Config::ignite(STATE . DS . 'config.php');
+
 // Set global URL data
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
 $protocol = $scheme . '://';
@@ -45,47 +86,6 @@ $GLOBALS['URL'] = [
     'current' => rtrim($clean . '/' . $i, '/'),
     'hash' => null // TODO
 ];
-
-// Enable/disable debug mode (default is `null`)
-if (defined('DEBUG')) {
-    ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
-    if (DEBUG === true) {
-        error_reporting(E_ALL | E_STRICT);
-        ini_set('display_errors', true);
-        ini_set('display_startup_errors', true);
-        ini_set('html_errors', 1);
-    } else if (DEBUG === false) {
-        error_reporting(0);
-        ini_set('display_errors', false);
-        ini_set('display_startup_errors', false);
-    }
-}
-
-// Normalize line-break
-$vars = [
-    &$_COOKIE,
-    &$_GET,
-    &$_POST,
-    &$_REQUEST,
-    &$_SESSION
-];
-array_walk_recursive($vars, function(&$v) {
-    $v = str_replace(["\r\n", "\r"], "\n", $v);
-});
-
-$f = ENGINE . DS;
-d($f . 'kernel', function($w, $n) use($f) {
-    $f .= 'plug' . DS . $n . '.php';
-    if (file_exists($f)) {
-        require $f;
-    }
-});
-
-$x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
-File::$config['extension'] = array_unique(explode(',', $x));
-
-Session::ignite();
-Config::ignite(STATE . DS . 'config.php');
 
 $config = new Config;
 $url = new URL;
@@ -151,7 +151,7 @@ $content = Cache::expire(EXTEND, $id) ? Cache::set(EXTEND, function() use($c) {
         $i18n = new Page($k, [], ['*', 'language']);
         $fn = 'From::' . $i18n->type;
         $v = $i18n->content;
-        $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $v) : (array) $v);
+        $content = extend($content, is_callable($fn) ? call_user_func($fn, $v) : (array) $v);
     }
     return $content;
 }, $id) : Cache::get(EXTEND, []);

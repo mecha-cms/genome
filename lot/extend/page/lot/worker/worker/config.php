@@ -4,7 +4,7 @@
 if ($state = Extend::state('page')) {
     // Prioritize current shield state
     if ($alt = File::open(SHIELD . DS . $config->shield . DS . 'state' . DS . 'config.php')->import()) {
-        $state = array_replace_recursive($state, $alt);
+        $state = extend($state, $alt);
     }
     // Prioritize default state
     Config::alt($state);

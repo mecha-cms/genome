@@ -53,7 +53,7 @@ abbr[title]:hover {border-bottom-color:inherit}
 b,dt,h1,h2,h3,h4,h5,h6,strong,th {font-weight:bold}
 caption,em,figcaption,i,var {font-style:italic}
 caption,figure {text-align:center}
-code,small,sub,sup {font-size:75%}
+small,sub,sup {font-size:75%}
 ins,u {text-decoration:underline}
 del,s {text-decoration:line-through}
 img {
@@ -255,10 +255,16 @@ fieldset {
 }
 legend {padding:0 .5em}
 hr::before {content:'\2022\2002\2022\2002\2022'}
-code,.code {font-family:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace}
+code,.code {
+  font-weight:normal;
+  font-style:normal;
+  font-size:90%;
+  font-family:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace;
+}
 blockquote {
+  font-size:120%;
   padding-left:1em;
-  border-left:4px solid;
+  border-left:1px solid;
 }
 pre code {
   display:block;
@@ -267,7 +273,6 @@ pre code {
   padding:1em;
   white-space:pre-wrap;
   word-wrap:break-word;
-  font-style:normal;
 }
 .table {
   border-collapse:collapse;

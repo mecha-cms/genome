@@ -30,7 +30,7 @@ class Union extends Genome {
     public static $config = self::config;
 
     // Build union attribute(s)…
-    protected function Genome_data($a) {
+    protected function Genome_data($a = []) {
         if (!is_array($a)) {
             $a = trim((string) $a);
             return strlen($a) ? ' ' . $a : "";
@@ -49,11 +49,11 @@ class Union extends Genome {
     }
 
     // Base union constructor
-    protected function Genome_unite($unit, $content = "", $data = [], $dent = 0) {
+    protected function Genome_unite($unit = null, $content = "", array $data = [], $dent = 0) {
         // `$union->unite(['div', "", ['id' => 'foo']], 1)`
         if (is_array($unit)) {
             $dent = $content ?: 0;
-            $unit = array_replace([
+            $unit = extend([
                 0 => null,
                 1 => "",
                 2 => []
@@ -70,7 +70,7 @@ class Union extends Genome {
     }
 
     // Inverse version of `Union::unite()`
-    protected function Genome_apart($input, $eval = true) {
+    protected function Genome_apart(string $input = "", $eval = true) {
         $u = $this->union[1][0];
         $d = $this->union[1][1];
         $r = $this->pattern;
@@ -114,7 +114,7 @@ class Union extends Genome {
     }
 
     // Union comment
-    protected function Genome___($content = "", $dent = 0, $block = N) {
+    protected function Genome___(string $content = "", int $dent = 0, $block = N) {
         $dent = static::dent($dent);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
@@ -125,7 +125,7 @@ class Union extends Genome {
     }
 
     // Base union unit open
-    protected function Genome_begin($unit = 'html', $data = [], $dent = 0) {
+    protected function Genome_begin($unit = null, array $data = [], $dent = 0) {
         $dent = static::dent($dent);
         $this->unit[] = $unit;
         $this->dent[] = $dent;
@@ -137,11 +137,11 @@ class Union extends Genome {
     protected function Genome_end($unit = null, $dent = null) {
         if ($unit === true) {
             // Close all!
-            $s = "";
+            $output = "";
             while (array_pop($this->unit)) {
-                $s .= $this->Genome_end() . ($dent ?: N);
+                $output .= $this->Genome_end() . ($dent ?: N);
             }
-            return $s;
+            return $output;
         }
         $unit = $unit ?? array_pop($this->unit);
         $dent = isset($dent) ? static::dent($dent) : array_pop($this->dent);
@@ -150,22 +150,22 @@ class Union extends Genome {
     }
 
     // Indent…
-    public static function dent($i) {
+    public static function dent($i = 0) {
         return is_numeric($i) ? str_repeat(DENT, (int) $i) : $i;
     }
 
     // Encode all union’s special character(s)…
-    public static function x($v) {
+    public static function x($v = "") {
         return is_string($v) ? From::HTML($v) : $v;
     }
 
-    public function __construct($config = []) {
+    public function __construct(array $config = []) {
         $this->union = static::$config['union'];
         $this->pattern = static::$config['pattern'];
         if ($config) {
             foreach (['union', 'pattern'] as $k) {
                 if (!empty($config[$k])) {
-                    $this->{$k} = array_replace_recursive($this->{$k}, $config[$k]);
+                    $this->{$k} = extend($this->{$k}, $config[$k]);
                 }
             }
         }

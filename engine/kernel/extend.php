@@ -22,7 +22,7 @@ class Extend extends Genome {
         $state = self::$state[$c][$id] ?? include $state;
         $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $id, [$state]);
         if (is_array($key)) {
-            return array_replace_recursive($key, $state);
+            return extend($key, $state);
         }
         return isset($key) ? (array_key_exists($key, $state) ? $state[$key] : $fail) : $state;
     }

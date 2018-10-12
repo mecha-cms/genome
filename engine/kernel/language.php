@@ -17,16 +17,16 @@ class Language extends Config {
     public static function get($key = null, $vars = [], $preserve_case = false) {
         $c = static::class;
         if (!isset($key)) {
-            return !empty(self::$bucket[$c]) ? o(self::$bucket[$c]) : [];
+            return !empty(self::$lot[$c]) ? o(self::$lot[$c]) : [];
         }
-        $v = (array) (self::$bucket[$c] ?? []);
+        $v = (array) (self::$lot[$c] ?? []);
         $v = Anemon::get($v, $key, $key);
-        $vars = array_replace([""], (array) $vars);
+        $vars = extend([""], (array) $vars);
         if (is_string($v)) {
             if (!$preserve_case && strpos($v, '%') !== 0 && u($vars[0]) !== $vars[0]) {
                 $vars[0] = l($vars[0]);
             }
-            return replace($v, $vars);
+            return candy($v, $vars);
         }
         return o($v);
     }

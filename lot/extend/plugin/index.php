@@ -37,7 +37,7 @@ call_user_func(function() {
             $i18n = new Page($k, [], ['*', 'language']);
             $fn = 'From::' . $i18n->type;
             $v = $i18n->content;
-            $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $v) : (array) $v);
+            $content = extend($content, is_callable($fn) ? call_user_func($fn, $v) : (array) $v);
         }
         return $content;
     }, $id) : Cache::get(PLUGIN, []);

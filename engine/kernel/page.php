@@ -13,7 +13,7 @@ class Page extends Genome {
     public function __construct($path = null, array $lot = [], $NS = []) {
         $key = c2f(static::class, '_', '/');
         $this->path = $path;
-        $this->NS = is_array($NS) ? array_replace(['*', $key], $NS) : $NS;
+        $this->NS = is_array($NS) ? extend(['*', $key], $NS) : $NS;
         $this->hash = $id = json_encode([$path, $lot, $this->NS]);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id];
@@ -25,7 +25,7 @@ class Page extends Genome {
                 $c = filectime($path); // File creation time
                 $m = filemtime($path); // File modification time
             }
-            $this->lot = array_replace([
+            $this->lot = extend([
                 'time' => date(DATE_WISE, $c),
                 'update' => date(DATE_WISE, $m),
                 'slug' => $n,
@@ -83,7 +83,7 @@ class Page extends Genome {
                 $extern = null; // Stop!
                 $a[$key] = e($data);
             } else if ($page = file_get_contents($path)) {
-                $a = array_replace($a, e(self::apart($page), ['$', 'content']));
+                $a = extend($a, e(self::apart($page), ['$', 'content']));
             }
         }
         if (!array_key_exists($key, $a)) {
@@ -222,7 +222,7 @@ class Page extends Genome {
     protected function Genome_set($input, $fn = null) {
         $path = $this->path;
         $data = is_file($path) ? self::apart(file_get_contents($path)) : [];
-        $this->lot = array_replace($data, ['path' => $path]);
+        $this->lot = extend($data, ['path' => $path]);
         if (!is_array($input)) {
             if (is_callable($fn)) {
                 $this->lot[$input] = call_user_func($fn, ...$this->lot);
@@ -231,7 +231,7 @@ class Page extends Genome {
                 $input = ['content' => $input];
             }
         }
-        $this->lot = array_replace($this->lot, $input);
+        $this->lot = extend($this->lot, $input);
         foreach ($this->lot as $k => $v) {
             if ($v === false) unset($this->lot[$k]);
         }
