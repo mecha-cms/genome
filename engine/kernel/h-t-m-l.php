@@ -5,7 +5,7 @@ class HTML extends Union {
     public static $config = self::config;
 
     // Build HTML attribute(s)…
-    protected function _data($a, $unit = "") {
+    protected function Genome_data($a, $unit = "") {
         if (is_array($a)) {
             foreach ($a as $k => $v) {
                 if (!is_array($v)) continue;
@@ -14,7 +14,7 @@ class HTML extends Union {
                     ksort($v);
                     foreach ($v as $kk => $vv) {
                         if (!isset($vv)) continue;
-                        $a['data-' . $kk] = __is_anemon__($vv) ? json_encode($vv) : $vv;
+                        $a['data-' . $kk] = fn\is\anemon($vv) ? json_encode($vv) : $vv;
                     }
                     unset($a[$k]);
                 // Class value as array
@@ -40,11 +40,11 @@ class HTML extends Union {
                 }
             }
         }
-        return parent::_data($a, $unit);
+        return parent::Genome_data($a, $unit);
     }
 
-    protected function _apart($input, $eval = true) {
-        $output = parent::_apart($input, $eval);
+    protected function Genome_apart($input, $eval = true) {
+        $output = parent::Genome_apart($input, $eval);
         if (!empty($output[2])) {
             foreach ($output[2] as $k => $v) {
                 if (strpos($k, 'data-') === 0) {
@@ -73,15 +73,15 @@ class HTML extends Union {
     }
 
     public function __call($kin, $lot = []) {
-        if (!self::_($kin) && !method_exists($this, '_' . $kin)) {
-            return $this->unite(...$lot);
+        if (!self::_($kin) && !method_exists($this, 'Genome_' . $kin)) {
+            return $this->Genome_unite(...$lot);
         }
         return parent::__call($kin, $lot);
     }
 
     public static function __callStatic($kin, $lot = []) {
         $that = new static;
-        if (!self::_($kin) && !method_exists($that, '_' . $kin)) {
+        if (!self::_($kin) && !method_exists($that, 'Genome_' . $kin)) {
             array_unshift($lot, $kin);
             return $that->__call($kin, $lot);
         }

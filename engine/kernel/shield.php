@@ -5,7 +5,7 @@ class Shield extends Genome {
     protected static $lot = [];
 
     public static function path($input, $fail = false) {
-        $NS = __c2f__($c = static::class, '_', '/') . '.' . __FUNCTION__;
+        $NS = c2f($c = static::class, '_', '/') . '.' . __FUNCTION__;
         $output = [];
         if (is_string($input)) {
             if (strpos($input, ROOT) !== 0) {
@@ -53,7 +53,7 @@ class Shield extends Genome {
     }
 
     public static function get($input, $fail = false, $print = true) {
-        $NS = __c2f__(static::class, '_', '/');
+        $NS = c2f(static::class, '_', '/');
         $output = "";
         Lot::set('lot', []);
         if (is_array($fail)) {
@@ -95,11 +95,11 @@ class Shield extends Genome {
 
     public static function attach($input, $fail = false) {
         if (!$output = self::get($input, $fail, false)) {
-            $output = __replace__(Guardian::$config['message'], [
+            $output = replace(Guardian::$config['message'], [
                 'message' => '<code>' . __METHOD__ . '(' . v(json_encode($input)) . ')</code>'
             ]);
         }
-        echo Hook::fire(__c2f__(static::class, '_', '/') . '.yield', [$output, $input]);
+        echo Hook::fire(c2f(static::class, '_', '/') . '.yield', [$output, $input]);
         exit;
     }
 

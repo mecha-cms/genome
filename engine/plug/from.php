@@ -139,12 +139,12 @@ function yaml($in, $d = '  ', $ref = [], $e = true) {
 }
 
 foreach ([
-    'base64' => '\base64_decode',
-    'dec' => ['\html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
-    'hex' => ['\html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
-    'HTML' => ['\htmlspecialchars', [null, ENT_QUOTES | ENT_HTML5]],
+    'base64' => 'base64_decode',
+    'dec' => ['html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
+    'hex' => ['html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
+    'HTML' => ['htmlspecialchars', [null, ENT_QUOTES | ENT_HTML5]],
     'JSON' => function($in) {
-        if (\__is_anemon__($in)) {
+        if (\fn\is\anemon($in)) {
             return (object) \o($in);
         }
         return json_decode($in);
@@ -170,12 +170,12 @@ foreach ([
         }
         return $out;
     },
-    'serial' => '\unserialize',
+    'serial' => 'unserialize',
     'URL' => function($in, $raw = false) {
         return $raw ? rawurlencode($in) : urlencode($in);
     },
     'YAML' => function(...$lot) {
-        if (\__is_anemon__($lot[0])) {
+        if (\fn\is\anemon($lot[0])) {
             return \a($lot[0]);
         }
         if (\Is::path($lot[0], true)) {

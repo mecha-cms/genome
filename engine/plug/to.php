@@ -15,15 +15,15 @@ function query($array, $key) {
 }
 
 function yaml($in, $d = '  ', $safe = false, $dent = 0) {
-    if (\__is_anemon__($in)) {
+    if (\fn\is\anemon($in)) {
         $out = "";
-        $li = \__is_anemon_0__($in) && !$safe; // is numeric array?
+        $li = \fn\is\anemon_0($in) && !$safe; // is numeric array?
         $t = str_repeat($d, $dent);
         foreach ($in as $k => $v) {
             if (strpos($k, ':') !== false) {
                 $k = '"' . $k . '"';
             }
-            if (!\__is_anemon__($v) || empty($v)) {
+            if (!\fn\is\anemon($v) || empty($v)) {
                 if (is_array($v)) {
                     $v = '[]';
                 } else if (is_object($v)) {
@@ -224,7 +224,7 @@ foreach([
         return $raw ? rawurldecode($in) : urldecode($in);
     },
     'YAML' => function(...$lot) {
-        if (!\__is_anemon__($lot[0])) {
+        if (!\fn\is\anemon($lot[0])) {
             return \s($lot[0]);
         }
         if (is_string($lot[0]) && \Is::path($lot[0], true)) {

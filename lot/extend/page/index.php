@@ -1,5 +1,7 @@
 <?php namespace fn\page;
 
+// TODO: make sure it is working without the `time` data.
+
 // Require the plug manually…
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 
@@ -8,16 +10,15 @@ require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'config.php'
 
 $state = \Extend::state('page');
 
-function url($content, $lot = []) {
-    if (!isset($lot['path'])) {
-        return $content;
+function url($url = "", array $lot = []) {
+    if (!$path = $this->path) {
+        return $url;
     }
-    global $url;
-    $s = \Path::F($lot['path'], PAGE);
-    return rtrim($url . '/' . ltrim(\To::URL($s), '/'), '/');
+    $path = \Path::F($path, PAGE);
+    return rtrim($GLOBALS['URL']['$'] . '/' . ltrim(str_replace(DS, '/', $path), '/'), '/');
 }
 
-\Hook::set('page.url', __NAMESPACE__ . '\url', 1);
+\Hook::set('page.url', __NAMESPACE__ . '\url', 2);
 
 \Lot::set([
     'page' => new \Page,
@@ -26,7 +27,7 @@ function url($content, $lot = []) {
     'parent' => new \Page
 ]);
 
-\Route::set(['%*%/%i%', '%*%', ""], function($path = "", $step = null) use($state) {
+\Route::set(['%*%/%i%', '%*%', ""], function(string $path = "", $step = null) use($state) {
     // Include global variable(s)…
     extract(\Lot::get(null, []));
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
@@ -53,8 +54,8 @@ function url($content, $lot = []) {
                 $k . '.archive'
             ])) {
                 $f = new \Page($f);
-                $sort = $f->sort($sort);
-                $chunk = $f->chunk($chunk);
+                $sort = $f->sort ?: $sort;
+                $chunk = $f->chunk ?: $chunk;
             }
             if ($fn = \File::exist($k . DS . 'index.php')) include $fn;
         }
@@ -70,8 +71,8 @@ function url($content, $lot = []) {
         ])) {
             $_page = new \Page($_file);
             // Inherit parent’s `sort` and `chunk` property where possible
-            $sort = $_page->sort($sort);
-            $chunk = $_page->chunk($chunk);
+            $sort = $_page->sort ?: $sort;
+            $chunk = $_page->chunk ?: $chunk;
             $_files = \Get::pages($_folder, 'page', $sort, 'slug');
         } else {
             $_files = [];
@@ -93,7 +94,7 @@ function url($content, $lot = []) {
                 \Config::set('is.search', true);
                 \Config::set('trace', new \Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                 $query = explode(' ', $query);
-                $files = array_filter($files, function($v) use($query) {
+                $files = \is($files, function($v) use($query) {
                     $v = \Path::N($v);
                     foreach ($query as $q) {
                         if (strpos($v, $q) !== false) {

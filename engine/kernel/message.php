@@ -26,7 +26,7 @@ class Message extends Genome {
     public static $config = self::config;
 
     public static function set(...$lot) {
-        $c = __c2f__(static::class, '_');
+        $c = c2f(static::class, '_');
         $count = count($lot);
         $kin = array_shift($lot);
         $text = array_shift($lot);
@@ -41,11 +41,17 @@ class Message extends Genome {
             $s = Session::get(self::$id, "");
             $ss = Hook::fire($c . '.set.' . $kin, [$o]);
             if (strpos($s, $ss) === false) {
-                $s .= __replace__(HTML::unite(...self::$config['message']), [$kin, $ss]);
+                $s .= replace(HTML::unite(...self::$config['message']), [$kin, $ss]);
             }
             Session::set(self::$id, $s);
         }
         return new static;
+    }
+
+    public static function warn(...$lot) {
+        ++self::$x;
+        array_unshift($lot, __METHOD__);
+        return self::set(...$lot);
     }
 
     public static function reset($error_x = true) {
@@ -55,7 +61,7 @@ class Message extends Genome {
 
     public static function get($session_x = true) {
         $s = Session::get(self::$id, "");
-        $output = Hook::fire(__c2f__(static::class, '_', '/') . '.' . __FUNCTION__, [$s !== "" ? __replace__(HTML::unite(...self::$config['messages']), $s) : ""]);
+        $output = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$s !== "" ? replace(HTML::unite(...self::$config['messages']), $s) : ""]);
         if ($session_x) self::reset();
         return $output;
     }
@@ -66,7 +72,7 @@ class Message extends Genome {
         }
         if (is_array($to)) {
             $s = "";
-            if (__is_anemon_a__($to)) {
+            if (fn\is\anemon_a($to)) {
                 // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
                 foreach ($to as $k => $v) {
                     $s .= ', ' . $v . ' <' . $k . '>';
@@ -83,7 +89,7 @@ class Message extends Genome {
         $lot .= 'Reply-To: ' . $from . N;
         $lot .= 'Return-Path: ' . $from . N;
         $lot .= 'X-Mailer: PHP/' . phpversion();
-        $s = __c2f__(static::class, '_', '/') . '.' . __FUNCTION__;
+        $s = c2f(static::class, '_', '/') . '.' . __FUNCTION__;
         $lot = Hook::fire($s . '.data', [$lot]);
         $data = Hook::fire($s . '.content', [$message]);
         return mail($to, $subject, $data, $lot);

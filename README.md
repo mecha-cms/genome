@@ -7,20 +7,6 @@ Mecha CMS
 
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/mecha-cms?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 
-### At a Glance
-
-#### Control Panel
-
-Requires [panel](https://github.com/mecha-cms/extend.panel) extension.
-
-![1](https://cloud.githubusercontent.com/assets/1669261/25493598/f831dd3e-2ba0-11e7-8733-c0bd36c68653.png)
-
-#### Site
-
-The default _shield_ for Mecha version `2.x.x`.
-
-![2](https://cloud.githubusercontent.com/assets/1669261/25493599/f87525a8-2ba0-11e7-9df0-523858a32c55.png)
-
 ### Objective
 
 Mecha is a file-based CMS that survives on principle that a database-less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary. Mecha’s market shares are people with high creativity and individuals who want to dedicate themselves to the freedom of speech, that probably don’t have much time to learn web programming languages. By introducing Mecha as files and folders that used to be seen by people everyday in their working desktop, we hope you will soon be familiar with the way Mecha CMS works.
@@ -44,7 +30,7 @@ If you want to make something that is super huge with Mecha, that would be possi
 
 ### Dependencies
 
- - PHP 5.6 and above, with enabled [`curl`](http://php.net/manual/en/book.curl.php "PHP Extension `curl`") and [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") extension.
+ - PHP 7.1.0 and above, with enabled [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") extension.
  - Apache 2.4 and above, with enabled [`mod_rewrite`](http://httpd.apache.org/docs/current/mod/mod_rewrite.html "Apache Module `mod_rewrite`") module.
 
 ### Preparations

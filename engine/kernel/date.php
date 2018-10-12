@@ -13,14 +13,14 @@ class Date extends Genome {
         return date_default_timezone_set($zone);
     }
 
-    public static function set($key, $fn = null) {
+    public static function set(string $key, callable $fn) {
         self::$format[$key] = $fn;
         return new static;
     }
 
     public static function get($key = null, $fail = false) {
         if (isset($key)) {
-            return isset(self::$format[$key]) ? self::$format[$key] : $fail;
+            return self::$format[$key] ?? $fail;
         }
         return !empty(self::$format) ? self::$format : $fail;
     }
@@ -38,7 +38,7 @@ class Date extends Genome {
         $date = $this->date;
         if (is_numeric($date)) return date($format, $date);
         if (substr_count($date, '-') === 5) {
-            return DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format($format);
+            return \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format($format);
         }
         return date($format, strtotime($date));
     }
@@ -130,7 +130,7 @@ class Date extends Genome {
     }
 
     public function __construct($date = null) {
-        $this->date = isset($date) ? $date : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
+        $this->date = $date ?? $_SERVER['REQUEST_TIME'] ?? time();
         parent::__construct();
     }
 

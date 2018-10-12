@@ -19,14 +19,14 @@ class Language extends Config {
         if (!isset($key)) {
             return !empty(self::$bucket[$c]) ? o(self::$bucket[$c]) : [];
         }
-        $v = isset(self::$bucket[$c]) ? (array) self::$bucket[$c] : [];
+        $v = (array) (self::$bucket[$c] ?? []);
         $v = Anemon::get($v, $key, $key);
         $vars = array_replace([""], (array) $vars);
         if (is_string($v)) {
             if (!$preserve_case && strpos($v, '%') !== 0 && u($vars[0]) !== $vars[0]) {
                 $vars[0] = l($vars[0]);
             }
-            return __replace__($v, $vars);
+            return replace($v, $vars);
         }
         return o($v);
     }
@@ -44,9 +44,9 @@ class Language extends Config {
             $test = self::get($kin, ...$lot);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
-                return call_user_func($test, ...$lot);
+                return fn($test, $this, $lot);
             // Rich asynchronous value with class instance
-            } else if ($fn = __is_instance__($test)) {
+            } else if ($fn = fn\is\instance($test)) {
                 if (method_exists($fn, '__invoke')) {
                     return call_user_func([$fn, '__invoke'], ...$lot);
                 }

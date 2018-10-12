@@ -8,13 +8,16 @@ abstract class Genome {
     // Method(s)…
     public static $_ = [];
 
+    // Data(s)…
+    public $__data__ = [];
+
     // Set, get, reset…
     public static function _(...$lot) {
         $c = static::class;
         if (count($lot) === 0) {
-            return isset(self::$_[$c]) ? self::$_[$c] : [];
+            return self::$_[$c] ?? [];
         } else if (count($lot) === 1) {
-            return isset(self::$_[$c][$lot[0]]) ? self::$_[$c][$lot[0]] : false;
+            return self::$_[$c][$lot[0]] ?? false;
         } else if ($lot[1] === null) {
             unset(self::$_[$c][$lot[0]]);
             return true;
@@ -31,6 +34,8 @@ abstract class Genome {
     // Call the added method with `$genome->foo()`
     public function __call($kin, $lot = []) {
         $c = static::class;
+        $m = 'Genome_' . $kin;
+        $this->_hub = '->';
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             $a = self::$_[$c][$kin];
             if (is_callable($a[0])) {
@@ -42,13 +47,13 @@ abstract class Genome {
                 if (isset($a[2])) {
                     $lot = array_slice($lot, 0, $a[2]);
                 }
-                return call_user_func(\Closure::bind($a[0], $this), ...$lot);
+                return fn($a[0], $this, $lot);
             }
             return $a[0];
-        } else if (method_exists($this, '_' . $kin) && !(new ReflectionMethod($this, '_' . $kin))->isPublic()) {
-            return $this->{'_' . $kin}(...$lot);
+        } else if (method_exists($this, $m) && !(new \ReflectionMethod($this, $m))->isPublic()) {
+            return $this->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            echo '<p>Method <code>$' . __c2f__($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.</p>';
+            echo '<p>Method <code>$' . c2f($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.</p>';
         }
         return false;
     }
@@ -56,6 +61,9 @@ abstract class Genome {
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot = []) {
         $c = static::class;
+        $m = 'Genome_' . $kin;
+        $that = new static;
+        $that->_hub = '::';
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             $a = self::$_[$c][$kin];
             if (is_callable($a[0])) {
@@ -67,11 +75,11 @@ abstract class Genome {
                 if (isset($a[2])) {
                     $lot = array_slice($lot, 0, $a[2]);
                 }
-                return call_user_func($a[0], ...$lot);
+                return fn($a[0], $that, $lot);
             }
             return $a[0];
-        } else if (method_exists($that = new static, '_' . $kin) && !(new ReflectionMethod($that, '_' . $kin))->isPublic()) {
-            return $that->{'_' . $kin}(...$lot);
+        } else if (method_exists($that, $m) && !(new \ReflectionMethod($that, $m))->isPublic()) {
+            return $that->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
         }

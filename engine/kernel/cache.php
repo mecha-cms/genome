@@ -4,7 +4,7 @@ class Cache extends Genome {
 
     protected static $cache = [];
 
-    public static function set($from, $fn = null, $id = null) {
+    public static function set(string $from, $fn = null, $id = null) {
         $n = self::x($from);
         $t = $id ? (string) $id : (file_exists($from) ? filemtime($from) : 0);
         if ($t || $fn) {
@@ -22,11 +22,11 @@ class Cache extends Genome {
         return false;
     }
 
-    public static function get($from, $fail = false) {
+    public static function get(string $from, $fail = false) {
         return File::open(self::x($from))->import([0, $fail])[1];
     }
 
-    public static function reset($from = null) {
+    public static function reset(string $from = null) {
         if (isset($from)) {
             File::open(self::x($from))->delete();
         } else {
@@ -37,7 +37,7 @@ class Cache extends Genome {
         return true;
     }
 
-    public static function expire($from, $id = null) {
+    public static function expire(string $from, $id = null) {
         $n = self::x($from);
         if (!file_exists($n)) {
             return true;
@@ -47,11 +47,11 @@ class Cache extends Genome {
         return is_string($t) && $t !== $x[0] || $t > $x[0];
     }
 
-    public static function ID($from, $fail = -1) {
+    public static function ID(string $from, $fail = -1) {
         return File::open(self::x($from))->import([$fail])[0];
     }
 
-    private static function x($s) {
+    private static function x(string $s) {
         if (is_dir($s) || !file_exists($s)) {
             $s .= '.cache';
             File::set("")->saveTo($s, 0600);

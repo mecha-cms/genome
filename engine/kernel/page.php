@@ -2,24 +2,25 @@
 
 class Page extends Genome {
 
-    protected $lot = [];
+    public $path = null;
+    public $lot = [];
 
     private $NS = "";
     private $hash = "";
 
     private static $page = []; // Cache!
 
-    public function __construct($input = [], $lot = [], $NS = []) {
-        $key = __c2f__(static::class, '_', '/');
+    public function __construct($path = null, array $lot = [], $NS = []) {
+        $key = c2f(static::class, '_', '/');
+        $this->path = $path;
         $this->NS = is_array($NS) ? array_replace(['*', $key], $NS) : $NS;
-        $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
-        $id = $this->hash = md5(json_encode(array_merge((array) $lot, (array) $NS)) . $path);
+        $this->hash = $id = json_encode([$path, $lot, $this->NS]);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id];
         } else {
             $n = $path ? Path::N($path) : null;
-            $x = Path::X($path);
-            $c = $m = $_SERVER['REQUEST_TIME'];
+            $x = Path::X($path, "");
+            $c = $m = $_SERVER['REQUEST_TIME'] ?? time();
             if (file_exists($path)) {
                 $c = filectime($path); // File creation time
                 $m = filemtime($path); // File modification time
@@ -29,13 +30,12 @@ class Page extends Genome {
                 'update' => date(DATE_WISE, $m),
                 'slug' => $n,
                 'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
-                'type' => u($x) . "", // Fake `type` data from the page’s file extension
-                'state' => (string) $x,
+                'state' => $x,
+                'type' => u($x), // Fake `type` data from the page’s file extension
                 'id' => sprintf('%u', $c),
+                'path' => $path,
                 'url' => To::URL($path)
-            ], is_array($input) ? $input : [
-                'path' => $path
-            ], (array) a(Config::get($key, [])), $lot);
+            ], (array) Config::get($key, [], true), $lot);
             // Set `time` value from the page’s file name
             if (
                 $n &&
@@ -66,23 +66,23 @@ class Page extends Genome {
     }
 
     public function __call($key, $lot = []) {
-        if (self::_($key) || $key === 'set') { // @see `protected function _set()`
+        if (self::_($key) || $key === 'set') { // @see `protected function Genome_set()`
             return parent::__call($key, $lot);
         }
         // Example: `$page->__call('foo.bar')`
+        $keys = null;
         if (strpos($key, '.') !== false) {
             list($key, $keys) = explode('.', $key, 2);
-        } else {
-            $keys = null;
         }
         $a = $this->lot;
-        $extern = isset($a['path']) ? Path::F($a['path']) . DS . str_replace('_', '-', $key) . '.data' : null;
-        if ($extern && is_file($a['path'])) {
+        $path = $this->path;
+        $extern = $path ? Path::F($path) . DS . str_replace('_', '-', $key) . '.data' : null;
+        if ($extern && is_file($path)) {
             // Prioritize data from a file…
             if ($data = File::open($extern)->get()) {
                 $extern = null; // Stop!
                 $a[$key] = e($data);
-            } else if ($page = file_get_contents($a['path'])) {
+            } else if ($page = file_get_contents($path)) {
                 $a = array_replace($a, e(self::apart($page), ['$', 'content']));
             }
         }
@@ -93,22 +93,19 @@ class Page extends Genome {
         if ($extern && $data = File::open($extern)->get()) {
             $a[$key] = e($data);
         }
-        self::$page[$this->hash] = $this->lot = $a;
-        $fail = isset($lot[0]) ? $lot[0] : null;
-        if ($fail === false) {
-            // Disable hook(s) with `$page->key(false)`
+        $this->lot = self::$page[$this->hash] = $a;
+        $test = $lot[0] ?? null;
+        if ($test === false) {
+            // Disable hook(s) with `$page->foo(false)`
             return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key];
         } else {
-            if ($fail instanceof \Closure) {
-                // As function call with `$page->key(function($text) { … })`
-                $a[$key] = $fail($a[$key], $this);
-            } else if ($a[$key] === null) {
-                // Other(s)… `$page->key('default value')`
-                $a[$key] = $fail;
+            if ($test instanceof \Closure) {
+                // As function call with `$page->foo(function($text) { … })`
+                $a[$key] = fn($test, $this, [$a[$key]]);
             }
         }
         if ($this->NS === false) {
-            // Disable hook(s) with `$page = new Page('path\to\file.page', [], false)`
+            // Disable hook(s) with `$page = new Page('.\path\to\file.page', [], false)`
             return isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key];
         } else if (is_array($this->NS)) {
             $name = [];
@@ -118,8 +115,8 @@ class Page extends Genome {
         } else {
             $name = $this->NS . '.' . $key;
         }
-        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key], $a, $this, $key]);
-        if (count($lot) && $x = __is_instance__($v)) {
+        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key], $lot], $this);
+        if (count($lot) && $x = fn\is\instance($v)) {
             if (method_exists($x, '__invoke')) {
                 $v = call_user_func([$x, '__invoke'], ...$lot);
             }
@@ -145,10 +142,10 @@ class Page extends Genome {
     }
 
     public function __toString() {
-        if ($s = $this->__call('$')) {
-            return $s;
+        if ($str = $this->__call('$')) {
+            return $str;
         }
-        $path = isset($this->lot['path']) ? $this->lot['path'] : null;
+        $path = $this->path;
         return $path && file_exists($path) ? file_get_contents($path) : "";
     }
 
@@ -156,7 +153,7 @@ class Page extends Genome {
         // Get specific property…
         if ($key === 'content') {
             $input = explode("\n...", n(Is::file($input) ? file_get_contents($input) : $input), 2);
-            return trim(isset($input[1]) ? $input[1] : $input[0], "\n");
+            return trim($input[1] ?? $input[0], "\n");
         } else if (isset($key)) {
             // By path… (faster)
             if (Is::file($input)) {
@@ -222,8 +219,8 @@ class Page extends Genome {
         return new static($path, $lot, $NS);
     }
 
-    protected function _set($input, $fn = null) {
-        $path = isset($this->lot['path']) ? $this->lot['path'] : null;
+    protected function Genome_set($input, $fn = null) {
+        $path = $this->path;
         $data = is_file($path) ? self::apart(file_get_contents($path)) : [];
         $this->lot = array_replace($data, ['path' => $path]);
         if (!is_array($input)) {

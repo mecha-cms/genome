@@ -1,5 +1,51 @@
 <?php
 
+// Set global URL data
+$scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
+$protocol = $scheme . '://';
+$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
+$directory = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
+$directory = $directory === '.' ? "" : trim($directory, '/');
+$url = rtrim($protocol . $host  . '/' . $directory, '/');
+// [1]. Remove query string(s) and hash from URL
+// [2]. Remove possible XSS attack from URL
+$path = strtr(preg_replace('#[?&\#].*$#', "", trim($_SERVER['QUERY_STRING'], '/')), [
+    '<' => '%3C',
+    '>' => '%3E',
+    '&' => '%26',
+    '"' => '%22'
+]);
+$path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $directory . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
+if ($path !== "") {
+    array_shift($_GET);
+}
+$query = http_build_query($_GET);
+$a = explode('/', rtrim($path, '/'));
+$i = null;
+if (is_numeric(end($a))) {
+    $i = (int) array_pop($a);
+    $path = implode('/', $a);
+}
+$clean = rtrim($url . '/' . $path, '/');
+$GLOBALS['URL'] = [
+    'i' => $i,
+    'scheme' => $scheme,
+    'protocol' => $protocol,
+    'host' => $host,
+    'port' => (int) $_SERVER['SERVER_PORT'],
+    'user' => $_SESSION['url']['user'] ?? null,
+    'pass' => $_SESSION['url']['pass'] ?? null,
+    'directory' => $directory,
+    '$' => $url,
+    'path' => $path,
+    'query' => $query ? '?' . $query : "",
+    'previous' => $_SESSION['url']['previous'] ?? null,
+    'next' => $_SESSION['url']['next'] ?? null,
+    'clean' => $clean,
+    'current' => rtrim($clean . '/' . $i, '/'),
+    'hash' => null // TODO
+];
+
 // Enable/disable debug mode (default is `null`)
 if (defined('DEBUG')) {
     ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
@@ -60,11 +106,11 @@ $seeds = [
     'config' => $config,
     'date' => $date,
     'language' => $language,
-    'message' => Message::get(),
+    'message' => Message::get(false),
     'site' => $config,
-    'token' => Guardian::token(),
+    'token' => Guardian::token(0),
     'url' => $url,
-    'u_r_l' => $url
+    'u_r_l' => $url // alias for `url`
 ];
 
 // Plant…

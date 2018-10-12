@@ -9,16 +9,6 @@ class Is extends Genome {
         return new static($input);
     }
 
-    // Any of these…
-    public static function any(array $input, ...$lot) {
-        foreach ($input as $v) {
-            if ($output = call_user_func('self::' . $v, ...$lot)) {
-                return $output;
-            }
-        }
-        return false;
-    }
-
     // Check for empty string, array or object
     public static function void($x) {
         return (
@@ -65,30 +55,6 @@ class Is extends Genome {
         return is_string($x) && strlen($x) <= 260 && realpath($x) && is_dir($x);
     }
 
-    // Check if `$this->bucket` contains `$s`
-    public function has($s, $all = false, $x = X) {
-        $input = $x . implode($x, $this->bucket) . $x;
-        if (is_array($s)) {
-            if (!$all) {
-                foreach ($s as $v) {
-                    if (strpos($input, $x . $v . $x) !== false) {
-                        return true;
-                    }
-                }
-                return false;
-            } else {
-                $pass = 0;
-                foreach ($s as $v) {
-                    if (strpos($input, $x . $v . $x) !== false) {
-                        ++$pass;
-                    }
-                }
-                return $pass === count($s);
-            }
-        }
-        return strpos($input, $x . $s . $x) !== false;
-    }
-
     // Is equal to `$x`
     public function EQ($x) {
         return q($this->bucket) === $x;
@@ -114,7 +80,7 @@ class Is extends Genome {
         return q($this->bucket) >= $x;
     }
 
-    public function __construct($input) {
+    public function __construct($input = []) {
         $this->bucket = $input;
     }
 

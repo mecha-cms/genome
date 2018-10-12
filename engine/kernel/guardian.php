@@ -11,7 +11,7 @@ class Guardian extends Genome {
 
     public static $config = self::config;
 
-    public static function hash($salt = "") {
+    public static function hash(string $salt = "") {
         return sha1(uniqid(mt_rand(), true) . $salt);
     }
 
@@ -34,13 +34,13 @@ class Guardian extends Genome {
         }
         Session::set('url.previous', $current);
         $long = URL::long($path, false);
-        $long = Hook::fire(__c2f__(static::class, '_', '/') . '.' . __FUNCTION__, [$long, $path]);
+        $long = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$long, $path]);
         header('Location: ' . str_replace('&amp;', '&', $long));
         exit;
     }
 
     public static function abort($message, $exit = true) {
-        echo __replace__(self::$config['message'], ['message' => $message]);
+        echo replace(self::$config['message'], ['message' => $message]);
         if ($exit) exit;
     }
 

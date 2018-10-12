@@ -14,14 +14,14 @@ class Elevator extends Genome {
     protected $bucket = [];
     protected $NS = "";
 
-    protected function _unite($input, $alt = ['span']) {
+    protected function unite($input, $alt = ['span']) {
         if (!$alt || !$input) return "";
         $input = array_replace_recursive($alt, $input);
         return HTML::unite($input);
     }
 
     public function __construct($input = [], $chunk = [5, 0], $path = true, $config = []) {
-        $key = __c2f__(static::class, '_', '/');
+        $key = c2f(static::class, '_', '/');
         $this->c = [
             // <: previous
             // =: parent or current
@@ -111,9 +111,9 @@ class Elevator extends Genome {
         $d = array_search($kin, $this->config['direction']);
         if ($d !== false && ($text || $text === "")) {
             if ($text !== true) $u[$d][1] = $text;
-            return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['!'], $u[$d]);
+            return isset($this->bucket[$kin]) ? $this->unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->unite($u['!'], $u[$d]);
         }
-        return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
+        return $this->bucket[$kin] ?? $text;
     }
 
     public function __toString() {

@@ -14,7 +14,7 @@ class Route extends Genome {
             if (!isset(self::$lot[0][$v])) {
                 self::$lot[1][$v] = [
                     'fn' => $fn,
-                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10)) + $i),
+                    'stack' => (float) (($stack[$k] ?? (end($stack) !== false ? end($stack) : 10)) + $i),
                     'is' => ['pattern' => $pattern]
                 ];
                 $i += .1;
@@ -27,7 +27,7 @@ class Route extends Genome {
         if (isset($id)) {
             foreach ((array) $id as $v) {
                 $v = URL::short($v, false);
-                self::$lot[0][$v] = isset(self::$lot[1][$v]) ? self::$lot[1][$v] : 1;
+                self::$lot[0][$v] = self::$lot[1][$v] ?? 1;
                 unset(self::$lot[1][$v]);
             }
         } else {
@@ -45,7 +45,7 @@ class Route extends Genome {
             if (!isset(self::$lot_o[0][$v])) {
                 self::$lot_o[1][$v][] = [
                     'fn' => $fn,
-                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10)) + $i),
+                    'stack' => (float) (($stack[$k] ?? (end($stack) !== false ? end($stack) : 10)) + $i),
                     'is' => ['pattern' => $pattern]
                 ];
                 $i += .1;
@@ -68,7 +68,7 @@ class Route extends Genome {
                 'lot' => []
             ] : $fail;
         }
-        if (preg_match($pattern ? $id : '#^' . __format__($id, '\/\n', '#', false) . '$#', $path, $m)) {
+        if (preg_match($pattern ? $id : '#^' . format($id, '\/\n', '#', false) . '$#', $path, $m)) {
             array_shift($m);
             return [
                 'pattern' => $id,
@@ -81,7 +81,7 @@ class Route extends Genome {
 
     public static function get($id = null, $fail = false) {
         if (isset($id)) {
-            return isset(self::$lot[1][$id]) ? self::$lot[1][$id] : $fail;
+            return self::$lot[1][$id] ?? $fail;
         }
         return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
     }
@@ -100,14 +100,14 @@ class Route extends Genome {
                 }
                 return !empty($routes) ? $routes : $fail;
             } else {
-                return isset(self::$lot_o[1][$id]) ? self::$lot_o[1][$id] : $fail;
+                return self::$lot_o[1][$id] ?? $fail;
             }
         }
         return !empty(self::$lot_o[1]) ? self::$lot_o[1] : $fail;
     }
 
     public static function fire($id = null, $lot = []) {
-        $s = __c2f__(static::class, '_', '/') . '.';
+        $s = c2f(static::class, '_', '/') . '.';
         if (isset($id)) {
             $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
@@ -130,7 +130,7 @@ class Route extends Genome {
                 Hook::fire($s . 'exit', [self::$lot[1][$id], null]);
                 return $r;
             } else {
-                $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort([1, 'stack'], true)->vomit();
+                $routes = Anemon::eat(self::$lot[1] ?? [])->sort([1, 'stack'], true)->vomit();
                 foreach ($routes as $k => $v) {
                     // If matched with the URL path, then …
                     if (($route = self::is($k, false, $v['is']['pattern'])) !== false) {

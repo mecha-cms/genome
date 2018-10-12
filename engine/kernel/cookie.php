@@ -2,7 +2,7 @@
 
 class Cookie extends Genome {
 
-    public static function set($key, $value = "", $config = []) {
+    public static function set(string $key, $value = "", $config = []) {
         if (is_numeric($config)) {
             $config = ['expire' => (int) $config];
         }
@@ -27,7 +27,7 @@ class Cookie extends Genome {
             return $o;
         }
         $key = self::key($key);
-        $value = self::v(isset($_COOKIE[$key]) ? $_COOKIE[$key] : 'bnVsbA==');
+        $value = self::v($_COOKIE[$key] ?? 'bnVsbA==');
         return $value !== null ? $value : $fail;
     }
 

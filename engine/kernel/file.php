@@ -2,9 +2,8 @@
 
 class File extends Genome {
 
-    public $path = "";
-    public $content = "";
-    public $c = [];
+    public $path = null;
+    public $content = null;
 
     // Cache!
     private static $inspect = [];
@@ -18,7 +17,7 @@ class File extends Genome {
     public static $config = self::config;
 
     // Inspect file path
-    public static function inspect($input, $key = null, $fail = false) {
+    public static function inspect(string $input, $key = null, $fail = false) {
         $id = json_encode(func_get_args());
         if (isset(self::$inspect[$id])) {
             $output = self::$inspect[$id];
@@ -65,7 +64,7 @@ class File extends Genome {
         }
         $x = null;
         if (is_array($folder)) {
-            $x = isset($folder[1]) ? $folder[1] : null;
+            $x = $folder[1] ?? null;
             $folder = $folder[0];
         }
         $folder = str_replace('/', DS, $folder);
@@ -161,7 +160,7 @@ class File extends Genome {
 
     // Print the file content
     public function read($fail = null) {
-        if ($this->path !== false) {
+        if (isset($this->path)) {
             $content = filesize($this->path) > 0 ? file_get_contents($this->path) : "";
             return $content !== false ? $content : $fail;
         }
@@ -169,17 +168,16 @@ class File extends Genome {
     }
 
     // Write `$data` before save
-    public static function set($data) {
-        $self = new static;
-        $self->content = $data;
-        return $self;
+    protected function Genome_set(string $data) {
+        $this->content = $data;
+        return $this;
     }
 
     // Print the file content line by line
     public function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
         $output = "";
-        if ($this->path !== false && filesize($this->path) > 0 && ($hand = fopen($this->path, 'r'))) {
+        if (isset($this->path) && filesize($this->path) > 0 && ($hand = fopen($this->path, 'r'))) {
             while (($chunk = fgets($hand, $ch)) !== false) {
                 $output .= $chunk;
                 if (
@@ -205,27 +203,27 @@ class File extends Genome {
 
     // Import the exported PHP file
     public function import($fail = []) {
-        if ($this->path === false) {
+        $path = $this->path;
+        if (!$path || !is_file($path)) {
             return $fail;
         }
-        return include $this->path;
+        return include $path;
     }
 
     // Export value to a PHP file
-    public static function export($data, $format = '<?php return %{0}%;') {
+    public static function export(array $data, $format = '<?php return %{0}%;') {
         $self = new static;
-        $self->content = __replace__($format, z($data));
+        $self->content = replace($format, z($data));
         return $self;
     }
 
     // Save the `$data`
-    public static function save($consent = null) {
+    public function save($consent = null) {
         $this->saveTo($this->path, $consent);
-        return $this;
     }
 
     // Save the `$data` to …
-    public function saveTo($path, $consent = null) {
+    public function saveTo(string $path, $consent = null) {
         $this->path = $path;
         $path = To::path($path);
         if (!file_exists($d = dirname($path))) {
@@ -235,134 +233,142 @@ class File extends Genome {
         if (isset($consent)) {
             chmod($path, $consent);
         }
-        return $this;
+        return $path;
     }
 
     // Rename the file/folder
-    public function renameTo($name) {
-        if ($this->path !== false) {
-            $b = basename($this->path);
-            $d = dirname($this->path) . DS;
-            if ($name !== $b && !file_exists($d . $name)) {
-                rename($d . $b, $d . $name);
+    public function renameTo(string $name) {
+        $path = $this->path;
+        if (isset($path)) {
+            $b = basename($path);
+            $d = dirname($path) . DS;
+            $v = $d . $name;
+            if ($name !== $b && !file_exists($v)) {
+                rename($path, $v);
             }
-            $this->path = $d . $name;
+            $this->path = $v;
         }
-        return $this;
+        return [$path, $v];
     }
 
     // Move the file/folder to … (folder)
-    public function moveTo($folder = ROOT, $as = null) {
+    public function moveTo(string $folder = ROOT, $as = null) {
         $path = $this->path;
-        if ($path !== false) {
+        $out = [];
+        if (isset($path)) {
             $b = basename($path);
-            $o = [];
             if (is_dir($path)) {
-                foreach (self::open($path)->copyTo($folder)->path as $k => $v) {
-                    $o[$k] = $v;
+                foreach (self::open($path)->copyTo($folder) as $k => $v) {
+                    $out[$k] = $v;
                     unlink($k);
                 }
                 self::open($path)->delete();
+                $this->path = $k = $folder . DS . $b;
                 if ($as !== null) {
-                    rename($k = $folder . DS . $b, $v = $folder . DS . $as);
-                    $o[$k] = $v;
+                    rename($k, $v = $folder . DS . $as);
+                    $this->path = $out[$k] = $v;
                 }
             } else {
                 if (!is_dir($folder)) {
                     mkdir($folder, 0775, true);
                 }
                 if (rename($path, $to = $folder . DS . ($as ?: $b))) {
-                    $o = [$path => $to];
+                    $out = [$path => $to];
                 }
+                $this->path = $to;
             }
-            $this->path = $o;
         }
-        return $this;
+        return $out;
     }
 
     // Copy the file/folder to … (folder)
-    public function copyTo($folder = ROOT, $pattern = '%{name}%.%{i}%.%{extension}%') {
+    public function copyTo(string $folder = ROOT, string $pattern = '%{name}%.%{i}%.%{extension}%') {
         $i = 1;
         $path = $this->path;
-        if ($path !== false) {
-            $o = [];
+        $out = [];
+        if (isset($path)) {
+            $b = basename($path);
             // Copy folder
             if (is_dir($path)) {
                 foreach (self::explore([$path, 1], true, []) as $k => $v) {
-                    $dir = dirname($folder . DS . basename($path) . DS . str_replace($path . DS, "", $k));
+                    $dir = dirname($folder . DS . $b . DS . str_replace($path . DS, "", $k));
                     if (!is_dir($dir)) {
                         mkdir($dir, 0775, true);
                     }
-                    $o = array_replace($o, self::open($k)->copyTo($dir, $pattern)->path);
+                    $out = array_replace($out, self::open($k)->copyTo($dir, $pattern));
                 }
-                $this->path = $o;
-                return $this;
+                $this->path = $folder . DS . $b;
+                return $out;
             }
             // Copy file
-            $b = DS . basename($path);
             foreach ((array) $folder as $v) {
                 if (!is_dir($v)) {
                     mkdir($v, 0775, true);
                 }
-                $v .= $b;
+                $v .= DS . $b;
                 if (!file_exists($v)) {
                     if (copy($path, $v)) {
-                        $o[$path] = $v;
+                        $out[$path] = $v;
                     }
                     $i = 1;
                 } else if ($pattern) {
-                    $v = dirname($v) . DS . __replace__($pattern, [
+                    $v = dirname($v) . DS . replace($pattern, [
                         'name' => pathinfo($v, PATHINFO_FILENAME),
                         'i' => $i,
                         'extension' => pathinfo($v, PATHINFO_EXTENSION)
                     ]);
                     if (copy($path, $v)) {
-                        $o[$path] = $v;
+                        $out[$path] = $v;
                     }
                     ++$i;
                 } else {
                     if (copy($path, $v)) {
-                        $o[$path] = $v;
+                        $out[$path] = $v;
                     }
                 }
+                $this->path = $v;
             }
-            $this->path = $o;
         }
-        return $this;
+        return $out;
     }
 
     // Delete the file
     public function delete() {
         $path = $this->path;
-        if ($path !== false) {
+        $out = [];
+        if (isset($path)) {
             if (is_dir($path)) {
                 $a = new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS);
                 $b = new \RecursiveIteratorIterator($a, \RecursiveIteratorIterator::CHILD_FIRST);
                 foreach ($b as $v) {
+                    $p = $v->getPathname();
+                    $out[$p] = 1;
                     if ($v->isFile()) {
-                        unlink($v->getPathname());
+                        unlink($p);
                     } else {
-                        rmdir($v->getPathname());
+                        rmdir($p);
                     }
                 }
                 rmdir($path);
             } else {
                 unlink($path);
             }
+            $out[$path] = 1;
         }
-        return $this;
+        return $out;
     }
 
     // Set file permission
     public function consent($consent) {
-        if ($this->path !== false) {
-            chmod($this->path, $consent);
+        $path = $this->path;
+        if (isset($path)) {
+            chmod($path, $consent);
         }
-        return $this;
+        return $path;
     }
 
     // Upload a file
-    public static function push($name, $path = ROOT, $fn = null) {
+    public static function push($name, string $path = ROOT, $fn = null) {
         $path = rtrim(str_replace('/', DS, $path), DS);
         if (!isset($_FILES[$name])) {
             return 4; // No file was uploaded
@@ -387,10 +393,10 @@ class File extends Genome {
     }
 
     // Download the file
-    public static function pull($file, $mime = null) {
+    public static function pull(string $file, $mime = null) {
         HTTP::header([
             'Content-Description' => 'File Transfer',
-            'Content-Type' => 'application/octet-stream',
+            'Content-Type' => $mime ?: 'application/octet-stream',
             'Content-Disposition' => 'attachment; filename="' . basename($file) . '"',
             'Content-Length' => filesize($file),
             'Expires' => 0,
@@ -410,13 +416,12 @@ class File extends Genome {
             $u = $size > 0 ? floor($size_base) : 0;
         }
         $output = round($size / pow(1024, $u), $prec);
-        return $output < 0 ? Language::unknown() : trim($output . ' ' . $x[$u]);
+        return $output < 0 ? null : trim($output . ' ' . $x[$u]);
     }
 
     public function __construct($path = true, $c = []) {
-        $this->path = file_exists($path) ? realpath($path) : false;
+        $this->path = file_exists($path) ? realpath($path) : null;
         $this->content = "";
-        $this->c = !empty($c) ? $c : self::$config;
         parent::__construct();
     }
 

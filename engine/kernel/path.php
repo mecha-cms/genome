@@ -32,7 +32,7 @@ class Path extends Genome {
     }
 
     public static function N($path, $x = false) {
-        return pathinfo($path, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
+        return (string) pathinfo($path, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
     }
 
     public static function X($path, $fail = false) {

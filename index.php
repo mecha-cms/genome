@@ -17,15 +17,15 @@ if (!defined('T')) define('T', "\t"); // Tab
 if (!defined('X')) define('X', "\x1A"); // Placeholder text
 
 if (!defined('SESSION')) define('SESSION', null); // Change to a folder path to define `session_save_path`
-if (!defined('DEBUG')) define('DEBUG', null); // Change to `true` to enable debug mode
+if (!defined('DEBUG')) define('DEBUG', false); // Change to `true` to enable debug mode
 
 if (!defined('ENGINE')) define('ENGINE', __DIR__ . DS . 'engine');
 if (!defined('LOT')) define('LOT', __DIR__ . DS . 'lot');
 
 foreach (glob(__DIR__ . DS . 'lot' . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
-    $s = strtoupper(str_replace(['-', '.'], ['_', '__'], basename($lot)));
-    if (!defined($s)) {
-        define($s, $lot);
+    $b = strtoupper(str_replace(['-', '.'], ['_', '__'], basename($lot)));
+    if (!defined($b)) {
+        define($b, $lot);
     }
 }
 

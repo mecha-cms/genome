@@ -9,7 +9,7 @@ foreach ([
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $href = $path === false ? $url : __replace__($state, [$url, file_exists($path) ? filemtime($path) : 0]);
+        $href = $path === false ? $url : replace($state, [$url, file_exists($path) ? filemtime($path) : 0]);
         if (isset($attr['href']) && is_callable($attr['href'])) {
             $href = call_user_func($attr['href'], $href, $value, $key, $attr);
             unset($attr['href']);
@@ -25,7 +25,7 @@ foreach ([
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $src = $path === false ? $url : __replace__($state, [$url, file_exists($path) ? filemtime($path) : 0]);
+        $src = $path === false ? $url : replace($state, [$url, file_exists($path) ? filemtime($path) : 0]);
         if (isset($attr['src']) && is_callable($attr['src'])) {
             $src = call_user_func($attr['src'], $src, $value, $key, $attr);
             unset($attr['src']);
@@ -45,7 +45,7 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $src = $path === false ? $url : __replace__($state, [$url, file_exists($path) ? filemtime($path) : 0]);
+        $src = $path === false ? $url : replace($state, [$url, file_exists($path) ? filemtime($path) : 0]);
         if (isset($attr['src']) && is_callable($attr['src'])) {
             $src = call_user_func($attr['src'], $src, $value, $key, $attr);
             unset($attr['src']);

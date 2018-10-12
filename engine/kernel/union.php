@@ -30,7 +30,7 @@ class Union extends Genome {
     public static $config = self::config;
 
     // Build union attribute(s)…
-    protected function _data($a, $unit = "") {
+    protected function Genome_data($a) {
         if (!is_array($a)) {
             $a = trim((string) $a);
             return strlen($a) ? ' ' . $a : "";
@@ -40,7 +40,7 @@ class Union extends Genome {
         ksort($a);
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
-            if (is_array($v) || (is_object($v) && !__is_instance__($v))) {
+            if (is_array($v) || (is_object($v) && !fn\is\instance($v))) {
                 $v = json_encode($v);
             }
             $output .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . static::x($v) . $u[2] : $k);
@@ -49,7 +49,7 @@ class Union extends Genome {
     }
 
     // Base union constructor
-    protected function _unite($unit, $content = "", $data = [], $dent = 0) {
+    protected function Genome_unite($unit, $content = "", $data = [], $dent = 0) {
         // `$union->unite(['div', "", ['id' => 'foo']], 1)`
         if (is_array($unit)) {
             $dent = $content ?: 0;
@@ -65,24 +65,24 @@ class Union extends Genome {
         // `$union->unite('div', "", ['id' => 'foo'], 0)`
         $dent = static::dent($dent);
         $u = $this->union[1][0];
-        $s = $dent . $u[0] . $unit . $this->_data($data, $unit);
+        $s = $dent . $u[0] . $unit . $this->Genome_data($data);
         return $s . ($content === false ? $u[1] : $u[1] . $content . $u[0] . $u[2] . $unit . $u[1]);
     }
 
     // Inverse version of `Union::unite()`
-    protected function _apart($input, $eval = true) {
+    protected function Genome_apart($input, $eval = true) {
         $u = $this->union[1][0];
         $d = $this->union[1][1];
         $r = $this->pattern;
-        $x_u = isset($this->union[0][0]) ? $this->union[0][0] : [];
-        $x_d = isset($this->union[0][1]) ? $this->union[0][1] : [];
-        $u0 = isset($x_u[0]) ? $x_u[0] : x($u[0]); // `<`
-        $u1 = isset($x_u[1]) ? $x_u[1] : x($u[1]); // `>`
-        $u2 = isset($x_u[2]) ? $x_u[2] : x($u[2]); // `/`
-        $d0 = isset($x_d[0]) ? $x_d[0] : x($d[0]); // `=`
-        $d1 = isset($x_d[1]) ? $x_d[1] : x($d[1]); // `"`
-        $d2 = isset($x_d[2]) ? $x_d[2] : x($d[2]); // `"`
-        $d3 = isset($x_d[3]) ? $x_d[3] : x($d[3]); // ` `
+        $x_u = $this->union[0][0] ?? [];
+        $x_d = $this->union[0][1] ?? [];
+        $u0 = $x_u[0] ?? x($u[0]); // `<`
+        $u1 = $x_u[1] ?? x($u[1]); // `>`
+        $u2 = $x_u[2] ?? x($u[2]); // `/`
+        $d0 = $x_d[0] ?? x($d[0]); // `=`
+        $d1 = $x_d[1] ?? x($d[1]); // `"`
+        $d2 = $x_d[2] ?? x($d[2]); // `"`
+        $d3 = $x_d[3] ?? x($d[3]); // ` `
         $input = trim($input);
         $output = [
             0 => null, // `Element.nodeName`
@@ -114,7 +114,7 @@ class Union extends Genome {
     }
 
     // Union comment
-    protected function ___($content = "", $dent = 0, $block = N) {
+    protected function Genome___($content = "", $dent = 0, $block = N) {
         $dent = static::dent($dent);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
@@ -125,25 +125,25 @@ class Union extends Genome {
     }
 
     // Base union unit open
-    protected function _begin($unit = 'html', $data = [], $dent = 0) {
+    protected function Genome_begin($unit = 'html', $data = [], $dent = 0) {
         $dent = static::dent($dent);
         $this->unit[] = $unit;
         $this->dent[] = $dent;
         $u = $this->union[1][0];
-        return $dent . $u[0] . $unit . $this->_data($data, $unit) . $u[1];
+        return $dent . $u[0] . $unit . $this->Genome_data($data) . $u[1];
     }
 
     // Base union unit close
-    protected function _end($unit = null, $dent = null) {
+    protected function Genome_end($unit = null, $dent = null) {
         if ($unit === true) {
             // Close all!
             $s = "";
             while (array_pop($this->unit)) {
-                $s .= $this->_end() . ($dent ?: N);
+                $s .= $this->Genome_end() . ($dent ?: N);
             }
             return $s;
         }
-        $unit = isset($unit) ? $unit : array_pop($this->unit);
+        $unit = $unit ?? array_pop($this->unit);
         $dent = isset($dent) ? static::dent($dent) : array_pop($this->dent);
         $u = $this->union[1][0];
         return $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "";

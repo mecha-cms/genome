@@ -5,9 +5,9 @@ class Hook extends Genome {
     protected static $i = [];
     protected static $lot = [];
 
-    public static function set($id = null, $fn = null, $stack = null, $i = 100) {
+    public static function set($id = null, $fn = null, $stack = null, $i = 1) {
         $c = static::class;
-        $stack = isset($stack) ? $stack : 10;
+        $stack = $stack ?? 10;
         if (!is_array($id)) {
             if (!isset(self::$lot[0][$c][$id][$stack])) {
                 if (!isset(self::$lot[1][$c][$id])) {
@@ -31,7 +31,7 @@ class Hook extends Genome {
         $c = static::class;
         if (!is_array($id)) {
             if (isset($id)) {
-                self::$lot[0][$c][$id][isset($stack) ? $stack : 10] = isset(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : 1;
+                self::$lot[0][$c][$id][$stack ?? 10] = self::$lot[1][$c][$id] ?? 1;
                 if (isset(self::$lot[1][$c][$id])) {
                     if (isset($stack)) {
                         foreach (self::$lot[1][$c][$id] as $k => $v) {
@@ -67,7 +67,7 @@ class Hook extends Genome {
         return !empty(self::$lot[1][$c]) ? self::$lot[1][$c] : $fail;
     }
 
-    public static function fire($id, array $lot = []) {
+    public static function fire($id, array $lot = [], $self = null) {
         $c = static::class;
         if (!array_key_exists(0, $lot)) {
             $lot = [null];
@@ -78,43 +78,36 @@ class Hook extends Genome {
                 return $lot[0];
             }
             $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack'])->vomit();
-            foreach ($hooks as $v) {
-                if (!is_callable($v['fn'])) {
-                    continue;
-                }
-                if (is_string($v['fn'])) {
-                    if (!isset(self::$i[$c][$id][$v['fn']])) {
-                        self::$i[$c][$id][$v['fn']] = 0;
-                    } else {
-                        if (self::$i[$c][$id][$v['fn']] > $v['i']) {
-                            continue;
-                        }
-                        ++self::$i[$c][$id][$v['fn']];
+            if ($self) {
+                $self->_hook = $id;
+                $self->_hook_count = 0;
+                foreach ($hooks as $v) {
+                    if (!is_callable($v['fn']) || $self->_hook_count > $v['i']) {
+                        continue;
+                    }
+                    ++$self->_hook_count;
+                    if (($r = fn($v['fn'], $self, $lot)) !== null) {
+                        $lot[0] = $r;
                     }
                 }
-                if (($s = call_user_func($v['fn'], ...$lot)) !== null) {
-                    $lot[0] = $s;
+            } else {
+                foreach ($hooks as $v) {
+                    if (!is_callable($v['fn'])) {
+                        continue;
+                    }
+                    if (($r = fn($v['fn'], null, $lot)) !== null) {
+                        $lot[0] = $r;
+                    }
                 }
             }
         } else {
             foreach ($id as $v) {
-                if (($s = self::fire($v, $lot)) !== null) {
-                    $lot[0] = $s;
+                if (($r = self::fire($v, $lot, $self)) !== null) {
+                    $lot[0] = $r;
                 }
             }
         }
         return $lot[0];
-    }
-
-    public static function NS(...$lot) {
-        if (strpos($lot[0], '.') !== false) {
-            foreach (Anemon::step($lot[0], '.', -1) as $v) {
-                $lot[0] = $v;
-                $lot[1] = [self::fire(...$lot)];
-            }
-            return $lot[1][0];
-        }
-        return self::fire(...$lot);
     }
 
 }

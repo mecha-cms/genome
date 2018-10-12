@@ -22,7 +22,7 @@ Shield::_('state', function(...$lot) {
         return is_array($key) ? $key : $fail;
     }
     $state = isset(self::$state[$c][$id]) ? self::$state[$c][$id] : include $state;
-    $state = Hook::fire(__c2f__($c, '_', '/') . '.state.' . $id, [$state]);
+    $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $id, [$state]);
     if (is_array($key)) {
         return array_replace_recursive($key, $state);
     }

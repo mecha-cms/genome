@@ -4,7 +4,7 @@ class HTTP extends Genome {
 
     const config = [
         'session' => [
-            'request' => 'mecha.request'
+            'gate' => 'mecha.gate'
         ]
     ];
 
@@ -161,7 +161,7 @@ class HTTP extends Genome {
         } else {
             $key = $data;
         }
-        $s = self::$config['session']['request'] . '.' . $id;
+        $s = self::$config['session']['gate'] . '.' . $id;
         $cache = Session::get($s, []);
         Session::set($s, array_replace_recursive($cache, $key));
         return new static;
@@ -169,7 +169,7 @@ class HTTP extends Genome {
 
     // Restore state
     public static function restore($id, $key = null, $fail = null) {
-        $s = self::$config['session']['request'] . '.' . $id;
+        $s = self::$config['session']['gate'] . '.' . $id;
         $cache = Session::get($s, []);
         if (isset($key)) {
             self::delete($id, $key);
@@ -181,14 +181,14 @@ class HTTP extends Genome {
 
     // Delete state
     public static function delete($id, $key = null) {
-        Session::reset(self::$config['session']['request'] . '.' . $id . (isset($key) ? '.' . $key : ""));
+        Session::reset(self::$config['session']['gate'] . '.' . $id . (isset($key) ? '.' . $key : ""));
         return new static;
     }
 
     public static function __callStatic($kin, $lot = []) {
         if (!self::_($kin)) {
             $id = '_' . strtoupper($kin);
-            $data = isset($GLOBALS[$id]) ? $GLOBALS[$id] : [];
+            $data = $GLOBALS[$id] ?? [];
             $key = array_shift($lot);
             $fail = array_shift($lot);
             $eval = array_shift($lot);

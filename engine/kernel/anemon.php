@@ -2,12 +2,12 @@
 
 class Anemon extends Genome implements \ArrayAccess {
 
-    protected $bucket = [];
-    protected $separator = "";
-    protected $i = 0;
+    public $bucket = [];
+    public $separator = "";
+    public $i = 0;
 
     // Create list of namespace step(s)
-    public static function step($input, $NS = '.', $dir = 1) {
+    public static function step($input, string $NS = '.', int $dir = 1) {
         if (is_string($input) && strpos($input, $NS) !== false) {
             $input = explode($NS, trim($input, $NS));
             $a = $dir === -1 ? array_pop($input) : array_shift($input);
@@ -29,7 +29,7 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     // Set array value recursively
-    public static function set(array &$input, $key, $value = null, $NS = '.') {
+    public static function set(array &$input, string $key, $value = null, string $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
             $key = str_replace(X, $NS, array_shift($keys));
@@ -42,7 +42,7 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     // Get array value recursively
-    public static function get(array &$input, $key, $fail = false, $NS = '.') {
+    public static function get(array &$input, string $key, $fail = false, string $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         foreach ($keys as $value) {
             $value = str_replace(X, $NS, $value);
@@ -55,7 +55,7 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     // Remove array value recursively
-    public static function reset(array &$input, $key, $NS = '.') {
+    public static function reset(array &$input, string $key, string $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
             $key = str_replace(X, $NS, array_shift($keys));
@@ -113,19 +113,6 @@ class Anemon extends Genome implements \ArrayAccess {
         return $this;
     }
 
-    public function is($fn) {
-        $this->bucket = array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
-        return $this;
-    }
-
-    public function not($fn) {
-        $a = array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
-        $b = array_diff_assoc($this->bucket, $a);
-        $this->bucket = $b;
-        unset($a);
-        return $this;
-    }
-
     // Sort array value: `1` for “asc” and `-1` for “desc”
     public function sort($sort = 1, $preserve_key = false) {
         if (is_array($sort) && isset($sort[1])) {
@@ -160,22 +147,6 @@ class Anemon extends Genome implements \ArrayAccess {
         return $this;
     }
 
-    public static function walk(array $array, $fn = null, $deep = false) {
-        if (is_callable($fn)) {
-            if ($deep) {
-                array_walk_recursive($array, function(&$v, $k, $a) use($fn) {
-                    call_user_func($fn, $v, $k, $a);
-                }, $array);
-            } else {
-                array_walk($array, function(&$v, $k, $a) use($fn) {
-                    call_user_func($fn, $v, $k, $a);
-                }, $array);
-            }
-            return $array;
-        }
-        return self::eat($array);
-    }
-
     public static function alter($input, array $replace = [], $fail = null) {
         // Return `$replace[$input]` value if exist
         // or `$fail` value if `$replace[$input]` does not exist
@@ -184,13 +155,13 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     // Move to next array index
-    public function next($skip = 0) {
+    public function next(int $skip = 0) {
         $this->i = b($this->i + 1 + $skip, 0, $this->count() - 1);
         return $this;
     }
 
     // Move to previous array index
-    public function previous($skip = 0) {
+    public function previous(int $skip = 0) {
         $this->i = b($this->i - 1 - $skip, 0, $this->count() - 1);
         return $this;
     }
@@ -272,20 +243,20 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     // Get array key by position
-    public function key($index, $fail = false) {
+    public function key(int $index, $fail = false) {
         $array = array_keys($this->bucket);
         return array_key_exists($index, $array) ? $array[$index] : $fail;
     }
 
     // Get position by array key
-    public function index($key, $fail = false) {
+    public function index(string $key, $fail = false) {
         $search = array_search($key, array_keys($this->bucket));
         return $search !== false ? $search : $fail;
     }
 
     // Generate chunk(s) of array
-    public function chunk($chunk = 5, $index = null, $fail = [], $preserve_key = false) {
-        $chunks = array_chunk(__is_anemon__($this->bucket) ? (array) $this->bucket : [], $chunk, $preserve_key);
+    public function chunk(int $chunk = 5, $index = null, $fail = [], $preserve_key = false) {
+        $chunks = array_chunk(fn\is\anemon($this->bucket) ? (array) $this->bucket : [], $chunk, $preserve_key);
         return !isset($index) ? $chunks : (array_key_exists($index, $chunks) ? $chunks[$index] : $fail);
     }
 
@@ -306,10 +277,10 @@ class Anemon extends Genome implements \ArrayAccess {
     }
 
     public function offsetGet($i) {
-        return isset($this->bucket[$i]) ? $this->bucket[$i] : null;
+        return $this->bucket[$i] ?? null;
     }
 
-    public function __construct(array $array = [], $separator = ', ') {
+    public function __construct(array $array = [], string $separator = ', ') {
         $this->bucket = $array;
         $this->separator = $separator;
         parent::__construct();
@@ -336,11 +307,11 @@ class Anemon extends Genome implements \ArrayAccess {
         return $this->__invoke($this->separator);
     }
 
-    public function __invoke($s = ', ', $filter = true) {
-        return implode($s, $filter ? $this->is(function($v, $k) {
+    public function __invoke(string $s = ', ', $filter = true) {
+        return implode($s, /*$filter ? is($this->bucket, function($v, $k) {
             // Ignore `null` value and item with key prefixed by a `_`
             return isset($v) && strpos($k, '_') !== 0;
-        })->vomit() : $this->bucket);
+        }) : */$this->bucket);
     }
 
 }

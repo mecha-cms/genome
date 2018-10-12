@@ -13,6 +13,7 @@ class Folder extends File {
                 mkdir(To::path($v), $c, true);
             }
         }
+        return $input;
     }
 
     public static function exist($input, $fail = false) {
@@ -25,13 +26,11 @@ class Folder extends File {
         if (!glob($folder . DS . '*', GLOB_NOSORT)) {
             return parent::size(0, $unit, $prec);
         }
-        $pool = 0;
-        foreach (parent::explore($folder, true, []) as $k => $v) {
-            if ($v === 1) {
-                $pool += filesize($k);
-            }
+        $sizes = 0;
+        foreach (parent::explore([$folder, 1], true, []) as $k => $v) {
+            $sizes += filesize($k);
         }
-        return parent::size($pool, $unit, $prec);
+        return parent::size($sizes, $unit, $prec);
     }
 
 }

@@ -38,7 +38,7 @@ class Asset extends Genome {
                     'url' => self::URL($v),
                     'id' => sprintf('%u', crc32($v)),
                     'data' => $data,
-                    'stack' => (float) (isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10) + $i)
+                    'stack' => (float) ($stack[$k] ?? (end($stack) !== false ? end($stack) : 10) + $i)
                 ];
                 $i += .1;
             }
@@ -50,7 +50,7 @@ class Asset extends Genome {
         $c = static::class;
         if (isset($path)) {
             $x = Path::X($path);
-            return isset(self::$lot[$c][$i][$x][$path]) ? self::$lot[$c][$i][$x][$path] : $fail;
+            return self::$lot[$c][$i][$x][$path] ?? $fail;
         }
         return !empty(self::$lot[$c][$i]) ? self::$lot[$c][$i] : $fail;
     }

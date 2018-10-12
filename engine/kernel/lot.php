@@ -16,11 +16,11 @@ class Lot extends Genome {
 
     public static function get($key = null, $fail = false, $scope = null) {
         $scope = '.' . md5($scope ?: static::class);
-        $data = isset($GLOBALS[$scope]) ? $GLOBALS[$scope] : [];
+        $data = $GLOBALS[$scope] ?? [];
         if (isset($key)) {
             return array_key_exists($key, $data) ? $data[$key] : $fail;
         }
-        return isset($data) ? $data : $fail;
+        return $data ?: $fail;
     }
 
     public static function reset($key = null, $scope = null) {

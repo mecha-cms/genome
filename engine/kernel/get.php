@@ -27,7 +27,7 @@ class Get extends Genome {
             $key = array_shift($lot);
             $fail = array_shift($lot);
             if (!isset($key)) {
-                return isset($GLOBALS[$id]) ? $GLOBALS[$id] : [];
+                return $GLOBALS[$id] ?? [];
             } else if (is_array($key)) {
                 foreach ($key as $k => $v) {
                     Anemon::get($GLOBALS, $id . '.' . $k, $fail);

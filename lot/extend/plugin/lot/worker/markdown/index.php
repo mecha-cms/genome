@@ -1,46 +1,47 @@
 <?php
 
-function fn_markdown_replace($in, $mode = 'text') {
-    $x = new ParsedownExtraPlugin;
-    foreach (Plugin::state('markdown') as $k => $v) {
-        $x->{$k} = $v;
+namespace fn\markdown {
+    function b($in = "", array $lot = [], $mode = 'text') {
+        $x = new \ParsedownExtraPlugin;
+        foreach (\Plugin::state('markdown') as $k => $v) {
+            $x->{$k} = $v;
+        }
+        return $x->{$mode}($in);
     }
-    return $x->{$mode}($in);
+    function i(string $in = "", array $lot = []) {
+        if ($this->type !== 'Markdown') {
+            return $in;
+        }
+        return \w(b($in, $lot), HTML_WISE_I);
+        // return replace($in, 'line'); // TODO
+    }
+    \Hook::set('*.title', __NAMESPACE__ . '\i', 2);
+    \Hook::set(['*.description', '*.content'], __NAMESPACE__, 2);
 }
 
-function fn_markdown($in = "", $lot = [], $that) {
-    if ($that->get('type') !== 'Markdown') {
-        return $in;
+namespace fn {
+    function markdown($in = "", array $lot = []) {
+        if ($this->type !== 'Markdown') {
+            return $in;
+        }
+        return markdown\b($in, $lot);
     }
-    return fn_markdown_replace($in);
 }
 
-function fn_markdown_span($in, $lot = [], $that) {
-    if ($that->get('type') !== 'Markdown') {
-        return $in;
-    }
-    return w(fn_markdown_replace($in), HTML_WISE_I);
-    // return fn_markdown_replace($in, 'line'); // TODO
+namespace {
+    From::_('Markdown', function(string $in = "", $span = false) {
+        return fn\markdown\b($in, $span ? 'span' : 'text');
+    });
+    To::_('Markdown', function(string $in = "") {
+        return $in; // TODO
+    });
+    // Alias(es)
+    From::_('markdown', From::_('Markdown'));
+    To::_('markdown', To::_('Markdown'));
+    // Add `markdown` to the allowed file extension(s)
+    File::$config['extension'] = array_merge(File::$config['extension'], [
+        'markdown',
+        'md',
+        'mkd'
+    ]);
 }
-
-From::_('Markdown', function($in, $span = false) {
-    return fn_markdown_replace($in, $span ? 'span' : 'text');
-});
-
-To::_('Markdown', function($in) {
-    return $in; // TODO
-});
-
-// Alias(es)
-From::_('markdown', From::_('Markdown'));
-To::_('markdown', To::_('Markdown'));
-
-Hook::set('*.title', 'fn_markdown_span', 2);
-Hook::set(['*.description', '*.content'], 'fn_markdown', 2);
-
-// Add `markdown` to the allowed file extension(s)
-File::$config['extension'] = array_merge(File::$config['extension'], [
-    'markdown',
-    'md',
-    'mkd'
-]);

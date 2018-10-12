@@ -102,7 +102,7 @@ class Form extends HTML {
         return str_replace(['.', '[', ']', X], [X, '.', "", '\\.'], $key);
     }
 
-    public static function name(&$s, &$a) {
+    private static function name(&$s, &$a) {
         if ($s && strpos('.!*', $s[0]) !== false) {
             $a[Anemon::alter($s[0], [
                 '.' => 'disabled',

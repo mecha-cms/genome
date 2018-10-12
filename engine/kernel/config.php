@@ -11,7 +11,7 @@ class Config extends Genome {
             return (self::$bucket[$c] = []);
         }
         $a = Is::file($lot[0]) ? require $lot[0] : $lot[0];
-        return (self::$bucket[$c] = self::$a[$c] = (array) a($a));
+        return (self::$bucket[$c] = self::$a[$c] = a($a));
     }
 
     public static function set($key, $value = null) {
@@ -26,7 +26,7 @@ class Config extends Genome {
                 Anemon::set($cargo, $k, $v);
             }
         }
-        $o = isset(self::$bucket[$c]) ? (array) self::$bucket[$c] : [];
+        $o = (array) (self::$bucket[$c] ?? []);
         self::$bucket[$c] = array_replace_recursive($o, $cargo);
         return new static;
     }
@@ -45,7 +45,7 @@ class Config extends Genome {
             return $fail ? $output : o($output);
         }
         // `get($key = null, $fail = false, $array = false)`
-        $output = isset(self::$bucket[$c]) ? (array) self::$bucket[$c] : [];
+        $output = (array) (self::$bucket[$c] ?? []);
         $output = Anemon::get($output, $key, $fail);
         return $array ? $output : o($output);
     }
@@ -78,9 +78,9 @@ class Config extends Genome {
             $test = self::get($kin);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
-                return call_user_func($test, ...$lot);
+                return fn($test, $this, $lot);
             // Rich asynchronous value with class instance
-            } else if ($fn = __is_instance__($test)) {
+            } else if ($fn = fn\is\instance($test)) {
                 if (method_exists($fn, '__invoke')) {
                     return call_user_func([$fn, '__invoke'], ...$lot);
                 }
@@ -90,8 +90,8 @@ class Config extends Genome {
             $fail = array_shift($lot) ?: false;
             $alt = array_shift($lot) ?: false;
         }
-        if ($fail instanceof \Closure) {
-            return call_user_func(\Closure::bind($fail, $this), self::get($kin, $alt));
+        if (is_callable($fail)) {
+            return fn($fail, $this, self::get($kin, $alt));
         }
         return self::get($kin, $fail);
     }
@@ -130,9 +130,9 @@ class Config extends Genome {
             $test = self::get($kin);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
-                return call_user_func($test, ...$lot);
+                return fn($test, null, $lot);
             // Rich asynchronous value with class instance
-            } else if ($fn = __is_instance__($test)) {
+            } else if ($fn = fn\is\instance($test)) {
                 if (method_exists($fn, '__invoke')) {
                     return call_user_func([$fn, '__invoke'], ...$lot);
                 }
@@ -142,8 +142,8 @@ class Config extends Genome {
             $fail = array_shift($lot) ?: false;
             $alt = array_shift($lot) ?: false;
         }
-        if ($fail instanceof \Closure) {
-            return call_user_func($fail, self::get($kin, $alt));
+        if (is_callable($fail)) {
+            return fn($fail, null, self::get($kin, $alt));
         }
         return self::get($kin, $fail);
     }
