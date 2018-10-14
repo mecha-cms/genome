@@ -39,7 +39,7 @@ class Message extends Genome {
             self::set('default', $kin);
         } else {
             $s = Session::get(self::$id, "");
-            $ss = Hook::fire($c . '.set.' . $kin, [$o]);
+            $ss = Hook::fire($c . '.set.' . $kin, [$o], new stdClass);
             if (strpos($s, $ss) === false) {
                 $s .= candy(HTML::unite(...self::$config['message']), [$kin, $ss]);
             }
@@ -60,9 +60,9 @@ class Message extends Genome {
 
     public static function get($session_x = true) {
         $s = Session::get(self::$id, "");
-        $output = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$s !== "" ? candy(HTML::unite(...self::$config['messages']), $s) : ""]);
+        $out = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$s !== "" ? candy(HTML::unite(...self::$config['messages']), $s) : ""], new stdClass);
         if ($session_x) self::reset();
-        return $output;
+        return $out;
     }
 
     public static function send($from, $to, $subject, $message) {
@@ -89,8 +89,9 @@ class Message extends Genome {
         $lot .= 'Return-Path: ' . $from . N;
         $lot .= 'X-Mailer: PHP/' . phpversion();
         $s = c2f(static::class, '_', '/') . '.' . __FUNCTION__;
-        $lot = Hook::fire($s . '.data', [$lot]);
-        $data = Hook::fire($s . '.content', [$message]);
+        $o = new stdClass;
+        $lot = Hook::fire($s . '.data', [$lot], $o);
+        $data = Hook::fire($s . '.content', [$message], $o);
         return mail($to, $subject, $data, $lot);
     }
 

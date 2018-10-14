@@ -25,7 +25,7 @@ foreach ([
         return HTML::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, extend($attr_o, $attr)) . $text);
     },
     'radio' => function($name = null, $options = [], $select = null, $attr = [], $dent = 0) {
-        $output = [];
+        $out = [];
         $select = (string) $select;
         foreach ($options as $k => $v) {
             $attr_o = ['disabled' => null];
@@ -36,9 +36,9 @@ foreach ([
             $k = (string) $k;
             $attr_o['checked'] = $select === $k || $select === '.' . $k ? true : null;
             $v = $v ? '&#x0020;' . HTML::span($v) : "";
-            $output[] = HTML::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, extend($attr_o, $attr)) . $v);
+            $out[] = HTML::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, extend($attr_o, $attr)) . $v);
         }
-        return implode(HTML::br(), $output);
+        return implode(HTML::br(), $out);
     },
     'range' => function($name = null, $range = [0, 0, 1], $attr = [], $dent = 0) {
         if (is_array($value)) {

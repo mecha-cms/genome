@@ -145,10 +145,22 @@ namespace {
     }
     // Merge array value(s)
     function concat(array $a = [], ...$b) {
+        // `concat([…], […], […], false)`
+        if (count($b) > 1 && end($b) === false) {
+            array_pop($b);
+            return array_merge($a, ...$b);
+        }
+        // `concat([…], […], […])`
         return array_merge_recursive($a, ...$b);
     }
     // Extend array value(s)
     function extend(array $a = [], ...$b) {
+        // `extend([…], […], […], false)`
+        if (count($b) > 1 && end($b) === false) {
+            array_pop($b);
+            return array_replace($a, ...$b);
+        }
+        // `extend([…], […], […])`
         return array_replace_recursive($a, ...$b);
     }
     // Convert file name to class name

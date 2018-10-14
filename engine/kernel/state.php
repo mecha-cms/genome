@@ -4,8 +4,8 @@ class State extends Genome {
 
     protected $lot = [];
 
-    public function __construct($input = [], $lot = []) {
-        $this->lot = extend(Is::file($input) ? require $input : $input, $lot);
+    public function __construct($in = [], array $lot = []) {
+        $this->lot = extend(Is::file($in) ? require $in : $in, $lot);
         parent::__construct();
     }
 
@@ -17,7 +17,7 @@ class State extends Genome {
         $fail = array_shift($lot);
         $alt = array_shift($lot);
         if ($fail instanceof \Closure) {
-            return call_user_func(\Closure::bind($fail, $this), $x !== null ? $x : $alt);
+            return fn($fail, $this, [$x !== null ? $x : $alt]);
         }
         return $x !== null ? $x : $fail;
     }

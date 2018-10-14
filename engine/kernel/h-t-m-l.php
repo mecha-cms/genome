@@ -43,16 +43,16 @@ class HTML extends Union {
         return parent::Genome_data($a);
     }
 
-    protected function Genome_apart(string $input = "", $eval = true) {
-        $output = parent::Genome_apart($input, $eval);
-        if (!empty($output[2])) {
-            foreach ($output[2] as $k => $v) {
+    protected function Genome_apart(string $in = "", $eval = true) {
+        $out = parent::Genome_apart($in, $eval);
+        if (!empty($out[2])) {
+            foreach ($out[2] as $k => $v) {
                 if (strpos($k, 'data-') === 0) {
-                    $output[2]['data[]'][substr($k, 5)] = $v;
-                    unset($output[2][$k]);
+                    $out[2]['data[]'][substr($k, 5)] = $v;
+                    unset($out[2][$k]);
                 } else if ($k === 'class') {
-                    $output[2]['class[]'] = $v === 'class' ? [] : array_unique(explode(' ', $v));
-                    unset($output[2][$k]);
+                    $out[2]['class[]'] = $v === 'class' ? [] : array_unique(explode(' ', $v));
+                    unset($out[2][$k]);
                 } else if ($k === 'style') {
                     if ($v !== 'style') {
                         // TODO: preserve `;` inside quote(s)
@@ -60,16 +60,16 @@ class HTML extends Union {
                             if (trim($vv) === "") continue;
                             $a = explode(':', $vv . ':');
                             if (trim($a[1]) === "") continue;
-                            $output[2]['style[]'][trim($a[0])] = e(trim($a[1]));
+                            $out[2]['style[]'][trim($a[0])] = e(trim($a[1]));
                         }
                     } else {
-                        $output[2]['style[]'] = [];
+                        $out[2]['style[]'] = [];
                     }
-                    unset($output[2][$k]);
+                    unset($out[2][$k]);
                 }
             }
         }
-        return $output;
+        return $out;
     }
 
     public function __call($kin, $lot = []) {

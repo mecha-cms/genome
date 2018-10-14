@@ -21,7 +21,7 @@ class Language extends Config {
         }
         $v = (array) (self::$lot[$c] ?? []);
         $v = Anemon::get($v, $key, $key);
-        $vars = extend([""], (array) $vars);
+        $vars = extend([""], (array) $vars, false);
         if (is_string($v)) {
             if (!$preserve_case && strpos($v, '%') !== 0 && u($vars[0]) !== $vars[0]) {
                 $vars[0] = l($vars[0]);
@@ -31,8 +31,8 @@ class Language extends Config {
         return o($v);
     }
 
-    public function __construct($input = []) {
-        parent::__construct(is_array($input) ? $input : From::YAML($input));
+    public function __construct($in = []) {
+        parent::__construct(is_array($in) ? $in : From::YAML($in));
     }
 
     public function __call($kin, $lot = []) {

@@ -5,8 +5,8 @@ class Is extends Genome {
     protected $lot = [];
 
     // Initialize…
-    public static function this($input) {
-        return new static($input);
+    public static function this($in) {
+        return new static($in);
     }
 
     // Check for empty string, array or object
@@ -80,8 +80,8 @@ class Is extends Genome {
         return q($this->lot) >= $x;
     }
 
-    public function __construct($input = []) {
-        $this->lot = $input;
+    public function __construct($in = []) {
+        $this->lot = $in;
     }
 
     public function __call($kin, $lot = []) {

@@ -150,7 +150,7 @@ foreach ([
         return json_decode($in);
     },
     'query' => function($in, $c = []) {
-        $c = extend(['?', '&', '=', ""], $c);
+        $c = extend(['?', '&', '=', ""], $c, false);
         if (!is_string($in)) {
             return [];
         }

@@ -66,7 +66,7 @@ class Date extends Genome {
         $day_long = $days_long[(int) $d];
         $day_short = $days_short[(int) $d];
         $AM_PM = strtoupper($AM_PM);
-        $output = [
+        $out = [
             'W3C' => $this->format('c'),
             'GMT' => $this->GMT(),
             'unix' => (int) $this->format('U'),
@@ -94,10 +94,10 @@ class Date extends Genome {
         ];
         if (!empty(self::$format)) {
             foreach (self::$format as $k => $v) {
-                $output[$k] = is_callable($v) ? call_user_func($v, $output, $language) : $v;
+                $out[$k] = is_callable($v) ? call_user_func($v, $out, $language) : $v;
             }
         }
-        return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;
+        return isset($key) ? (array_key_exists($key, $out) ? $out[$key] : $fail) : $out;
     }
 
     public function ago($key = null, $fail = false, $compact = true) {
@@ -114,13 +114,13 @@ class Date extends Genome {
             'minute' => $time[4],
             'second' => $time[5]
         ];
-        $output = [];
+        $out = [];
         foreach ($data as $k => $v) {
             if ($compact && $v === '0') continue;
-            $output[$k] = e($v);
+            $out[$k] = e($v);
         }
         unset($data);
-        return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;
+        return isset($key) ? (array_key_exists($key, $out) ? $out[$key] : $fail) : $out;
     }
 
     public function GMT($format = DATE_WISE) {

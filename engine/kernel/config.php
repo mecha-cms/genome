@@ -34,20 +34,20 @@ class Config extends Genome {
     public static function get($key = null, $fail = false, $array = false) {
         $c = static::class;
         if (!isset($key)) {
-            $output = !empty(self::$lot[$c]) ? self::$lot[$c] : $fail;
-            return $array ? $output : o($output);
+            $out = !empty(self::$lot[$c]) ? self::$lot[$c] : $fail;
+            return $array ? $out : o($out);
         } else if (is_array($key) || is_object($key)) {
-            $output = [];
+            $out = [];
             foreach ($key as $k => $v) {
-                $output[$k] = self::get($k, $v, $array);
+                $out[$k] = self::get($k, $v, $array);
             }
             // `get($keys = [], $array = false)`
-            return $fail ? $output : o($output);
+            return $fail ? $out : o($out);
         }
         // `get($key = null, $fail = false, $array = false)`
-        $output = (array) (self::$lot[$c] ?? []);
-        $output = Anemon::get($output, $key, $fail);
-        return $array ? $output : o($output);
+        $out = (array) (self::$lot[$c] ?? []);
+        $out = Anemon::get($out, $key, $fail);
+        return $array ? $out : o($out);
     }
 
     public static function reset($key = null) {

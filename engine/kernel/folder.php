@@ -2,8 +2,8 @@
 
 class Folder extends File {
 
-    public static function set($input, $consent = 0775) {
-        foreach ((array) $input as $k => $v) {
+    public static function set($path, $consent = 0775) {
+        foreach ((array) $path as $k => $v) {
             if (!file_exists($v)) {
                 if (is_array($consent)) {
                     $c = array_key_exists($k, $consent) ? $consent[$k] : end($consent);
@@ -13,12 +13,12 @@ class Folder extends File {
                 mkdir(To::path($v), $c, true);
             }
         }
-        return $input;
+        return $path;
     }
 
-    public static function exist($input, $fail = false) {
-        $file = parent::exist(rtrim($input, DS . '/'));
-        return $file && is_dir($file) ? $file : $fail;
+    public static function exist($path, $fail = false) {
+        $path = parent::exist(rtrim($path, DS . '/'));
+        return $path && is_dir($path) ? $path : $fail;
     }
 
     public static function size($folder, $unit = null, $prec = 2) {

@@ -16,7 +16,7 @@ function _page($path, $key = null, $fail = false, $for = null) {
     if (!file_exists($path)) {
         return $fail;
     }
-    $output = \Page::open($path)->get([
+    $out = \Page::open($path)->get([
         $for => null,
         'path' => $path,
         'time' => null,
@@ -29,34 +29,34 @@ function _page($path, $key = null, $fail = false, $for = null) {
         if ($for === null) {
             foreach (\g($data, 'data') as $v) {
                 $n = \Path::N($v);
-                $output[$n] = \e(_data($v, $n));
+                $out[$n] = \e(_data($v, $n));
             }
         } else if ($v = \File::exist($data . DS . $for . '.data')) {
-            $output[$for] = \e(_data($v, $for));
+            $out[$for] = \e(_data($v, $for));
         }
     }
-    return !isset($key) ? $output : (array_key_exists($key, $output) ? $output[$key] : $fail);
+    return !isset($key) ? $out : (array_key_exists($key, $out) ? $out[$key] : $fail);
 }
 
 function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = null) {
-    $output = [];
+    $out = [];
     $by = is_array($sort) && isset($sort[1]) ? $sort[1] : null;
-    if ($input = \g($folder, $state)) {
-        foreach ($input as $v) {
+    if ($in = \g($folder, $state)) {
+        foreach ($in as $v) {
             if (\Path::N($v) === '$') continue;
-            $output[] = _page($v, null, false, $by);
+            $out[] = _page($v, null, false, $by);
         }
-        $output = $o = \Anemon::eat($output)->sort($sort)->vomit();
+        $out = $o = \Anemon::eat($out)->sort($sort)->vomit();
         if (isset($key)) {
             $o = [];
-            foreach ($output as $v) {
+            foreach ($out as $v) {
                 if (!array_key_exists($key, $v)) {
                     continue;
                 }
                 $o[] = $v[$key];
             }
         }
-        unset($output);
+        unset($out);
         return !empty($o) ? $o : false;
     }
     return false;

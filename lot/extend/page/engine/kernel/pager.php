@@ -2,8 +2,8 @@
 
 class Pager extends Elevator {
 
-    public function __construct($input = [], $chunk = [5, 0], $path = true, $config = []) {
-        parent::__construct($input, $chunk, $path, extend([
+    public function __construct($in = [], $chunk = [5, 0], $path = true, $config = []) {
+        parent::__construct($in, $chunk, $path, extend([
             'direction' => [
                 '<' => 'previous',
                 '>' => 'next'

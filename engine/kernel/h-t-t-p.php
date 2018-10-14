@@ -99,7 +99,7 @@ class HTTP extends Genome {
     }
 
     public static function query($query = null, $c = []) {
-        $c = extend(['?', '&amp;', '=', ""], $c);
+        $c = extend(['?', '&amp;', '=', ""], $c, false);
         if (!isset($query)) {
             $query = $GLOBALS['URL']['query'];
             return str_replace(['?', '&', '='], $c, $query);
@@ -109,12 +109,12 @@ class HTTP extends Genome {
 
     public static function header($key = null, $value = null) {
         if (!isset($ket)) {
-            $output = [];
+            $out = [];
             foreach (headers_list() as $v) {
                 $a = explode(':', $v, 2);
-                $output[$a[0]] = e(trim($a[1]));
+                $out[$a[0]] = e(trim($a[1]));
             }
-            return $output;
+            return $out;
         }
         if (!is_array($key)) {
             if (is_int($key)) {

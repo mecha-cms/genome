@@ -35,7 +35,7 @@ class Union extends Genome {
             $a = trim((string) $a);
             return strlen($a) ? ' ' . $a : "";
         }
-        $output = "";
+        $out = "";
         $u = $this->union[1][1];
         ksort($a);
         foreach ($a as $k => $v) {
@@ -43,9 +43,9 @@ class Union extends Genome {
             if (is_array($v) || (is_object($v) && !fn\is\instance($v))) {
                 $v = json_encode($v);
             }
-            $output .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . static::x($v) . $u[2] : $k);
+            $out .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . static::x($v) . $u[2] : $k);
         }
-        return $output;
+        return $out;
     }
 
     // Base union constructor
@@ -70,7 +70,7 @@ class Union extends Genome {
     }
 
     // Inverse version of `Union::unite()`
-    protected function Genome_apart(string $input = "", $eval = true) {
+    protected function Genome_apart(string $in = "", $eval = true) {
         $u = $this->union[1][0];
         $d = $this->union[1][1];
         $r = $this->pattern;
@@ -83,21 +83,21 @@ class Union extends Genome {
         $d1 = $x_d[1] ?? x($d[1]); // `"`
         $d2 = $x_d[2] ?? x($d[2]); // `"`
         $d3 = $x_d[3] ?? x($d[3]); // ` `
-        $input = trim($input);
-        $output = [
+        $in = trim($in);
+        $out = [
             0 => null, // `Element.nodeName`
             1 => null, // `Element.innerHTML`
             2 => []    // `Element.attributes`
         ];
         $s = '/^' . $u0 . '(' . $r[0][0] . ')(' . $d3 . '.*?)?(?:' . $u2 . $u1 . '|' . $u1 . '(?:([\s\S]*?)(' . $u0 . $u2 . '\1' . $u1 . '))?)$/s';
         // Must starts with `<` and ends with `>`
-        if ($u[0] && $u[1] && substr($input, 0, strlen($u[0])) === $u[0] && substr($input, -strlen($u[1])) === $u[1]) {
+        if ($u[0] && $u[1] && substr($in, 0, strlen($u[0])) === $u[0] && substr($in, -strlen($u[1])) === $u[1]) {
             // Does not match with pattern, abort!
-            if (!preg_match($s, $input, $m)) {
+            if (!preg_match($s, $in, $m)) {
                 return false;
             }
-            $output[0] = $m[1];
-            $output[1] = isset($m[4]) ? $m[3] : false;
+            $out[0] = $m[1];
+            $out[1] = isset($m[4]) ? $m[3] : false;
             if (!empty($m[2]) && preg_match_all('/' . $d3 . '+(' . $r[1][0] . ')(?:' . $d0 . $d1 . '(' . $r[1][1] . ')' . $d2 . ')?/s', $m[2], $mm)) {
                 foreach ($mm[1] as $k => $v) {
                     $s = To::HTML(v($mm[2][$k]));
@@ -105,10 +105,10 @@ class Union extends Genome {
                     if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
                         $s = $v;
                     }
-                    $output[2][$v] = $s;
+                    $out[2][$v] = $s;
                 }
             }
-            return $output;
+            return $out;
         }
         return false;
     }
@@ -137,11 +137,11 @@ class Union extends Genome {
     protected function Genome_end($unit = null, $dent = null) {
         if ($unit === true) {
             // Close all!
-            $output = "";
+            $out = "";
             while (array_pop($this->unit)) {
-                $output .= $this->Genome_end() . ($dent ?: N);
+                $out .= $this->Genome_end() . ($dent ?: N);
             }
-            return $output;
+            return $out;
         }
         $unit = $unit ?? array_pop($this->unit);
         $dent = isset($dent) ? static::dent($dent) : array_pop($this->dent);

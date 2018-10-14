@@ -17,13 +17,13 @@ class File extends Genome {
     public static $config = self::config;
 
     // Inspect file path
-    public static function inspect(string $input, $key = null, $fail = false) {
+    public static function inspect(string $path, $key = null, $fail = false) {
         $id = json_encode(func_get_args());
         if (isset(self::$inspect[$id])) {
-            $output = self::$inspect[$id];
-            return isset($key) ? Anemon::get($output, $key, $fail) : $output;
+            $out = self::$inspect[$id];
+            return isset($key) ? Anemon::get($out, $key, $fail) : $out;
         }
-        $path = To::path($input);
+        $path = To::path($path);
         $n = Path::N($path);
         $x = Path::X($path);
         $exist = file_exists($path);
@@ -31,7 +31,7 @@ class File extends Genome {
         $update = $exist ? filemtime($path) : null;
         $create_date = $create ? date(DATE_WISE, $create) : null;
         $update_date = $update ? date(DATE_WISE, $update) : null;
-        $output = [
+        $out = [
             'path' => $path,
             'name' => $n,
             'url' => To::URL($path),
@@ -51,16 +51,16 @@ class File extends Genome {
             '_update' => $update,
             '_size' => $exist ? filesize($path) : null
         ];
-        self::$inspect[$id] = $output;
-        return isset($key) ? Anemon::get($output, $key, $fail) : $output;
+        self::$inspect[$id] = $out;
+        return isset($key) ? Anemon::get($out, $key, $fail) : $out;
     }
 
     // List all file(s) from a folder
     public static function explore($folder = ROOT, $deep = false, $fail = []) {
         $id = json_encode(func_get_args());
         if (isset(self::$explore[$id])) {
-            $output = self::$explore[$id];
-            return !empty($output) ? $output : $fail;
+            $out = self::$explore[$id];
+            return !empty($out) ? $out : $fail;
         }
         $x = null;
         if (is_array($folder)) {
@@ -68,7 +68,7 @@ class File extends Genome {
             $folder = $folder[0];
         }
         $folder = str_replace('/', DS, $folder);
-        $output = [];
+        $out = [];
         if ($deep) {
             $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
             $b = $x === 1 || is_string($x) ? \RecursiveIteratorIterator::LEAVES_ONLY : \RecursiveIteratorIterator::SELF_FIRST;
@@ -78,7 +78,7 @@ class File extends Genome {
                     $xx = $v->getExtension();
                     $vv = $v->getPathname();
                     if (call_user_func($x, $vv, $v)) {
-                        $output[$vv] = $v->isDir() ? 0 : 1;
+                        $out[$vv] = $v->isDir() ? 0 : 1;
                     }
                 }
             } else {
@@ -86,9 +86,9 @@ class File extends Genome {
                     $xx = $v->getExtension();
                     $vv = $v->getPathname();
                     if ($v->isDir()) {
-                        $output[$vv] = 0;
+                        $out[$vv] = 0;
                     } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {
-                        $output[$vv] = 1;
+                        $out[$vv] = 1;
                     }
                 }
             }
@@ -121,7 +121,7 @@ class File extends Genome {
                         continue;
                     }
                     if (call_user_func($fn, $file, null)) {
-                        $output[$file] = is_file($file) ? 1 : 0;
+                        $out[$file] = is_file($file) ? 1 : 0;
                     }
                 }
             } else {
@@ -130,18 +130,18 @@ class File extends Genome {
                     if ($b === '.' || $b === '..') {
                         continue;
                     }
-                    $output[$file] = is_file($file) ? 1 : 0;
+                    $out[$file] = is_file($file) ? 1 : 0;
                 }
             }
         }
-        self::$explore[$id] = $output;
-        return !empty($output) ? $output : $fail;
+        self::$explore[$id] = $out;
+        return !empty($out) ? $out : $fail;
     }
 
     // Check if file/folder does exist
-    public static function exist($input, $fail = false) {
-        if (is_array($input)) {
-            foreach ($input as $v) {
+    public static function exist($path, $fail = false) {
+        if (is_array($path)) {
+            foreach ($path as $v) {
                 $v = To::path($v);
                 if (file_exists($v)) {
                     return $v;
@@ -149,8 +149,8 @@ class File extends Genome {
             }
             return $fail;
         }
-        $input = To::path($input);
-        return file_exists($input) ? $input : $fail;
+        $path = To::path($path);
+        return file_exists($path) ? $path : $fail;
     }
 
     // Open a file
@@ -176,10 +176,10 @@ class File extends Genome {
     // Print the file content line by line
     public function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
-        $output = "";
+        $out = "";
         if (isset($this->path) && filesize($this->path) > 0 && ($hand = fopen($this->path, 'r'))) {
             while (($chunk = fgets($hand, $ch)) !== false) {
-                $output .= $chunk;
+                $out .= $chunk;
                 if (
                     // `->get(7)`
                     is_int($stop) && $stop === $i ||
@@ -187,13 +187,13 @@ class File extends Genome {
                     is_string($stop) && strpos($chunk, $stop) !== false ||
                     // `->get(['$', 7])`
                     is_array($stop) && strpos($chunk, $stop[0]) === $stop[1] ||
-                    // `->get(function($chunk, $i, $output) {})`
-                    is_callable($stop) && call_user_func($stop, $chunk, $i, $output)
+                    // `->get(function($chunk, $i, $out) {})`
+                    is_callable($stop) && call_user_func($stop, $chunk, $i, $out)
                 ) break;
                 ++$i;
             }
             fclose($hand);
-            return rtrim($output);
+            return rtrim($out);
         }
         return $fail;
     }
@@ -295,7 +295,7 @@ class File extends Genome {
                     if (!is_dir($dir)) {
                         mkdir($dir, 0775, true);
                     }
-                    $out = extend($out, self::open($k)->copyTo($dir, $pattern));
+                    $out = extend($out, self::open($k)->copyTo($dir, $pattern), false);
                 }
                 $this->path = $folder . DS . $b;
                 return $out;
@@ -415,8 +415,8 @@ class File extends Genome {
         if (!$u = array_search((string) $unit, $x)) {
             $u = $size > 0 ? floor($size_base) : 0;
         }
-        $output = round($size / pow(1024, $u), $prec);
-        return $output < 0 ? null : trim($output . ' ' . $x[$u]);
+        $out = round($size / pow(1024, $u), $prec);
+        return $out < 0 ? null : trim($out . ' ' . $x[$u]);
     }
 
     public function __construct($path = true, $c = []) {

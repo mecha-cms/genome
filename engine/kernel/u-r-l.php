@@ -41,9 +41,9 @@ class URL extends Genome {
         return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $path);
     }
 
-    public function __construct($input = null, string $self = '$') {
+    public function __construct($in = null, string $self = '$') {
         $this->s = $self;
-        if (isset($input)) {
+        if (isset($in)) {
             $u = extend([
                 '$' => null,
                 'fragment' => "",
@@ -55,14 +55,14 @@ class URL extends Genome {
                 'query' => "",
                 'scheme' => "",
                 'user' => null
-            ], parse_url($input));
+            ], parse_url($in));
             $u['path'] = trim($u['path'], '/');
             $a = explode('/', $u['path']);
             if (is_numeric(end($a))) {
                 $u['i'] = (int) array_pop($a);
                 $u['path'] = implode('/', $a);
             }
-            $u['clean'] = rtrim(strtr(preg_replace('#[?&\#].*$#', "", $input), [
+            $u['clean'] = rtrim(strtr(preg_replace('#[?&\#].*$#', "", $in), [
                 '<' => '%3C',
                 '>' => '%3E',
                 '&' => '%26',

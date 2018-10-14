@@ -120,7 +120,7 @@ foreach([
         return file_exists($in) ? realpath($in) : $in;
     },
     'query' => function($in, $c = []) {
-        $c = extend(['?', '&', '=', ""], $c);
+        $c = extend(['?', '&', '=', ""], $c, false);
         foreach (query($in, "") as $k => $v) {
             if ($v === false) continue; // `['a' => 'false', 'b' => false]` → `a=false`
             $v = $v !== true ? $c[2] . urlencode(\s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`

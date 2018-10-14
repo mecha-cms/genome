@@ -90,19 +90,19 @@ class Asset extends Genome {
             }
             if (isset(self::$lot[$c][1][$kin])) {
                 $assets = Anemon::eat(self::$lot[$c][1][$kin])->sort([1, 'stack'], true)->vomit();
-                $output = "";
+                $out = "";
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {
-                        $output .= call_user_func($fn, $v, $k, extend($a, $v['data'])) . N;
+                        $out .= call_user_func($fn, $v, $k, extend($a, $v['data'])) . N;
                     }
                 } else {
                     foreach ($assets as $k => $v) {
                         if ($v['path'] !== false) {
-                            $output .= file_get_contents($v['path']) . N;
+                            $out .= file_get_contents($v['path']) . N;
                         }
                     }
                 }
-                return strlen(N) ? substr($output, 0, -strlen(N)) : $output;
+                return strlen(N) ? substr($out, 0, -strlen(N)) : $out;
             }
             return "";
         }

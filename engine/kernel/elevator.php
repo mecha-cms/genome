@@ -14,13 +14,13 @@ class Elevator extends Genome {
     protected $lot = [];
     protected $NS = "";
 
-    protected function unite($input, $alt = ['span']) {
-        if (!$alt || !$input) return "";
-        $input = extend($alt, $input);
-        return HTML::unite($input);
+    protected function unite($in, $alt = ['span']) {
+        if (!$alt || !$in) return "";
+        $in = extend($alt, $in);
+        return HTML::unite($in);
     }
 
-    public function __construct(array $input = [], $chunk = [5, 0], $path = true, $config = []) {
+    public function __construct(array $in = [], $chunk = [5, 0], $path = true, $config = []) {
         $key = c2f(static::class, '_', '/');
         $this->c = [
             // <: previous
@@ -49,7 +49,7 @@ class Elevator extends Genome {
                     1 => self::SOUTH
                 ]
             ],
-            'lot' => [$input, $chunk, $path, $config]
+            'lot' => [$in, $chunk, $path, $config]
         ];
         $c = extend($this->c, $config);
         $d = $c['direction'];
@@ -58,7 +58,7 @@ class Elevator extends Genome {
         $r = $GLOBALS['URL']['current'];
         if (is_array($chunk)) {
             $chunk = extend([5, 0], $chunk);
-            $input = Anemon::eat($input)->chunk($chunk[0]);
+            $in = Anemon::eat($in)->chunk($chunk[0]);
         }
         if ($path === true) {
             $path = $r;
@@ -69,20 +69,20 @@ class Elevator extends Genome {
         if (is_array($chunk)) {
             $i = $chunk[1];
             if ($d['<'] !== false)
-                $this->lot[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $i . $q : null;
+                $this->lot[$d['<']] = isset($in[$i - 1]) ? $path . '/' . $i . $q : null;
             if ($d['='] !== false)
                 $this->lot[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
             if ($d['>'] !== false)
-                $this->lot[$d['>']] = isset($input[$i + 1]) ? $path . '/' . ($i + 2) . $q : null;
+                $this->lot[$d['>']] = isset($in[$i + 1]) ? $path . '/' . ($i + 2) . $q : null;
         // @page
         } else {
-            $i = ($input ? array_search($chunk, $input) : 0) ?: 0;
+            $i = ($in ? array_search($chunk, $in) : 0) ?: 0;
             if ($d['<'] !== false)
-                $this->lot[$d['<']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] . $q : null;
+                $this->lot[$d['<']] = isset($in[$i - 1]) ? $path . '/' . $in[$i - 1] . $q : null;
             if ($d['='] !== false)
                 $this->lot[$d['=']] = $p !== "" ? ($path !== $r ? $path : $parent) . $q : null;
             if ($d['>'] !== false)
-                $this->lot[$d['>']] = isset($input[$i + 1]) ? $path . '/' . $input[$i + 1] . $q : null;
+                $this->lot[$d['>']] = isset($in[$i + 1]) ? $path . '/' . $in[$i + 1] . $q : null;
         }
         $this->config = $c;
         $this->NS = $key;
@@ -128,7 +128,7 @@ class Elevator extends Genome {
             $html[] = $this->{$d['=']}(true);
         if ($d['>'] !== false)
             $html[] = $this->{$d['>']}(true);
-        return Hook::fire($this->NS . '.yield', [implode(' ', $html), $this]);
+        return Hook::fire($this->NS . '.yield', [implode(' ', $html)], $this);
     }
 
 }

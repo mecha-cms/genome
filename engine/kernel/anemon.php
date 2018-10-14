@@ -7,70 +7,70 @@ class Anemon extends Genome implements \ArrayAccess {
     public $i = 0;
 
     // Create list of namespace step(s)
-    public static function step($input, string $NS = '.', int $dir = 1) {
-        if (is_string($input) && strpos($input, $NS) !== false) {
-            $input = explode($NS, trim($input, $NS));
-            $a = $dir === -1 ? array_pop($input) : array_shift($input);
-            $output = [$a];
+    public static function step($in, string $NS = '.', int $dir = 1) {
+        if (is_string($in) && strpos($in, $NS) !== false) {
+            $in = explode($NS, trim($in, $NS));
+            $a = $dir === -1 ? array_pop($in) : array_shift($in);
+            $out = [$a];
             if ($dir === -1) {
-                while ($b = array_pop($input)) {
+                while ($b = array_pop($in)) {
                     $a = $b . $NS . $a;
-                    array_unshift($output, $a);
+                    array_unshift($out, $a);
                 }
             } else {
-                while ($b = array_shift($input)) {
+                while ($b = array_shift($in)) {
                     $a .= $NS . $b;
-                    array_unshift($output, $a);
+                    array_unshift($out, $a);
                 }
             }
-            return $output;
+            return $out;
         }
-        return (array) $input;
+        return (array) $in;
     }
 
     // Set array value recursively
-    public static function set(array &$input, string $key, $value = null, string $NS = '.') {
+    public static function set(array &$array, string $key, $value = null, string $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
             $key = str_replace(X, $NS, array_shift($keys));
-            if (!array_key_exists($key, $input)) {
-                $input[$key] = [];
+            if (!array_key_exists($key, $array)) {
+                $array[$key] = [];
             }
-            $input =& $input[$key];
+            $array =& $array[$key];
         }
-        return ($input[array_shift($keys)] = $value);
+        return ($array[array_shift($keys)] = $value);
     }
 
     // Get array value recursively
-    public static function get(array &$input, string $key, $fail = false, string $NS = '.') {
+    public static function get(array &$array, string $key, $fail = false, string $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         foreach ($keys as $value) {
             $value = str_replace(X, $NS, $value);
-            if (!is_array($input) || !array_key_exists($value, $input)) {
+            if (!is_array($array) || !array_key_exists($value, $array)) {
                 return $fail;
             }
-            $input =& $input[$value];
+            $array =& $array[$value];
         }
-        return $input;
+        return $array;
     }
 
     // Remove array value recursively
-    public static function reset(array &$input, string $key, string $NS = '.') {
+    public static function reset(array &$array, string $key, string $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
             $key = str_replace(X, $NS, array_shift($keys));
-            if (array_key_exists($key, $input)) {
-                $input =& $input[$key];
+            if (array_key_exists($key, $array)) {
+                $array =& $array[$key];
             }
         }
-        if (is_array($input) && array_key_exists($value = array_shift($keys), $input)) {
-            unset($input[$value]);
+        if (is_array($array) && array_key_exists($value = array_shift($keys), $array)) {
+            unset($array[$value]);
         }
-        return $input;
+        return $array;
     }
 
-    public static function eat(array $input) {
-        return new static($input);
+    public static function eat(array $array) {
+        return new static($array);
     }
 
     public function vomit($key = null, $fail = false) {
@@ -137,11 +137,11 @@ class Anemon extends Genome implements \ArrayAccess {
         return $this;
     }
 
-    public static function alter($input, array $replace = [], $fail = null) {
-        // Return `$replace[$input]` value if exist
-        // or `$fail` value if `$replace[$input]` does not exist
-        // or `$input` value if `$fail` is `null`
-        return array_key_exists((string) $input, $replace) ? $replace[$input] : ($fail ?: $input);
+    public static function alter($key, array $data = [], $fail = null) {
+        // Return `$data[$key]` value if exist
+        // or `$fail` value if `$data[$key]` does not exist
+        // or `$key` value if `$fail` is `null`
+        return array_key_exists((string) $key, $data) ? $data[$key] : ($fail ?? $key);
     }
 
     // Move to next array index

@@ -1,6 +1,6 @@
 <?php
 
-class Set extends Genome {
+class Reset extends Genome {
 
     public static function __callStatic($kin, $lot = []) {
         if (!self::_($kin)) {
@@ -10,10 +10,10 @@ class Set extends Genome {
                 $GLOBALS[$id] = [];
             } else if (is_array($key)) {
                 foreach ($key as $v) {
-                    Anemon::reset($GLOBALS, $id . '.' . $v);
+                    unset($GLOBALS[$id][$v]);
                 }
             } else {
-                Anemon::reset($GLOBALS, $id . '.' . $key);
+                Anemon::reset($GLOBALS[$id], $key);
             }
             return new static;
         }

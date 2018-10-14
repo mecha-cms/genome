@@ -35,13 +35,13 @@ abstract class Genome {
     public function __call($kin, $lot = []) {
         $c = static::class;
         $m = 'Genome_' . $kin;
-        $this->_hub = '->';
+        $this->_call = '->';
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             $a = self::$_[$c][$kin];
             if (is_callable($a[0])) {
                 // Alter default function argument(s)
                 if (isset($a[1])) {
-                    $lot = extend((array) $a[1], $lot);
+                    $lot = extend((array) $a[1], $lot, false);
                 }
                 // Limit function argument(s)
                 if (isset($a[2])) {
@@ -63,13 +63,13 @@ abstract class Genome {
         $c = static::class;
         $m = 'Genome_' . $kin;
         $that = new static;
-        $that->_hub = '::';
+        $that->_call = '::';
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             $a = self::$_[$c][$kin];
             if (is_callable($a[0])) {
                 // Alter default function argument(s)
                 if (isset($a[1])) {
-                    $lot = extend((array) $a[1], $lot);
+                    $lot = extend((array) $a[1], $lot, false);
                 }
                 // Limit function argument(s)
                 if (isset($a[2])) {

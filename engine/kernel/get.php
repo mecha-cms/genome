@@ -29,13 +29,13 @@ class Get extends Genome {
             if (!isset($key)) {
                 return $GLOBALS[$id] ?? [];
             } else if (is_array($key)) {
+                $out = [];
                 foreach ($key as $k => $v) {
-                    Anemon::get($GLOBALS, $id . '.' . $k, $fail);
+                    $out[$k] = Anemon::get($GLOBALS[$id], $k, $v);
                 }
-            } else {
-                Anemon::get($GLOBALS, $id . '.' . $key, $value);
+                return !empty($out) ? $out : $fail;
             }
-            return new static;
+            return Anemon::get($GLOBALS[$id], $key, $value);
         }
         return parent::__callStatic($kin, $lot);
     }

@@ -4,26 +4,26 @@ class Shield extends Genome {
 
     protected static $lot = [];
 
-    public static function path($input, $fail = false) {
+    public static function path($in, $fail = false) {
         $NS = c2f($c = static::class, '_', '/') . '.' . __FUNCTION__;
-        $output = [];
-        if (is_string($input)) {
-            if (strpos($input, ROOT) !== 0) {
-                $id = str_replace(DS, '/', $input);
+        $out = [];
+        if (is_string($in)) {
+            if (strpos($in, ROOT) !== 0) {
+                $id = str_replace(DS, '/', $in);
                 if (!isset(self::$lot[$c][0][$id]) && isset(self::$lot[$c][1][$id])) {
-                    $output = self::$lot[$c][1][$id];
+                    $out = self::$lot[$c][1][$id];
                 } else {
-                    $output = Anemon::step($id, '/');
-                    array_unshift($output, str_replace('/', '.', $output[0]));
-                    $output = array_unique($output);
+                    $out = Anemon::step($id, '/');
+                    array_unshift($out, str_replace('/', '.', $out[0]));
+                    $out = array_unique($out);
                 }
             } else {
-                $output = $input;
+                $out = $in;
             }
         } else {
-            $output = $input;
+            $out = $in;
         }
-        foreach ((array) $output as $k => $v) {
+        foreach ((array) $out as $k => $v) {
             $id = $v;
             $v = str_replace('/', DS, $v);
             if (strpos($v, ROOT) !== 0) {
@@ -32,9 +32,9 @@ class Shield extends Genome {
                 }
                 $v = ROOT . DS . $v;
             }
-            $output[$k] = $v;
+            $out[$k] = $v;
         }
-        return File::exist(Hook::fire($NS, [$output, $input]), $fail);
+        return File::exist(Hook::fire($NS, [$out, $in]), $fail);
     }
 
     public static function set($id, $path = null) {
@@ -52,29 +52,29 @@ class Shield extends Genome {
         return new static;
     }
 
-    public static function get($input, $fail = false, $print = true) {
+    public static function get($in, $fail = false, $print = true) {
         $NS = c2f(static::class, '_', '/');
-        $output = "";
+        $out = "";
         Lot::set('lot', []);
         if (is_array($fail)) {
             Lot::set('lot', $fail);
             $fail = false;
         }
-        if ($path = self::path($input, $fail)) {
+        if ($path = self::path($in, $fail)) {
             ob_start();
             extract(Lot::get(null, []));
             require $path;
-            $output = ob_get_clean();
+            $out = ob_get_clean();
             // Begin shield
-            Hook::fire($NS . '.enter', [$output, $input, $path]);
-            $output = Hook::fire($NS . '.' . __FUNCTION__, [$output, $input, $path]);
+            Hook::fire($NS . '.enter', [$out, $in, $path]);
+            $out = Hook::fire($NS . '.' . __FUNCTION__, [$out, $in, $path]);
             // End shield
-            Hook::fire($NS . '.exit', [$output, $input, $path]);
+            Hook::fire($NS . '.exit', [$out, $in, $path]);
         }
         if (!$print) {
-            return $output;
+            return $out;
         }
-        echo $output;
+        echo $out;
     }
 
     public static function reset($id = null) {
@@ -93,13 +93,13 @@ class Shield extends Genome {
         return new static;
     }
 
-    public static function attach($input, $fail = false) {
-        if (!$output = self::get($input, $fail, false)) {
-            $output = candy(Guardian::$config['message'], [
-                'message' => '<code>' . __METHOD__ . '(' . v(json_encode($input)) . ')</code>'
+    public static function attach($in, $fail = false) {
+        if (!$out = self::get($in, $fail, false)) {
+            $out = candy(Guardian::$config['message'], [
+                'message' => '<code>' . __METHOD__ . '(' . v(json_encode($in)) . ')</code>'
             ]);
         }
-        echo Hook::fire(c2f(static::class, '_', '/') . '.yield', [$output, $input]);
+        echo Hook::fire(c2f(static::class, '_', '/') . '.yield', [$out, $in]);
         exit;
     }
 

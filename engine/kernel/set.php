@@ -10,16 +10,16 @@ class Set extends Genome {
             if (is_array($key)) {
                 // `Set::post(['foo' => 'bar'], false)`
                 if ($value === false) {
+                    // Replace
                     $GLOBALS[$id] = $key;
                 // `Set::post(['foo' => 'bar'])`
                 } else {
-                    foreach ($key as $k => $v) {
-                        Anemon::set($GLOBALS, $id . '.' . $k, $v);
-                    }
+                    // Extend
+                    $GLOBALS[$id] = extend($GLOBALS[$id], $key);
                 }
             // `Set::post('foo', 'bar')`
             } else {
-                Anemon::set($GLOBALS, $id . '.' . $key, $value);
+                Anemon::set($GLOBALS[$id], $key, $value);
             }
             return new static;
         }

@@ -6,8 +6,8 @@ Shield::_('abort', function($code = 404, $fail = false) {
     Shield::attach($code, $fail);
 });
 
-Shield::_('exist', function($input, $fail = false) {
-    return Folder::exist(SHIELD . DS . $input, $fail);
+Shield::_('exist', function(string $in, $fail = false) {
+    return Folder::exist(SHIELD . DS . $in, $fail);
 });
 
 Shield::_('state', function(...$lot) {
