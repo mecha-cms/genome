@@ -35,7 +35,7 @@ abstract class Genome {
     public function __call($kin, $lot = []) {
         $c = static::class;
         $m = 'Genome_' . $kin;
-        $this->_call = '->';
+        $this->_call = T_OBJECT_OPERATOR;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             $a = self::$_[$c][$kin];
             if (is_callable($a[0])) {
@@ -63,7 +63,7 @@ abstract class Genome {
         $c = static::class;
         $m = 'Genome_' . $kin;
         $that = new static;
-        $that->_call = '::';
+        $that->_call = T_DOUBLE_COLON;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             $a = self::$_[$c][$kin];
             if (is_callable($a[0])) {
