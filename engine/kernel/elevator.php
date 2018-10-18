@@ -58,7 +58,7 @@ class Elevator extends Genome {
         $r = $GLOBALS['URL']['current'];
         if (is_array($chunk)) {
             $chunk = extend([5, 0], $chunk);
-            $in = Anemon::eat($in)->chunk($chunk[0]);
+            $in = array_chunk($in, $chunk[0]);
         }
         if ($path === true) {
             $path = $r;

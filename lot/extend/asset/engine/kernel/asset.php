@@ -89,7 +89,7 @@ class Asset extends Genome {
                 return is_callable($fn) ? call_user_func($fn, $g, $path, $data) : ($g['path'] ? file_get_contents($g['path']) : "");
             }
             if (isset(self::$lot[$c][1][$kin])) {
-                $assets = Anemon::eat(self::$lot[$c][1][$kin])->sort([1, 'stack'], true)->vomit();
+                $assets = Anemon::eat(self::$lot[$c][1][$kin])->sort([1, 'stack'], true);
                 $out = "";
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {

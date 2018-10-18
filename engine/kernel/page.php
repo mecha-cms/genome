@@ -1,6 +1,6 @@
 <?php
 
-class Page extends Genome implements \IteratorAggregate {
+class Page extends Genome {
 
     public $path = null;
     public $lot = [];
@@ -9,11 +9,6 @@ class Page extends Genome implements \IteratorAggregate {
     private $hash = "";
 
     private static $page = []; // Cache!
-
-    // `foreach (new Page as $k => $v) { … }`
-	  public function getIterator() {
-		    return new \ArrayIterator($this->lot);
-    }
 
     public function __construct($path = null, array $lot = [], $NS = []) {
         $key = c2f(static::class, '_', '/');
@@ -34,12 +29,12 @@ class Page extends Genome implements \IteratorAggregate {
                 'time' => date(DATE_WISE, $c),
                 'update' => date(DATE_WISE, $m),
                 'slug' => $n,
-                'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
+                'title' => $n !== null ? To::title((string) $n) : null, // Fake `title` data from the page’s file name
                 'state' => $x,
                 'type' => u($x), // Fake `type` data from the page’s file extension
                 'id' => sprintf('%u', $c),
                 'path' => $path,
-                'url' => To::URL($path)
+                'url' => $path !== null ? To::URL((string) $path) : null
             ], (array) Config::get($key, [], true), $lot, false);
             // Set `time` value from the page’s file name
             if (
@@ -88,7 +83,7 @@ class Page extends Genome implements \IteratorAggregate {
                 $extern = null; // Stop!
                 $a[$key] = e($data);
             } else if ($page = file_get_contents($path)) {
-                $a = extend($a, e(self::apart($page), ['$', 'content']));
+                $a = extend($a, self::apart($page, null, null, ['$', 'content']), false);
             }
         }
         if (!array_key_exists($key, $a)) {

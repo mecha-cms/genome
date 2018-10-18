@@ -1,5 +1,6 @@
 <?php namespace fn\get;
 
+/*
 // Hard-coded data key(s) which the value must be standardized: `time`, `slug`
 function _data($v, $n = null) {
     $n = $n ?: \Path::N($v);
@@ -46,7 +47,7 @@ function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = nul
             if (\Path::N($v) === '$') continue;
             $out[] = _page($v, null, false, $by);
         }
-        $out = $o = \Anemon::eat($out)->sort($sort)->vomit();
+        $out = $o = \Anemon::eat($out)->sort($sort);
         if (isset($key)) {
             $o = [];
             foreach ($out as $v) {
@@ -60,6 +61,31 @@ function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = nul
         return !empty($o) ? $o : false;
     }
     return false;
+}
+
+*/
+
+function _page($v, $key) {
+    return (new \Page($v, [], false))->get([
+        $key => null,
+        'path' => $v,
+        'time' => null,
+        'update' => null,
+        'slug' => \Path::N($v),
+        'state' => \Path::X($v)
+    ]);
+}
+
+function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = null) {
+    $pages = \Anemon::eat(\g($folder, $state))->not(function($v) {
+        return pathinfo($v, PATHINFO_FILENAME) === '$';
+    })->map(function($v) use($key) {
+        return _page($v, $key);
+    })->sort($sort);
+    if ($key) {
+        return $pages->pluck($key);
+    }
+    return $pages;
 }
 
 \Get::_('pages', __NAMESPACE__ . '\pages');

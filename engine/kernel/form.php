@@ -104,7 +104,7 @@ class Form extends HTML {
 
     private static function name(&$s, &$a) {
         if ($s && strpos('.!*', $s[0]) !== false) {
-            $a[Anemon::alter($s[0], [
+            $a[alt($s[0], [
                 '.' => 'disabled',
                 '!' => 'readonly',
                 '*' => 'required'

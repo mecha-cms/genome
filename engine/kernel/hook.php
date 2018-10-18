@@ -77,7 +77,7 @@ class Hook extends Genome {
                 self::$lot[1][$c][$id] = [];
                 return $lot[0];
             }
-            $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack'])->vomit();
+            $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack']);
             if ($self) {
                 $self->_hook = $id;
                 $self->_hook_count = 0;

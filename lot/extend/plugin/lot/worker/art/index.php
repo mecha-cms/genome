@@ -30,6 +30,12 @@ namespace fn\art {
             \Config::set('not.art', !$css && !$js);
         }
     }
+    if (!\HTTP::is('get', 'art') || \HTTP::get('art')) {
+        \Hook::set('on.ready', __NAMESPACE__ . '\classes', 0);
+        \Hook::set('page.css', __NAMESPACE__ . '\css', 2);
+        \Hook::set('page.js', __NAMESPACE__ . '\js', 2);
+        \Hook::set('shield.yield', __NAMESPACE__, 1);
+    }
 }
 
 namespace fn {
@@ -42,14 +48,5 @@ namespace fn {
         // Append custom JS before `</body>`…
         $content = str_replace('</body>', $page->js . '</body>', $content);
         return $content;
-    }
-}
-
-namespace {
-    if (!\HTTP::is('get', 'art') || \HTTP::get('art')) {
-        \Hook::set('on.ready', 'fn\art\classes', 0);
-        \Hook::set('page.css', 'fn\art\css', 2);
-        \Hook::set('page.js', 'fn\art\js', 2);
-        \Hook::set('shield.yield', 'fn\art', 1);
     }
 }

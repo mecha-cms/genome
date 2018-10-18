@@ -8,9 +8,6 @@ abstract class Genome {
     // Method(s)…
     public static $_ = [];
 
-    // Data(s)…
-    public $__data__ = [];
-
     // Set, get, reset…
     public static function _(...$lot) {
         $c = static::class;

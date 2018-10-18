@@ -59,20 +59,26 @@ namespace fn\is {
 }
 
 namespace {
+    // Shortcut for `switch` and `case` statement(s)
+    function alt($k = "", array $a = [], $fail = null) {
+        // Return `$a[$k]` value if exist
+        // or `$fail` value if `$a[$k]` does not exist
+        // or `$k` value if `$fail` is `null`
+        return array_key_exists((string) $k, $a) ? $a[$k] : ($fail ?? $k);
+    }
     // Check if array contains …
-    function any(array $a = [], callable $fn) {
+    function any(array $a = [], $fn = null) {
+        if (!is_callable($fn) && $fn !== null) {
+            $fn = function($v) use($fn) {
+                return $v === $fn;
+            };
+        }
         foreach ($a as $k => $v) {
             if (call_user_func($fn, $v, $k)) {
                 return true;
             }
         }
         return false;
-    }
-    // Filter out element(s) that does not pass the function test
-    function but(array $a = [], callable $fn) {
-        return array_filter($a, function($v, $k) use($fn) {
-            return !call_user_func($fn, $v, $k);
-        }, ARRAY_FILTER_USE_BOTH);
     }
     // Replace pattern to its value
     function candy(string $s = "", $a = [], $x = "\n", $r = true) {
@@ -209,16 +215,60 @@ namespace {
         ], x($s, $d)); // return a regular expression string without the delimiter(s)
     }
     // Check if an element exists in array
-    function has(array $a = [], $s = "") {
-        return strpos(X . implode(X, $a) . X, X . $s . X) !== false;
+    function has(array $a = [], string $s = "", string $x = X) {
+        return strpos($x . implode($x, $a) . $x, $x . $s . $x) !== false;
     }
     // Filter out element(s) that pass the function test
     function is(array $a = [], $fn = null) {
+        if (!is_callable($fn) && $fn !== null) {
+            $fn = function($v) use($fn) {
+                return $v === $fn;
+            };
+        }
         return $fn ? array_filter($a, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($a);
     }
     // Manipulate array value(s)
     function map(array $a = [], callable $fn) {
         return array_map($fn, $a);
+    }
+    // Filter out element(s) that does not pass the function test
+    function not(array $a = [], $fn = null) {
+        if (!is_callable($fn) && $fn !== null) {
+            $fn = function($v) use($fn) {
+                return $v === $fn;
+            };
+        }
+        return array_filter($a, function($v, $k) use($fn) {
+            return !call_user_func($fn, $v, $k);
+        }, ARRAY_FILTER_USE_BOTH);
+    }
+    // Generate new array contains value from the key
+    function pluck(array $a = [], string $k, $fail = null) {
+        return array_filter(array_map(function($v) use($k, $fail) {
+            return $v[$k] ?? $fail;
+        }, $a));
+    }
+    // Shake array
+    function shake(array $a = [], $preserve_key = true) {
+        if (is_callable($preserve_key)) {
+            // `$preserve_key` as `$fn`
+            $a = call_user_func($preserve_key, $a);
+        } else {
+            // <http://php.net/manual/en/function.shuffle.php#94697>
+            if ($preserve_key) {
+                $k = array_keys($a);
+                $v = [];
+                shuffle($k);
+                foreach ($k as $kk) {
+                    $v[$kk] = $a[$kk];
+                }
+                $a = $v;
+                unset($k, $v);
+            } else {
+                shuffle($a);
+            }
+        }
+        return $a;
     }
     // Dump PHP code
     function test(...$a) {
@@ -1025,7 +1075,7 @@ namespace {
     }
     // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
     // $n: @keep line-break in the output or replace them with a space? (default is !@keep)
-    function w(string $x = "", $c = [], $n = false) {
+    function w(/* string */$x = "", $c = [], $n = false) {
         // Should be a HTML input
         if (strpos($x, '<') !== false || strpos($x, ' ') !== false || strpos($x, "\n") !== false) {
             $c = '<' . implode('><', is_string($c) ? explode(',', $c) : (array) $c) . '>';

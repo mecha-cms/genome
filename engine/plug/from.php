@@ -139,6 +139,12 @@ function yaml($in, $d = '  ', $ref = [], $e = true) {
 }
 
 foreach ([
+    'anemon' => function($in) {
+        if ($in instanceof \Traversable) {
+            return iterator_to_array($in);
+        }
+        return (array) $in;
+    },
     'base64' => 'base64_decode',
     'dec' => ['html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
     'hex' => ['html_entity_decode', [null, ENT_QUOTES | ENT_HTML5]],
