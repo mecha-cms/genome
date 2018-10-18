@@ -171,7 +171,7 @@ namespace {
     }
     // Convert file name to class name
     function f2c(string $s = "", string $h = '-', string $n = '.') {
-        return str_replace($n, '\\', p($s, false, $n));
+        return str_replace($n, '\\', p(str_replace($n, $n . '-', $s), false, $n));
     }
     // Return the first element found in array that passed the function test
     function find(array $a = [], callable $fn) {
@@ -180,7 +180,7 @@ namespace {
                 return $v;
             }
         }
-        return false;
+        return null;
     }
     // Trigger function with scope and parameter(s)
     function fn(callable $fn, $t = null, array $a = []) {

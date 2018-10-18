@@ -4,27 +4,28 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     public $lot = [];
     public $current = [];
+    public $parent = null;
     public $separator = "";
     public $i = 0;
 
     public function offsetSet($i, $value) {
         if (!isset($i)) {
-            $this->lot[] = $value;
+            $this->current[] = $value;
         } else {
-            $this->lot[$i] = $value;
+            $this->current[$i] = $value;
         }
     }
 
     public function offsetExists($i) {
-        return isset($this->lot[$i]);
+        return isset($this->current[$i]);
     }
 
     public function offsetUnset($i) {
-        unset($this->lot[$i]);
+        unset($this->current[$i]);
     }
 
     public function offsetGet($i) {
-        return $this->lot[$i] ?? null;
+        return $this->current[$i] ?? null;
     }
 
     public function count($deep = false) {
@@ -40,7 +41,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function unserialize($lot) {
-        $this->lot = unserialize($lot);
+        $this->lot = $this->current = unserialize($lot);
     }
 
     public function __construct(iterable $array = [], string $separator = ', ') {
@@ -52,21 +53,11 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         parent::__construct();
     }
 
-    public function __set($key, $value = null) {
-        $this->lot[$key] = $value;
-    }
-
     public function __get($key) {
-        return array_key_exists($key, $this->lot) ? $this->lot[$key] : null;
-    }
-
-    // Fix case for `isset($a->key)` or `!empty($a->key)`
-    public function __isset($key) {
-        return !!$this->__get($key);
-    }
-
-    public function __unset($key) {
-        unset($this->lot[$key]);
+        if (method_exists($this, $key)) {
+            return $this->{$key}();
+        }
+        return parent::__get($key);
     }
 
     public function __toString() {
@@ -80,9 +71,16 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         })->current : $this->current);
     }
 
-    public function all() {
+    public function lot() {
         $this->current = $this->lot;
         return $this;
+    }
+
+    public function mitose() {
+        $clone = new static($this->current, $this->separator);
+        $clone->lot = $this->lot;
+        $clone->parent = $this;
+        return $clone;
     }
 
     // Move to next array index
@@ -133,36 +131,24 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Insert `$value` to the end of array
     public function append($value, $key = null) {
-        $this->i = $this->count() + 1;
-        if (isset($key)) {
-            $this->current += [$key => $value];
-        } else {
-            $this->current = array_merge($this->current, [$value]);
-        }
-        return $this;
+        return $this->end()->after($value, $key);
     }
 
     // Insert `$value` to the start of array
     public function prepend($value, $key = null) {
-        $this->i = 0;
-        if (isset($key)) {
-            $this->current = [$key => $value] + $this->current;
-        } else {
-            $this->current = array_merge([$value], $this->current);
-        }
-        return $this;
+        return $this->begin()->before($value, $key);
     }
 
     // Insert `$value` before current element
     public function before($value, $key = null) {
-        $i = b($this->i - 1, 0, $this->count());
+        $i = b($this->i, 0, $this->count());
         $this->current = array_slice($this->current, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->current, $i, null, true);
         return $this;
     }
 
     // Insert `$value` after current element
     public function after($value, $key = null) {
-        $i = b($this->i + 2, 0, $this->count());
+        $i = b($this->i + 1, 0, $this->count());
         $this->current = array_slice($this->current, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->current, $i, null, true);
         return $this;
     }
@@ -241,9 +227,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // @see `.\engine\ignite.php#fn:find`
-    public function find(callable $fn = null, $fail = false) {
+    public function find(callable $fn = null, $fail = null) {
         $found = find($this->current, $fn);
-        return $found !== false ? $found : $fail;
+        return $found !== null ? $found : $fail;
     }
 
     // @see `.\engine\ignite.php#fn:has`
@@ -257,7 +243,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // @see `.\engine\ignite.php#fn:not`
+    // @see `.\engine\ignite.php#fn:map`
     public function map(callable $fn) {
         $this->current = map($this->current, $fn);
         return $this;

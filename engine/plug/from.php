@@ -62,11 +62,14 @@ function yaml($in, $d = '  ', $ref = [], $e = true) {
         }
     }
     if (strpos($in, ': ') !== false && (strpos($in, '|') !== false || strpos($in, '>') !== false)) {
-        $in = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)#', function($m) use($d) {
-            $s = trim(str_replace("\n" . $m[1] . $d, "\n", "\n" . $m[4]), "\n");
+        $in = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:(?:\1' . $x . '[^\n]*)?\n?)+|$))#', function($m) use($d) {
+            $s = str_replace("\n" . $m[1] . $d, "\n", "\n" . $m[4]);
             if ($m[3] === '>') {
+                $s = trim($s, "\n");
                 // TODO
                 $s = preg_replace('#(\S)\n(\S)#', '$1 $2', $s);
+            } else {
+                $s = \t($s, "\n");
             }
             return $m[1] . $m[2] . ': ' . json_encode($s) . "\n";
         }, $in);
