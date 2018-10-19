@@ -3,61 +3,54 @@
 class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \Serializable {
 
     public $lot = [];
-    public $current = [];
+    public $value = [];
     public $parent = null;
     public $separator = "";
     public $i = 0;
 
     public function offsetSet($i, $value) {
         if (!isset($i)) {
-            $this->current[] = $value;
+            $this->value[] = $value;
         } else {
-            $this->current[$i] = $value;
+            $this->value[$i] = $value;
         }
     }
 
     public function offsetExists($i) {
-        return isset($this->current[$i]);
+        return isset($this->value[$i]);
     }
 
     public function offsetUnset($i) {
-        unset($this->current[$i]);
+        unset($this->value[$i]);
     }
 
     public function offsetGet($i) {
-        return $this->current[$i] ?? null;
+        return $this->value[$i] ?? null;
     }
 
     public function count($deep = false) {
-        return count($this->current, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+        return count($this->value, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
 
     public function getIterator() {
-        return new \ArrayIterator($this->current);
+        return new \ArrayIterator($this->value);
     }
 
     public function serialize() {
-        return serialize($this->current);
+        return serialize($this->value);
     }
 
     public function unserialize($lot) {
-        $this->lot = $this->current = unserialize($lot);
+        $this->lot = $this->value = unserialize($lot);
     }
 
     public function __construct(iterable $array = [], string $separator = ', ') {
         if ($array instanceof \Traversable) {
             $array = iterator_to_array($array);
         }
-        $this->lot = $this->current = $array;
+        $this->lot = $this->value = $array;
         $this->separator = $separator;
         parent::__construct();
-    }
-
-    public function __get($key) {
-        if (method_exists($this, $key)) {
-            return $this->{$key}();
-        }
-        return parent::__get($key);
     }
 
     public function __toString() {
@@ -68,16 +61,20 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return implode($separator, $is ? $this->is(function($v, $k) {
             // Ignore `null` and `false` value and all item(s) with key prefixed by a `_`
             return isset($v) && $v !== false && strpos($k, '_') !== 0;
-        })->current : $this->current);
+        })->value : $this->value);
     }
 
-    public function lot() {
-        $this->current = $this->lot;
+    public function lot(array $lot = [], $over = false) {
+        if ($lot) {
+            $this->lot = $over ? extend($this->lot, $lot) : $lot;
+        }
+        $this->value = $this->lot;
         return $this;
     }
 
+    // Clone the current instance
     public function mitose() {
-        $clone = new static($this->current, $this->separator);
+        $clone = new static($this->value, $this->separator);
         $clone->lot = $this->lot;
         $clone->parent = $this;
         return $clone;
@@ -115,18 +112,18 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Get first array value
     public function first() {
-        return reset($this->current);
+        return reset($this->value);
     }
 
     // Get current array value
     public function current($fail = null) {
-        $current = array_values($this->current);
+        $current = array_values($this->value);
         return $current[$this->i] ?? $fail;
     }
 
     // Get last array value
     public function last() {
-        return end($this->current);
+        return end($this->value);
     }
 
     // Insert `$value` to the end of array
@@ -142,23 +139,23 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     // Insert `$value` before current element
     public function before($value, $key = null) {
         $i = b($this->i, 0, $this->count());
-        $this->current = array_slice($this->current, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->current, $i, null, true);
+        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
         return $this;
     }
 
     // Insert `$value` after current element
     public function after($value, $key = null) {
         $i = b($this->i + 1, 0, $this->count());
-        $this->current = array_slice($this->current, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->current, $i, null, true);
+        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
         return $this;
     }
 
     // Replace current element with `$value`
     public function replace($value) {
         $i = 0;
-        foreach ($this->current as $k => $v) {
+        foreach ($this->value as $k => $v) {
             if ($i === $this->i) {
-                $this->current[$k] = $value;
+                $this->value[$k] = $value;
                 break;
             }
             ++$i;
@@ -168,102 +165,121 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Get array key by position
     public function key(int $index, $fail = null) {
-        $array = array_keys($this->current);
+        $array = array_keys($this->value);
         return array_key_exists($index, $array) ? $array[$index] : $fail;
     }
 
     // Get position by array key
     public function index(string $key, $fail = null) {
-        $search = array_search($key, array_keys($this->current));
+        $search = array_search($key, array_keys($this->value));
         return $search !== false ? $search : $fail;
     }
 
     // Generate chunk(s) of array
     public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
-        $this->current = array_chunk($this->current, $chunk, $preserve_key);
+        $this->value = array_chunk($this->value, $chunk, $preserve_key);
         if ($index !== -1) {
-            $this->current = $this->current[$this->i = $index] ?? [];
+            $this->value = $this->value[$this->i = $index] ?? [];
         }
         return $this;
     }
 
     // Sort array value: `1` for “asc” and `-1` for “desc”
     public function sort($sort = 1, $preserve_key = false) {
-        if (is_array($sort) && isset($sort[1])) {
-            $before = $after = [];
-            $key = $sort[1];
-            if (!empty($this->current)) {
-                foreach ($this->current as $k => $v) {
-                    $v = (array) $v;
-                    if (array_key_exists($key, $v)) {
-                        $before[$k] = $v[$key];
-                    } else if (!is_bool($preserve_key)) {
-                        $before[$k] = (string) $preserve_key;
-                        $this->current[$k][$key] = (string) $preserve_key;
+        $value = $this->value;
+        if (is_callable($sort)) {
+            $preserve_key ? uasort($value, $sort) : usort($value, $sort);
+        } else if (is_array($sort)) {
+            $i = $sort[0];
+            if (!isset($sort[1])) {
+                if ($preserve_key) {
+                    $i === -1 ? arsort($value) : asort($value);
+                } else {
+                    $i === -1 ? rsort($value) : sort($value);
+                }
+            } else {
+                $key = $sort[1];
+                $fn = $i === -1 ? function($a, $b) use($key) {
+                    if (!isset($a[$key]) && !isset($b[$key]))
+                        return 0;
+                    if (!isset($b[$key]))
+                        return 1;
+                    if (!isset($a[$key]))
+                        return -1;
+                    return $b[$key] <=> $a[$key];
+                } : function($a, $b) use($key) {
+                    if (!isset($a[$key]) && !isset($b[$key]))
+                        return 0;
+                    if (!isset($a[$key]))
+                        return 1;
+                    if (!isset($b[$key]))
+                        return -1;
+                    return $a[$key] <=> $b[$key];
+                };
+                if (array_key_exists(2, $sort)) {
+                    foreach ($value as &$v) {
+                        if (!isset($v[$key])) {
+                            $v[$key] = $sort[2];
+                        }
                     }
+                    unset($v);
                 }
-                $sort[0] === -1 ? arsort($before) : asort($before);
-                foreach ($before as $k => $v) {
-                    $after[$k] = $this->current[$k];
-                }
+                $preserve_key ? uasort($value, $fn) : usort($value, $fn);
             }
-            $this->current = $after;
-            unset($before, $after);
         } else {
-            if (is_array($sort)) {
-                $sort = $sort[0];
+            if ($preserve_key) {
+                $sort === -1 ? arsort($value) : asort($value);
+            } else {
+                $sort === -1 ? rsort($value) : sort($value);
             }
-            $sort === -1 ? arsort($this->current) : asort($this->current);
         }
-        if ($preserve_key === false) {
-            $this->current = array_values($this->current);
-        }
+        $this->value = $value;
         return $this;
     }
 
     // @see `.\engine\ignite.php#fn:any`
     public function any($fn = null) {
-        return any($this->current, $fn);
+        return any($this->value, $fn);
     }
 
     // @see `.\engine\ignite.php#fn:find`
     public function find(callable $fn = null, $fail = null) {
-        $found = find($this->current, $fn);
+        $found = find($this->value, $fn);
         return $found !== null ? $found : $fail;
     }
 
     // @see `.\engine\ignite.php#fn:has`
     public function has(string $value = "", string $separator = X) {
-        return has($this->current, $value, $separator);
+        return has($this->value, $value, $separator);
     }
 
     // @see `.\engine\ignite.php#fn:is`
     public function is($fn = null) {
-        $this->current = is($this->current, $fn);
+        $this->value = is($this->value, $fn);
         return $this;
     }
 
     // @see `.\engine\ignite.php#fn:map`
     public function map(callable $fn) {
-        $this->current = map($this->current, $fn);
+        $this->value = map($this->value, $fn);
         return $this;
     }
 
     // @see `.\engine\ignite.php#fn:not`
     public function not($fn = null) {
-        $this->current = $fn ? not($this->current, $fn) : [];
+        $this->value = $fn ? not($this->value, $fn) : [];
         return $this;
     }
 
     // @see `.\engine\ignite.php#fn:pluck`
     public function pluck(string $key, $fail = null) {
-        $this->current = pluck($this->current, $key, $fail);
+        $this->value = pluck($this->value, $key, $fail);
         return $this;
     }
 
     // @see `.\engine\ignite.php#fn:shake`
     public function shake($preserve_key = true) {
-        $this->current = shake($this->current, $preserve_key);
+        $this->value = shake($this->value, $preserve_key);
         return $this;
     }
 
@@ -336,9 +352,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     public function vomit($key = null, $fail = null) {
         if (isset($key)) {
-            return self::get($this->current, $key, $fail);
+            return self::get($this->value, $key, $fail);
         }
-        return $this->current;
+        return $this->value;
     }
 
 }

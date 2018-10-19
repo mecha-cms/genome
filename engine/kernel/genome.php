@@ -28,6 +28,13 @@ abstract class Genome {
         self::$__instance__[] = $this;
     }
 
+    public function __get($kin) {
+        if (method_exists($this, $kin)) {
+            return $this->{$kin}();
+        }
+        return $this->__call($kin);
+    }
+
     // Call the added method with `$genome->foo()`
     public function __call($kin, $lot = []) {
         $c = static::class;

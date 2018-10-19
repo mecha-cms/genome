@@ -90,6 +90,9 @@ class Elevator extends Genome {
     }
 
     public function __get($key) {
+        if (self::_($key)) {
+            return parent::__call($key);
+        }
         return array_key_exists($key, $this->lot) ? $this->lot[$key] : null;
     }
 
