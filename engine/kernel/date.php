@@ -5,7 +5,7 @@ class Date extends Genome {
     public $lot = [];
     public $source = null;
 
-    protected static $zone = "";
+    protected static $zone = null;
     protected static $pattern = '%Y%-%M%-%D% %~h%:%m%:%s%';
 
     protected function extract() {
@@ -20,7 +20,7 @@ class Date extends Genome {
                 '%minute%' => $i[4],
                 '%second%' => $i[5],
                 '%noon%' => $i[6],
-                '%week%' => $i[7],
+                '%week%' => ($w = str_pad($i[7] + 1, 2, '0', STR_PAD_LEFT)),
                 '%zone%' => $i[9],
                 '%~M%' => $language->months_long[(int) $i[1] - 1],
                 '%~D%' => $language->days_long[(int) $i[7]],
@@ -30,10 +30,10 @@ class Date extends Genome {
                 '%D%' => $i[2],
                 '%m%' => $i[4],
                 '%s%' => $i[5],
-                '%n%' => $i[6],
-                '%w%' => $i[7],
+                '%N%' => $i[6],
+                '%W%' => $w,
                 '%h%' => $i[8],
-                '%z%' => $i[9]
+                '%Z%' => $i[9]
             ];
         }
         return $this;
@@ -48,7 +48,7 @@ class Date extends Genome {
         if (is_string($type)) {
             return $this->lot['%~D%'];
         }
-        return $this->lot['%' . ($type === 7 ? 'w' : 'd') . '%'];
+        return $this->lot['%' . ($type === 7 ? 'W' : 'D') . '%'];
     }
 
     public function hour($type = null) {
@@ -75,7 +75,7 @@ class Date extends Genome {
         return strtr(strtr(strtr($pattern, '\%', X), $this->lot), X, '%');
     }
 
-    public function format($format = DATE_WISE) {
+    public function format(string $format = DATE_WISE) {
         return date($format, strtotime($this->source)); // Generic PHP date formatter
     }
 
@@ -114,7 +114,7 @@ class Date extends Genome {
 
     public static function zone(string $zone = null) {
         if (!isset($zone)) {
-            return self::$zone;
+            return self::$zone ?: date_default_timezone_get();
         }
         return date_default_timezone_set(self::$zone = $zone);
     }
