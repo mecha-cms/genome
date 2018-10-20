@@ -24,7 +24,7 @@ $vars = [
     &$_SESSION
 ];
 array_walk_recursive($vars, function(&$v) {
-    $v = str_replace(["\r\n", "\r"], "\n", $v);
+    $v = strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
 });
 
 $f = ENGINE . DS;
@@ -45,7 +45,7 @@ Config::ignite(STATE . DS . 'config.php');
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
 $protocol = $scheme . '://';
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
-$directory = str_replace(DS, '/', dirname($_SERVER['SCRIPT_NAME']));
+$directory = strtr(dirname($_SERVER['SCRIPT_NAME']), DS, '/');
 $directory = $directory === '.' ? "" : trim($directory, '/');
 $url = rtrim($protocol . $host  . '/' . $directory, '/');
 // [1]. Remove query string(s) and hash from URL
@@ -56,7 +56,7 @@ $path = strtr(preg_replace('#[?&\#].*$#', "", trim($_SERVER['QUERY_STRING'], '/'
     '&' => '%26',
     '"' => '%22'
 ]);
-$path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $directory . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
+$path = trim(strtr($_SERVER['REQUEST_URI'], ['/?' => '?']), '/') === $directory . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
 if ($path !== "") {
     array_shift($_GET);
 }

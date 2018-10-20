@@ -67,7 +67,7 @@ class File extends Genome {
             $x = $folder[1] ?? null;
             $folder = $folder[0];
         }
-        $folder = str_replace('/', DS, $folder);
+        $folder = strtr($folder, '/', DS);
         $out = [];
         if ($deep) {
             $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
@@ -369,7 +369,7 @@ class File extends Genome {
 
     // Upload a file
     public static function push($name, string $path = ROOT, $fn = null) {
-        $path = rtrim(str_replace('/', DS, $path), DS);
+        $path = rtrim(strtr($path, '/', DS), DS);
         if (!isset($_FILES[$name])) {
             return 4; // No file was uploaded
         }

@@ -1,23 +1,5 @@
 <?php namespace fn\shield;
 
-// Fix missing date format: default to `en_us`
-\Hook::set('on.ready', function() {
-    $key = str_replace('-', '_', \Config::get('language'));
-    if (!\Date::get($key)) {
-        \Date::set($key, function($out) {
-            return $out['en_us'];
-        });
-    }
-}, 0);
-
-// Rich `time` and `update` data
-\Hook::set([
-    '*.time',
-    '*.update'
-], function($v) {
-    return new \Date($v);
-}, 0);
-
 // Generate relative shield path to the `.\lot\shield\*` folder
 function path($path) {
     if (!$path) {

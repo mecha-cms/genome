@@ -9,12 +9,12 @@ class Shield extends Genome {
         $out = [];
         if (is_string($in)) {
             if (strpos($in, ROOT) !== 0) {
-                $id = str_replace(DS, '/', $in);
+                $id = strtr($in, DS, '/');
                 if (!isset(self::$lot[$c][0][$id]) && isset(self::$lot[$c][1][$id])) {
                     $out = self::$lot[$c][1][$id];
                 } else {
                     $out = Anemon::step($id, '/');
-                    array_unshift($out, str_replace('/', '.', $out[0]));
+                    array_unshift($out, strtr($out[0], '/', '.'));
                     $out = array_unique($out);
                 }
             } else {
@@ -25,7 +25,7 @@ class Shield extends Genome {
         }
         foreach ((array) $out as $k => $v) {
             $id = $v;
-            $v = str_replace('/', DS, $v);
+            $v = strtr($v, '/', DS);
             if (strpos($v, ROOT) !== 0) {
                 if (substr($v, -4) !== '.php') {
                     $v .= '.php';
@@ -45,7 +45,7 @@ class Shield extends Genome {
             }
         } else {
             if (!isset(self::$lot[$c][0][$id])) {
-                $id = str_replace(DS, '/', $id);
+                $id = strtr($id, DS, '/');
                 self::$lot[$c][1][$id] = $path;
             }
         }
@@ -86,7 +86,7 @@ class Shield extends Genome {
                 self::reset($v);
             }
         } else {
-            $id = str_replace(DS, '/', $id);
+            $id = strtr($id, DS, '/');
             self::$lot[$c][0][$id] = 1;
             unset(self::$lot[$c][1][$id]);
         }
@@ -100,7 +100,7 @@ class Shield extends Genome {
             ]);
         }
         echo Hook::fire(c2f(static::class, '_', '/') . '.yield', [$out, $in]);
-        exit;
+        return;
     }
 
 }

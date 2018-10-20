@@ -9,11 +9,11 @@ class State extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot = []) {
-        if (self::_($key)) {
-            return parent::__call($key, $lot);
+    public function __call($kin, $lot = []) {
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
         }
-        $x = $this->__get($key);
+        $x = $this->__get($kin);
         $fail = array_shift($lot);
         $alt = array_shift($lot);
         if ($fail instanceof \Closure) {

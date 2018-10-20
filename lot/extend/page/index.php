@@ -16,7 +16,7 @@ function url($url = "", array $lot = []) {
         return $url;
     }
     $path = \Path::F($path, PAGE);
-    return rtrim($GLOBALS['URL']['$'] . '/' . ltrim(str_replace(DS, '/', $path), '/'), '/');
+    return rtrim($GLOBALS['URL']['$'] . '/' . ltrim(strtr($path, DS, '/'), '/'), '/');
 }
 
 \Hook::set('page.url', __NAMESPACE__ . '\url', 2);
@@ -61,29 +61,29 @@ function url($url = "", array $lot = []) {
         }
         $page = new \Page($file);
         // Create pager for single page mode
-        $_folder = \Path::D($folder);
-        $_path = \Path::D($path);
-        if ($_file = \File::exist([
-            $_folder . '.page', // `lot\page\parent-slug.page`
-            $_folder . '.archive', // `lot\page\parent-slug.archive`
-            $_folder . DS . '$.page', // `lot\page\parent-slug\$.page`
-            $_folder . DS . '$.archive' // `lot\page\parent-slug\$.archive`
+        $parent_folder = \Path::D($folder);
+        $parent_path = \Path::D($path);
+        if ($parent_file = \File::exist([
+            $parent_folder . '.page', // `lot\page\parent-slug.page`
+            $parent_folder . '.archive', // `lot\page\parent-slug.archive`
+            $parent_folder . DS . '$.page', // `lot\page\parent-slug\$.page`
+            $parent_folder . DS . '$.archive' // `lot\page\parent-slug\$.archive`
         ])) {
-            $_page = new \Page($_file);
+            $parent_page = new \Page($parent_file);
             // Inherit parent’s `sort` and `chunk` property where possible
-            $sort = $_page->sort ?: $sort;
-            $chunk = $_page->chunk ?: $chunk;
-            $_files = \Get::pages($_folder, 'page', $sort, 'slug')->vomit();
+            $sort = $parent_page->sort ?: $sort;
+            $chunk = $parent_page->chunk ?: $chunk;
+            $parent_files = \Get::pages($parent_folder, 'page', $sort, 'slug')->vomit();
         } else {
-            $_files = [];
+            $parent_files = [];
         }
-        $pager = new \Pager($_files, $page->slug, $url . '/' . $_path);
+        $pager = new \Pager($parent_files, $page->slug, $url . '/' . $parent_path);
         $pager_previous = $pager->config['direction']['<'];
         $pager_next = $pager->config['direction']['>'];
         \Lot::set([
             'page' => $page,
             'pager' => $pager,
-            'parent' => new \Page($_file)
+            'parent' => $parent_page ?? new \Page
         ]);
         \Config::set('trace', new \Anemon([$page->title, $site->title], ' &#x00B7; '));
         \Config::set('has', [
@@ -119,7 +119,7 @@ function url($url = "", array $lot = []) {
                     $pager->config['direction']['<'] => false,
                     $pager->config['direction']['>'] => false
                 ]);
-                \Shield::abort('404/' . $path_canon);
+                return \Shield::abort('404/' . $path_canon);
             } else {
                 \Lot::set([
                     'pager' => $pager,
@@ -135,9 +135,9 @@ function url($url = "", array $lot = []) {
         // Redirect to parent page if user tries to access the placeholder page…
         if ($name === '$' && \File::exist($folder . '.' . $page->state)) {
             \Message::info('kick', '<code>' . $url->current . '</code>');
-            \Guardian::kick($_path);
+            \Guardian::kick($parent_path);
         }
-        \Shield::attach('page/' . $path_canon);
+        return \Shield::attach('page/' . $path_canon);
     }
-    \Shield::abort('404/' . $path_canon);
+    return \Shield::abort('404/' . $path_canon);
 }, 20);

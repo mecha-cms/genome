@@ -131,7 +131,7 @@ foreach([
         return trim($s) . ($t > $x[0] ? $x[1] : "");
     },
     'file' => function(string $in) {
-        $in = array_map('trim', explode(DS, str_replace('/', DS, $in)));
+        $in = array_map('trim', explode(DS, strtr($in, '/', DS)));
         $n = array_map('trim', explode('.', array_pop($in)));
         $x = array_pop($n);
         $s = "";
@@ -142,7 +142,7 @@ foreach([
         return $s . \h(implode('.', $n), '-', true, '_.') . '.' . \h($x, '-', true);
     },
     'folder' => function(string $in) {
-        $in = array_map('trim', explode(DS, str_replace('/', DS, $in)));
+        $in = array_map('trim', explode(DS, strtr($in, '/', DS)));
         $n = array_pop($in);
         $s = "";
         foreach ($in as $v) {
@@ -180,7 +180,7 @@ foreach([
     'pascal' => '\p',
     'path' => function(string $in) {
         $u = $GLOBALS['URL'];
-        $s = str_replace('/', DS, $u['$']);
+        $s = strtr($u['$'], '/', DS);
         $in = str_replace([$u['$'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $in);
         return file_exists($in) ? realpath($in) : $in;
     },
@@ -218,7 +218,7 @@ foreach([
     'upper' => '\u',
     'URL' => function(string $in, $raw = false) {
         $u = $GLOBALS['URL'];
-        $s = str_replace(DS, '/', ROOT);
+        $s = strtr(ROOT, DS, '/');
         $in = file_exists($in) ? realpath($in) : $in;
         $in = str_replace([ROOT, DS, '\\', $s], [$u['$'], '/', '/', $u['$']], $in);
         return $raw ? rawurldecode($in) : urldecode($in);

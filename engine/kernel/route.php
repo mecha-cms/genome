@@ -5,7 +5,7 @@ class Route extends Genome {
     protected static $lot = [];
     protected static $lot_o = [];
 
-    public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
+    public static function set($id = null, callable $fn = null, float $stack = null, $pattern = false) {
         $i = 0;
         $id = (array) $id;
         $stack = (array) $stack;
@@ -36,7 +36,7 @@ class Route extends Genome {
         return true;
     }
 
-    public static function lot($id, $fn = null, $stack = null, $pattern = false) {
+    public static function lot($id, callable $fn = null, float $stack = null, $pattern = false) {
         $i = 0;
         $id = (array) $id;
         $stack = (array) $stack;
@@ -54,11 +54,11 @@ class Route extends Genome {
         return true;
     }
 
-    public static function pattern($pattern, $fn = null, $stack = null) {
+    public static function pattern($pattern, callable $fn = null, float $stack = null) {
         return self::set($pattern, $fn, $stack, true);
     }
 
-    public static function is($id, $fail = false, $pattern = false) {
+    public static function is(string $id, $fail = false, $pattern = false) {
         $id = URL::short($id, false);
         $path = rtrim($GLOBALS['URL']['path'] . '/' . $GLOBALS['URL']['i'], '/');
         if (strpos($id, '%') === false) {
@@ -81,9 +81,9 @@ class Route extends Genome {
 
     public static function get($id = null, $fail = false) {
         if (isset($id)) {
-            return self::$lot[1][$id] ?? $fail;
+            return self::$lot[1][$id] ?? $fail ?: $fail;
         }
-        return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
+        return self::$lot[1] ?? $fail ?: $fail;
     }
 
     public static function has($id = null, $stack = null, $fail = false) {
@@ -98,12 +98,12 @@ class Route extends Genome {
                         $routes[] = $v;
                     }
                 }
-                return !empty($routes) ? $routes : $fail;
+                return $routes ?? $fail ?: $fail;
             } else {
-                return self::$lot_o[1][$id] ?? $fail;
+                return self::$lot_o[1][$id] ?? $fail ?: $fail;
             }
         }
-        return !empty(self::$lot_o[1]) ? self::$lot_o[1] : $fail;
+        return self::$lot_o[1] ?? $fail ?: $fail;
     }
 
     public static function fire($id = null, $lot = []) {
@@ -138,7 +138,6 @@ class Route extends Genome {
                         if (isset(self::$lot_o[1][$k])) {
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack']);
                             foreach ($fn as $f) {
-                                if (!is_callable($f['fn'])) continue;
                                 call_user_func($f['fn'], ...$route['lot']);
                             }
                         }

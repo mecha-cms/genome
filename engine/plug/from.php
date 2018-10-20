@@ -111,7 +111,7 @@ function yaml($in, $d = '  ', $ref = [], $e = true) {
         }
         $a = yaml_pair(trim($v));
         // Restore `\x1A` to `:`
-        $a[0] = $key[$dent] = str_replace(X, ':', $a[0]);
+        $a[0] = $key[$dent] = strtr($a[0], X, ':');
         if (is_string($a[1])) {
             // Ignore comment(s)…
             if (strpos($a[1], '#') === 0) {
