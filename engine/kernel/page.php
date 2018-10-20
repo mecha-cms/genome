@@ -26,8 +26,8 @@ class Page extends Genome {
                 $m = filemtime($path); // File modification time
             }
             $this->lot = extend([
-                'time' => date(DATE_WISE, $c),
-                'update' => date(DATE_WISE, $m),
+                'time' => new Date(date(DATE_WISE, $c)),
+                'update' => new Date(date(DATE_WISE, $m)),
                 'slug' => $n,
                 'title' => $n !== null ? To::title((string) $n) : null, // Fake `title` data from the page’s file name
                 'state' => $x,
@@ -50,15 +50,15 @@ class Page extends Genome {
                 preg_match('#^\d{4,}(?:-\d{2}){2}(?:(?:-\d{2}){3})?$#', $n)
             ) {
                 $t = new Date($n);
-                $this->lot['time'] = $t->format(DATE_WISE);
-                $this->lot['title'] = $t->F2;
+                $this->lot['time']->source = $t->format(DATE_WISE);
+                $this->lot['title'] = $t->format(strtr(DATE_WISE, '-', '/'));
             // Else, set `time` value from the page’s `time.data` if any
-            } else if ($t = File::open(Path::F($path) . DS . 'time.data')->read()) {
-                $this->lot['time'] = (new Date($t))->format(DATE_WISE);
+            } else if ($t = File::open(Path::F($path) . DS . 'time.data')->get()) {
+                $this->lot['time']->source = (new Date($t))->format(DATE_WISE);
             }
             // Static `update` value from the page’s `update.data` if any
-            if ($t = File::open(Path::F($path) . DS . 'update.data')->read()) {
-                $this->lot['update'] = (new Date($t))->format(DATE_WISE);
+            if ($t = File::open(Path::F($path) . DS . 'update.data')->get()) {
+                $this->lot['update']->source = (new Date($t))->format(DATE_WISE);
             }
             self::$page[$id] = $this->lot;
         }
@@ -76,7 +76,7 @@ class Page extends Genome {
         }
         $a = $this->lot;
         $path = $this->path;
-        $extern = $path ? Path::F($path) . DS . str_replace('_', '-', $key) . '.data' : null;
+        $extern = $path ? Path::F($path) . DS . strtr($key, '_', '-') . '.data' : null;
         if ($extern && is_file($path)) {
             // Prioritize data from a file…
             if ($data = File::open($extern)->get()) {

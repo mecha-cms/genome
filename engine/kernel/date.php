@@ -2,161 +2,121 @@
 
 class Date extends Genome {
 
-    protected $date = "";
+    public $lot = [];
+    public $source = null;
 
-    protected static $zone = false;
-    protected static $format = [];
+    protected static $zone = "";
+    protected static $pattern = '%Y%-%M%-%D% %~h%:%m%:%s%';
 
-    public static function zone($zone = null) {
-        if (!isset($zone)) return self::$zone;
-        self::$zone = $zone;
-        return date_default_timezone_set($zone);
-    }
-
-    public static function set(string $key, callable $fn) {
-        self::$format[$key] = $fn;
-        return new static;
-    }
-
-    public static function get($key = null, $fail = false) {
-        if (isset($key)) {
-            return self::$format[$key] ?? $fail;
+    protected function extract() {
+        if (!$this->lot) {
+            global $language;
+            $i = explode('.', $this->format('Y.m.d.H.i.s.A.w.h.e'));
+            $this->lot = [
+                '%year%' => $i[0],
+                '%month%' => $i[1],
+                '%day%' => $i[2],
+                '%hour%' => $i[3],
+                '%minute%' => $i[4],
+                '%second%' => $i[5],
+                '%noon%' => $i[6],
+                '%week%' => $i[7],
+                '%zone%' => $i[9],
+                '%~M%' => $language->months_long[(int) $i[1] - 1],
+                '%~D%' => $language->days_long[(int) $i[7]],
+                '%~h%' => $i[3],
+                '%Y%' => $i[0],
+                '%M%' => $i[1],
+                '%D%' => $i[2],
+                '%m%' => $i[4],
+                '%s%' => $i[5],
+                '%n%' => $i[6],
+                '%w%' => $i[7],
+                '%h%' => $i[8],
+                '%z%' => $i[9]
+            ];
         }
-        return !empty(self::$format) ? self::$format : $fail;
+        return $this;
     }
 
-    public static function reset($key = null) {
-        if (isset($key)) {
-            unset(self::$format[$key]);
-        } else {
-            self::$format = [];
+    public function month($type = null) {
+        return $this->extract()->lot['%' . (is_string($type) ? '~M' : 'M') . '%'];
+    }
+
+    public function day($type = null) {
+        $this->extract();
+        if (is_string($type)) {
+            return $this->lot['%~D%'];
         }
-        return new static;
+        return $this->lot['%' . ($type === 7 ? 'w' : 'd') . '%'];
+    }
+
+    public function hour($type = null) {
+        return $this->extract()->lot['%' . ($type === 12 ? 'h' : '~h') . '%'];
+    }
+
+    public function W3C() {
+        return $this->format('c');
+    }
+
+    public function GMT() {
+        $date = new \DateTime($this->W3C());
+        $date->setTimeZone(new \DateTimeZone('UTC'));
+        $this->source = $date->format(DATE_WISE);
+        return $this;
+    }
+
+    public function pattern(string $pattern = null) {
+        $this->extract();
+        $pattern = $pattern ?? self::$pattern;
+        if (isset($this->lot[$pattern])) {
+            return $this->lot[$pattern];
+        }
+        return strtr(strtr(strtr($pattern, '\%', X), $this->lot), X, '%');
     }
 
     public function format($format = DATE_WISE) {
-        $date = $this->date;
-        if (is_numeric($date)) return date($format, $date);
-        if (substr_count($date, '-') === 5) {
-            return \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format($format);
-        }
-        return date($format, strtotime($date));
+        return date($format, strtotime($this->source)); // Generic PHP date formatter
     }
 
-    public function extract($key = null, $fail = false) {
-        global $language;
-        $months_long = $language->months_long;
-        $days_long = $language->days_long;
-        $months_short = $language->months_short;
-        $days_short = $language->days_short;
-        list(
-            $year,
-            $year_short,
-            $month,
-            $day,
-            $hour_24,
-            $hour_12,
-            $minute,
-            $second,
-            $AM_PM,
-            $d
-        ) = explode('.', $this->format('Y.y.m.d.H.h.i.s.A.w'));
-        $month_long = $months_long[(int) $month - 1];
-        $month_short = $months_short[(int) $month - 1];
-        $day_long = $days_long[(int) $d];
-        $day_short = $days_short[(int) $d];
-        $AM_PM = strtoupper($AM_PM);
-        $out = [
-            'W3C' => $this->format('c'),
-            'GMT' => $this->GMT(),
-            'unix' => (int) $this->format('U'),
-            'slug' => $year . '-' . $month . '-' . $day . '-' . $hour_24 . '-' . $minute . '-' . $second,
-            'year' => $year,
-            'year_short' => $year_short,
-            'month' => $month,
-            'day' => $day,
-            'month_long' => $month_long,
-            'day_long' => $day_long,
-            'month_short' => $month_short,
-            'day_short' => $day_short,
-            'hour' => $hour_24,
-            'hour_12' => $hour_12,
-            'hour_24' => $hour_24, // alias for `hour`
-            'minute' => $minute,
-            'second' => $second,
-            'AM_PM' => $AM_PM,
-            'en_us' => $day_long . ', ' . $month_long . ' ' . $day . ', ' . $year,
-            'id_id' => $day_long . ', ' . $day . ' ' . $month_long . ' ' . $year,
-            'F1' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
-            'F2' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AM_PM,
-            'F3' => $hour_24 . ':' . $minute,
-            'F4' => $hour_12 . ':' . $minute . ' ' . $AM_PM
-        ];
-        if (!empty(self::$format)) {
-            foreach (self::$format as $k => $v) {
-                $out[$k] = is_callable($v) ? call_user_func($v, $out, $language) : $v;
+    public function __construct(string $date = null) {
+        if (!isset($date)) {
+            $this->source = date(DATE_WISE, $_SERVER['REQUEST_TIME'] ?? time());
+        } else if (is_numeric($date)) {
+            $this->source = date(DATE_WISE, $date);
+        } else if (strlen($date) >= 19 && substr_count($date, '-') === 5) {
+            $this->source = \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format(DATE_WISE);
+        } else {
+            $this->source = date(DATE_WISE, strtotime($date));
+        }
+    }
+
+    public function __call($kin, $lot = []) {
+        $this->extract();
+        $k = '%' . $kin . '%';
+        if (array_key_exists($k, $this->lot)) {
+            return $this->extract()->lot[$k];
+        } else if ($v = self::_($kin)) {
+            if (is_string($v = $v[0]) && strpos($v, '%') !== false) {
+                return $this->pattern($v);
             }
         }
-        return isset($key) ? (array_key_exists($key, $out) ? $out[$key] : $fail) : $out;
+        return parent::__call($kin, $lot);
     }
 
-    public function ago($key = null, $fail = false, $compact = true) {
-        $date = new \DateTime();
-        $date->setTimestamp((int) $this->format('U'));
-        $interval = $date->diff(new \DateTime('now'));
-        $time = $interval->format('%y.%m.%d.%h.%i.%s');
-        $time = explode('.', $time);
-        $data = [
-            'year' => $time[0],
-            'month' => $time[1],
-            'day' => $time[2],
-            'hour' => $time[3],
-            'minute' => $time[4],
-            'second' => $time[5]
-        ];
-        $out = [];
-        foreach ($data as $k => $v) {
-            if ($compact && $v === '0') continue;
-            $out[$k] = e($v);
-        }
-        unset($data);
-        return isset($key) ? (array_key_exists($key, $out) ? $out[$key] : $fail) : $out;
-    }
-
-    public function GMT($format = DATE_WISE) {
-        $date_GMT = new \DateTime($this->format('c'));
-        $date_GMT->setTimeZone(new \DateTimeZone('UTC'));
-        return $date_GMT->format($format);
-    }
-
-    public function __construct($date = null) {
-        $this->date = $date ?? $_SERVER['REQUEST_TIME'] ?? time();
-        parent::__construct();
-    }
-
-    public function __set($key, $value = null) {
-        return self::set($key, $value);
-    }
-
-    public function __get($key) {
-        return $this->extract($key, null);
-    }
-
-    // Fix case for `isset($date->key)` or `!empty($date->key)`
-    public function __isset($key) {
-        return !!$this->__get($key);
-    }
-
-    public function __unset($key) {
-        self::reset($key);
+    public function __invoke(string $pattern = null) {
+        return $this->pattern($pattern ?? self::$pattern);
     }
 
     public function __toString() {
-        return $this->format();
+        return $this->source . "";
     }
 
-    public function __invoke($format = DATE_WISE) {
-        return $this->format($format);
+    public static function zone(string $zone = null) {
+        if (!isset($zone)) {
+            return self::$zone;
+        }
+        return date_default_timezone_set(self::$zone = $zone);
     }
 
 }
