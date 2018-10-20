@@ -36,7 +36,7 @@ abstract class Genome {
     }
 
     // Call the added method with `$genome->foo()`
-    public function __call($kin, $lot = []) {
+    public function __call(string $kin, array $lot = []) {
         $c = static::class;
         $m = 'Genome_' . $kin;
         $this->_call = T_OBJECT_OPERATOR;
@@ -59,11 +59,10 @@ abstract class Genome {
         } else if (defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>$' . c2f($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.</p>';
         }
-        return false;
     }
 
     // Call the added method with `Genome::foo()`
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic(string $kin, array $lot = []) {
         $c = static::class;
         $m = 'Genome_' . $kin;
         $that = new static;
@@ -87,7 +86,6 @@ abstract class Genome {
         } else if (defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
         }
-        return false;
     }
 
 }
