@@ -3,7 +3,7 @@
 Shield::_('abort', function($code = 404, $fail = false) {
     $i = is_string($code) ? explode('/', strtr($code, DS, '/'))[0] : '404';
     HTTP::status((int) $i);
-    Shield::attach($code, $fail);
+    return Shield::attach($code, $fail);
 });
 
 Shield::_('exist', function(string $in, $fail = false) {
