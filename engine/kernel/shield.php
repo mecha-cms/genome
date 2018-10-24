@@ -37,7 +37,7 @@ class Shield extends Genome {
         return File::exist(Hook::fire($NS, [$out, $in]), $fail);
     }
 
-    public static function set($id, $path = null) {
+    public static function set($id, string $path = null) {
         $c = static::class;
         if (is_array($id)) {
             foreach ($id as $k => $v) {
@@ -95,9 +95,7 @@ class Shield extends Genome {
 
     public static function attach($in, $fail = false) {
         if (!$out = self::get($in, $fail, false)) {
-            $out = candy(Guardian::$config['message'], [
-                'message' => '<code>' . __METHOD__ . '(' . v(json_encode($in)) . ')</code>'
-            ]);
+            $out = error('<code>' . __METHOD__ . '(' . v(json_encode($in)) . ')</code>');
         }
         echo Hook::fire(c2f(static::class, '_', '/') . '.yield', [$out, $in]);
         return;

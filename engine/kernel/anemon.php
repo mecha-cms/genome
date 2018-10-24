@@ -128,12 +128,27 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Insert `$value` to the end of array
     public function append($value, $key = null) {
-        return $this->end()->after($value, $key);
+        $this->i = count($v = $this->value) + 1;
+        if (isset($key)) {
+            $v += [$key => $value];
+        } else {
+            $v[] = $value;
+        }
+        $this->value = $v;
+        return $this;
     }
 
     // Insert `$value` to the start of array
     public function prepend($value, $key = null) {
-        return $this->begin()->before($value, $key);
+        $this->i = 0;
+        $v = $this->value;
+        if (isset($key)) {
+            $v = [$key => $value] + $v;
+        } else {
+            array_unshift($v, $value);
+        }
+        $this->value = $v;
+        return $this;
     }
 
     // Insert `$value` before current element

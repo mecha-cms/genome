@@ -57,7 +57,7 @@ abstract class Genome {
         } else if (method_exists($this, $m) && !(new \ReflectionMethod($this, $m))->isPublic()) {
             return $this->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            echo '<p>Method <code>$' . c2f($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.</p>';
+            echo error('Method <code>$' . c2f($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.');
         }
     }
 
@@ -84,7 +84,7 @@ abstract class Genome {
         } else if (method_exists($that, $m) && !(new \ReflectionMethod($that, $m))->isPublic()) {
             return $that->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
+            echo error('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
         }
     }
 

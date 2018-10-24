@@ -1,3 +1,5 @@
 <?php
 
-Hook::set('shield.exit', 'Message::reset', 20);
+Hook::set('route.exit', function() {
+    Message::reset();
+}, 20);

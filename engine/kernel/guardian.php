@@ -3,7 +3,6 @@
 class Guardian extends Genome {
 
     const config = [
-        'message' => '<p style="background:#f00;color:#fff;margin:0;padding:.5em 1em;">%{message}%</p>',
         'session' => [
             'token' => 'mecha.guardian.token'
         ]
@@ -39,8 +38,8 @@ class Guardian extends Genome {
         exit;
     }
 
-    public static function abort($message, $exit = true) {
-        echo candy(self::$config['message'], ['message' => $message]);
+    public static function abort(string $message, $exit = true) {
+        echo error($message);
         if ($exit) exit;
     }
 

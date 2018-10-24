@@ -2,8 +2,11 @@
 
 class Date extends Genome {
 
+    public $o = [];
     public $lot = [];
     public $source = null;
+
+    public $parent = null;
 
     protected static $zone = null;
     protected static $pattern = '%Y%-%M%-%D% %~h%:%m%:%s%';
@@ -55,15 +58,22 @@ class Date extends Genome {
         return $this->extract()->lot['%' . ($type === 12 ? 'h' : '~h') . '%'];
     }
 
+    public function slug($separator = '-') {
+        return strtr($this->source, '- :', str_repeat($separator, 3));
+    }
+
     public function W3C() {
         return $this->format('c');
     }
 
-    public function GMT() {
+    public function to(string $zone = 'UTC') {
         $date = new \DateTime($this->W3C());
-        $date->setTimeZone(new \DateTimeZone('UTC'));
-        $this->source = $date->format(DATE_WISE);
-        return $this;
+        $date->setTimeZone(new \DateTimeZone($zone));
+        if (!isset($this->o[$zone])) {
+            $this->o[$zone] = new static($date->format(DATE_WISE));
+        }
+        $this->o[$zone]->parent = $this;
+        return $this->o[$zone];
     }
 
     public function pattern(string $pattern = null) {
@@ -95,9 +105,9 @@ class Date extends Genome {
         $this->extract();
         $k = '%' . $kin . '%';
         if (array_key_exists($k, $this->lot)) {
-            return $this->extract()->lot[$k];
+            return $this->lot[$k];
         } else if ($v = self::_($kin)) {
-            if (is_string($v = $v[0]) && strpos($v, '%') !== false) {
+            if (is_string($v = $v[0]) && substr_count($v, '%') >= 2) {
                 return $this->pattern($v);
             }
         }

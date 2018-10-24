@@ -2,10 +2,12 @@
 
 class Message extends Genome {
 
-    public static $id = 'mecha.message';
     public static $x = 0;
 
     const config = [
+        'session' => [
+            'previous' => 'mecha.message'
+        ],
         'message' => [
             0 => 'p',
             1 => '%{1}%',
@@ -26,25 +28,14 @@ class Message extends Genome {
     public static $config = self::config;
 
     public static function set(...$lot) {
-        $c = c2f(static::class, '_');
-        $count = count($lot);
+        $id = self::$config['session']['previous'];
         $kin = array_shift($lot);
-        $text = array_shift($lot);
-        $s = array_shift($lot) ?: "";
-        $k = array_shift($lot) ?: false;
-        $i = $c . '_' . $kin . '_' . $text;
-        $o = Language::get($i, $s, $k);
-        $o = $o === $i ? $text : $o;
-        if ($count === 1) {
-            self::set('default', $kin);
-        } else {
-            $s = Session::get(self::$id, "");
-            $ss = Hook::fire($c . '.set.' . $kin, [$o], new stdClass);
-            if (strpos($s, $ss) === false) {
-                $s .= candy(HTML::unite(...self::$config['message']), [$kin, $ss]);
-            }
-            Session::set(self::$id, $s);
+        $previous = Session::get($id, []);
+        if (!isset($previous[$kin])) {
+            $previous[$kin] = [];
         }
+        $previous[$kin][] = $lot;
+        Session::set($id, $previous);
         return new static;
     }
 
@@ -53,19 +44,34 @@ class Message extends Genome {
         return self::set(...$lot);
     }
 
-    public static function reset($error_x = true) {
-        Session::reset(self::$id);
-        if ($error_x) self::$x = 0;
+    public static function reset(string $kin = null) {
+        Session::reset(self::$config['session']['previous'] . ($kin ? '.' . $kin : ""));
+        return new static;
     }
 
-    public static function get($session_x = true) {
-        $s = Session::get(self::$id, "");
-        $out = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$s !== "" ? candy(HTML::unite(...self::$config['messages']), $s) : ""], new stdClass);
-        if ($session_x) self::reset();
-        return $out;
+    public static function get(string $kin = null, $reset = true) {
+        global $language;
+        $id = self::$config['session']['previous'];
+        $c = c2f(static::class, '_', '/');
+        $a = [];
+        foreach (Session::get($id, []) as $k => $v) {
+            if ($kin && $kin !== $k) {
+                continue;
+            }
+            foreach ($v as $vv) {
+                $text = $vv[0];
+                $key = $c . '_' . $text;
+                $t = $language->get($key, $vv[1] ?? [], $vv[2] ?? false);
+                $s = candy(HTML::unite(self::$config['message']), [$k, $t === $key ? $text : $t]);
+                $a[] = Hook::fire($c . '.' . __FUNCTION__ . '.' . $k, [$s]);
+            }
+        }
+        if ($reset) self::reset($kin);
+        $out = $a ? candy(HTML::unite(self::$config['messages']), [N . implode(N, $a) . N]) : "";
+        return Hook::fire($c . '.' . __FUNCTION__, [$out]);
     }
 
-    public static function send($from, $to, $subject, $message) {
+    public static function send(string $from, $to, string $title, string $message) {
         if (empty($to) || (!is_array($to) && !Is::EMail($to))) {
             return false;
         }
@@ -82,17 +88,21 @@ class Message extends Genome {
                 $to = implode(', ', $to);
             }
         }
-        $lot  = 'MIME-Version: 1.0' . N;
-        $lot .= 'Content-Type: text/html; charset=ISO-8859-1' . N;
-        $lot .= 'From: ' . $from . N;
-        $lot .= 'Reply-To: ' . $from . N;
-        $lot .= 'Return-Path: ' . $from . N;
-        $lot .= 'X-Mailer: PHP/' . phpversion();
-        $s = c2f(static::class, '_', '/') . '.' . __FUNCTION__;
-        $o = new stdClass;
-        $lot = Hook::fire($s . '.data', [$lot], $o);
-        $data = Hook::fire($s . '.content', [$message], $o);
-        return mail($to, $subject, $data, $lot);
+        $n = c2f(static::class, '_', '/') . '.';
+        $header = Hook::fire($n . 'header', [[
+            'MIME-Version' => '1.0',
+            'Content-Type' => 'text/html; charset=ISO-8859-1',
+            'From' => $from,
+            'Reply-To' => $from,
+            'Return-Path' => $from,
+            'X-Mailer' => 'PHP/' . phpversion()
+        ]]);
+        $body = Hook::fire($n . 'body', [$message, $header]);
+        $lot = "";
+        foreach ($header as $k => $v) {
+            $lot .= $k . ': ' . $v . N;
+        }
+        return mail($to, $title, $body, rtrim($lot, N));
     }
 
     public static function __callStatic($kin, $lot = []) {
