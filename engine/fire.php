@@ -176,4 +176,8 @@ foreach (array_keys($extends) as $v) {
 }
 
 // Load all route(s)…
-Hook::set('on.ready', 'Route::fire', 20)->fire('on.ready');
+function ready() {
+    Route::fire();
+    Message::reset();
+}
+Hook::set('on.ready', 'ready', 20)->fire('on.ready');

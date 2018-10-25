@@ -4,10 +4,7 @@
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 
 // Include worker(s)…
-\r(__DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', [
-    'config.php',
-    'hook.php'
-], null, \Lot::get(null, []));
+require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'config.php';
 
 $state = \Extend::state('page');
 
@@ -15,8 +12,8 @@ function url($url = "", array $lot = []) {
     if (!$path = $this->path) {
         return $url;
     }
-    $path = \Path::F($path, PAGE);
-    return rtrim($GLOBALS['URL']['$'] . '/' . ltrim(strtr($path, DS, '/'), '/'), '/');
+    $path = \Path::F($path, PAGE, '/');
+    return rtrim($GLOBALS['URL']['$'] . '/' . ltrim($path, '/'), '/');
 }
 
 \Hook::set('page.url', __NAMESPACE__ . '\url', 2);
