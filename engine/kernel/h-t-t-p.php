@@ -85,7 +85,7 @@ class HTTP extends Genome {
 
     ];
 
-    public static function status($i = null) {
+    public static function status(int $i = null) {
         if (is_numeric($i) && isset(self::$message[$i])) {
             if (strpos(PHP_SAPI, 'cgi') !== false) {
                 header('Status: ' . $i . ' ' . self::$message[$i]);
@@ -98,7 +98,7 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function query($query = null, $c = []) {
+    public static function query(array $query = null, array $c = []) {
         $c = extend(['?', '&amp;', '=', ""], $c, false);
         if (!isset($query)) {
             $query = $GLOBALS['URL']['query'];
@@ -108,7 +108,7 @@ class HTTP extends Genome {
     }
 
     public static function header($key = null, $value = null) {
-        if (!isset($ket)) {
+        if (!isset($key)) {
             $out = [];
             foreach (headers_list() as $v) {
                 $a = explode(':', $v, 2);
@@ -134,7 +134,7 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function is($id = null, $key = null) {
+    public static function is(string $id = null, string $key = null) {
         $r = strtoupper($_SERVER['REQUEST_METHOD']);
         if (isset($id)) {
             $id = strtoupper($id);
@@ -146,13 +146,13 @@ class HTTP extends Genome {
         return $r;
     }
 
-    public static function type($mime, $charset = null) {
+    public static function type(string $mime, string $charset = null) {
         header('Content-Type: ' . $mime . (isset($charset) ? '; charset=' . $charset : ""));
         return new static;
     }
 
     // Save state
-    public static function save($id, $key = null, $value = null) {
+    public static function save(string $id, $key = null, $value = null) {
         $data = self::__callStatic($id, [$key, $value]);
         if (isset($key)) {
             if (!is_array($key)) {
@@ -168,7 +168,7 @@ class HTTP extends Genome {
     }
 
     // Restore state
-    public static function restore($id, $key = null, $fail = null) {
+    public static function restore(string $id, $key = null, $fail = null) {
         $s = self::$config['session']['gate'] . '.' . $id;
         $cache = Session::get($s, []);
         if (isset($key)) {
@@ -180,12 +180,12 @@ class HTTP extends Genome {
     }
 
     // Delete state
-    public static function delete($id, $key = null) {
+    public static function delete(string $id, $key = null) {
         Session::reset(self::$config['session']['gate'] . '.' . $id . (isset($key) ? '.' . $key : ""));
         return new static;
     }
 
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {
             $id = '_' . strtoupper($kin);
             $data = $GLOBALS[$id] ?? [];

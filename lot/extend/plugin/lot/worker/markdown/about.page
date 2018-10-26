@@ -12,7 +12,7 @@ The Markdown syntax allows you to write text naturally and format it without usi
 
 ### Usage
 
-In your page header, add a `type` property with a value set to `Markdown`:
+In your page header, add `type` property with value set to `Markdown`:
 
 ~~~ .yaml
 ---

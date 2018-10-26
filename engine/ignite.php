@@ -195,28 +195,27 @@ namespace {
     function format(string $s = "", string $x = "\n", string $d = '#', $r = true) {
         if (!$s || strpos($s, '%') === false) return $s;
         $r = $r ? "" : '?';
-        // group: `%[foo,bar,baz]%`
-        if (($i = strpos($s, '%[')) !== false && strpos($s, ']%') > $i) {
-            $s = preg_replace_callback('#%\[([\s\S]+?)' . $r . '\]%#', function($m) {
-                $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
-                return '(' . $m[1] . ')';
-            }, $s);
-        }
-        return str_replace([
+        $s = str_replace([
             '%s%', // any string excludes `$x`
             '%i%', // any string number(s)
             '%f%', // any string number(s) includes float(s)
             '%b%', // any string boolean(s)
-           '%\*%', // any string includes `$x`
-             X
+            '%\*%' // any string includes `$x`
         ], [
             '([^' . $x . ']+)' . $r,
             '(\-?\d+)' . $r,
             '(\-?(?:(?:\d+)?\.)?\d+)' . $r,
             '(\b(?:TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b)' . $r,
-            '([\s\S]+)' . $r,
-            ','
-        ], x($s, $d)); // return a regular expression string without the delimiter(s)
+            '([\s\S]+)' . $r
+        ], x($s, $d));
+        // group: `%[foo,bar,baz]%`
+        if (($i = strpos($s, '%\\[')) !== false && strpos($s, '\\]%') > $i) {
+            $s = preg_replace_callback('#%\\\\\[([\s\S]+?)\\\\\]%#', function($m) use($r) {
+                $m[1] = str_replace(['\\\\,', ','], [X, '|'], $m[1]);
+                return '(' . $m[1] . ')' . $r;
+            }, $s);
+        }
+        return strtr($s, X, ','); // return a regular expression string without the delimiter(s)
     }
     // Check if an element exists in array
     function has(array $a = [], string $s = "", string $x = X) {
