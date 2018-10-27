@@ -14,4 +14,4 @@ function asset($content) {
     return $content . \Hook::fire('asset.js', [\Asset::js()]);
 });
 
-\Hook::set('shield.yield', __NAMESPACE__ . '\asset', 0);
+\Hook::set('shield.yield', __NAMESPACE__ . "\\asset", 0);

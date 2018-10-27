@@ -15,7 +15,7 @@ namespace fn\markdown {
         return \w(b($in, $lot), HTML_WISE_I);
         // return b($in, 'line'); // TODO
     }
-    \Hook::set('*.title', __NAMESPACE__ . '\i', 2);
+    \Hook::set('*.title', __NAMESPACE__ . "\\i", 2);
     \Hook::set(['*.description', '*.content'], __NAMESPACE__, 2);
 }
 

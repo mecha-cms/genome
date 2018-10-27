@@ -46,5 +46,5 @@ function classes($content) {
     return $content;
 }
 
-\Hook::set('shield.path', __NAMESPACE__ . '\path', 0);
-\Hook::set('shield.yield', __NAMESPACE__ . '\classes', 0);
+\Hook::set('shield.path', __NAMESPACE__ . "\\path", 0);
+\Hook::set('shield.yield', __NAMESPACE__ . "\\classes", 0);

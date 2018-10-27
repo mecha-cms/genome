@@ -31,9 +31,9 @@ namespace fn\art {
         }
     }
     if (!\HTTP::is('get', 'art') || \HTTP::get('art')) {
-        \Hook::set('on.ready', __NAMESPACE__ . '\classes', 0);
-        \Hook::set('page.css', __NAMESPACE__ . '\css', 2);
-        \Hook::set('page.js', __NAMESPACE__ . '\js', 2);
+        \Hook::set('on.ready', __NAMESPACE__ . "\\classes", 0);
+        \Hook::set('page.css', __NAMESPACE__ . "\\css", 2);
+        \Hook::set('page.js', __NAMESPACE__ . "\\js", 2);
         \Hook::set('shield.yield', __NAMESPACE__, 1);
     }
 }

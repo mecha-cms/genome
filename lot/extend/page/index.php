@@ -16,7 +16,7 @@ function url($url = "", array $lot = []) {
     return rtrim($GLOBALS['URL']['$'] . '/' . ltrim($path, '/'), '/');
 }
 
-\Hook::set('page.url', __NAMESPACE__ . '\url', 2);
+\Hook::set('page.url', __NAMESPACE__ . "\\url", 2);
 
 \Lot::set([
     'page' => new \Page,
