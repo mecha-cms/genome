@@ -65,7 +65,7 @@ foreach([
         }
         return $out;
     },
-    'description' => function(string $in, $html = true, $x = [200, '&#x2026;']) {
+    'description' => function(string $in, $html = true, $x = 200) {
         $s = \w($in, $html ? HTML_WISE_I : []);
         $utf8 = extension_loaded('mbstring');
         if (is_int($x)) {
@@ -126,9 +126,9 @@ foreach([
             $t = $utf8 ? mb_strlen($s) : strlen($s);
             return $out . ($t > $x[0] ? $x[1] : "");
         }
-        $s = $utf8 ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
+        $out = $utf8 ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
         $t = $utf8 ? mb_strlen($s) : strlen($s);
-        return trim($s) . ($t > $x[0] ? $x[1] : "");
+        return trim($out) . ($t > $x[0] ? $x[1] : "");
     },
     'file' => function(string $in) {
         $in = array_map('trim', explode(DS, strtr($in, '/', DS)));
