@@ -44,7 +44,7 @@ class Language extends Config {
             $test = self::get($kin, ...$lot);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
-                return fn($test, $this, $lot);
+                return fn($test, $lot, $this);
             // Rich asynchronous value with class instance
             } else if ($fn = fn\is\instance($test)) {
                 if (method_exists($fn, '__invoke')) {

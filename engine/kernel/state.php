@@ -17,7 +17,7 @@ class State extends Genome {
         $fail = array_shift($lot);
         $alt = array_shift($lot);
         if (is_callable($fail)) {
-            return fn($fail, $this, [$x !== null ? $x : $alt]);
+            return fn($fail, [$x !== null ? $x : $alt], $this);
         }
         return $x !== null ? $x : $fail;
     }

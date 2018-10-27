@@ -103,7 +103,7 @@ class Page extends Genome {
         } else {
             if ($test instanceof \Closure) {
                 // As function call with `$page->foo(function($text) { … })`
-                $a[$key] = fn($test, $this, [$a[$key]]);
+                $a[$key] = fn($test, [$a[$key]], $this);
             }
         }
         if ($this->NS === false) {

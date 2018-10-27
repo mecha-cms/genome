@@ -186,10 +186,10 @@ namespace {
         }
         return null;
     }
-    // Trigger function with scope and parameter(s)
-    function fn(callable $fn, $t = null, array $a = []) {
+    // Trigger function with parameter(s) and optional scope
+    function fn(callable $fn, array $a = [], $that = null) {
         $fn = \Closure::fromCallable($fn);
-        return call_user_func($t ? $fn->bindTo($t) : $fn, ...$a);
+        return call_user_func($that ? $fn->bindTo($that) : $fn, ...$a);
     }
     // Replace pattern to regular expression
     function format(string $s = "", string $x = "\n", string $d = '#', $r = true) {

@@ -67,7 +67,7 @@ class Hook extends Genome {
         return self::$lot[1][$c] ?? $fail ?: $fail;
     }
 
-    public static function fire($id, array $lot = [], $self = null) {
+    public static function fire($id, array $lot = [], $that = null) {
         $c = static::class;
         if (!array_key_exists(0, $lot)) {
             $lot = [null];
@@ -78,15 +78,15 @@ class Hook extends Genome {
                 return $lot[0];
             }
             $hooks = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack']);
-            if ($self) {
-                $self->_hook = $id;
-                $self->_hook_count = 0;
+            if ($that) {
+                $that->_hook = $id;
+                $that->_hook_count = 0;
                 foreach ($hooks as $v) {
-                    if ($self->_hook_count > $v['i']) {
+                    if ($that->_hook_count > $v['i']) {
                         continue;
                     }
-                    ++$self->_hook_count;
-                    if (($r = fn($v['fn'], $self, $lot)) !== null) {
+                    ++$that->_hook_count;
+                    if (($r = fn($v['fn'], $lot, $that)) !== null) {
                         $lot[0] = $r;
                     }
                 }
@@ -103,14 +103,14 @@ class Hook extends Genome {
                         ++self::$lot[1][$c][$id][$v['fn']];
                     }
                     */
-                    if (($r = fn($v['fn'], null, $lot)) !== null) {
+                    if (($r = fn($v['fn'], $lot)) !== null) {
                         $lot[0] = $r;
                     }
                 }
             }
         } else {
             foreach ($id as $v) {
-                if (($r = self::fire($v, $lot, $self)) !== null) {
+                if (($r = self::fire($v, $lot, $that)) !== null) {
                     $lot[0] = $r;
                 }
             }

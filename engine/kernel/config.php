@@ -78,7 +78,7 @@ class Config extends Genome {
             $test = self::get($kin);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
-                return fn($test, $this, $lot);
+                return fn($test, $lot, $this);
             // Rich asynchronous value with class instance
             } else if ($fn = fn\is\instance($test)) {
                 if (method_exists($fn, '__invoke')) {
@@ -91,7 +91,7 @@ class Config extends Genome {
             $alt = array_shift($lot) ?: false;
         }
         if (is_callable($fail)) {
-            return fn($fail, $this, self::get($kin, $alt));
+            return fn($fail, [self::get($kin, $alt)], $this);
         }
         return self::get($kin, $fail);
     }
@@ -130,7 +130,7 @@ class Config extends Genome {
             $test = self::get($kin);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
-                return fn($test, null, $lot);
+                return fn($test, $lot);
             // Rich asynchronous value with class instance
             } else if ($fn = fn\is\instance($test)) {
                 if (method_exists($fn, '__invoke')) {
@@ -143,7 +143,7 @@ class Config extends Genome {
             $alt = array_shift($lot) ?: false;
         }
         if (is_callable($fail)) {
-            return fn($fail, null, self::get($kin, $alt));
+            return fn($fail, [self::get($kin, $alt)]);
         }
         return self::get($kin, $fail);
     }
