@@ -2,10 +2,10 @@
 
 foreach([
     'a' => function($text = "", $href = null, $target = null, $attr = [], $dent = 0) {
-        $attr_o = [
+        $a = [
             'target' => $target === true ? '_blank' : ($target === false ? null : $target)
         ];
-        $attr = extend($attr_o, $attr);
+        $attr = extend($a, $attr);
         $attr['href'] = URL::long(str_replace('&amp;', '&', $href));
         return HTML::unite('a', $text, $attr, $dent);
     },
@@ -22,12 +22,12 @@ foreach([
         } else {
             $z = [null, null];
         }
-        $attr_o = [
+        $a = [
             'alt' => !isset($alt) ? "" : $alt,
             'width' => $z[0],
             'height' => $z[1]
         ];
-        $attr = extend($attr_o, $attr);
+        $attr = extend($a, $attr);
         $attr['src'] = URL::long(str_replace('&amp;', '&', $src));
         return HTML::unite('img', false, $attr, $dent);
     }

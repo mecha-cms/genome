@@ -72,18 +72,17 @@ class HTML extends Union {
         return $out;
     }
 
-    public function __call($kin, $lot = []) {
+    public function __call(string $kin, array $lot = []) {
         if (!self::_($kin) && !method_exists($this, 'Genome_' . $kin)) {
+            array_unshift($lot, $kin);
             return $this->Genome_unite(...$lot);
         }
         return parent::__call($kin, $lot);
     }
 
-    public static function __callStatic($kin, $lot = []) {
-        $that = new static;
-        if (!self::_($kin) && !method_exists($that, 'Genome_' . $kin)) {
-            array_unshift($lot, $kin);
-            return $that->__call($kin, $lot);
+    public static function __callStatic(string $kin, array $lot = []) {
+        if (!self::_($kin)) {
+            return (new static)->__call($kin, $lot);
         }
         return parent::__callStatic($kin, $lot);
     }

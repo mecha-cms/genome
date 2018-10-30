@@ -17,28 +17,28 @@ foreach ([
         return Form::input($name, 'file', null, null, $attr, $dent);
     },
     'checkbox' => function($name = null, $value = null, $check = false, $text = "", $attr = [], $dent = 0) {
-        $attr_o = ['checked' => $check ? true : null];
+        $a = ['checked' => $check ? true : null];
         if ($value === true) {
             $value = 'true';
         }
         $text = $text ? '&#x0020;' . HTML::span($text) : "";
-        return HTML::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, extend($attr_o, $attr)) . $text);
+        return HTML::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, extend($a, $attr)) . $text);
     },
     'radio' => function($name = null, $options = [], $select = null, $attr = [], $dent = 0) {
         $out = [];
         $select = (string) $select;
         foreach ($options as $k => $v) {
-            $attr_o = ['disabled' => null];
+            $a = ['disabled' => null];
             if (strpos($k, '.') === 0) {
-                $attr_o['disabled'] = true;
+                $a['disabled'] = true;
                 $k = substr($k, 1);
             }
             $k = (string) $k;
-            $attr_o['checked'] = $select === $k || $select === '.' . $k ? true : null;
+            $a['checked'] = $select === $k || $select === '.' . $k ? true : null;
             $v = $v ? '&#x0020;' . HTML::span($v) : "";
-            $out[] = HTML::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, extend($attr_o, $attr)) . $v);
+            $out[] = HTML::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, extend($a, $attr)) . $v);
         }
-        return implode(HTML::br(), $out);
+        return implode(HTML::unite('br', false), $out);
     },
     'range' => function($name = null, $range = [0, 0, 1], $attr = [], $dent = 0) {
         if (is_array($value)) {

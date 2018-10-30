@@ -7,37 +7,31 @@ class Form extends HTML {
         if (!array_key_exists('type', $attr)) {
             $attr['type'] = 'button';
         }
-        $attr_o = ['value' => $value];
-        self::name($name, $attr_o);
-        unset($attr_o['readonly'], $attr_o['required']);
-        return self::unite('button', $text, extend($attr_o, $attr), $dent);
+        $a = ['value' => $value];
+        self::name($name, $a);
+        unset($a['readonly'], $a['required']);
+        return self::unite('button', $text, extend($a, $attr), $dent);
     }
 
     // `<input>`
     public static function input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0) {
-        $attr_o = [
-            'placeholder' => strtr(html_entity_decode($placeholder), [
-                '&' => '&#x0026;',
-                '"' => '&#x0022;',
-                "'" => '&#x0027;',
-                '<' => '&#x003C;',
-                '>' => '&#x003E;'
-            ]),
+        $a = [
+            'placeholder' => self::v($placeholder),
             'type' => $type
         ];
-        self::name($name, $attr_o);
-        $attr_o['value'] = HTTP::restore('post', self::key($name), $value);
-        return self::unite('input', false, extend($attr_o, $attr), $dent);
+        self::name($name, $a);
+        $a['value'] = HTTP::restore('post', self::key($name), $value);
+        return self::unite('input', false, extend($a, $attr), $dent);
     }
 
     // `<select>`
     public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
-        $attr_o = [];
-        self::name($name, $attr_o);
-        unset($attr_o['required']);
+        $a = [];
+        self::name($name, $a);
+        unset($a['required']);
         $select = (string) HTTP::restore('post', self::key($name), $select);
-        $attr_o = extend($attr_o, $attr);
+        $a = extend($a, $attr);
         foreach ($option as $key => $value) {
             $tag = new static;
             // option list group
@@ -72,29 +66,23 @@ class Form extends HTML {
                 $o .= N . self::unite('option', trim(strip_tags($value)), $s, $dent + 1);
             }
         }
-        return self::unite('select', $o . N . self::dent($dent), $attr_o, $dent);
+        return self::unite('select', $o . N . self::dent($dent), $a, $dent);
     }
 
     // `<textarea>`
     public static function textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0) {
-        $attr_o = [];
-        self::name($name, $attr_o);
+        $a = [];
+        self::name($name, $a);
         // <https://www.w3.org/TR/html5/forms.html#the-placeholder-attribute>
         // The `placeholder` attribute represents a short hint (a word or short phrase) intended
         // to aid the user with data entry when the control has no value. A hint could be a sample
         // value or a brief description of the expected format. The attribute, if specified, must
         // have a value that contains no “LF” (U+000A) or “CR” (U+000D) character(s).
         if (isset($placeholder)) {
-            $placeholder = strtr(html_entity_decode(explode("\n", n($placeholder), 2)[0]), [
-                '&' => '&#x0026;',
-                '"' => '&#x0022;',
-                "'" => '&#x0027;',
-                '<' => '&#x003C;',
-                '>' => '&#x003E;'
-            ]);
+            $placeholder = self::v(explode("\n", n($placeholder), 2)[0]);
         }
-        $attr_o['placeholder'] = $placeholder;
-        return self::unite('textarea', self::x(HTTP::restore('post', self::key($name), $value)), extend($attr_o, $attr), $dent);
+        $a['placeholder'] = $placeholder;
+        return self::unite('textarea', self::v(HTTP::restore('post', self::key($name), $value)), extend($a, $attr), $dent);
     }
 
     public static function key($key) {
@@ -114,6 +102,16 @@ class Form extends HTML {
             $s = substr($s, 1);
         }
         $a['name'] = $s;
+    }
+
+    private static function v($value) {
+        // Only un-escape Unicode hex representation
+        if ($value && strpos($value . "", '&#x') !== false) {
+            return preg_replace_callback('#&\#x[a-f\d]+;#i', function($m) {
+                return html_entity_decode($m[0]);
+            }, $value);
+        }
+        return $value;
     }
 
 }
