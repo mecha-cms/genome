@@ -5,112 +5,77 @@ class URL extends Genome {
     protected $s = null;
     protected $lot = [];
 
-    public static function long(string $url = "", $root = true) {
-        $u = $GLOBALS['URL'];
-        $b = false;
-        if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
-            $url = ltrim($url, '/');
-            $b = true; // Relative to the root domain
-        }
-        if (
-            strpos($url, '://') === false &&
-            strpos($url, '//') !== 0 &&
-            strpos($url, '?') !== 0 &&
-            strpos($url, '&') !== 0 &&
-            strpos($url, '#') !== 0 &&
-            strpos($url, 'javascript:') !== 0
-        ) {
-            return trim(($root && $b ? $u['protocol'] . $u['host'] : $u['$']) . '/' . self::v($url), '/');
-        }
-        return self::v($url);
-    }
-
-    public static function short(string $url = "", $root = true) {
-        $u = $GLOBALS['URL'];
-        if (strpos($url, '//') === 0 && strpos($url, '//' . $u['host']) !== 0) {
-            return $url; // Ignore external URL
-        }
-        $url = X . $url;
-        if ($root) {
-            return str_replace([X . $u['protocol'] . $u['host'], X . '//' . $u['host'], X], "", $url);
-        }
-        return ltrim(str_replace([X . $u['$'], X . '//' . rtrim($u['host'] . '/' . $u['directory'], '/'), X], "", $url), '/');
-    }
-
-    protected static function v(string $path = "") {
-        return str_replace(['\\', '/?', '/&', '/#'], ['/', '?', '&', '#'], $path);
-    }
-
-    public function __construct($in = null, string $self = '$') {
+    public function __construct(string $in = null, string $self = '$') {
         $this->s = $self;
         if (isset($in)) {
-            $u = extend([
-                '$' => null,
-                'fragment' => "",
-                'host' => "",
-                'i' => null,
-                'pass' => null,
-                'path' => "",
-                'port' => null,
-                'query' => "",
-                'scheme' => "",
-                'user' => null
-            ], parse_url($in));
-            $u['path'] = trim($u['path'], '/');
-            $a = explode('/', $u['path']);
+            $url = parse_url($in);
+            $url['path'] = trim($url['path'] ?? "", '/');
+            $a = explode('/', $url['path']);
             if (is_numeric(end($a))) {
-                $u['i'] = (int) array_pop($a);
-                $u['path'] = implode('/', $a);
+                $url['i'] = (int) array_pop($a);
+                $url['path'] = implode('/', $a);
+            } else {
+                $url['i'] = null;
             }
-            $u['clean'] = rtrim(strtr(preg_replace('#[?&\#].*$#', "", $in), [
+            $url['clean'] = rtrim(strtr(preg_replace('#[?&\#].*$#', "", $in), [
                 '<' => '%3C',
                 '>' => '%3E',
                 '&' => '%26',
                 '"' => '%22'
             ]), '/');
-            $u['$'] = rtrim($u['clean'] . '/' . $u['i'], '/');
-            $u['query'] = ($u['query'] && strpos($u['query'], '?') !== 0 ? '?' : "") . str_replace('&amp;', '&', $u['query']);
-            $u['hash'] = ($u['fragment'] && strpos($u['fragment'], '#') !== 0 ? '#' : "") . $u['fragment'];
-            unset($u['fragment']);
-            $this->lot = $u;
+            $url['$'] = rtrim($url['clean'] . '/' . $url['i'], '/');
+            $q = $url['query'] ?? "";
+            $url['query'] = (strpos($q, '?') !== 0 ? '?' : "") . str_replace('&amp;', '&', $q);
+            $h = $url['fragment'] ?? "";
+            $url['hash'] = (strpos($h, '#') !== 0 ? '#' : "") . $h;
+            unset($url['fragment']);
+            $this->lot = $url;
         } else {
             $this->lot = $GLOBALS['URL'];
         }
         parent::__construct();
     }
 
-    public function __call($kin, $lot = []) {
-        $u = $this->lot;
-        if (self::_($kin)) {
-            return parent::__call($kin, $lot);
-        } else if ($kin === 'path' && isset($u[$kin]) && isset($lot[0])) {
-            return str_replace('/', $lot[0], $u[$kin]);
-        } else if ($kin === 'query' && isset($u[$kin]) && $lot) {
-            $a = array_shift($lot);
-            if (is_string($a)) {
-                $a = ['?', $a, '=', ""];
-            }
-            return str_replace(['?', '&', '=', X], $a, $u[$kin] . X);
-        } else if ($kin === 'hash' && isset($u[$kin]) && isset($lot[0])) {
-            return str_replace('#', $lot[0], $u[$kin]);
-        }
-        return array_key_exists($kin, $u) ? $u[$kin] : array_shift($lot);
+    // `$url->path('.')`
+    public function path(string $separator = null) {
+        $path = $this->lot['path'];
+        return isset($separator) ? str_replace('/', $separator, $path) : $path;
     }
 
-    public function __set($key, $value = null) {
+    // `$url->query('&amp;')`
+    public function query($var = null) {
+        $query = $this->lot['query'];
+        if (isset($var)) {
+            // `$url->query(';')`
+            if (is_string($var)) {
+                return str_replace('&', $var, $query);
+            } else if (is_array($var)) {
+                $var = extend(['?', '&', '=', ""], $var, false);
+                return str_replace(['?', '&', '=', X], $var, $query . X);
+            }
+        }
+        return $query;
+    }
+
+    public function hash(string $prefix = null) {
+        $hash = $this->lot['hash'];
+        return isset($prefix) ? $prefix . substr($hash, 1) : $hash;
+    }
+
+    public function __call(string $kin, array $lot = []) {
+        return array_key_exists($kin, $this->lot) ? $this->lot[$kin] : null;
+    }
+
+    public function __set(string $key, $value = null) {
         $this->lot[$key] = $value;
     }
 
-    public function __get($key) {
-        return $this->__call($key);
-    }
-
     // Fix case for `isset($url->key)` or `!empty($url->key)`
-    public function __isset($key) {
+    public function __isset(string $key) {
         return !!$this->__get($key);
     }
 
-    public function __unset($key) {
+    public function __unset(string $key) {
         unset($this->lot[$key]);
     }
 
@@ -118,7 +83,44 @@ class URL extends Genome {
         return (string) $this->lot[$this->s] ?? "";
     }
 
-    public static function __callStatic($kin, $lot = []) {
+    public static function long(string $path = "", $root = true) {
+        $url = $GLOBALS['URL'];
+        $b = false;
+        if (strpos($path, '//') === 0) {
+            return trim($url['scheme'] . ':' . $path, '/');
+        } else if (strpos($path, '/') === 0) {
+            $path = ltrim($path, '/');
+            $b = true; // Relative to the root domain
+        }
+        if (
+            strpos($path, '://') === false &&
+            strpos($path, '?') !== 0 &&
+            strpos($path, '&') !== 0 &&
+            strpos($path, '#') !== 0 &&
+            strpos($path, 'javascript:') !== 0
+        ) {
+            return trim(($root && $b ? $url['protocol'] . $url['host'] : $url['$']) . '/' . str_replace([X . '&', X], ['?', ""], X . ltrim($path, '/')), '/');
+        }
+        return str_replace([X . '&', X], ['?', ""], X . $path);
+    }
+
+    public static function short(string $path = "", $root = true) {
+        $url = $GLOBALS['URL'];
+        if (strpos($path, '//') === 0 && strpos($path, '//' . $url['host']) !== 0) {
+            return $path; // Ignore external URL
+        }
+        return $root ? str_replace([
+            X . $url['protocol'] . $url['host'],
+            X . '//' . $url['host'],
+            X
+        ], "", X . $path) : ltrim(str_replace([
+            X . $url['$'],
+            X . '//' . rtrim($url['host'] . '/' . $url['directory'], '/'),
+            X
+        ], "", X . $path), '/');
+    }
+
+    public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
