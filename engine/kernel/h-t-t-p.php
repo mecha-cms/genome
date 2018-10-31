@@ -4,7 +4,7 @@ class HTTP extends Genome {
 
     const config = [
         'session' => [
-            'gate' => 'mecha.gate'
+            'gate' => '136c8c95'
         ]
     ];
 

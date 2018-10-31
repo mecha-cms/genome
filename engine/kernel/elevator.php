@@ -105,7 +105,7 @@ class Elevator extends Genome {
         unset($this->lot[$key]);
     }
 
-    public function __call($kin, $lot = []) {
+    public function __call(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }

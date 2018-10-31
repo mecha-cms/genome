@@ -21,7 +21,7 @@ class Get extends Genome {
         return !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : $fail;
     }
 
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {
             $id = '_' . strtoupper($kin);
             $key = array_shift($lot);

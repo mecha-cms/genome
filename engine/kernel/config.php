@@ -69,7 +69,7 @@ class Config extends Genome {
         return new static;
     }
 
-    public function __call($kin, $lot = []) {
+    public function __call(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
@@ -121,7 +121,7 @@ class Config extends Genome {
         return self::get(null, $fail, true);
     }
 
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }

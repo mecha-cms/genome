@@ -2,7 +2,7 @@
 
 class Reset extends Genome {
 
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {
             $id = '_' . strtoupper($kin);
             $key = array_shift($lot);

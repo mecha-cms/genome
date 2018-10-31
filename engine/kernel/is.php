@@ -84,14 +84,12 @@ class Is extends Genome {
         $this->lot = $in;
     }
 
-    public function __call($kin, $lot = []) {
-        if (!self::_($kin)) return null; // Disable error message!
-        return parent::__call($kin, $lot);
+    public function __call(string $kin, array $lot = []) {
+        return self::_($kin) ? parent::__call($kin, $lot) : null;
     }
 
-    public static function __callStatic($kin, $lot = []) {
-        if (!self::_($kin)) return null; // Disable error message!
-        return parent::__callStatic($kin, $lot);
+    public static function __callStatic(string $kin, array $lot = []) {
+        return self::_($kin) ? parent::__callStatic($kin, $lot) : null;
     }
 
 }

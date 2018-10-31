@@ -35,7 +35,7 @@ class Language extends Config {
         parent::__construct(is_array($in) ? $in : From::YAML($in));
     }
 
-    public function __call($kin, $lot = []) {
+    public function __call(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }

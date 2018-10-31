@@ -4,7 +4,7 @@ class Guardian extends Genome {
 
     const config = [
         'session' => [
-            'token' => 'mecha.guardian.token'
+            'token' => 'b9645ac7'
         ]
     ];
 

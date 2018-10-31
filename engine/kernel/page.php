@@ -67,8 +67,8 @@ class Page extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot = []) {
-        if (self::_($key) || $key === 'set') { // @see `protected function Genome_set()`
+    public function __call(string $key, array $lot = []) {
+        if (self::_($key) || $key === 'set') { // @see `function Genome_set()`
             return parent::__call($key, $lot);
         }
         // Example: `$page->__call('foo.bar')`

@@ -101,7 +101,7 @@ class Date extends Genome {
         }
     }
 
-    public function __call($kin, $lot = []) {
+    public function __call(string $kin, array $lot = []) {
         $this->extract();
         $k = '%' . $kin . '%';
         if (array_key_exists($k, $this->lot)) {

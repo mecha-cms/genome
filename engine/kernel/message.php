@@ -6,7 +6,7 @@ class Message extends Genome {
 
     const config = [
         'session' => [
-            'previous' => 'mecha.message'
+            'previous' => '71695985'
         ],
         'message' => [
             0 => 'p',
@@ -105,7 +105,7 @@ class Message extends Genome {
         return mail($to, $title, $body, rtrim($lot, N));
     }
 
-    public static function __callStatic($kin, $lot = []) {
+    public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
