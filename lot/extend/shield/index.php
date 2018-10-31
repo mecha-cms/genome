@@ -4,10 +4,7 @@
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'shield.php';
 
 // Include worker(s)…
-r(__DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', [
-    'config.php',
-    'hook.php'
-], null, Lot::get(null, []));
+r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot::get(null, []));
 
 Hook::set('on.ready', function() {
 

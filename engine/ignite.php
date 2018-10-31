@@ -937,37 +937,28 @@ namespace {
             return $h . l($m[0]);
         }, f($x, $a, x($h) . $i)));
     }
-    // If `$fn` is a function, the function will be executed after file include.
-    // If `$fn` is array of function, the first function will be executed before
-    // file include, and the rest will be executed after file include.
-    function i(string $a = "", $b = [], $fn = [null, null], array $s__ = []) {
-        if (!is_array($fn)) {
-            $fn = [null, $fn];
-        } else if (!isset($fn[1])) {
-            $fn[1] = null;
-        }
-        if (fn\is\anemon($b)) {
-            foreach ($b as $v) {
-                if ($s__) extract($s__);
-                $v = $a . DS . $v;
-                if (is_callable($fn[0])) { // before
-                    call_user_func($fn[0], $v, $s__);
-                }
-                include $v;
-                if (is_callable($fn[1])) { // after
-                    call_user_func($fn[1], $v, $s__);
-                }
+    function i(...$a) {
+        // `i('.\engine')`
+        if (is_string($a[0])) {
+            foreach (g($a[0], $a[1] ?? 'php', "", true) as $v) {
+                call_user_func(function() use($a, $v) {
+                    extract($a[2] ?? []);
+                    include $v;
+                });
             }
-        } else {
-            foreach (g($a, $b) as $v) {
-                if ($s__) extract($s__);
-                if (is_callable($fn[0])) { // before
-                    call_user_func($fn[0], $v, $s__);
-                }
-                include $v;
-                if (is_callable($fn[1])) { // after
-                    call_user_func($fn[1], $v, $s__);
-                }
+        // `i(['foo', 'bar', 'baz'])`
+        } else if (is_array($a[0])) {
+            $r = "";
+            // `i(['foo', 'bar', 'baz'], '.\engine')`
+            if (isset($a[1]) && is_string($a[1])) {
+                $r = rtrim($a[1], DS);
+            }
+            foreach ($a[0] as $v) {
+                $v = $r . DS . $v . '.php';
+                call_user_func(function() use($a, $r, $v) {
+                    extract($a[$r ? 2 : 1] ?? []);
+                    include $v;
+                });
             }
         }
     }
@@ -1008,37 +999,30 @@ namespace {
         }
         return count($x, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
-    // If `$fn` is a function, the function will be executed after file require.
-    // If `$fn` is array of function, the first function will be executed before
-    // file require, and the rest will be executed after file require.
-    function r(string $a = "", $b = [], $fn = [null, null], array $s__ = []) {
-        if (!is_array($fn)) {
-            $fn = [null, $fn];
-        } else if (!isset($fn[1])) {
-            $fn[1] = null;
-        }
-        if (fn\is\anemon($b)) {
-            foreach ($b as $v) {
-                if ($s__) extract($s__);
-                $v = $a . DS . $v;
-                if (is_callable($fn[0])) { // before
-                    call_user_func($fn[0], $v, $s__);
-                }
-                require $v;
-                if (is_callable($fn[1])) { // after
-                    call_user_func($fn[1], $v, $s__);
-                }
+    function r(...$a) {
+        // `r('.\engine')`
+        if (is_string($a[0])) {
+            foreach (g($a[0], $a[1] ?? 'php', "", true) as $v) {
+                call_user_func(function() use($a, $v) {
+                    extract($a[2] ?? []);
+                    require $v;
+                });
             }
-        } else {
-            foreach (g($a, $b) as $v) {
-                if ($s__) extract($s__);
-                if (is_callable($fn[0])) { // before
-                    call_user_func($fn[0], $v, $s__);
+        // `r(['foo', 'bar', 'baz'])`
+        } else if (is_array($a[0])) {
+            $r = "";
+            // `r(['foo', 'bar', 'baz'], '.\engine')`
+            if (isset($a[1]) && is_string($a[1])) {
+                $r = rtrim($a[1], DS);
+            }
+            foreach ($a[0] as $v) {
+                if (!file_exists($v = $r . DS . $v . '.php')) {
+                    continue;
                 }
-                require $v;
-                if (is_callable($fn[1])) { // after
-                    call_user_func($fn[1], $v, $s__);
-                }
+                call_user_func(function() use($a, $r, $v) {
+                    extract($a[$r ? 2 : 1] ?? []);
+                    require $v;
+                });
             }
         }
     }
