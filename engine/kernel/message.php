@@ -6,7 +6,7 @@ class Message extends Genome {
 
     const config = [
         'session' => [
-            'previous' => '71695985'
+            'previous' => 'c49f8055'
         ],
         'message' => [
             0 => 'p',
