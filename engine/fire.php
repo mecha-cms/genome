@@ -106,7 +106,6 @@ $seeds = [
     'config' => $config,
     'date' => $date,
     'language' => $language,
-    'message' => Message::get("", false),
     'site' => $config,
     'token' => Guardian::token(0),
     'url' => $url,
@@ -177,6 +176,9 @@ foreach (array_keys($extends) as $v) {
 
 // Load all route(s)…
 function ready() {
+    Lot::set([
+        'message' => Message::get("", false)
+    ]);
     Route::fire();
     Message::reset();
 }
