@@ -192,11 +192,13 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Generate chunk(s) of array
     public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
-        $this->value = array_chunk($this->value, $chunk, $preserve_key);
+        $clone = array_chunk($this->value, $chunk, $preserve_key);
         if ($index !== -1) {
-            $this->value = $this->value[$this->i = $index] ?? [];
+            $clone = $clone[$this->i = $index] ?? [];
         }
-        return $this;
+        $clone = new static($clone, $this->separator);
+        $clone->parent = $this;
+        return $clone;
     }
 
     // Sort array value: `1` for “asc” and `-1` for “desc”
@@ -270,26 +272,30 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // @see `.\engine\ignite.php#fn:is`
     public function is($fn = null) {
-        $this->value = is($this->value, $fn);
-        return $this;
+        $clone = new static(is($this->value, $fn), $this->separator);
+        $clone->parent = $this;
+        return $clone;
     }
 
     // @see `.\engine\ignite.php#fn:map`
     public function map(callable $fn) {
-        $this->value = map($this->value, $fn);
-        return $this;
+        $clone = new static(map($this->value, $fn), $this->separator);
+        $clone->parent = $this;
+        return $clone;
     }
 
     // @see `.\engine\ignite.php#fn:not`
     public function not($fn = null) {
-        $this->value = $fn ? not($this->value, $fn) : [];
-        return $this;
+        $clone = new static($fn ? not($this->value, $fn) : [], $this->separator);
+        $clone->parent = $this;
+        return $clone;
     }
 
     // @see `.\engine\ignite.php#fn:pluck`
     public function pluck(string $key, $fail = null) {
-        $this->value = pluck($this->value, $key, $fail);
-        return $this;
+        $clone = new static(pluck($this->value, $key, $fail), $this->separator);
+        $clone->parent = $this;
+        return $clone;
     }
 
     // @see `.\engine\ignite.php#fn:shake`
