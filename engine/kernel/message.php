@@ -60,7 +60,7 @@ class Message extends Genome {
             }
             foreach ($v as $vv) {
                 $text = $vv[0];
-                $key = $c . '_' . $text;
+                $key = $c . '_' . $k . '_' . $text;
                 $t = $language->get($key, $vv[1] ?? [], $vv[2] ?? false);
                 $s = candy(HTML::unite(self::$config['message']), [$k, $t === $key ? $text : $t]);
                 $a[] = Hook::fire($c . '.' . __FUNCTION__ . '.' . $k, [$s]);
