@@ -192,12 +192,11 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Generate chunk(s) of array
     public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
-        $clone = array_chunk($this->value, $chunk, $preserve_key);
+        $clone = $this->mitose();
+        $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
         if ($index !== -1) {
-            $clone = $clone[$this->i = $index] ?? [];
+            $clone->value = $clone->value[$clone->i = $index] ?? [];
         }
-        $clone = new static($clone, $this->separator);
-        $clone->parent = $this;
         return $clone;
     }
 
@@ -272,29 +271,29 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // @see `.\engine\ignite.php#fn:is`
     public function is($fn = null) {
-        $clone = new static(is($this->value, $fn), $this->separator);
-        $clone->parent = $this;
+        $clone = $this->mitose();
+        $clone->value = is($clone->value, $fn);
         return $clone;
     }
 
     // @see `.\engine\ignite.php#fn:map`
     public function map(callable $fn) {
-        $clone = new static(map($this->value, $fn), $this->separator);
-        $clone->parent = $this;
+        $clone = $this->mitose();
+        $clone->value = map($clone->value, $fn);
         return $clone;
     }
 
     // @see `.\engine\ignite.php#fn:not`
     public function not($fn = null) {
-        $clone = new static($fn ? not($this->value, $fn) : [], $this->separator);
-        $clone->parent = $this;
+        $clone = $this->mitose();
+        $clone->value = not($clone->value, $fn);
         return $clone;
     }
 
     // @see `.\engine\ignite.php#fn:pluck`
     public function pluck(string $key, $fail = null) {
-        $clone = new static(pluck($this->value, $key, $fail), $this->separator);
-        $clone->parent = $this;
+        $clone = $this->mitose();
+        $clone->value = pluck($clone->value, $key, $fail);
         return $clone;
     }
 
