@@ -4,7 +4,7 @@ class Folder extends File {
 
     public static function set($path, $consent = 0775) {
         foreach ((array) $path as $k => $v) {
-            if (!file_exists($v)) {
+            if (!file_exists($v) || is_file($v)) {
                 if (is_array($consent)) {
                     $c = array_key_exists($k, $consent) ? $consent[$k] : end($consent);
                 } else {

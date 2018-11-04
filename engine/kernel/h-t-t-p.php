@@ -98,8 +98,8 @@ class HTTP extends Genome {
         return new static;
     }
 
-    public static function query(array $query = null, array $c = []) {
-        $c = extend(['?', '&amp;', '=', ""], $c, false);
+    public static function query(array $query = null, $c = []) {
+        $c = extend(['?', '&amp;', '=', ""], is_array($c) ? $c : [1 => $c], false);
         if (!isset($query)) {
             $query = $GLOBALS['URL']['query'];
             return str_replace(['?', '&', '='], $c, $query);
@@ -143,7 +143,7 @@ class HTTP extends Genome {
             }
             return $id === $r;
         }
-        return $r;
+        return strtolower($r);
     }
 
     public static function type(string $mime, string $charset = null) {

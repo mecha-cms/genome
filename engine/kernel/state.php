@@ -43,4 +43,8 @@ class State extends Genome {
         return json_encode($this->lot);
     }
 
+    public function __invoke($array = false) {
+        return $array ? $this->lot : o($this->lot);
+    }
+
 }

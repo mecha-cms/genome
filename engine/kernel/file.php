@@ -269,7 +269,7 @@ class File extends Genome {
                     $this->path = $out[$k] = $v;
                 }
             } else {
-                if (!is_dir($folder)) {
+                if (!file_exists($folder) || is_file($folder)) {
                     mkdir($folder, 0775, true);
                 }
                 if (rename($path, $to = $folder . DS . ($as ?: $b))) {

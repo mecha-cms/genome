@@ -79,10 +79,11 @@ class Form extends HTML {
         // value or a brief description of the expected format. The attribute, if specified, must
         // have a value that contains no “LF” (U+000A) or “CR” (U+000D) character(s).
         if (isset($placeholder)) {
-            $placeholder = self::v(explode("\n", n($placeholder), 2)[0]);
+            $placeholder = substr(self::v(explode("\n", n($placeholder), 2)[0]), 0, 300); // TODO
         }
         $a['placeholder'] = $placeholder;
-        return self::unite('textarea', self::v(HTTP::restore('post', self::key($name), $value)), extend($a, $attr), $dent);
+        $value = HTTP::restore('post', self::key($name), $value);
+        return self::unite('textarea', self::v(htmlentities($value)), extend($a, $attr), $dent);
     }
 
     public static function key($key) {
