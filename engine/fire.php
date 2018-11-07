@@ -16,13 +16,7 @@ if (defined('DEBUG')) {
 }
 
 // Normalize line-break
-$vars = [
-    &$_COOKIE,
-    &$_GET,
-    &$_POST,
-    &$_REQUEST,
-    &$_SESSION
-];
+$vars = [&$_COOKIE, &$_GET, &$_POST, &$_REQUEST, &$_SESSION];
 array_walk_recursive($vars, function(&$v) {
     $v = strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
 });
@@ -41,49 +35,47 @@ File::$config['extension'] = array_unique(explode(',', $x));
 Session::ignite();
 Config::ignite(STATE . DS . 'config.php');
 
-// Set global URL data
+// Generate static URL data
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
 $protocol = $scheme . '://';
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
 $directory = strtr(dirname($_SERVER['SCRIPT_NAME']), DS, '/');
 $directory = $directory === '.' ? "" : trim($directory, '/');
-$url = rtrim($protocol . $host  . '/' . $directory, '/');
-// [1]. Remove query string(s) and hash from URL
-// [2]. Remove possible XSS attack from URL
-$path = strtr(preg_replace('#[?&\#].*$#', "", trim($_SERVER['QUERY_STRING'], '/')), [
+$url = trim($protocol . $host . '/' . $directory, '/');
+$parts = explode('&', $_SERVER['QUERY_STRING'], 2);
+$path = array_shift($parts);
+$query = array_shift($parts);
+$path = strtr($path ?? "", [
     '<' => '%3C',
     '>' => '%3E',
     '&' => '%26',
     '"' => '%22'
 ]);
-$path = trim(strtr($_SERVER['REQUEST_URI'], ['/?' => '?']), '/') === $directory . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $path;
-if ($path !== "") {
-    array_shift($_GET);
+$query = $query ? '?' . $query : "";
+$parts = explode('/', $path);
+if (is_numeric(end($parts))) {
+    $i = array_pop($parts);
+    $path = implode('/', $parts);
+} else {
+    $i = null;
 }
-$query = http_build_query($_GET);
-$a = explode('/', rtrim($path, '/'));
-$i = null;
-if (is_numeric(end($a))) {
-    $i = (int) array_pop($a);
-    $path = implode('/', $a);
-}
-$clean = rtrim($url . '/' . $path, '/');
+$clean = trim($url . '/' . $path, '/');
 $GLOBALS['URL'] = [
-    'i' => $i,
     'scheme' => $scheme,
     'protocol' => $protocol,
     'host' => $host,
+    'directory' => $directory,
     'port' => (int) $_SERVER['SERVER_PORT'],
     'user' => $_SESSION['url']['user'] ?? null,
     'pass' => $_SESSION['url']['pass'] ?? null,
-    'directory' => $directory,
-    '$' => $url,
     'path' => $path,
+    'i' => $i,
+    '$' => $url,
+    'clean' => $clean,
+    'current' => trim($clean . '/' . $i, '/'),
     'query' => $query ? '?' . $query : "",
     'previous' => $_SESSION['url']['previous'] ?? null,
     'next' => $_SESSION['url']['next'] ?? null,
-    'clean' => $clean,
-    'current' => rtrim($clean . '/' . $i, '/'),
     'hash' => null // TODO
 ];
 
@@ -109,7 +101,7 @@ $seeds = [
     'site' => $config,
     'token' => Guardian::token(0),
     'url' => $url,
-    'u_r_l' => $url // alias for `url`
+    'u_r_l' => $url // Alias for `url`
 ];
 
 // Plant…
@@ -174,12 +166,16 @@ foreach (array_keys($extends) as $v) {
     });
 }
 
-// Load all route(s)…
+// Document is ready
 function ready() {
     Lot::set([
         'message' => Message::get("", false)
     ]);
+    // Load all route(s)…
     Route::fire();
+    // Clear message(s)…
     Message::reset();
 }
+
+// Fire!
 Hook::set('on.ready', 'ready', 20)->fire('on.ready');
