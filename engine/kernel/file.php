@@ -16,146 +16,10 @@ class File extends Genome {
 
     public static $config = self::config;
 
-    // Inspect file path
-    public static function inspect(string $path, $key = null, $fail = false) {
-        $id = json_encode(func_get_args());
-        if (isset(self::$inspect[$id])) {
-            $out = self::$inspect[$id];
-            return isset($key) ? Anemon::get($out, $key, $fail) : $out;
-        }
-        $path = To::path($path);
-        $n = Path::N($path);
-        $x = Path::X($path);
-        $exist = file_exists($path);
-        $create = $exist ? filectime($path) : null;
-        $update = $exist ? filemtime($path) : null;
-        $create_date = $create ? date(DATE_WISE, $create) : null;
-        $update_date = $update ? date(DATE_WISE, $update) : null;
-        $out = [
-            'path' => $path,
-            'name' => $n,
-            'url' => To::URL($path),
-            'extension' => is_file($path) ? $x : null,
-            'create' => $create_date,
-            'update' => $update_date,
-            'size' => $exist ? self::size($path) : null,
-            'is' => [
-                'exist' => $exist,
-                // Hidden file/folder only
-                'hidden' => $n === "" || strpos($n, '.') === 0 || strpos($n, '_') === 0,
-                'file' => is_file($path),
-                'files' => is_dir($path),
-                'folder' => is_dir($path) // alias for `is.files`
-            ],
-            '_create' => $create,
-            '_update' => $update,
-            '_size' => $exist ? filesize($path) : null
-        ];
-        self::$inspect[$id] = $out;
-        return isset($key) ? Anemon::get($out, $key, $fail) : $out;
-    }
-
-    // List all file(s) from a folder
-    public static function explore($folder = ROOT, $deep = false, $fail = []) {
-        $id = json_encode(func_get_args());
-        if (isset(self::$explore[$id])) {
-            $out = self::$explore[$id];
-            return !empty($out) ? $out : $fail;
-        }
-        $x = null;
-        if (is_array($folder)) {
-            $x = $folder[1] ?? null;
-            $folder = $folder[0];
-        }
-        $folder = strtr($folder, '/', DS);
-        $out = [];
-        if ($deep) {
-            $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
-            $b = $x === 1 || is_string($x) ? \RecursiveIteratorIterator::LEAVES_ONLY : \RecursiveIteratorIterator::SELF_FIRST;
-            $c = new \RecursiveIteratorIterator($a, $b);
-            if (is_callable($x)) {
-                foreach ($c as $v) {
-                    $xx = $v->getExtension();
-                    $vv = $v->getPathname();
-                    if (call_user_func($x, $vv, $v)) {
-                        $out[$vv] = $v->isDir() ? 0 : 1;
-                    }
-                }
-            } else {
-                foreach ($c as $v) {
-                    $xx = $v->getExtension();
-                    $vv = $v->getPathname();
-                    if ($v->isDir()) {
-                        $out[$vv] = 0;
-                    } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {
-                        $out[$vv] = 1;
-                    }
-                }
-            }
-        } else {
-            if ($x === 1 || is_string($x)) {
-                if ($x === 1) {
-                    $x = '*.*';
-                } else {
-                    $x = '*.{' . $x . '}';
-                }
-                $files = is(concat(
-                    glob($folder . DS . $x, GLOB_BRACE | GLOB_NOSORT),
-                    glob($folder . DS . substr($x, 1), GLOB_BRACE | GLOB_NOSORT)
-                ), 'is_file');
-            } else if ($x === 0) {
-                $files = concat(
-                    glob($folder . DS . '*', GLOB_ONLYDIR | GLOB_NOSORT),
-                    glob($folder . DS . '.*', GLOB_ONLYDIR | GLOB_NOSORT)
-                );
-            } else {
-                $files = concat(
-                    glob($folder . DS . '*', GLOB_NOSORT),
-                    glob($folder . DS . '.*', GLOB_NOSORT)
-                );
-            }
-            if (is_callable($x)) {
-                foreach ($files as $file) {
-                    $b = basename($file);
-                    if ($b === '.' || $b === '..') {
-                        continue;
-                    }
-                    if (call_user_func($fn, $file, null)) {
-                        $out[$file] = is_file($file) ? 1 : 0;
-                    }
-                }
-            } else {
-                foreach ($files as $file) {
-                    $b = basename($file);
-                    if ($b === '.' || $b === '..') {
-                        continue;
-                    }
-                    $out[$file] = is_file($file) ? 1 : 0;
-                }
-            }
-        }
-        self::$explore[$id] = $out;
-        return !empty($out) ? $out : $fail;
-    }
-
-    // Check if file/folder does exist
-    public static function exist($path, $fail = false) {
-        if (is_array($path)) {
-            foreach ($path as $v) {
-                $v = To::path($v);
-                if (file_exists($v)) {
-                    return $v;
-                }
-            }
-            return $fail;
-        }
-        $path = To::path($path);
-        return file_exists($path) ? $path : $fail;
-    }
-
-    // Open a file
-    public static function open(...$lot) {
-        return new static(...$lot);
+    public function __construct($path = true, $c = []) {
+        $this->path = file_exists($path) ? realpath($path) : null;
+        $this->content = "";
+        parent::__construct();
     }
 
     // Print the file content
@@ -168,8 +32,20 @@ class File extends Genome {
     }
 
     // Write `$data` before save
-    protected function Genome_set(string $data) {
+    protected function _set_(string $data) {
         $this->content = $data;
+        return $this;
+    }
+
+    // Append `$data` before save
+    protected function _append_(string $data) {
+        $this->content .= $data;
+        return $this;
+    }
+
+    // Prepend `$data` before save
+    protected function _prepend_(string $data) {
+        $this->content = $data . $this->content;
         return $this;
     }
 
@@ -188,7 +64,7 @@ class File extends Genome {
                     // `->get(['$', 7])`
                     is_array($stop) && strpos($chunk, $stop[0]) === $stop[1] ||
                     // `->get(function($chunk, $i, $out) {})`
-                    is_callable($stop) && call_user_func($stop, $chunk, $i, $out)
+                    is_callable($stop) && fn($stop, [$chunk, $i, $out], $this)
                 ) break;
                 ++$i;
             }
@@ -367,6 +243,149 @@ class File extends Genome {
         return $path;
     }
 
+    // Inspect file path
+    public static function inspect(string $path, $key = null, $fail = false) {
+        $id = json_encode(func_get_args());
+        if (isset(self::$inspect[$id])) {
+            $out = self::$inspect[$id];
+            return isset($key) ? Anemon::get($out, $key, $fail) : $out;
+        }
+        $path = To::path($path);
+        $n = Path::N($path);
+        $x = Path::X($path);
+        $exist = file_exists($path);
+        $create = $exist ? filectime($path) : null;
+        $update = $exist ? filemtime($path) : null;
+        $create_date = $create ? date(DATE_WISE, $create) : null;
+        $update_date = $update ? date(DATE_WISE, $update) : null;
+        $out = [
+            'path' => $path,
+            'name' => $n,
+            'url' => To::URL($path),
+            'extension' => is_file($path) ? $x : null,
+            'type' => $exist ? mime_content_type($path) : null,
+            'create' => $create_date,
+            'update' => $update_date,
+            'size' => $exist ? self::size($path) : null,
+            'is' => [
+                'exist' => $exist,
+                // Hidden file/folder only
+                'hidden' => $n === "" || strpos($n, '.') === 0 || strpos($n, '_') === 0,
+                'file' => is_file($path),
+                'files' => is_dir($path),
+                'folder' => is_dir($path) // alias for `is.files`
+            ],
+            '_create' => $create,
+            '_update' => $update,
+            '_size' => $exist ? filesize($path) : null
+        ];
+        self::$inspect[$id] = $out;
+        return isset($key) ? Anemon::get($out, $key, $fail) : $out;
+    }
+
+    // List all file(s) from a folder
+    public static function explore($folder = ROOT, $deep = false, $fail = []) {
+        $id = json_encode(func_get_args());
+        if (isset(self::$explore[$id])) {
+            $out = self::$explore[$id];
+            return !empty($out) ? $out : $fail;
+        }
+        $x = null;
+        if (is_array($folder)) {
+            $x = $folder[1] ?? null;
+            $folder = $folder[0];
+        }
+        $folder = strtr($folder, '/', DS);
+        $out = [];
+        if ($deep) {
+            $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
+            $b = $x === 1 || is_string($x) ? \RecursiveIteratorIterator::LEAVES_ONLY : \RecursiveIteratorIterator::SELF_FIRST;
+            $c = new \RecursiveIteratorIterator($a, $b);
+            if (is_callable($x)) {
+                foreach ($c as $v) {
+                    $xx = $v->getExtension();
+                    $vv = $v->getPathname();
+                    if (call_user_func($x, $vv, $v)) {
+                        $out[$vv] = $v->isDir() ? 0 : 1;
+                    }
+                }
+            } else {
+                foreach ($c as $v) {
+                    $xx = $v->getExtension();
+                    $vv = $v->getPathname();
+                    if ($v->isDir()) {
+                        $out[$vv] = 0;
+                    } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {
+                        $out[$vv] = 1;
+                    }
+                }
+            }
+        } else {
+            if ($x === 1 || is_string($x)) {
+                if ($x === 1) {
+                    $x = '*.*';
+                } else {
+                    $x = '*.{' . $x . '}';
+                }
+                $files = is(concat(
+                    glob($folder . DS . $x, GLOB_BRACE | GLOB_NOSORT),
+                    glob($folder . DS . substr($x, 1), GLOB_BRACE | GLOB_NOSORT)
+                ), 'is_file');
+            } else if ($x === 0) {
+                $files = concat(
+                    glob($folder . DS . '*', GLOB_ONLYDIR | GLOB_NOSORT),
+                    glob($folder . DS . '.*', GLOB_ONLYDIR | GLOB_NOSORT)
+                );
+            } else {
+                $files = concat(
+                    glob($folder . DS . '*', GLOB_NOSORT),
+                    glob($folder . DS . '.*', GLOB_NOSORT)
+                );
+            }
+            if (is_callable($x)) {
+                foreach ($files as $file) {
+                    $b = basename($file);
+                    if ($b === '.' || $b === '..') {
+                        continue;
+                    }
+                    if (call_user_func($fn, $file, null)) {
+                        $out[$file] = is_file($file) ? 1 : 0;
+                    }
+                }
+            } else {
+                foreach ($files as $file) {
+                    $b = basename($file);
+                    if ($b === '.' || $b === '..') {
+                        continue;
+                    }
+                    $out[$file] = is_file($file) ? 1 : 0;
+                }
+            }
+        }
+        self::$explore[$id] = $out;
+        return !empty($out) ? $out : $fail;
+    }
+
+    // Check if file/folder does exist
+    public static function exist($path, $fail = false) {
+        if (is_array($path)) {
+            foreach ($path as $v) {
+                $v = To::path($v);
+                if (file_exists($v)) {
+                    return $v;
+                }
+            }
+            return $fail;
+        }
+        $path = To::path($path);
+        return file_exists($path) ? $path : $fail;
+    }
+
+    // Open a file
+    public static function open(...$lot) {
+        return new static(...$lot);
+    }
+
     // Upload a file
     public static function push($name, string $path = ROOT, $fn = null) {
         $path = rtrim(strtr($path, '/', DS), DS);
@@ -417,12 +436,6 @@ class File extends Genome {
         }
         $out = round($size / pow(1024, $u), $prec);
         return $out < 0 ? null : trim($out . ' ' . $x[$u]);
-    }
-
-    public function __construct($path = true, $c = []) {
-        $this->path = file_exists($path) ? realpath($path) : null;
-        $this->content = "";
-        parent::__construct();
     }
 
 }
