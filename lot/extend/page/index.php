@@ -95,8 +95,8 @@ function url($url = "", array $lot = []) {
                 \Config::set('is.search', true);
                 \Config::set('trace', new \Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
                 $query = explode(' ', $query);
-                $pages->is(function($v) use($query) {
-                    $v = \Path::N($v);
+                $pages = $pages->is(function($v) use($query) {
+                    $v = str_replace('-', "", \Path::N($v));
                     foreach ($query as $q) {
                         if (strpos($v, $q) !== false) {
                             return true;
