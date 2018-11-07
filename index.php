@@ -8,22 +8,24 @@
  * -----------------------------------------
  */
 
-!defined('DS') && define('DS', DIRECTORY_SEPARATOR);
-!defined('ROOT') && define('ROOT', __DIR__);
-
+!defined('DS') && define('DS', DIRECTORY_SEPARATOR); // Default directory separator
 !defined('DENT') && define('DENT', '  '); // Default HTML indent
 !defined('N') && define('N', "\n"); // Line break
 !defined('T') && define('T', "\t"); // Tab
 !defined('X') && define('X', "\x1A"); // Placeholder text
 
 !defined('SESSION') && define('SESSION', null); // Change to a folder path to define `session_save_path`
-!defined('DEBUG') && define('DEBUG', false); // Change to `true` to enable debug mode
+!defined('DEBUG') && define('DEBUG', null); // Change to `true` to enable debug mode
 
-!defined('ENGINE') && define('ENGINE', __DIR__ . DS . 'engine');
-!defined('LOT') && define('LOT', __DIR__ . DS . 'lot');
+!defined('GROUND') && define('GROUND', rtrim(strtr($_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
+!defined('ROOT') && define('ROOT', __DIR__);
+!defined('ENGINE') && define('ENGINE', ROOT . DS . 'engine');
+!defined('LOT') && define('LOT', ROOT . DS . 'lot');
 
-foreach (glob(__DIR__ . DS . 'lot' . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
-    $b = strtoupper(str_replace(['-', '.'], ['_', '__'], basename($lot)));
+foreach (glob(ROOT . DS . 'lot' . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
+    $b = strtoupper(str_replace(['-', '.'], ['_', "\\"], basename($lot)));
+    !defined($b) && define($b, $lot);
+    $b = "LOT\\" . $b; // Alias
     !defined($b) && define($b, $lot);
 }
 
