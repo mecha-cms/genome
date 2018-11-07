@@ -159,10 +159,6 @@ namespace {
         // `concat([…], […], […])`
         return array_merge_recursive($a, ...$b);
     }
-    // Error message
-    function error(string $s) {
-        return '<p style="background:#f00;color:#fff;margin:0;padding:.5em 1em;">' . $s . '</p>';
-    }
     // Extend array value(s)
     function extend(array $a = [], ...$b) {
         // `extend([…], […], […], false)`
@@ -172,6 +168,10 @@ namespace {
         }
         // `extend([…], […], […])`
         return array_replace_recursive($a, ...$b);
+    }
+    // Error message
+    function fail(string $s) {
+        return '<p style="background:#f00;color:#fff;margin:0;padding:.5em 1em;">' . $s . '</p>';
     }
     // Convert file name to class name
     function f2c(string $s = "", string $h = '-', string $n = '.') {

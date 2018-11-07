@@ -39,7 +39,7 @@ class Guardian extends Genome {
     }
 
     public static function abort(string $message, $exit = true) {
-        echo error($message);
+        echo fail($message);
         if ($exit) exit;
     }
 

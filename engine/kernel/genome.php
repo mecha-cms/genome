@@ -38,7 +38,7 @@ abstract class Genome {
     // Call the added method with `$genome->foo()`
     public function __call(string $kin, array $lot = []) {
         $c = static::class;
-        $m = 'Genome_' . $kin;
+        $m = '_' . $kin . '_';
         $this->_call = T_OBJECT_OPERATOR;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
             $a = self::$_[$c][$kin];
@@ -54,17 +54,17 @@ abstract class Genome {
                 return fn($a[0], $lot, $this);
             }
             return $a[0];
-        } else if (method_exists($this, $m) && !(new \ReflectionMethod($this, $m))->isPublic()) {
+        } else if (method_exists($this, $m) && (new \ReflectionMethod($this, $m))->isProtected()) {
             return $this->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            echo error('Method <code>$' . c2f($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.');
+            echo fail('Method <code>$' . c2f($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.');
         }
     }
 
     // Call the added method with `Genome::foo()`
     public static function __callStatic(string $kin, array $lot = []) {
         $c = static::class;
-        $m = 'Genome_' . $kin;
+        $m = '_' . $kin . '_';
         $that = new static;
         $that->_call = T_DOUBLE_COLON;
         if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
@@ -81,10 +81,10 @@ abstract class Genome {
                 return fn($a[0], $lot, $that);
             }
             return $a[0];
-        } else if (method_exists($that, $m) && !(new \ReflectionMethod($that, $m))->isPublic()) {
+        } else if (method_exists($that, $m) && (new \ReflectionMethod($that, $m))->isProtected()) {
             return $that->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            echo error('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
+            echo fail('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
         }
     }
 

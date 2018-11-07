@@ -95,10 +95,16 @@ class Shield extends Genome {
 
     public static function attach($in, $fail = false) {
         if (!$out = self::get($in, $fail, false)) {
-            $out = error('<code>' . __METHOD__ . '(' . v(json_encode($in)) . ')</code>');
+            $out = fail('<code>' . __METHOD__ . '(' . v(json_encode($in)) . ')</code>');
         }
-        echo Hook::fire(c2f(static::class, '_', '/') . '.yield', [$out, $in]);
-        return;
+        echo ($out = Hook::fire(c2f(static::class, '_', '/') . '.yield', [$out, $in]));
+        return $out;
+    }
+
+    public static function abort($code = 404, $fail = false) {
+        $i = is_string($code) ? explode('/', strtr($code, DS, '/'))[0] : '404';
+        HTTP::status((int) $i);
+        return Shield::attach($code, $fail);
     }
 
 }
