@@ -16,10 +16,14 @@ class File extends Genome {
 
     public static $config = self::config;
 
-    public function __construct($path = true, $c = []) {
+    public function __construct(string $path = null) {
         $this->path = file_exists($path) ? realpath($path) : null;
         $this->content = "";
         parent::__construct();
+    }
+
+    public function __toString() {
+        return $this->read("");
     }
 
     // Print the file content

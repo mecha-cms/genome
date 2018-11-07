@@ -2,6 +2,10 @@
 
 class Folder extends File {
 
+    public function __toString() {
+        return "";
+    }
+
     public static function set($path, $consent = 0775) {
         foreach ((array) $path as $k => $v) {
             if (!file_exists($v) || is_file($v)) {

@@ -65,71 +65,6 @@ foreach([
         }
         return $out;
     },
-    'description' => function(string $in, $html = true, $x = 200) {
-        $s = \w($in, $html ? HTML_WISE_I : []);
-        $utf8 = extension_loaded('mbstring');
-        if (is_int($x)) {
-            $x = [$x, '&#x2026;'];
-        }
-        $utf8 = extension_loaded('mbstring');
-        // <https://stackoverflow.com/a/1193598/1163000>
-        if ($html && (strpos($s, '<') !== false || strpos($s, '&') !== false)) {
-            $out = "";
-            $done = $i = 0;
-            $tags = [];
-            while ($done < $x[0] && preg_match('#</?([a-z\d:.-]+)(?:\s[^<>]*?)?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*#i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
-                list($tag, $pos) = $m[0];
-                $str = substr($s, $i, $pos - $i);
-                if ($done + strlen($str) > $x[0]) {
-                    $out .= substr($str, 0, $x[0] - $done);
-                    $done = $x[0];
-                    break;
-                }
-                $out .= $str;
-                $done += strlen($str);
-                if ($done >= $x[0]) {
-                    break;
-                }
-                if ($tag[0] === '&' || ord($tag) >= 0x80) {
-                    $out .= $tag;
-                    ++$done;
-                } else {
-                    // `tag`
-                    $n = $m[1][0];
-                    // `</tag>`
-                    if ($tag[1] === '/') {
-                        $open = array_pop($tags);
-                        assert($open === $n); // Check that tag(s) are properly nested!
-                        $out .= $tag;
-                    // `<tag/>`
-                    } else if (substr($tag, -2) === '/>' || preg_match('#<(?:br|hr|img|input|link|meta|svg)(?:\s[^<>]*?)?>#i', $tag)) {
-                        $out .= $tag;
-                    // `<tag>`
-                    } else {
-                        $out .= $tag;
-                        $tags[] = $n;
-                    }
-                }
-                // Continue after the tag…
-                $i = $pos + strlen($tag);
-            }
-            // Print rest of the text…
-            if ($done < $x[0] && $i < strlen($s)) {
-                $out .= substr($s, $i, $x[0] - $done);
-            }
-            // Close any open tag(s)…
-            while ($close = array_pop($tags)) {
-                $out .= '</' . $close . '>';
-            }
-            $out = trim(str_replace('<br>', ' ', $out));
-            $s = trim(strip_tags($s));
-            $t = $utf8 ? mb_strlen($s) : strlen($s);
-            return $out . ($t > $x[0] ? $x[1] : "");
-        }
-        $out = $utf8 ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
-        $t = $utf8 ? mb_strlen($s) : strlen($s);
-        return trim($out) . ($t > $x[0] ? $x[1] : "");
-    },
     'file' => function(string $in) {
         $in = array_map('trim', explode(DS, strtr($in, '/', DS)));
         $n = array_map('trim', explode('.', array_pop($in)));
@@ -207,6 +142,71 @@ foreach([
     'snake' => function(string $in, $a = true) {
         return trim(\h($in, '_', $a), '_');
     },
+    'snippet' => function(string $in, $html = true, $x = 200) {
+        $s = \w($in, $html ? HTML_WISE_I : []);
+        $utf8 = extension_loaded('mbstring');
+        if (is_int($x)) {
+            $x = [$x, '&#x2026;'];
+        }
+        $utf8 = extension_loaded('mbstring');
+        // <https://stackoverflow.com/a/1193598/1163000>
+        if ($html && (strpos($s, '<') !== false || strpos($s, '&') !== false)) {
+            $out = "";
+            $done = $i = 0;
+            $tags = [];
+            while ($done < $x[0] && preg_match('#</?([a-z\d:.-]+)(?:\s[^<>]*?)?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*#i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
+                list($tag, $pos) = $m[0];
+                $str = substr($s, $i, $pos - $i);
+                if ($done + strlen($str) > $x[0]) {
+                    $out .= substr($str, 0, $x[0] - $done);
+                    $done = $x[0];
+                    break;
+                }
+                $out .= $str;
+                $done += strlen($str);
+                if ($done >= $x[0]) {
+                    break;
+                }
+                if ($tag[0] === '&' || ord($tag) >= 0x80) {
+                    $out .= $tag;
+                    ++$done;
+                } else {
+                    // `tag`
+                    $n = $m[1][0];
+                    // `</tag>`
+                    if ($tag[1] === '/') {
+                        $open = array_pop($tags);
+                        assert($open === $n); // Check that tag(s) are properly nested!
+                        $out .= $tag;
+                    // `<tag/>`
+                    } else if (substr($tag, -2) === '/>' || preg_match('#<(?:br|hr|img|input|link|meta|svg)(?:\s[^<>]*?)?>#i', $tag)) {
+                        $out .= $tag;
+                    // `<tag>`
+                    } else {
+                        $out .= $tag;
+                        $tags[] = $n;
+                    }
+                }
+                // Continue after the tag…
+                $i = $pos + strlen($tag);
+            }
+            // Print rest of the text…
+            if ($done < $x[0] && $i < strlen($s)) {
+                $out .= substr($s, $i, $x[0] - $done);
+            }
+            // Close any open tag(s)…
+            while ($close = array_pop($tags)) {
+                $out .= '</' . $close . '>';
+            }
+            $out = trim(str_replace('<br>', ' ', $out));
+            $s = trim(strip_tags($s));
+            $t = $utf8 ? mb_strlen($s) : strlen($s);
+            return $out . ($t > $x[0] ? $x[1] : "");
+        }
+        $out = $utf8 ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
+        $t = $utf8 ? mb_strlen($s) : strlen($s);
+        return trim($out) . ($t > $x[0] ? $x[1] : "");
+    },
     'text' => '\w',
     'title' => function(string $in) {
         $in = \w($in);
@@ -240,7 +240,6 @@ foreach([
 foreach ([
     'files' => 'folder',
     'html' => 'HTML',
-    'snippet' => 'description',
     'url' => 'URL',
     'yaml' => 'YAML'
 ] as $k => $v) {

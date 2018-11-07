@@ -15,7 +15,7 @@
 !defined('X') && define('X', "\x1A"); // Placeholder text
 
 !defined('SESSION') && define('SESSION', null); // Change to a folder path to define `session_save_path`
-!defined('DEBUG') && define('DEBUG', null); // Change to `true` to enable debug mode
+!defined('DEBUG') && define('DEBUG', false); // Change to `true` to enable debug mode
 
 !defined('GROUND') && define('GROUND', rtrim(strtr($_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
 !defined('ROOT') && define('ROOT', __DIR__);
