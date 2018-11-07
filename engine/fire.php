@@ -57,6 +57,9 @@ if (is_numeric(end($parts))) {
     $i = array_pop($parts);
     $path = implode('/', $parts);
 } else {
+    if ($path !== "") {
+        array_shift($_GET); // Remove path data from native URL query
+    }
     $i = null;
 }
 $clean = trim($url . '/' . $path, '/');
