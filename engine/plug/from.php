@@ -43,7 +43,7 @@ function yaml_array($s) {
     return $s;
 }
 
-function yaml($in, $d = '  ', $ref = [], $e = true) {
+function yaml($in, $d = '  ', $e = true) {
     // Normalize white-space(s)…
     $in = trim(\n($in), "\n");
     if ($in === "") {
@@ -54,13 +54,6 @@ function yaml($in, $d = '  ', $ref = [], $e = true) {
     // Save `\:` as `\x1A`
     $in = str_replace('\\:', X, $in);
     $x = \x($d);
-    if (strpos($in, '&') !== false) {
-        if (preg_match_all('#((?:' . $x . ')*)([^\n]+): +&(\S+)(\s*\n((?:(?:\1' . $x . '[^\n]*)?\n)+|$)| *[^\n]*)#', $in, $m)) {
-            foreach ($m[3] as $k => $v) {
-                $ref[$v] = yaml($m[2][$k] . ':' . $m[4][$k], $in, $ref);
-            }
-        }
-    }
     if (strpos($in, ': ') !== false && (strpos($in, '|') !== false || strpos($in, '>') !== false)) {
         $in = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:(?:\1' . $x . '[^\n]*)?\n?)+|$))#', function($m) use($d) {
             $s = str_replace("\n" . $m[1] . $d, "\n", "\n" . $m[4]);
@@ -116,12 +109,6 @@ function yaml($in, $d = '  ', $ref = [], $e = true) {
             // Ignore comment(s)…
             if (strpos($a[1], '#') === 0) {
                 $a[1] = [];
-            // Copy…
-            } else if (strpos($a[1], '&') === 0) {
-                $a[1] = strpos($a[1], ' ') !== false ? explode(' ', $a[1], 2)[1] : [];
-            // Paste…
-            } else if (strpos($a[1], '*') === 0 && isset($ref[substr($a[1], 1)])) {
-                $a[1] = array_pop($ref[substr($a[1], 1)]);
             } else {
                 $s = strpos($a[1], "'") === 0 || strpos($a[1], '"') === 0 ? $a[1] : explode('#', $a[1])[0];
                 $s = trim($s);
