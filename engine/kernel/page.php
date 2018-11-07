@@ -19,7 +19,7 @@ class Page extends Genome {
             $this->lot = self::$page[$id];
         } else {
             $n = $path ? Path::N($path) : null;
-            $x = Path::X($path, "");
+            $x = Path::X((string) $path, "");
             $c = $m = $_SERVER['REQUEST_TIME'] ?? time();
             if (file_exists($path)) {
                 $c = filectime($path); // File creation time
@@ -53,11 +53,11 @@ class Page extends Genome {
                 $this->lot['time'] = $t->format(DATE_WISE);
                 $this->lot['title'] = $t->format(strtr(DATE_WISE, '-', '/'));
             // Else, set `time` value from the page’s `time.data` if any
-            } else if ($t = File::open(Path::F($path) . DS . 'time.data')->get()) {
+            } else if ($t = File::open(Path::F((string) $path) . DS . 'time.data')->get()) {
                 $this->lot['time'] = $t;
             }
             // Static `update` value from the page’s `update.data` if any
-            if ($t = File::open(Path::F($path) . DS . 'update.data')->get()) {
+            if ($t = File::open(Path::F((string) $path) . DS . 'update.data')->get()) {
                 $this->lot['update'] = $t;
             }
             $this->lot['time'] = new Date($this->lot['time']);
@@ -68,7 +68,7 @@ class Page extends Genome {
     }
 
     public function __call(string $key, array $lot = []) {
-        if (self::_($key) || $key === 'set') { // @see `function Genome_set()`
+        if (self::_($key) || $key === 'set') { // @see `function _set_()`
             return parent::__call($key, $lot);
         }
         // Example: `$page->__call('foo.bar')`
@@ -221,7 +221,7 @@ class Page extends Genome {
         return new static($path, $lot, $NS);
     }
 
-    protected function Genome_set($in, $fn = null) {
+    protected function _set_($in, $fn = null) {
         $path = $this->path;
         $data = is_file($path) ? self::apart(file_get_contents($path)) : [];
         $this->lot = extend($data, ['path' => $path], false);

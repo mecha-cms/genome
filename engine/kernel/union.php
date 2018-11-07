@@ -30,7 +30,7 @@ class Union extends Genome {
     public static $config = self::config;
 
     // Build union attribute(s)…
-    protected function Genome_data($a = []) {
+    protected function _data_($a = []) {
         if (!is_array($a)) {
             $a = trim((string) $a);
             return strlen($a) ? ' ' . $a : "";
@@ -49,7 +49,7 @@ class Union extends Genome {
     }
 
     // Base union constructor
-    protected function Genome_unite($unit = null, $content = "", array $data = [], $dent = 0) {
+    protected function _unite_($unit = null, $content = "", array $data = [], $dent = 0) {
         // `$union->unite(['div', "", ['id' => 'foo']], 1)`
         if (is_array($unit)) {
             $dent = $content ?: 0;
@@ -65,12 +65,12 @@ class Union extends Genome {
         // `$union->unite('div', "", ['id' => 'foo'], 0)`
         $dent = static::dent($dent);
         $u = $this->union[1][0];
-        $s = $dent . $u[0] . $unit . $this->Genome_data($data);
+        $s = $dent . $u[0] . $unit . $this->_data_($data);
         return $s . ($content === false ? $u[1] : $u[1] . $content . $u[0] . $u[2] . $unit . $u[1]);
     }
 
     // Inverse version of `Union::unite()`
-    protected function Genome_apart(string $in = "", $eval = true) {
+    protected function _apart_(string $in = "", $eval = true) {
         $u = $this->union[1][0];
         $d = $this->union[1][1];
         $r = $this->pattern;
@@ -114,7 +114,7 @@ class Union extends Genome {
     }
 
     // Union comment
-    protected function Genome___(string $content = "", int $dent = 0, $block = N) {
+    protected function ____(string $content = "", int $dent = 0, $block = N) {
         $dent = static::dent($dent);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
@@ -125,21 +125,21 @@ class Union extends Genome {
     }
 
     // Base union unit open
-    protected function Genome_begin($unit = null, array $data = [], $dent = 0) {
+    protected function _begin_($unit = null, array $data = [], $dent = 0) {
         $dent = static::dent($dent);
         $this->unit[] = $unit;
         $this->dent[] = $dent;
         $u = $this->union[1][0];
-        return $dent . $u[0] . $unit . $this->Genome_data($data) . $u[1];
+        return $dent . $u[0] . $unit . $this->_data_($data) . $u[1];
     }
 
     // Base union unit close
-    protected function Genome_end($unit = null, $dent = null) {
+    protected function _end_($unit = null, $dent = null) {
         if ($unit === true) {
             // Close all!
             $out = "";
             while (array_pop($this->unit)) {
-                $out .= $this->Genome_end() . ($dent ?: N);
+                $out .= $this->_end_() . ($dent ?: N);
             }
             return $out;
         }
@@ -172,9 +172,9 @@ class Union extends Genome {
     }
 
     public function __call(string $kin, array $lot = []) {
-        if (!self::_($kin) && !method_exists($this, 'Genome_' . $kin)) {
+        if (!self::_($kin) && !method_exists($this, '_' . $kin . '_')) {
             array_unshift($lot, $kin);
-            return $this->Genome_unite(...$lot);
+            return $this->_unite_(...$lot);
         }
         return parent::__call($kin, $lot);
     }

@@ -16,12 +16,9 @@ function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = nul
     $pages = \Anemon::eat(\g($folder, $state))->not(function($v) {
         return pathinfo($v, PATHINFO_FILENAME) === '$';
     })->map(function($v) use($key, $sort) {
-        return _page($v, is_array($sort) && isset($sort[1]) ? $sort[1] : $key);
+        return _page($v, is_array($sort) && isset($sort[1]) ? $sort[1] : $key ?? X);
     })->sort($sort);
-    if ($key) {
-        return $pages->pluck($key);
-    }
-    return $pages;
+    return $key ? $pages->pluck($key) : $pages;
 }
 
 \Get::_('pages', __NAMESPACE__ . "\\pages");
