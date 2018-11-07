@@ -12,7 +12,7 @@ function url($url = "", array $lot = []) {
     if (!$path = $this->path) {
         return $url;
     }
-    $path = \Path::F($path, PAGE, '/');
+    $path = \Path::R(\Path::F($path), PAGE, '/');
     return rtrim($GLOBALS['URL']['$'] . '/' . ltrim($path, '/'), '/');
 }
 
