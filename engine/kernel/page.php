@@ -10,7 +10,7 @@ class Page extends Genome {
 
     private static $page = []; // Cache!
 
-    public function __construct($path = null, array $lot = [], $NS = []) {
+    public function __construct(string $path = null, array $lot = [], $NS = []) {
         $key = c2f(static::class, '_', '/');
         $this->path = $path;
         $this->NS = is_array($NS) ? extend(['*', $key], $NS, false) : $NS;
