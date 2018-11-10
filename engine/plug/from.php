@@ -1,27 +1,26 @@
 <?php namespace fn\from;
 
 // Get key and value pair…
-function yaml_pair($s) {
-    if ((strpos($s, "'") === 0 || strpos($s, '"') === 0) && preg_match('#(\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*") *: +([^\n]*)#', $s, $m)) {
-        $a = [\t($m[1], $s[0]), $m[2]];
+function yaml_pair($in) {
+    if ((strpos($in, "'") === 0 || strpos($in, '"') === 0) && preg_match('#(\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*") *: +([^\n]*)#', $in, $m)) {
+        $out = [\t($m[1], $in[0]), $m[2]];
     } else {
-        $a = explode(':', $s, 2);
+        $out = explode(': ', $in, 2);
     }
-    $a[0] = trim($a[0]);
+    $out[0] = trim($out[0]);
     // If value is an empty string, replace with `[]`
-    $a[1] = isset($a[1]) && $a[1] !== "" ? trim($a[1]) : [];
-    return $a;
+    $out[1] = isset($out[1]) && $out[1] !== "" ? trim($out[1]) : [];
+    return $out;
 }
 
 // Parse array-like string…
-function yaml_array($s) {
-    if (!is_string($s)) {
-        return $s;
+function yaml_array($in) {
+    if (!is_string($in)) {
+        return $in;
     }
-    if (strpos($s, '[') === 0 && substr($s, -1) === ']' || strpos($s, '{') === 0 && substr($s, -1) === '}') {
-        $a = preg_split('#(\s*(?:\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*"|[\[\]\{\}:,])\s*)#', $s, null, PREG_SPLIT_DELIM_CAPTURE);
-        $s = "";
-        foreach ($a as $v) {
+    if (strpos($in, '[') === 0 && substr($in, -1) === ']' || strpos($in, '{') === 0 && substr($in, -1) === '}') {
+        $out = "";
+        foreach (preg_split('#(\s*(?:\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*"|[\[\]\{\}:,])\s*)#', $in, null, PREG_SPLIT_DELIM_CAPTURE) as $v) {
             if (($v = trim($v)) === "") {
                 continue;
             }
@@ -36,11 +35,11 @@ function yaml_array($s) {
             } else {
                 $v = json_encode($v);
             }
-            $s .= $v;
+            $out .= $v;
         }
-        return json_decode($s, true);
+        return json_decode($out, true);
     }
-    return $s;
+    return $in;
 }
 
 function yaml($in, $d = '  ', $e = true) {
@@ -51,16 +50,20 @@ function yaml($in, $d = '  ', $e = true) {
     }
     $key = $out = $i = [];
     $len = strlen($d);
-    // Save `\:` as `\x1A`
-    $in = str_replace('\\:', X, $in);
     $x = \x($d);
     if (strpos($in, ': ') !== false && (strpos($in, '|') !== false || strpos($in, '>') !== false)) {
         $in = preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:(?:\1' . $x . '[^\n]*)?\n?)+|$))#', function($m) use($d) {
             $s = str_replace("\n" . $m[1] . $d, "\n", "\n" . $m[4]);
             if ($m[3] === '>') {
-                $s = trim($s, "\n");
-                // TODO
-                $s = preg_replace('#(\S)\n(\S)#', '$1 $2', $s);
+                $s = str_replace([
+                    "\n\n",
+                    "\n",
+                    X
+                ], [
+                    X,
+                    ' ',
+                    "\n\n"
+                ], trim($s, "\n"));
             } else {
                 $s = \t($s, "\n");
             }
@@ -102,9 +105,9 @@ function yaml($in, $d = '  ', $e = true) {
         while ($dent < count($key)) {
             array_pop($key);
         }
-        $a = yaml_pair(trim($v));
-        // Restore `\x1A` to `:`
-        $a[0] = $key[$dent] = strtr($a[0], X, ':');
+        $v = trim($v);
+        $a = yaml_pair(substr($v, -1) === ':' ? $v . ' ' : $v);
+        $key[$dent] = $a[0];
         if (is_string($a[1])) {
             // Ignore comment(s)…
             if (strpos($a[1], '#') === 0) {
