@@ -23,7 +23,7 @@ class Config extends Genome {
             Anemon::set($cargo, $key, $value);
         } else {
             foreach ($key as $k => $v) {
-                Anemon::set($cargo, $k, $v);
+                $cargo[$k] = $v;
             }
         }
         $o = (array) (self::$lot[$c] ?? []);
