@@ -20,7 +20,7 @@ class Form extends HTML {
             'type' => $type
         ];
         self::name($name, $a);
-        $a['value'] = HTTP::restore('post', self::key($name), $value);
+        $a['value'] = HTTP::restore(self::key($name), $value);
         return self::unite('input', false, extend($a, $attr), $dent);
     }
 
@@ -30,7 +30,7 @@ class Form extends HTML {
         $a = [];
         self::name($name, $a);
         unset($a['required']);
-        $select = (string) HTTP::restore('post', self::key($name), $select);
+        $select = (string) HTTP::restore(self::key($name), $select);
         $a = extend($a, $attr);
         foreach ($option as $key => $value) {
             $tag = new static;
@@ -82,13 +82,13 @@ class Form extends HTML {
             $placeholder = substr(self::v(explode("\n", n($placeholder), 2)[0]), 0, 300); // TODO
         }
         $a['placeholder'] = $placeholder;
-        $value = HTTP::restore('post', self::key($name), $value);
+        $value = HTTP::restore(self::key($name), $value);
         return self::unite('textarea', self::v(htmlentities($value)), extend($a, $attr), $dent);
     }
 
     public static function key($key) {
         // Replace `foo[bar][baz]` to `foo.bar.baz`
-        return str_replace(['.', '[', ']', X], [X, '.', "", '\\.'], $key);
+        return str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $key);
     }
 
     private static function name(&$s, &$a) {

@@ -10,7 +10,7 @@ foreach (['reset', 'submit'] as $kin) {
 foreach ([
     'hidden' => function($name = null, $value = null, $attr = [], $dent = 0) {
         // Do not cache any request data of hidden form element(s)
-        HTTP::delete('post', $name);
+        HTTP::delete($name);
         return Form::input($name, 'hidden', $value, null, $attr, $dent);
     },
     'file' => function($name = null, $attr = [], $dent = 0) {

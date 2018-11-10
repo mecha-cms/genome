@@ -152,8 +152,8 @@ class HTTP extends Genome {
     }
 
     // Save state
-    public static function save(string $id, $key = null, $value = null) {
-        $data = self::__callStatic($id, [$key, $value]);
+    public static function save($key = null, $value = null) {
+        $data = $_POST ?? [];
         if (isset($key)) {
             if (!is_array($key)) {
                 $key = [$key => $value];
@@ -161,18 +161,18 @@ class HTTP extends Genome {
         } else {
             $key = $data;
         }
-        $s = self::$config['session']['gate'] . '.' . $id;
-        $cache = Session::get($s, []);
-        Session::set($s, extend($cache, $key));
+        $id = self::$config['session']['gate'];
+        $cache = Session::get($id, []);
+        Session::set($id, extend($cache, $key));
         return new static;
     }
 
     // Restore state
-    public static function restore(string $id, $key = null, $fail = null) {
-        $s = self::$config['session']['gate'] . '.' . $id;
-        $cache = Session::get($s, []);
+    public static function restore($key = null, $fail = null) {
+        $id = self::$config['session']['gate'];
+        $cache = Session::get($id, []);
         if (isset($key)) {
-            self::delete($id, $key);
+            self::delete($key);
             return Anemon::get($cache, $key, $fail);
         }
         self::delete($id);
@@ -180,8 +180,8 @@ class HTTP extends Genome {
     }
 
     // Delete state
-    public static function delete(string $id, $key = null) {
-        Session::reset(self::$config['session']['gate'] . '.' . $id . (isset($key) ? '.' . $key : ""));
+    public static function delete($key = null) {
+        Session::reset(self::$config['session']['gate'] . (isset($key) ? '.' . $key : ""));
         return new static;
     }
 
