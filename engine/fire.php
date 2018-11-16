@@ -42,10 +42,10 @@ $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
 $directory = strtr(dirname($_SERVER['SCRIPT_NAME']), DS, '/');
 $directory = $directory === '.' ? "" : trim($directory, '/');
 $url = trim($protocol . $host . '/' . $directory, '/');
-$parts = explode('&', $_SERVER['QUERY_STRING'], 2);
+$parts = explode('&', strtr($_SERVER['QUERY_STRING'], DS, '/'), 2);
 $path = array_shift($parts);
 $query = array_shift($parts);
-$path = strtr($path ?? "", [
+$path = strtr(trim($path ?? "", '/'), [
     '<' => '%3C',
     '>' => '%3E',
     '&' => '%26',
@@ -54,7 +54,7 @@ $path = strtr($path ?? "", [
 $query = $query ? '?' . $query : "";
 $parts = explode('/', $path);
 if (is_numeric(end($parts))) {
-    $i = array_pop($parts);
+    $i = (int) array_pop($parts);
     $path = implode('/', $parts);
 } else {
     if ($path !== "") {

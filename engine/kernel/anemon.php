@@ -327,7 +327,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Set array value recursively
     public static function set(array &$array, string $key, $value = null, string $NS = '.') {
-        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
+        $keys = explode($NS, str_replace("\\" . $NS, X, $key));
         while (count($keys) > 1) {
             $key = str_replace(X, $NS, array_shift($keys));
             if (!array_key_exists($key, $array)) {
@@ -340,7 +340,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Get array value recursively
     public static function get(array &$array, string $key, $fail = false, string $NS = '.') {
-        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
+        $keys = explode($NS, str_replace("\\" . $NS, X, $key));
         foreach ($keys as $value) {
             $value = str_replace(X, $NS, $value);
             if (!is_array($array) || !array_key_exists($value, $array)) {
@@ -353,7 +353,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Remove array value recursively
     public static function reset(array &$array, string $key, string $NS = '.') {
-        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
+        $keys = explode($NS, str_replace("\\" . $NS, X, $key));
         while (count($keys) > 1) {
             $key = str_replace(X, $NS, array_shift($keys));
             if (array_key_exists($key, $array)) {
