@@ -5,7 +5,8 @@ class Extend extends Genome {
     protected static $state = [];
 
     public static function exist(string $id, $fail = false) {
-        return Folder::exist(constant(u(static::class)) . DS . $id, $fail);
+        $file = File::exist(constant(u(static::class)) . DS . $id . DS . 'index.php');
+        return $file ? dirname($file) : $fail;
     }
 
     public static function state(...$lot) {

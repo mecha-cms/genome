@@ -6,7 +6,7 @@ class Session extends Genome {
         $path = array_shift($lot);
         $path = $path ? $path : constant(u(static::class));
         if (isset($path)) {
-            Folder::set($path, 0600);
+            Folder::create($path, 0600);
             session_save_path($path);
         }
         return !session_id() ? session_start() : true;

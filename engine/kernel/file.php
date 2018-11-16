@@ -23,7 +23,7 @@ class File extends Genome {
     }
 
     public function __toString() {
-        return $this->read("");
+        return $this->path . "";
     }
 
     // Print the file content
@@ -36,9 +36,14 @@ class File extends Genome {
     }
 
     // Write `$data` before save
-    protected function _set_(string $data) {
+    protected function _put_(string $data) {
         $this->content = $data;
         return $this;
+    }
+
+    // Alias for `put`
+    protected function _set_(string $data) {
+        return $this->_put_($data);
     }
 
     // Append `$data` before save
@@ -77,9 +82,6 @@ class File extends Genome {
         }
         return $fail;
     }
-
-    // Reserved
-    public function reset() {}
 
     // Import the exported PHP file
     public function import($fail = []) {
@@ -238,6 +240,11 @@ class File extends Genome {
         return $out;
     }
 
+    // Alias for `delete`
+    public function reset() {
+        return $this->delete();
+    }
+
     // Set file permission
     public function consent($consent) {
         $path = $this->path;
@@ -302,6 +309,9 @@ class File extends Genome {
         $folder = strtr($folder, '/', DS);
         $out = [];
         if ($deep) {
+            if (!is_dir($folder)) {
+                return $fail;
+            }
             $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
             $b = $x === 1 || is_string($x) ? \RecursiveIteratorIterator::LEAVES_ONLY : \RecursiveIteratorIterator::SELF_FIRST;
             $c = new \RecursiveIteratorIterator($a, $b);
@@ -391,27 +401,22 @@ class File extends Genome {
     }
 
     // Upload a file
-    public static function push($name, string $path = ROOT, $fn = null) {
+    public static function push($blob, string $path = ROOT) {
+        if (!is_array($blob)) {
+            return null; // Invalid blob input
+        }
         $path = rtrim(strtr($path, '/', DS), DS);
-        if (!isset($_FILES[$name])) {
-            return 4; // No file was uploaded
+        if (!empty($blob['error'])) {
+            return $blob['error']; // Has error, abort!
         }
-        $data = $_FILES[$name];
-        if (is_callable($fn)) {
-            $data = call_user_func($fn, $data);
-        }
-        if (file_exists($f = $path . DS . $data['name'])) {
+        if (file_exists($f = $path . DS . $blob['name'])) {
             return false; // File already exists
-        } else if (isset($data['error']) && $data['error'] > 0) {
-            return $data['error'];
-        } else if ($data['size'] > self::$config['size'][1]) {
-            return 1; // The uploaded file exceeds the `upload_max_filesize` directive in `php.ini`
         }
         // Destination folder does not exist
         if (!file_exists($path) || !is_dir($path)) {
             mkdir($path, 0775, true); // Create one!
         }
-        move_uploaded_file($data['tmp_name'], $f);
+        move_uploaded_file($blob['tmp_name'], $f);
         return $f; // There is no error, the file uploaded with success
     }
 

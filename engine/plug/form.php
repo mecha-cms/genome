@@ -27,6 +27,8 @@ foreach ([
     'radio' => function($name = null, $options = [], $select = null, $attr = [], $dent = 0) {
         $out = [];
         $select = (string) $select;
+        $id = $attr['id'] ?? null;
+        unset($attr['id']);
         foreach ($options as $k => $v) {
             $a = ['disabled' => null];
             if (strpos($k, '.') === 0) {
@@ -36,6 +38,9 @@ foreach ([
             $k = (string) $k;
             $a['checked'] = $select === $k || $select === '.' . $k ? true : null;
             $v = $v ? '&#x0020;' . HTML::span($v) : "";
+            if ($id) {
+                $a['id'] = $id . ':' . dechex(crc32($k));
+            }
             $out[] = HTML::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, extend($a, $attr)) . $v);
         }
         return implode(HTML::unite('br', false), $out);

@@ -19,26 +19,27 @@ class Page extends Genome {
             $this->lot = self::$page[$id];
         } else {
             $n = $path ? Path::N($path) : null;
-            $x = Path::X((string) $path, "");
+            $x = $path ? Path::X($path) : null;
             $c = $m = $_SERVER['REQUEST_TIME'] ?? time();
             if (file_exists($path)) {
                 $c = filectime($path); // File creation time
                 $m = filemtime($path); // File modification time
             }
             $this->lot = extend([
-                'time' => $c,
-                'update' => $m,
+                'time' => date(DATE_WISE, $c),
+                'update' => date(DATE_WISE, $m),
                 'slug' => $n,
-                'title' => $n !== null ? To::title((string) $n) : null, // Fake `title` data from the page’s file name
+                'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
                 'state' => $x,
-                'type' => u($x), // Fake `type` data from the page’s file extension
+                'type' => $x !== null ? u($x) : null, // Fake `type` data from the page’s file extension
                 'id' => sprintf('%u', $c),
                 'path' => $path,
-                'url' => $path !== null ? To::URL((string) $path) : null
+                'url' => $path !== null ? To::URL($path) : null
             ], (array) Config::get($key, [], true), $lot, false);
             // Set `time` value from the page’s file name
             if (
                 $n &&
+                is_string($n) &&
                 is_numeric($n[0]) &&
                 (
                     // `2017-04-21.page`
@@ -47,21 +48,19 @@ class Page extends Genome {
                     substr_count($n, '-') === 5
                 ) &&
                 is_numeric(str_replace('-', "", $n)) &&
-                preg_match('#^\d{4,}(?:-\d{2}){2}(?:(?:-\d{2}){3})?$#', $n)
+                preg_match('#^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$#', $n)
             ) {
                 $t = new Date($n);
                 $this->lot['time'] = $t->format(DATE_WISE);
                 $this->lot['title'] = $t->format(strtr(DATE_WISE, '-', '/'));
             // Else, set `time` value from the page’s `time.data` if any
-            } else if ($t = File::open(Path::F((string) $path) . DS . 'time.data')->get()) {
+            } else if ($path && $t = File::open(Path::F($path) . DS . 'time.data')->get()) {
                 $this->lot['time'] = $t;
             }
             // Static `update` value from the page’s `update.data` if any
-            if ($t = File::open(Path::F((string) $path) . DS . 'update.data')->get()) {
+            if ($path && $t = File::open(Path::F($path) . DS . 'update.data')->get()) {
                 $this->lot['update'] = $t;
             }
-            $this->lot['time'] = new Date($this->lot['time']);
-            $this->lot['update'] = new Date($this->lot['update']);
             self::$page[$id] = $this->lot;
         }
         parent::__construct();
@@ -94,6 +93,16 @@ class Page extends Genome {
         // Prioritize data from a file…
         if ($extern && $data = File::open($extern)->get()) {
             $a[$key] = e($data);
+        }
+        // Check for valid time format, render it as `Date` instance
+        $t = $a[$key];
+        if (
+            $t &&
+            is_string($t) && 
+            strlen($t) >= 19 &&
+            preg_match('#^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1]) ([0-1]\d|2[0-4])(:([0-5]\d|60)){2}$#', $t)
+        ) {
+            $a[$key] = new Date($t);
         }
         $this->lot = self::$page[$this->hash] = $a;
         $test = $lot[0] ?? null;
@@ -258,7 +267,7 @@ class Page extends Genome {
 
     public function saveTo(string $path, $consent = 0600) {
         unset($this->lot['path']);
-        File::set(self::unite($this->lot))->saveTo($path, $consent);
+        File::put(self::unite($this->lot))->saveTo($path, $consent);
     }
 
     public function save($consent = 0600) {

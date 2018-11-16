@@ -6,7 +6,7 @@ class Folder extends File {
         return "";
     }
 
-    public static function set($path, $consent = 0775) {
+    public static function create($path, $consent = 0775) {
         foreach ((array) $path as $k => $v) {
             if (!file_exists($v) || is_file($v)) {
                 if (is_array($consent)) {
@@ -18,6 +18,11 @@ class Folder extends File {
             }
         }
         return $path;
+    }
+
+    // Alias for `create`
+    public static function set($path, $consent = 0755) {
+        return self::create($path, $consent);
     }
 
     public static function exist($path, $fail = false) {
