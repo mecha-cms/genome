@@ -74,7 +74,8 @@ foreach([
             if ($v === "") continue;
             $s .= \h($v, '-', true, '_') . DS;
         }
-        return $s . \h(implode('.', $n), '-', true, '_.') . '.' . \h($x, '-', true);
+        $out = $s . \h(implode('.', $n), '-', true, '_.') . '.' . \h($x, '-', true);
+        return $out === '.' ? "" : $out;
     },
     'folder' => function(string $in) {
         $in = array_map('trim', explode(DS, strtr($in, '/', DS)));
@@ -122,9 +123,9 @@ foreach([
     'query' => function(array $in, $c = []) {
         $c = \extend(['?', '&', '=', ""], $c, false);
         foreach (query($in, "") as $k => $v) {
-            if ($v === false) continue; // `['a' => 'false', 'b' => false]` → `a=false`
+            if (!isset($v) || $v === false) continue; // `['a' => 'false', 'b' => false, 'c' => 'null', 'd' => null]` → `a=false&c=null`
             $v = $v !== true ? $c[2] . urlencode(\s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`
-            $out[] = urlencode($k) . $v; // `['a' => 'null', 'b' => null]` → `a=null&b=null`
+            $out[] = urlencode($k) . $v;
         }
         return !empty($out) ? $c[0] . implode($c[1], $out) . $c[3] : "";
     },
@@ -210,10 +211,9 @@ foreach([
     'text' => '\w',
     'title' => function(string $in) {
         $in = \w($in);
-        if (extension_loaded('mbstring')) {
-            return mb_convert_case($in, MB_CASE_TITLE);
-        }
-        return ucwords($in);
+        $out = extension_loaded('mbstring') ? mb_convert_case($in, MB_CASE_TITLE) : ucwords($in);
+        // Convert to abbreviation if case(s) are all in upper
+        return u($out) === $out ? str_replace(' ', "", $out) : $out;
     },
     'upper' => '\u',
     'URL' => function(string $in, $raw = false) {

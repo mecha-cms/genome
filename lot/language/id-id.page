@@ -1,7 +1,7 @@
 ---
 title: Bahasa Indonesia
 description: Bahasa nasional Republik Indonesia.
-version: 2.0.0
+version: 2.0.1
 type: YAML
 ...
 
@@ -725,9 +725,9 @@ transfer: Transfer
 transfering: Mentransfer
 transfered: Ditransfer
 
-update: Perbaharui
-updateing: Memperbaharui
-updateed: Diperbaharui
+update: Perbarui
+updateing: Memperbarui
+updateed: Diperbarui
 
 upload: Unggah
 uploading: Mengunggah
@@ -748,11 +748,11 @@ message_avail: %{0}% tersedia.
 message_exist: %{0}% sudah ada.
 
 message_error_file_exist: Berkas %{0}% sudah ada.
-message_error_file_x: Ekstensi %{0}% tidak diperbolehkan.
 message_error_file_size:
   0: Harus lebih besar dari %{0}%.
   1: Harus lebih kecil dari %{0}%.
 message_error_file_type: Tipe berkas %{0}% tidak diperbolehkan.
+message_error_file_x: Ekstensi %{0}% tidak diperbolehkan.
 message_error_search: Tidak ada temuan untuk %{0}%.
 
 message_info_are: %{0}% Anda adalah %{1}%.
@@ -770,7 +770,14 @@ message_info_is: %{0}% Anda adalah %{1}%.
 message_info_search: Hasil penelusuran untuk %{0}%.
 message_info_void: Belum ada %{0}%.
 
-message_success_file_push: %{0}% berhasil diunggah.
+message_success_file_create: Berkas %{0}% dibuat.
+message_success_file_delete: Berkas %{0}% dihapus.
+message_success_file_push: Berkas %{0}% diunggah.
+message_success_file_update: Berkas %{0}% diperbarui.
+
+message_success_folder_create: Folder %{0}% dibuat.
+message_success_folder_delete: Folder %{0}% dihapus.
+message_success_folder_update: Folder %{0}% diperbarui.
 
 _active: Tidak Aktif
 _activate: Tidak Diaktifkan

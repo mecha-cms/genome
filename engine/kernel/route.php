@@ -79,14 +79,14 @@ class Route extends Genome {
         return $fail;
     }
 
-    public static function get($id = null, $fail = false) {
+    public static function get(string $id = null, $fail = false) {
         if (isset($id)) {
             return self::$lot[1][$id] ?? $fail ?: $fail;
         }
         return self::$lot[1] ?? $fail ?: $fail;
     }
 
-    public static function has($id = null, $stack = null, $fail = false) {
+    public static function has(string $id = null, $stack = null, $fail = false) {
         if (isset($id)) {
             if (isset($stack)) {
                 $routes = [];
@@ -106,27 +106,30 @@ class Route extends Genome {
         return self::$lot_o[1] ?? $fail ?: $fail;
     }
 
-    public static function fire($id = null, $lot = []) {
+    public static function fire(string $id = null, array $lot = []) {
         $s = c2f(static::class, '_', '/') . '.';
         if (isset($id)) {
             $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
-                call_user_func(self::$lot[1][$id]['fn'], ...$lot);
-                return true;
+                return call_user_func(self::$lot[1][$id]['fn'], ...$lot);
             }
         } else {
             $id = rtrim($GLOBALS['URL']['path'] . '/' . $GLOBALS['URL']['i'], '/');
+            $over = false;
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s)…
                 if (isset(self::$lot_o[1][$id])) {
                     $fn = Anemon::eat(self::$lot_o[1][$id])->sort([1, 'stack']);
                     foreach ($fn as $v) {
-                        call_user_func($v['fn'], ...$lot);
+                        if ($r = call_user_func($v['fn'], ...$lot)) {
+                            $over = $r;
+                            break;
+                        }
                     }
                 }
                 // Passed!
                 Hook::fire($s . 'enter', [self::$lot[1][$id], null]);
-                $r = call_user_func(self::$lot[1][$id]['fn'], ...$lot);
+                $r = $over ?: call_user_func(self::$lot[1][$id]['fn'], ...$lot);
                 Hook::fire($s . 'exit', [self::$lot[1][$id], null]);
                 return $r;
             } else {
@@ -138,12 +141,15 @@ class Route extends Genome {
                         if (isset(self::$lot_o[1][$k])) {
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack']);
                             foreach ($fn as $f) {
-                                call_user_func($f['fn'], ...$route['lot']);
+                                if ($r = call_user_func($f['fn'], ...$route['lot'])) {
+                                    $over = $r;
+                                    break;
+                                }
                             }
                         }
                         // Passed!
                         Hook::fire($s . 'enter', [self::$lot[1][$k], null]);
-                        $r = call_user_func($v['fn'], ...$route['lot']);
+                        $r = $over ?: call_user_func($v['fn'], ...$route['lot']);
                         Hook::fire($s . 'exit', [self::$lot[1][$k], null]);
                         return $r;
                     }
