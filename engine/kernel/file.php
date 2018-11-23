@@ -267,6 +267,7 @@ class File extends Genome {
         $exist = file_exists($path);
         $create = $exist ? filectime($path) : null;
         $update = $exist ? filemtime($path) : null;
+        $consent = $exist ? fileperms($path) : null;
         $create_date = $create ? date(DATE_WISE, $create) : null;
         $update_date = $update ? date(DATE_WISE, $update) : null;
         $out = [
@@ -278,6 +279,7 @@ class File extends Genome {
             'create' => $create_date,
             'update' => $update_date,
             'size' => $exist ? self::size($path) : null,
+            'consent' => substr(sprintf('%o', $consent), -4),
             'is' => [
                 'exist' => $exist,
                 // Hidden file/folder only
@@ -288,7 +290,8 @@ class File extends Genome {
             ],
             '_create' => $create,
             '_update' => $update,
-            '_size' => $exist ? filesize($path) : null
+            '_size' => $exist ? filesize($path) : null,
+            '_consent' => $consent
         ];
         self::$inspect[$id] = $out;
         return isset($key) ? Anemon::get($out, $key, $fail) : $out;
