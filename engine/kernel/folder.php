@@ -7,14 +7,14 @@ class Folder extends File {
     }
 
     public static function create($path, $consent = 0775) {
-        foreach ((array) $path as $k => $v) {
+        foreach ((array) $path as $k => &$v) {
             if (!file_exists($v) || is_file($v)) {
                 if (is_array($consent)) {
                     $c = array_key_exists($k, $consent) ? $consent[$k] : end($consent);
                 } else {
                     $c = $consent;
                 }
-                mkdir(To::path($v), $c, true);
+                mkdir($v = To::path($v), $c, true);
             }
         }
         return $path;

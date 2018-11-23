@@ -185,6 +185,9 @@ class HTTP extends Genome {
         return new static;
     }
 
+    // TODO
+    public static function fetch($url) {}
+
     public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {
             $id = '_' . strtoupper($kin);
