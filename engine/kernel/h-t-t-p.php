@@ -185,8 +185,33 @@ class HTTP extends Genome {
         return new static;
     }
 
-    // TODO
-    public static function fetch($url) {}
+    // Fetch remote URL
+    public static function fetch($url, $fail = false) {
+        $agent = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
+        if (extension_loaded('curl')) {
+            $curl = curl_init($url);
+            curl_setopt_array($curl, [
+                CURLOPT_FAILONERROR => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTPGET => true,
+                CURLOPT_MAXREDIRS => 2,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 15,
+                CURLOPT_USERAGENT => $agent
+            ]);
+            $out = curl_exec($curl);
+            curl_close($curl);
+        } else {
+            $out = file_get_contents($url, false, stream_context_create([
+                'http' => [
+                    'method' => 'GET',
+                    // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
+                    'header' => 'User-Agent: ' . $agent
+                ]
+            ]));
+        }
+        return $out !== false ? $out : $fail;
+    }
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {
