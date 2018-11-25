@@ -99,11 +99,6 @@ class File extends Genome {
         return $self;
     }
 
-    // Save the `$data`
-    public function save($consent = null) {
-        $this->saveTo($this->path, $consent);
-    }
-
     // Save the `$data` to …
     public function saveTo(string $path, $consent = null) {
         $this->path = $path;
@@ -116,6 +111,17 @@ class File extends Genome {
             chmod($path, $consent);
         }
         return $path;
+    }
+
+    // Save the `$data` as …
+    public function saveAs(string $name, $consent = null) {
+        $path = $this->path;
+        return $path ? $this->saveTo(dirname($path) . DS . basename($name), $consent) : false;
+    }
+
+    // Save the `$data`
+    public function save($consent = null) {
+        return $this->saveTo($this->path, $consent);
     }
 
     // Rename the file/folder
