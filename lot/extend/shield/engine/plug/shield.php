@@ -1,7 +1,7 @@
 <?php
 
-Shield::_('exist', function(string $in, $fail = false) {
-    return Folder::exist(SHIELD . DS . $in, $fail);
+Shield::_('exist', function(string $id) {
+    return file_exists(SHIELD . DS . $id . DS . 'index.php');
 });
 
 Shield::_('state', function(...$lot) {
