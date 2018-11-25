@@ -57,6 +57,7 @@ class URL extends Genome {
         return $query;
     }
 
+    // `$url->hash('#!')`
     public function hash(string $prefix = null) {
         $hash = $this->lot['hash'];
         return isset($prefix) ? $prefix . substr($hash, 1) : $hash;
@@ -87,7 +88,7 @@ class URL extends Genome {
         $url = $GLOBALS['URL'];
         $b = false;
         if (strpos($path, '//') === 0) {
-            return trim($url['scheme'] . ':' . $path, '/');
+            return rtrim($url['scheme'] . ':' . $path, '/');
         } else if (strpos($path, '/') === 0) {
             $path = ltrim($path, '/');
             $b = true; // Relative to the root domain

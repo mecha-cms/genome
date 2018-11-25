@@ -4,7 +4,7 @@ class Asset extends Genome {
 
     public static $lot = [];
 
-    public static function path($path, $fail = false) {
+    public static function path(string $path, $fail = false) {
         global $url;
         if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
             // External URL, nothing to check!
@@ -21,12 +21,12 @@ class Asset extends Genome {
         return File::exist([ASSET . DS . $s, ROOT . DS . $s], $fail);
     }
 
-    public static function URL($url, $fail = false) {
+    public static function URL(string $url, $fail = false) {
         $path = self::path($url, false);
         return $path !== false ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : $fail);
     }
 
-    public static function set($path, $stack = null, $data = []) {
+    public static function set($path, float $stack = null, array $data = []) {
         $i = 0;
         $stack = (array) $stack;
         $c = static::class;
@@ -46,7 +46,7 @@ class Asset extends Genome {
         return new static;
     }
 
-    public static function get($path = null, $fail = false, $i = 1) {
+    public static function get($path = null, $fail = false, int $i = 1) {
         $c = static::class;
         if (isset($path)) {
             $x = Path::X($path);

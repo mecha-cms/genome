@@ -1,22 +1,11 @@
 <?php namespace fn\get;
 
-function _page($v, $key) {
-    return (new \Page($v, [], false))->get([
-        'id' => null,
-        'path' => $v,
-        'slug' => \Path::N($v),
-        'state' => \Path::X($v),
-        'time' => null,
-        'update' => null,
-        $key => null
-    ]);
-}
-
 function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = null) {
     $pages = \Anemon::eat(\g($folder, $state))->not(function($v) {
         return pathinfo($v, PATHINFO_FILENAME) === '$';
     })->map(function($v) use($key, $sort) {
-        return _page($v, is_array($sort) && isset($sort[1]) ? $sort[1] : $key ?? X);
+        $key = is_array($sort) && isset($sort[1]) ? $sort[1] : $key ?? X;
+        return (new \Page($v, [], false))->get(['path' => $v, $key => null]);
     })->sort($sort);
     return $key ? $pages->pluck($key) : $pages;
 }

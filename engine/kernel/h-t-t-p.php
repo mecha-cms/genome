@@ -186,8 +186,8 @@ class HTTP extends Genome {
     }
 
     // Fetch remote URL
-    public static function fetch($url, $fail = false) {
-        $agent = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
+    public static function fetch($url, $fail = false, string $agent = null) {
+        $agent = $agent ?? 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
         if (extension_loaded('curl')) {
             $curl = curl_init($url);
             curl_setopt_array($curl, [

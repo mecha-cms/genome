@@ -160,6 +160,55 @@ class Page extends Genome {
         return $path && file_exists($path) ? file_get_contents($path) : "";
     }
 
+    protected function _set_($in, $fn = null) {
+        $path = $this->path;
+        $data = is_file($path) ? self::apart(file_get_contents($path)) : [];
+        $this->lot = extend($data, ['path' => $path], false);
+        if (!is_array($in)) {
+            if (is_callable($fn)) {
+                $this->lot[$in] = call_user_func($fn, ...$this->lot);
+                $in = [];
+            } else {
+                $in = ['content' => $in];
+            }
+        }
+        $this->lot = extend($this->lot, $in);
+        foreach ($this->lot as $k => $v) {
+            if ($v === false) unset($this->lot[$k]);
+        }
+        return $this;
+    }
+
+    public function get($key, $fail = null) {
+        if (is_array($key)) {
+            $out = [];
+            foreach ($key as $k => $v) {
+                $out[$k] = $this->__call($k, [$v]);
+            }
+            return $out;
+        }
+        return $this->__call($key, [$fail]);
+    }
+
+    public function has($key) {
+        $data = Path::F($this->path) . DS . $key . '.data';
+        return file_exists($data) ? filesize($data) > 0 : self::apart($this->path, $key) !== null;
+    }
+
+    public function saveTo(string $path, $consent = 0600) {
+        unset($this->lot['path']);
+        return File::put(self::unite($this->lot))->saveTo($path, $consent);
+    }
+
+    public function saveAs(string $name, $consent = 0600) {
+        $path = $this->path;
+        return $path ? $this->saveTo(dirname($path) . DS . basename($name), $consent) : false;
+    }
+
+    public function save($consent = 0600) {
+        return $this->saveTo($this->path, $consent);
+    }
+
     public static function apart($in, $key = null, $fail = null, $eval = false) {
         // Get specific property…
         if ($key === 'content') {
@@ -228,50 +277,6 @@ class Page extends Genome {
 
     public static function open($path = null, array $lot = [], $NS = []) {
         return new static($path, $lot, $NS);
-    }
-
-    protected function _set_($in, $fn = null) {
-        $path = $this->path;
-        $data = is_file($path) ? self::apart(file_get_contents($path)) : [];
-        $this->lot = extend($data, ['path' => $path], false);
-        if (!is_array($in)) {
-            if (is_callable($fn)) {
-                $this->lot[$in] = call_user_func($fn, ...$this->lot);
-                $in = [];
-            } else {
-                $in = ['content' => $in];
-            }
-        }
-        $this->lot = extend($this->lot, $in);
-        foreach ($this->lot as $k => $v) {
-            if ($v === false) unset($this->lot[$k]);
-        }
-        return $this;
-    }
-
-    public function get($key, $fail = null) {
-        if (is_array($key)) {
-            $out = [];
-            foreach ($key as $k => $v) {
-                $out[$k] = $this->__call($k, [$v]);
-            }
-            return $out;
-        }
-        return $this->__call($key, [$fail]);
-    }
-
-    public function has($key) {
-        $data = Path::F($this->path) . DS . $key . '.data';
-        return file_exists($data) ? filesize($data) > 0 : self::apart($this->path, $key) !== null;
-    }
-
-    public function saveTo(string $path, $consent = 0600) {
-        unset($this->lot['path']);
-        File::put(self::unite($this->lot))->saveTo($path, $consent);
-    }
-
-    public function save($consent = 0600) {
-        return $this->saveTo($this->lot['path'], $consent);
     }
 
 }
