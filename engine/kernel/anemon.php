@@ -111,8 +111,8 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // Get first array value
-    public function first() {
-        return reset($this->value);
+    public function first($take = false) {
+        return $take ? array_shift($this->value) : reset($this->value);
     }
 
     // Get current array value
@@ -122,8 +122,8 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // Get last array value
-    public function last() {
-        return end($this->value);
+    public function last($take = false) {
+        return $take ? array_pop($this->value) : end($this->value);
     }
 
     // Insert `$value` to the end of array
