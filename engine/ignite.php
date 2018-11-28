@@ -296,7 +296,7 @@ namespace {
 // j:
 // k:
 // l: convert text to lower case
-// m:
+// m: normalize range margin
 // n: normalize white-space in string
 // o: convert array to object
 // p: convert text to pascal case
@@ -967,7 +967,10 @@ namespace {
     function l(string $x = "") {
         return extension_loaded('mbstring') ? mb_strtolower($x) : strtolower($x);
     }
-    function m() {}
+    function m($x, array $a, array $b) {
+        // <https://stackoverflow.com/a/14224813/1163000>
+        return ($x - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
+    }
     function n(string $x = "", string $t = '    ') {
         // Tab to 4 space(s), line-break to `\n`
         return str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
