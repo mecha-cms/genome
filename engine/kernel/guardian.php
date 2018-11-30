@@ -14,26 +14,23 @@ class Guardian extends Genome {
         return sha1(uniqid(mt_rand(), true) . $salt);
     }
 
-    public static function check($token, $id = 0, $fail = false) {
-        $s = Session::get(self::$config['session']['token'] . '.' . $id);
-        return $s && $token && $s === $token ? $token : $fail;
+    public static function check(string $token, $id = 0, $fail = false) {
+        $previous = Session::get(self::$config['session']['token'] . '.' . $id);
+        return $previous && $token && $previous === $token ? $token : $fail;
     }
 
     public static function token($id = 0) {
-        $key = self::$config['session']['token'] . '.' . $id;
-        $token = Session::get($key, self::hash($id));
-        Session::set($key, $token);
+        $token = self::hash($id);
+        Session::set(self::$config['session']['token'] . '.' . $id, $token);
         return $token;
     }
 
-    public static function kick($path = null) {
+    public static function kick(string $path = null) {
         $current = $GLOBALS['URL']['current'];
-        if (!isset($path)) {
-            $path = $current;
-        }
+        $path = $path ?? $current;
         Session::set('url.previous', $current);
         $long = URL::long($path);
-        $long = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$long, $path], new stdClass);
+        $long = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$long, $path]);
         header('Location: ' . str_replace('&amp;', '&', $long));
         exit;
     }

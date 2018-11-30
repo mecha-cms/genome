@@ -96,13 +96,14 @@ Language::ignite();
 
 $date = new Date;
 $language = new Language;
+$message = new Message;
 
 $seeds = [
     'config' => $config,
     'date' => $date,
     'language' => $language,
+    'message' => $message,
     'site' => $config,
-    'token' => Guardian::token(0),
     'url' => $url,
     'u_r_l' => $url // Alias for `url`
 ];
@@ -171,9 +172,6 @@ foreach (array_keys($extends) as $v) {
 
 // Document is ready
 function ready() {
-    Lot::set([
-        'message' => Message::get("", false)
-    ]);
     // Load all route(s)…
     Route::fire();
     // Clear message(s)…
