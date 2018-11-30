@@ -39,13 +39,14 @@ class Form extends HTML {
                 $s = [];
                 $key = (string) $key;
                 self::name($key, $s);
+                unset($s['name']);
                 $s['label'] = trim(strip_tags($key));
                 $o .= N . $tag->begin('optgroup', $s, $dent + 1);
                 foreach ($value as $k => $v) {
                     $s = [];
                     $k = (string) $k;
                     self::name($k, $s);
-                    unset($s['readonly'], $s['required']);
+                    unset($s['name'], $s['readonly'], $s['required']);
                     if ($select === $k) {
                         $s['selected'] = true;
                     }
@@ -58,7 +59,7 @@ class Form extends HTML {
                 $s = [];
                 $key = (string) $key;
                 self::name($key, $s);
-                unset($s['readonly'], $s['required']);
+                unset($s['name'], $s['readonly'], $s['required']);
                 if ($select === $key) {
                     $s['selected'] = true;
                 }
