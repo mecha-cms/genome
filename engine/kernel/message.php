@@ -27,6 +27,10 @@ class Message extends Genome {
 
     public static $config = self::config;
 
+    public function __toString() {
+        return self::get("", false);
+    }
+
     public static function set(...$lot) {
         $id = self::$config['session']['previous'];
         $kin = array_shift($lot);
