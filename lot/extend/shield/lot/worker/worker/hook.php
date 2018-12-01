@@ -10,11 +10,11 @@ function path($path) {
     foreach ($path = (array) $path as $v) {
         $o[] = SHIELD . DS . $config->shield . DS . str_replace(ROOT . DS, "", $v);
     }
-    return concat($o, $path);
+    return \concat($o, $path);
 }
 
 // Generate HTML class(es) based on current page conditional statement(s)
-function classes($content) {
+function config($content) {
     $if = \Extend::state('shield', 'if');
     if (strpos($content, '<' . $if[0] . ' ') !== false) {
         return preg_replace_callback('#<' . \x($if[0]) . '(?:\s[^<>]*?)?>#', function($m) use($if) {
@@ -34,7 +34,7 @@ function classes($content) {
                     if ($x = \Config::get('is.error')) {
                         $c[] = 'error-' . $x;
                     }
-                    $c = array_unique(concat($a[2]['class[]'], $c));
+                    $c = array_unique(\concat($a[2]['class[]'], $c));
                     sort($c);
                     $a[2]['class[]'] = $c;
                 }
@@ -47,4 +47,4 @@ function classes($content) {
 }
 
 \Hook::set('shield.path', __NAMESPACE__ . "\\path", 0);
-\Hook::set('shield.yield', __NAMESPACE__ . "\\classes", 0);
+\Hook::set('shield.yield', __NAMESPACE__ . "\\config", 0);
