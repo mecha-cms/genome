@@ -95,6 +95,7 @@ class URL extends Genome {
         }
         if (
             strpos($path, '://') === false &&
+            strpos($path, 'data:') !== 0 &&
             strpos($path, '?') !== 0 &&
             strpos($path, '&') !== 0 &&
             strpos($path, '#') !== 0 &&
