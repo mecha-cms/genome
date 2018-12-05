@@ -25,6 +25,21 @@ class Folder extends File {
         return self::create($path, $consent);
     }
 
+    public function delete($files = null) {
+        if (!isset($files)) {
+            return parent::delete();
+        }
+        $path = $this->path;
+        foreach ((array) $files as $file) {
+            parent::open($path . DS . $file)->delete();
+        }
+    }
+
+    // Alias for `delete`
+    public function reset($files = null) {
+        return $this->delete($files);
+    }
+
     public static function exist($path, $fail = false) {
         $path = parent::exist(rtrim($path, DS . '/'));
         return $path && is_dir($path) ? $path : $fail;

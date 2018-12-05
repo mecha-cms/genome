@@ -16,8 +16,8 @@ class File extends Genome {
 
     public static $config = self::config;
 
-    public function __construct(string $path = null) {
-        $this->path = file_exists($path) ? realpath($path) : null;
+    public function __construct($path = null) {
+        $this->path = is_string($path) ? (file_exists($path) ? realpath($path) : null) : $path;
         $this->content = "";
         parent::__construct();
     }
@@ -430,10 +430,10 @@ class File extends Genome {
     }
 
     // Download the file
-    public static function pull(string $file, $mime = null) {
+    public static function pull(string $file, $type = null) {
         HTTP::header([
             'Content-Description' => 'File Transfer',
-            'Content-Type' => $mime ?: 'application/octet-stream',
+            'Content-Type' => $type ?? 'application/octet-stream',
             'Content-Disposition' => 'attachment; filename="' . basename($file) . '"',
             'Content-Length' => filesize($file),
             'Expires' => 0,
