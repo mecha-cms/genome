@@ -20,7 +20,9 @@ if ($i && File::exist([
     $folder . DS . $i . '.page',
     $folder . DS . $i . '.archive'
 ])) {
-    $GLOBALS['URL']['path'] .= '/' . $i;
+    $path = trim($path . '/' . $i, '/');
+    $folder .= DS . $i;
+    $GLOBALS['URL']['path'] = $path;
     $GLOBALS['URL']['clean'] .= '/' . $i;
     $GLOBALS['URL']['i'] = null;
 }
