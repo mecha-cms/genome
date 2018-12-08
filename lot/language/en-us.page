@@ -786,6 +786,9 @@ message_error_file_size:
   1: Must be less than %{0}%.
 message_error_file_type: File type %{0}% is not allowed.
 message_error_file_x: Extension %{0}% is not allowed.
+
+message_error_folder_exist: Folder %{0}% already exists.
+
 message_error_search: No results for %{0}%.
 
 message_info_are: Your %{0}% are %{1}%.

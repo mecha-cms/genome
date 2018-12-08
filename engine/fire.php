@@ -45,6 +45,7 @@ $url = trim($protocol . $host . '/' . $directory, '/');
 $parts = explode('&', strtr($_SERVER['QUERY_STRING'], DS, '/'), 2);
 $path = array_shift($parts);
 $query = array_shift($parts);
+// Prevent XSS attack where possible
 $path = strtr(trim($path ?? "", '/'), [
     '<' => '%3C',
     '>' => '%3E',
@@ -103,7 +104,7 @@ $seeds = [
     'date' => $date,
     'language' => $language,
     'message' => $message,
-    'site' => $config,
+    'site' => $config, // Alias for `config`
     'url' => $url,
     'u_r_l' => $url // Alias for `url`
 ];

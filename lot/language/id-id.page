@@ -753,6 +753,9 @@ message_error_file_size:
   1: Harus lebih kecil dari %{0}%.
 message_error_file_type: Tipe berkas %{0}% tidak diperbolehkan.
 message_error_file_x: Ekstensi %{0}% tidak diperbolehkan.
+
+message_error_folder_exist: Folder %{0}% sudah ada.
+
 message_error_search: Tidak ada temuan untuk %{0}%.
 
 message_info_are: %{0}% Anda adalah %{1}%.
