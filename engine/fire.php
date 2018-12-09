@@ -163,7 +163,7 @@ if ($task = File::exist(ROOT . DS . 'task.php')) {
 // Load extension(s)…
 foreach (array_keys($extends) as $v) {
     call_user_func(function() use($v) {
-        extract(Lot::get(null, []));
+        extract(Lot::get());
         if ($k = File::exist(dirname($v) . DS . 'task.php')) {
             include $k;
         }

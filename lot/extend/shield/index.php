@@ -9,7 +9,7 @@ r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot:
 Hook::set('on.ready', function() {
 
     // Include global variable(s)…
-    extract(Lot::get(null, []));
+    extract(Lot::get());
 
     // Load user language(s) from the current shield folder if any
     $folder = SHIELD . DS . $config->shield . DS;

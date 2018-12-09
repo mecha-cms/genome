@@ -6,21 +6,20 @@
     <a href="<?php echo $url; ?>"><?php echo $language->home; ?></a>
     <?php endif; ?>
   </li><!--
-  <?php if ($menus = Get::pages(PAGE, 'page', [1, 'slug'])): ?>
+  <?php if ($menus = Get::pages(PAGE, 'page', [1, 'slug'])->vomit()): ?>
     <?php foreach ($menus as $menu): ?>
-    <?php $slug = $menu['slug']; ?>
-    <?php if ($slug === $site->path) continue; ?>
+    <?php if ($menu === $site->path) continue; ?>
     <?php
 
-    $p = Page::open($menu['path'])->get([
+    $p = Page::open(PAGE . DS . $menu . '.page')->get([
         'url' => null,
-        'title' => To::title($slug),
+        'title' => To::title($menu),
         'link' => null
     ]);
 
     ?>
     --><li>
-      <?php if ($slug === $url->path || strpos($url->path . '/', $slug . '/') === 0): ?>
+      <?php if ($menu === $url->path || strpos($url->path . '/', $menu . '/') === 0): ?>
       <span><?php echo $p['title']; ?></span>
       <?php else: ?>
       <a href="<?php echo $p['link'] ?: $p['url']; ?>"><?php echo $p['title']; ?></a>

@@ -19,7 +19,7 @@ class Lot extends Genome {
         if (isset($key)) {
             return array_key_exists($key, $data) ? $data[$key] : $fail;
         }
-        return $data ?: $fail;
+        return $data ?: $fail ?: [];
     }
 
     public static function reset($key = null) {

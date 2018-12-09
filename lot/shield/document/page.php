@@ -13,9 +13,9 @@
       <?php endif; ?>
     </div>
     <footer>
-      <p><strong><?php echo $language->updateed; ?>:</strong> <time datetime="<?php echo $page->update->W3C; ?>"><?php echo $page->update->{str_replace('-', '_', $site->language)}; ?></time></p>
+      <p><strong><?php echo $language->updateed; ?>:</strong> <time datetime="<?php echo $page->update->W3C; ?>"><?php echo $page->update->{strtr($site->language, '-', '_')}; ?></time></p>
     </footer>
-  </article><?php Shield::get('comments'); ?>
+  </article>
 </main>
 <?php if ($site->has('parent')): ?>
 <nav><?php echo $pager; ?></nav>
