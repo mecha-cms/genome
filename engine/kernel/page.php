@@ -135,8 +135,8 @@ class Page extends Genome {
         return $v;
     }
 
-    public $_hook;
-    public $_hook_count;
+    // public $_hook;
+    // public $_hook_count;
 
     public function __set($key, $value = null) {
         $this->lot[$key] = self::$page[$this->hash][$key] = $value;
