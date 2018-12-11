@@ -26,7 +26,7 @@ foreach ([
     },
     'radio' => function($name = null, $options = [], $select = null, $attr = [], $dent = 0) {
         $out = [];
-        $select = (string) $select;
+        $select = s($select);
         $id = $attr['id'] ?? null;
         unset($attr['id']);
         foreach ($options as $k => $v) {
