@@ -4,7 +4,7 @@ define('PLUGIN', __DIR__ . DS . 'lot' . DS . 'worker');
 
 call_user_func(function() {
     $plugins = [];
-    $seeds = Lot::get(null, []);
+    $seeds = Lot::get();
     foreach (g(PLUGIN . DS . '*', 'index.php') as $v) {
         $plugins[$v] = (float) File::open(Path::D($v) . DS . 'stack.data')->get(0, 10);
     }

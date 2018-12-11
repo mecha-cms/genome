@@ -62,7 +62,7 @@ class Shield extends Genome {
         }
         if ($path = self::path($in, $fail)) {
             ob_start();
-            extract(Lot::get(null, []), EXTR_SKIP);
+            extract(Lot::get(), EXTR_SKIP);
             require $path;
             $out = ob_get_clean();
             // Begin shield
