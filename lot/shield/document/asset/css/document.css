@@ -1,5 +1,20 @@
 @import url('//fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i|Roboto+Mono:400,400i,700,700i');
 
+:root {
+  --color:#000;
+  --color--inverse:#fff;
+  --color-a:#00a;
+  --color-a--inverse:#a00;
+  --color-input:#eef;
+  --color-mark:#ff0;
+  --color-message:#fea;
+  --color-message--error:#faa;
+  --color-message--info:#aee;
+  --color-message--success:#afa;
+  --text:"Roboto Condensed",Roboto,Helmet,FreeSans,sans-serif;
+  --text-code:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace;
+}
+
 *,
 ::before,
 ::after {
@@ -38,11 +53,11 @@
 }
 :focus:not(:focus-visible) {outline:0}
 a {
-  color:#00a;
+  color:var(--color-a);
   text-decoration:none;
 }
 a:focus,
-a:active {color:#a00}
+a:active {color:var(--color-a--inverse)}
 abbr {
   border:0;
   text-decoration:none;
@@ -69,7 +84,7 @@ kbd {
   cursor:pointer;
 }
 mark {
-  background:#ff0;
+  background:var(--color-mark);
   color:inherit;
 }
 sub,sup {
@@ -86,7 +101,7 @@ article,aside,footer,header,main,nav,section {display:block}
 .textarea {
   display:inline-block;
   vertical-align:middle;
-  background:#eef;
+  background:var(--color-input);
   border:0;
   color:inherit;
   width:12em;
@@ -105,8 +120,8 @@ article,aside,footer,header,main,nav,section {display:block}
 .button {
   text-align:center;
   width:auto;
-  background:#00a;
-  color:#fff;
+  background:var(--color-a);
+  color:var(--color--inverse);
   padding-right:.5em;
   padding-left:.5em;
   -webkit-user-select:none;
@@ -115,8 +130,8 @@ article,aside,footer,header,main,nav,section {display:block}
 }
 .button:focus,
 .button:active {
-  background:#a00;
-  color:#fff;
+  background:var(--color-a--inverse);
+  color:var(--color--inverse);
 }
 .input[type="checkbox"],
 .input[type="color"],
@@ -194,9 +209,9 @@ form label {
 .notes ol {font-size:80%}
 .notes ol p {margin-top:.25em}
 html {
-  background:#fff;
-  font:normal normal 18px/1.5 "Roboto Condensed",Roboto,Helmet,FreeSans,sans-serif;
-  color:#000;
+  background:var(--color--inverse);
+  font:normal normal 18px/1.5 var(--text);
+  color:var(--color);
 }
 body {margin:5%}
 h1 {font-size:240%}
@@ -259,7 +274,7 @@ code,.code {
   font-weight:normal;
   font-style:normal;
   font-size:90%;
-  font-family:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace;
+  font-family:var(--text-code);
 }
 blockquote {
   font-size:120%;
@@ -268,8 +283,8 @@ blockquote {
 }
 pre code {
   display:block;
-  background:#000;
-  color:#fff;
+  background:var(--color);
+  color:var(--color--inverse);
   padding:1em;
   white-space:pre-wrap;
   word-wrap:break-word;
@@ -329,12 +344,12 @@ main + nav {text-align:center}
 }
 .is-pages article > div {margin:1em 0}
 .message {
-  background:#fea;
+  background:var(--color-message);
   padding:.5em 1em;
 }
-.message-error {background:#faa}
-.message-info {background:#aee}
-.message-success {background:#afa}
+.message-error {background:var(--color-message--error)}
+.message-info {background:var(--color-message--info)}
+.message-success {background:var(--color-message--success)}
 .messages + article {margin-top:1em}
 
 @media (max-width:800px) {
