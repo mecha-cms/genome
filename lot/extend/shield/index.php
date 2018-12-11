@@ -4,7 +4,13 @@
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'shield.php';
 
 // Include worker(s)…
-r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot::get(null, []));
+r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot::get());
+
+// Alias for `$config`
+Lot::set('site', $config);
+
+// Alias for `Config`
+class_alias('Config', 'Site');
 
 Hook::set('on.ready', function() {
 

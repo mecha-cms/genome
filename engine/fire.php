@@ -104,9 +104,8 @@ $seeds = [
     'date' => $date,
     'language' => $language,
     'message' => $message,
-    'site' => $config, // Alias for `config`
     'url' => $url,
-    'u_r_l' => $url // Alias for `url`
+    'u_r_l' => $url // Alias for `$url`
 ];
 
 // Plant…

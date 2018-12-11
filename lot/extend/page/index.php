@@ -27,23 +27,23 @@ function url($url = "", array $lot = []) {
 
 \Route::set(['%*%/%i%', '%*%', ""], function(string $path = "", $step = null) use($state) {
     // Include global variable(s)…
-    extract(\Lot::get(null, []));
+    extract(\Lot::get(), EXTR_SKIP);
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = str_replace('../', "", urldecode($path));
-    $path_canon = ltrim($path === "" ? $site->path : $path, '/');
-    if ($step === 1 && !$url->query && $path === $site->path) {
+    $path_canon = ltrim($path === "" ? $config->path : $path, '/');
+    if ($step === 1 && !$url->query && $path === $config->path) {
         \Message::info('kick', '<code>' . $url->current . '</code>');
         \Guardian::kick(""); // Redirect to home page…
     }
     $folder = rtrim(PAGE . DS . \To::path($path_canon), DS);
     $name = \Path::B($folder);
     $i = ($h = $step ?: 1) - 1; // 0-based index…
-    \Config::set('trace', new \Anemon([$site->title], ' &#x00B7; '));
-    if ($file = $site->is('page')) {
+    \Config::set('trace', new \Anemon([$config->title], ' &#x00B7; '));
+    if ($file = $config->is('page')) {
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
-        $sort = $site->page('sort', [1, 'path']);
-        $chunk = $site->page('chunk', 5);
+        $sort = $config->page('sort', [1, 'path']);
+        $chunk = $config->page('chunk', 5);
         foreach (explode('/', '/' . $path) as $v) {
             $k .= $v ? DS . $v : "";
             if ($f = \File::exist([
@@ -82,18 +82,18 @@ function url($url = "", array $lot = []) {
             'pager' => $pager,
             'parent' => $parent_page ?? new \Page
         ]);
-        \Config::set('trace', new \Anemon([$page->title, $site->title], ' &#x00B7; '));
+        \Config::set('trace', new \Anemon([$page->title, $config->title], ' &#x00B7; '));
         \Config::set('has', [
             $pager_previous => !!$pager->{$pager_previous},
             $pager_next => !!$pager->{$pager_next}
         ]);
-        if (!$site->is('pages')) {
+        if (!$config->is('pages')) {
             // Page(s) view has been disabled!
         } else {
             $pages = \Get::pages($folder, 'page', $sort, 'path');
-            if ($query = \l(\HTTP::get($site->q, ""))) {
+            if ($query = \l(\HTTP::get($config->q, ""))) {
                 \Config::set('is.search', true);
-                \Config::set('trace', new \Anemon([$language->search . ': ' . $query, $page->title, $site->title], ' &#x00B7; '));
+                \Config::set('trace', new \Anemon([$language->search . ': ' . $query, $page->title, $config->title], ' &#x00B7; '));
                 $query = explode(' ', $query);
                 $pages = $pages->is(function($v) use($query) {
                     $v = str_replace('-', "", \Path::N($v));
