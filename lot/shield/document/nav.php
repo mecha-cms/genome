@@ -11,18 +11,18 @@
     <?php if ($menu === $site->path) continue; ?>
     <?php
 
-    $p = Page::open(PAGE . DS . $menu . '.page')->get([
-        'url' => null,
+    $m = Page::open(PAGE . DS . $menu . '.page')->get([
+        'link' => null,
         'title' => To::title($menu),
-        'link' => null
+        'url' => null
     ]);
 
     ?>
     --><li>
       <?php if ($menu === $url->path || strpos($url->path . '/', $menu . '/') === 0): ?>
-      <span><?php echo $p['title']; ?></span>
+      <span><?php echo $m['title']; ?></span>
       <?php else: ?>
-      <a href="<?php echo $p['link'] ?: $p['url']; ?>"><?php echo $p['title']; ?></a>
+      <a href="<?php echo $m['link'] ?: $m['url']; ?>"><?php echo $m['title']; ?></a>
       <?php endif; ?>
     </li><!--
     <?php endforeach; ?>

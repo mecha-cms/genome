@@ -1,11 +1,11 @@
 <?php
 
-Hook::set('page.description', function($content) {
+Hook::set('page.description', function($description) {
     // Wrap description data with paragraph tag(s) if needed
-    if ($content && strpos($content, '</p>') === false) {
-        return '<p>' . str_replace(["\n\n", "\n"], ['</p><p>', '<br>'], trim(n($content))) . '</p>';
+    if ($description && strpos($description, '</p>') === false) {
+        return '<p>' . str_replace(["\n\n", "\n"], ['</p><p>', '<br>'], trim(n($description))) . '</p>';
     }
-    return $content;
+    return $description;
 });
 
 // Add CSS file to the `<head>` section…
