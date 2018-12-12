@@ -6,7 +6,11 @@ function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = nul
     $pages = \Anemon::eat(\g($folder, $state))->not(function($v) {
         return pathinfo($v, PATHINFO_FILENAME) === '$';
     })->map(function($v) use($k, $key, $sort) {
-        return (new \Page($v, [], false))->get(['path' => $v, $k => null]);
+        return (new \Page($v, [], false))->get([
+            'path' => $v,
+            $k = null,
+            $key => null
+        ]);
     })->sort($sort);
     return $pages->pluck($key);
 }
