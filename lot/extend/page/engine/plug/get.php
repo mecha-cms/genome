@@ -8,7 +8,7 @@ function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = nul
     })->map(function($v) use($k, $key, $sort) {
         return (new \Page($v, [], false))->get([
             'path' => $v,
-            $k = null,
+            $k => null,
             $key => null
         ]);
     })->sort($sort);

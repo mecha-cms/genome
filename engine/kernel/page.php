@@ -117,7 +117,7 @@ class Page extends Genome {
         }
         if ($this->NS === false) {
             // Disable hook(s) with `$page = new Page('.\path\to\file.page', [], false)`
-            return isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key];
+            return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key];
         } else if (is_array($this->NS)) {
             $name = [];
             foreach ($this->NS as $v) {
@@ -126,7 +126,7 @@ class Page extends Genome {
         } else {
             $name = $this->NS . '.' . $key;
         }
-        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, $fail) : $a[$key], $lot], $this);
+        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key], $lot], $this);
         if (count($lot) && $x = fn\is\instance($v)) {
             if (method_exists($x, '__invoke')) {
                 $v = call_user_func([$x, '__invoke'], ...$lot);
