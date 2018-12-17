@@ -972,6 +972,8 @@ namespace {
         return ($x - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
     }
     function n(string $x = "", string $t = '    ') {
+        // <https://stackoverflow.com/a/18870840/1163000>
+        $x = str_replace("\xEF\xBB\xBF", "", $x);
         // Tab to 4 space(s), line-break to `\n`
         return str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
     }
