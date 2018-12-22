@@ -212,7 +212,7 @@ class Page extends Genome {
         return $this->saveTo($this->path, $consent);
     }
 
-    public static function apart($in, $key = null, $fail = null, $eval = false) {
+    public static function apart(string $in, $key = null, $fail = null, $eval = false) {
         // Get specific property…
         if ($key === 'content') {
             $in = explode("\n...", n(Is::file($in) ? file_get_contents($in) : $in), 2);

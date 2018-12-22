@@ -232,7 +232,7 @@ namespace {
     }
     // Manipulate array value(s)
     function map(array $a = [], callable $fn) {
-        return array_map($fn, $a);
+        return array_map($fn, $a, array_keys($a));
     }
     // Filter out element(s) that does not pass the function test
     function not(array $a = [], $fn = null) {

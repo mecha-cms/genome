@@ -1,18 +1,24 @@
 @import url('//fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i|Roboto+Mono:400,400i,700,700i');
 
 :root {
-  --color:#000;
-  --color--inverse:#fff;
-  --color-a:#00a;
-  --color-a--inverse:#a00;
-  --color-input:#eef;
-  --color-mark:#ff0;
-  --color-message:#fea;
-  --color-message--error:#faa;
-  --color-message--info:#aee;
-  --color-message--success:#afa;
-  --text:"Roboto Condensed",Roboto,Helmet,FreeSans,sans-serif;
-  --text-code:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace;
+  --z:18px; /* text size */
+  --z--narrow:15px; /* mobile text size */
+  --x:1rem; /* v-space */
+  --y:1rem; /* h-space */
+  --w:40rem; /* width */
+  --h-text:1.5; /* line height */
+  --color:#000; /* text color */
+  --color--inverse:#fff; /* background color */
+  --color-a:#00a; /* link color */
+  --color-a--inverse:#a00; /* link color alternate state */
+  --color-input:#eef; /* form input background color */
+  --color-mark:#ff0; /* marker background color */
+  --color-message:#fea; /* default message background color */
+  --color-message--error:#faa; /* error message background color */
+  --color-message--info:#aee; /* info message background color */
+  --color-message--success:#afa; /* success message background color */
+  --text:"Roboto Condensed",Roboto,Helmet,FreeSans,sans-serif; /* default font face */
+  --text-code:"Roboto Mono","Courier New",Courier,"Nimbus Mono L",monospace; /* code font face */
 }
 
 *,
@@ -179,15 +185,15 @@ form label {
 .span-block {display:inline-block}
 .align-left {
   float:left;
-  margin-top:.5rem;
-  margin-right:1.5rem;
-  margin-bottom:.5rem;
+  margin-top:calc(var(--y) * .5);
+  margin-right:calc(var(--x) * 1.5);
+  margin-bottom:calc(var(--y) * .5);
 }
 .align-right {
   float:right;
-  margin-top:.5rem;
-  margin-bottom:.5rem;
-  margin-left:1.5rem;
+  margin-top:calc(var(--y) * .5);
+  margin-bottom:calc(var(--y) * .5);
+  margin-left:calc(var(--y) * 1.5);
 }
 .align-left img,
 .align-right img {display:block}
@@ -210,7 +216,7 @@ form label {
 .notes ol p {margin-top:.25em}
 html {
   background:var(--color--inverse);
-  font:normal normal 18px/1.5 var(--text);
+  font:normal normal var(--z)/var(--h-text) var(--text);
   color:var(--color);
 }
 body {margin:5%}
@@ -227,7 +233,7 @@ figcaption,
 figure,
 form,
 h1,h2,h3,h4,h5,h6,
-hr,nav,ol,p,.p,pre,table,ul {margin:1rem 0 0}
+hr,nav,ol,p,.p,pre,table,ul {margin:var(--y) 0 0}
 blockquote:first-child,
 dl:first-child,
 fieldset:first-child,
@@ -254,7 +260,7 @@ ol ul,
 ul ol,
 ul ul {
   margin-top:0;
-  margin-left:1em;
+  margin-left:var(--x);
 }
 ul {list-style:square}
 hr {
@@ -266,7 +272,7 @@ hr {
 }
 fieldset {
   border:1px dotted;
-  padding:0 1em 1em;
+  padding:0 var(--x) var(--y);
 }
 legend {padding:0 .5em}
 hr::before {content:'\2022\2002\2022\2002\2022'}
@@ -278,14 +284,14 @@ code,.code {
 }
 blockquote {
   font-size:120%;
-  padding-left:1em;
+  padding-left:var(--x);
   border-left:1px solid;
 }
 pre code {
   display:block;
   background:var(--color);
   color:var(--color--inverse);
-  padding:1em;
+  padding:calc(var(--y) - calc(var(--z) * .5)) var(--x);
   white-space:pre-wrap;
   word-wrap:break-word;
 }
@@ -293,7 +299,7 @@ pre code {
   border-collapse:collapse;
   width:100%;
 }
-.table caption {margin-bottom:1rem}
+.table caption {margin-bottom:var(--y)}
 .table td,
 .table th {
   vertical-align:top;
@@ -320,7 +326,7 @@ body > footer,
 body > header,
 body > main,
 body > nav {
-  max-width:40em;
+  max-width:var(--w);
   margin-right:auto;
   margin-left:auto;
 }
@@ -332,7 +338,7 @@ nav ul {
 }
 nav li {
   display:inline-block;
-  margin-right:1em;
+  margin-right:var(--x);
 }
 nav li:last-child {margin-right:0}
 main + nav {text-align:center}
@@ -342,23 +348,23 @@ main + nav {text-align:center}
   margin-top:0;
   margin-bottom:0;
 }
-.is-pages article > div {margin:1em 0}
+.is-pages article > div {margin:var(--y) 0}
 .message {
   background:var(--color-message);
-  padding:.5em 1em;
+  padding:calc(var(--y) * .5) var(--x);
 }
 .message-error {background:var(--color-message--error)}
 .message-info {background:var(--color-message--info)}
 .message-success {background:var(--color-message--success)}
-.messages + article {margin-top:1em}
+.messages + article {margin-top:var(--y)}
 
 @media (max-width:800px) {
-  html {font-size:15px}
+  html {font-size:var(--z--narrow)}
   .align-left,
   .align-right {
     float:none;
     display:block;
-    margin:1rem auto 0;
+    margin:var(--y) auto 0;
   }
   .align-left:first-child,
   .align-right:first-child {margin-top:0}
