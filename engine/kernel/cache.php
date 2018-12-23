@@ -53,7 +53,7 @@ class Cache extends Genome {
 
     private static function x(string $s) {
         $s = strtr($s, '/', DS);
-        if (is_dir($s) || !file_exists($s)) {
+        if (!is_file($s)) {
             $f = CACHE . DS . dechex(crc32($s));
             if (!file_exists($f)) {
                 File::put("")->saveTo($f, 0600);
