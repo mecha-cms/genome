@@ -52,11 +52,16 @@ class Cache extends Genome {
     }
 
     private static function x(string $s) {
+        $s = strtr($s, '/', DS);
         if (is_dir($s) || !file_exists($s)) {
-            $s .= '.cache';
-            File::put("")->saveTo($s, 0600);
+            $f = CACHE . DS . dechex(crc32($s));
+            if (!file_exists($f)) {
+                File::put("")->saveTo($f, 0600);
+            }
+            $f .= '.php';
+        } else {
+            $f = str_replace(ROOT, CACHE, $s) . '.php';
         }
-        $f = str_replace(ROOT, CACHE, $s) . '.php';
         self::$cache[$f] = file_exists($f) ? filemtime($f) : 0;
         return $f;
     }
