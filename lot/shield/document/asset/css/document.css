@@ -6,7 +6,9 @@
   --x:1rem; /* v-space */
   --y:1rem; /* h-space */
   --w:40rem; /* width */
-  --h-text:1.5; /* line height */
+  --e:5%; /* empty space */
+  --w-input:12rem; /* width input */
+  --h-text:1.5rem; /* line height */
   --color:#000; /* text color */
   --color--inverse:#fff; /* background color */
   --color-a:#00a; /* link color */
@@ -82,15 +84,13 @@ img {
   height:auto;
 }
 kbd {
-  display:inline-block;
-  vertical-align:middle;
   font-size:80%;
-  line-height:1.5em;
-  padding:0 .5em;
+  padding:0 calc((var(--h-text) - var(--z)) * .5);
   cursor:pointer;
 }
 mark {
   background:var(--color-mark);
+  padding:0 calc((var(--h-text) - var(--z)) * .5);
   color:inherit;
 }
 sub,sup {
@@ -110,10 +110,10 @@ article,aside,footer,header,main,nav,section {display:block}
   background:var(--color-input);
   border:0;
   color:inherit;
-  width:12em;
-  height:1.75em;
-  line-height:1.75;
-  padding:0 .5em;
+  width:var(--w-input);
+  height:calc(var(--h-text) * 1.25);
+  line-height:calc(var(--h-text) * 1.25);
+  padding:0 calc(var(--h-text) - var(--z));
   text-align:left;
 }
 .button::-moz-focus-inner,
@@ -128,8 +128,6 @@ article,aside,footer,header,main,nav,section {display:block}
   width:auto;
   background:var(--color-a);
   color:var(--color--inverse);
-  padding-right:.5em;
-  padding-left:.5em;
   -webkit-user-select:none;
   -moz-user-select:none;
   user-select:none;
@@ -151,7 +149,7 @@ article,aside,footer,header,main,nav,section {display:block}
   padding:0;
   cursor:pointer;
 }
-.input[type="range"] {width:12em}
+.input[type="range"] {width:var(--w-text)}
 .button,.select,label {cursor:pointer}
 label .input + span {
   display:inline-block;
@@ -162,15 +160,15 @@ label .input + span {
 }
 form label {
   display:inline-block;
-  height:1.75em;
-  line-height:1.75;
+  height:calc(var(--h-text) * 1.25);
+  line-height:calc(var(--h-text) * 1.25);
 }
 .input[type="color"] {
-  width:1.75em;
-  height:1.75em;
+  width:calc(var(--h-text) * 1.25);
+  height:calc(var(--h-text) * 1.25);
 }
 .textarea {
-  min-height:6em;
+  min-height:calc(var(--z) * 6);
   resize:vertical;
 }
 .block {
@@ -209,17 +207,17 @@ form label {
 .text-justify {text-align:justify}
 .notes {
   margin-left:2.5%;
-  margin-top:5%;
+  margin-top:var(--e);
 }
 .notes hr {display:none}
 .notes ol {font-size:80%}
-.notes ol p {margin-top:.25em}
+.notes ol p {margin-top:calc(var(--y) * .25)}
 html {
   background:var(--color--inverse);
   font:normal normal var(--z)/var(--h-text) var(--text);
   color:var(--color);
 }
-body {margin:5%}
+body {margin:var(--e)}
 h1 {font-size:240%}
 h2 {font-size:190%}
 h3 {font-size:150%}
@@ -254,7 +252,7 @@ p:first-child,
 pre:first-child,
 table:first-child,
 ul:first-child {margin-top:0}
-ol,ul,dd {margin-left:2em}
+ol,ul,dd {margin-left:calc(var(--x) * 2)}
 ol ol,
 ol ul,
 ul ol,
@@ -268,13 +266,13 @@ hr {
   height:auto;
   border:0;
   text-align:center;
-  margin:5% 0;
+  margin:var(--e) 0;
 }
 fieldset {
   border:1px dotted;
   padding:0 var(--x) var(--y);
 }
-legend {padding:0 .5em}
+legend {padding:0 calc(var(--z) * .5)}
 hr::before {content:'\2022\2002\2022\2002\2022'}
 code,.code {
   font-weight:normal;
@@ -291,7 +289,7 @@ pre code {
   display:block;
   background:var(--color);
   color:var(--color--inverse);
-  padding:calc(var(--y) - calc(var(--z) * .5)) var(--x);
+  padding:calc(var(--y) - ((var(--h-text) - var(--z)) * .5)) var(--x);
   white-space:pre-wrap;
   word-wrap:break-word;
 }
@@ -305,12 +303,12 @@ pre code {
   vertical-align:top;
   text-align:left;
   border:1px solid;
-  padding:.25em .5em;
+  padding:calc(var(--z) * .25) calc(var(--z) * .5);
 }
 
-header {margin-bottom:5%}
+header {margin-bottom:var(--e)}
 footer,
-nav {margin-top:5%}
+nav {margin-top:var(--e)}
 header + nav {margin-top:0}
 article::after,
 footer::after,
