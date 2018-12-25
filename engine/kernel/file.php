@@ -73,7 +73,7 @@ class File extends Genome {
                     // `->get(['$', 7])`
                     is_array($stop) && strpos($chunk, $stop[0]) === $stop[1] ||
                     // `->get(function($chunk, $i, $out) {})`
-                    is_callable($stop) && fn($stop, [$chunk, $i, $out], $this)
+                    is_callable($stop) && fn($stop, [$chunk, $i, $out], $this, static::class)
                 ) break;
                 ++$i;
             }
