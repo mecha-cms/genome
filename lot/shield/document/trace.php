@@ -1,6 +1,7 @@
 <?php
 
 $format = ['<span>%{0}%</span>', '<a href="%{1}%">%{0}%</a>'];
+$separator = $lot[0] ?? ' / ';
 
 $a = explode('/', $url->path);
 $b = candy($format[$site->is('home') ? 0 : 1], [$language->home, $url]);
@@ -18,9 +19,9 @@ while ($d = array_shift($a)) {
         continue;
     }
     $d = Page::open($f)->get('title', To::title($d));
-    $b .= ' / ' . candy($format[1], [$d, $url . $c]);
+    $b .= $separator . candy($format[1], [$d, $url . $c]);
 }
 
-$b .= ' / ' . candy($format[0], [$page->title ?: $language->error]);
+$b .= $separator . candy($format[0], [$page->title ?: $language->error]);
 
 echo $b;
