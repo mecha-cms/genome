@@ -1,4 +1,4 @@
-<?php Shield::get('header'); ?>
+<?php static::header(); ?>
 <main>
   <article id="post-0">
     <header>
@@ -9,4 +9,4 @@
     </div>
   </article>
 </main>
-<?php Shield::get('footer'); ?>
+<?php static::footer(); ?>
