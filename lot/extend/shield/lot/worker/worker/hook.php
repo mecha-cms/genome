@@ -1,18 +1,5 @@
 <?php namespace fn\shield;
 
-// Generate relative shield path to the `.\lot\shield\*` folder
-function path($path) {
-    if (!$path) {
-        return $path;
-    }
-    global $config;
-    $o = [];
-    foreach ($path = (array) $path as $v) {
-        $o[] = SHIELD . DS . $config->shield . DS . str_replace(ROOT . DS, "", $v);
-    }
-    return \concat($o, $path);
-}
-
 // Generate HTML class(es) based on current page conditional statement(s)
 function config($content) {
     $if = \Extend::state('shield', 'if');
@@ -46,5 +33,4 @@ function config($content) {
     return $content;
 }
 
-\Hook::set('shield.path', __NAMESPACE__ . "\\path", 0);
 \Hook::set('shield.yield', __NAMESPACE__ . "\\config", 0);

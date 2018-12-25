@@ -26,11 +26,11 @@ class Shield extends Genome {
         foreach ((array) $out as $k => $v) {
             $id = $v;
             $v = strtr($v, '/', DS);
-            if (strpos($v, ROOT) !== 0) {
+            if (strpos($v, SHIELD) !== 0) {
                 if (substr($v, -4) !== '.php') {
                     $v .= '.php';
                 }
-                $v = ROOT . DS . $v;
+                $v = SHIELD . DS . Config::get('shield') . DS . $v;
             }
             $out[$k] = $v;
         }
@@ -105,6 +105,24 @@ class Shield extends Genome {
         $i = is_string($code) ? explode('/', strtr($code, DS, '/'))[0] : '404';
         HTTP::status((int) $i);
         return Shield::attach($code, $fail);
+    }
+
+    public static function __callStatic($kin, array $lot = []) {
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
+        }
+        $kin = strtr($kin, '_', '-');
+        // `self::fake('foo/bar', ['key' => 'value'])`
+        if (count($lot)) {
+            // `self::fake(['key' => 'value'])`
+            if (is_array($lot[0])) {
+                // → is equal to `self::fake("", ['key' => 'value'])`
+                array_unshift($lot, "");
+            }
+            $kin = trim($kin . '/' . array_shift($lot), '/');
+            $lot = array_replace([[], true], $lot);
+        }
+        return self::get($kin, ...$lot);
     }
 
 }

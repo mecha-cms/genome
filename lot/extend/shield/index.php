@@ -1,8 +1,5 @@
 <?php
 
-// Include plug(s)…
-require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'shield.php';
-
 // Include worker(s)…
 r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot::get());
 
