@@ -187,9 +187,9 @@ namespace {
         return null;
     }
     // Trigger function with parameter(s) and optional scope
-    function fn(callable $fn, array $a = [], $that = null) {
-        $fn = \Closure::fromCallable($fn);
-        return call_user_func($that ? $fn->bindTo($that) : $fn, ...$a);
+    function fn(callable $fn, array $a = [], $that = null, $scope = 'static') {
+        $fn = $fn instanceof \Closure ? $fn : \Closure::fromCallable($fn);
+        return call_user_func($fn->bindTo($that, $scope), ...$a);
     }
     // Replace pattern to regular expression
     function format(string $s = "", string $x = "\n", string $d = '#', $r = true) {

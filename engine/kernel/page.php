@@ -112,7 +112,7 @@ class Page extends Genome {
         } else {
             if ($test instanceof \Closure) {
                 // As function call with `$page->foo(function($text) { … })`
-                $a[$key] = fn($test, [$a[$key]], $this);
+                $a[$key] = fn($test, [$a[$key]], $this, static::class);
             }
         }
         if ($this->NS === false) {
@@ -126,7 +126,7 @@ class Page extends Genome {
         } else {
             $name = $this->NS . '.' . $key;
         }
-        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key], $lot], $this);
+        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key], $lot], $this, static::class);
         if (count($lot) && $x = fn\is\instance($v)) {
             if (method_exists($x, '__invoke')) {
                 $v = call_user_func([$x, '__invoke'], ...$lot);

@@ -51,7 +51,7 @@ abstract class Genome {
                 if (isset($a[2])) {
                     $lot = array_slice($lot, 0, $a[2]);
                 }
-                return fn($a[0], $lot, $this);
+                return fn($a[0], $lot, $this, $c);
             }
             return $a[0];
         } else if (method_exists($this, $m) && (new \ReflectionMethod($this, $m))->isProtected()) {
