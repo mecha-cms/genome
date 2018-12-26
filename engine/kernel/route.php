@@ -107,7 +107,7 @@ class Route extends Genome {
     }
 
     public static function fire(string $id = null, array $lot = []) {
-        $s = c2f(static::class, '_', '/') . '.';
+        $s = c2f($c = static::class, '_', '/') . '.';
         if (isset($id)) {
             $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
@@ -128,9 +128,9 @@ class Route extends Genome {
                     }
                 }
                 // Passed!
-                Hook::fire($s . 'enter', [self::$lot[1][$id], null]);
+                Hook::fire($s . 'enter', [self::$lot[1][$id], null], null, $c);
                 $r = $over ?: call_user_func(self::$lot[1][$id]['fn'], ...$lot);
-                Hook::fire($s . 'exit', [self::$lot[1][$id], null]);
+                Hook::fire($s . 'exit', [self::$lot[1][$id], null], null, $c);
                 return $r;
             } else {
                 $routes = Anemon::eat(self::$lot[1] ?? [])->sort([1, 'stack'], true);
@@ -148,9 +148,9 @@ class Route extends Genome {
                             }
                         }
                         // Passed!
-                        Hook::fire($s . 'enter', [self::$lot[1][$k], null]);
+                        Hook::fire($s . 'enter', [self::$lot[1][$k], null], null, $c);
                         $r = $over ?: call_user_func($v['fn'], ...$route['lot']);
-                        Hook::fire($s . 'exit', [self::$lot[1][$k], null]);
+                        Hook::fire($s . 'exit', [self::$lot[1][$k], null], null, $c);
                         return $r;
                     }
                 }

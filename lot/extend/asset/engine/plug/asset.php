@@ -11,7 +11,7 @@ foreach ([
         }
         $href = $path === false ? $url : candy($state->url, [$url, file_exists($path) ? filemtime($path) : 0]);
         if (isset($attr['href']) && is_callable($attr['href'])) {
-            $href = fn($attr['href'], [$href, $value, $key, $attr], $state);
+            $href = fn($attr['href'], [$href, $value, $key, $attr], $state, Asset::class);
             unset($attr['href']);
         }
         return HTML::unite('link', false, extend(is_array($attr) ? $attr : [], [
@@ -27,7 +27,7 @@ foreach ([
         }
         $src = $path === false ? $url : candy($state->url, [$url, file_exists($path) ? filemtime($path) : 0]);
         if (isset($attr['src']) && is_callable($attr['src'])) {
-            $src = fn($attr['src'], [$src, $value, $key, $attr], $state);
+            $src = fn($attr['src'], [$src, $value, $key, $attr], $state, Asset::class);
             unset($attr['src']);
         }
         return HTML::unite('script', "", extend(is_array($attr) ? $attr : [], [
@@ -47,7 +47,7 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
         }
         $src = $path === false ? $url : candy($state->url, [$url, file_exists($path) ? filemtime($path) : 0]);
         if (isset($attr['src']) && is_callable($attr['src'])) {
-            $src = fn($attr['src'], [$src, $value, $key, $attr], $state);
+            $src = fn($attr['src'], [$src, $value, $key, $attr], $state, Asset::class);
             unset($attr['src']);
         }
         return HTML::unite('img', false, extend(is_array($attr) ? $attr : [], [

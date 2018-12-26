@@ -131,7 +131,7 @@ class Elevator extends Genome {
             $html[] = $this->{$d['=']}(true);
         if ($d['>'] !== false)
             $html[] = $this->{$d['>']}(true);
-        return Hook::fire($this->NS . '.yield', [implode(' ', $html)], $this);
+        return Hook::fire($this->NS . '.yield', [implode(' ', $html)], $this, static::class);
     }
 
 }

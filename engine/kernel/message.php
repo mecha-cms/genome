@@ -56,7 +56,7 @@ class Message extends Genome {
     public static function get(string $kin = null, $reset = true) {
         global $language;
         $id = self::$config['session']['previous'];
-        $c = c2f(static::class, '_', '/');
+        $c = c2f($cc = static::class, '_', '/');
         $a = [];
         foreach (Session::get($id, []) as $k => $v) {
             if ($kin && $kin !== $k) {
@@ -67,12 +67,12 @@ class Message extends Genome {
                 $key = $c . '_' . $k . '_' . $text;
                 $t = $language->get($key, $vv[1] ?? [], $vv[2] ?? false);
                 $s = candy(HTML::unite(self::$config['message']), [$k, $t === $key ? $text : $t]);
-                $a[] = Hook::fire($c . '.' . __FUNCTION__ . '.' . $k, [$s]);
+                $a[] = Hook::fire($c . '.' . __FUNCTION__ . '.' . $k, [$s], null, $cc);
             }
         }
         if ($reset) self::reset($kin);
         $out = $a ? candy(HTML::unite(self::$config['messages']), [N . implode(N, $a) . N]) : "";
-        return Hook::fire($c . '.' . __FUNCTION__, [$out]);
+        return Hook::fire($c . '.' . __FUNCTION__, [$out], null, $cc);
     }
 
     public static function send(string $from, $to, string $title, string $message) {
@@ -92,7 +92,8 @@ class Message extends Genome {
                 $to = implode(', ', $to);
             }
         }
-        $n = c2f(static::class, '_', '/') . '.';
+        $c = static::class;
+        $n = c2f($c, '_', '/') . '.';
         $header = Hook::fire($n . 'header', [[
             'MIME-Version' => '1.0',
             'Content-Type' => 'text/html; charset=ISO-8859-1',
@@ -100,8 +101,8 @@ class Message extends Genome {
             'Reply-To' => $from,
             'Return-Path' => $from,
             'X-Mailer' => 'PHP/' . phpversion()
-        ]]);
-        $body = Hook::fire($n . 'body', [$message, $header]);
+        ]], null, $c);
+        $body = Hook::fire($n . 'body', [$message, $header], null, $c);
         $lot = "";
         foreach ($header as $k => $v) {
             $lot .= $k . ': ' . $v . N;

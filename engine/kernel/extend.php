@@ -20,7 +20,7 @@ class Extend extends Genome {
             return is_array($key) ? $key : $fail;
         }
         $state = self::$state[$c][$id] ?? include $state;
-        $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $id, [$state]);
+        $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $id, [$state], null, $c);
         if (is_array($key)) {
             return extend($key, $state);
         }

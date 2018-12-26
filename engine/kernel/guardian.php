@@ -26,11 +26,12 @@ class Guardian extends Genome {
     }
 
     public static function kick(string $path = null) {
+        $c = static::class;
         $current = $GLOBALS['URL']['current'];
         $path = $path ?? $current;
         Session::set('url.previous', $current);
         $long = URL::long($path);
-        $long = Hook::fire(c2f(static::class, '_', '/') . '.' . __FUNCTION__, [$long, $path]);
+        $long = Hook::fire(c2f($c, '_', '/') . '.' . __FUNCTION__, [$long, $path], null, $c);
         header('Location: ' . str_replace('&amp;', '&', $long));
         exit;
     }
