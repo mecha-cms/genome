@@ -1,6 +1,6 @@
 <?php static::header(); ?>
 <main>
-  <?php echo $message; ?>
+  <?php static::message(); ?>
   <?php foreach ($pages as $page): ?>
   <article id="page-<?php echo $page->id; ?>">
     <header>

@@ -100,13 +100,11 @@ Language::ignite();
 
 $date = new Date;
 $language = new Language;
-$message = new Message;
 
 $seeds = [
     'config' => $config,
     'date' => $date,
     'language' => $language,
-    'message' => $message,
     'url' => $url,
     'u_r_l' => $url // Alias for `$url`
 ];

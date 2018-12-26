@@ -1,6 +1,6 @@
 <?php static::header(); ?>
 <main>
-  <?php echo $message; ?>
+  <?php static::message(); ?>
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
