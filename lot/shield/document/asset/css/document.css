@@ -5,8 +5,8 @@
   --z--narrow:15px; /* mobile text size */
   --x:1rem; /* v-space */
   --y:1rem; /* h-space */
-  --w:40rem; /* width */
-  --e:5%; /* empty space */
+  --w:40rem; /* page width */
+  --s:5%; /* white-space */
   --w-input:12rem; /* width input */
   --h-text:1.5rem; /* line height */
   --color:#000; /* text color */
@@ -207,7 +207,7 @@ form label {
 .text-justify {text-align:justify}
 .notes {
   margin-left:2.5%;
-  margin-top:var(--e);
+  margin-top:var(--s);
 }
 .notes hr {display:none}
 .notes ol {font-size:80%}
@@ -217,7 +217,7 @@ html {
   font:normal normal var(--z)/var(--h-text) var(--text);
   color:var(--color);
 }
-body {margin:var(--e)}
+body {margin:var(--s)}
 h1 {font-size:240%}
 h2 {font-size:190%}
 h3 {font-size:150%}
@@ -266,7 +266,7 @@ hr {
   height:auto;
   border:0;
   text-align:center;
-  margin:var(--e) 0;
+  margin:var(--s) 0;
 }
 fieldset {
   border:1px dotted;
@@ -306,9 +306,9 @@ pre code {
   padding:calc(var(--z) * .25) calc(var(--z) * .5);
 }
 
-header {margin-bottom:var(--e)}
+header {margin-bottom:var(--s)}
 footer,
-nav {margin-top:var(--e)}
+nav {margin-top:var(--s)}
 header + nav {margin-top:0}
 article::after,
 footer::after,
