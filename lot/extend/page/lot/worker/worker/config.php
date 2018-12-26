@@ -27,28 +27,28 @@ if ($i && File::exist([
     $GLOBALS['URL']['i'] = $i = null;
 }
 
-$if_0 = $path === "" || $path === $p;
+$if_0 = ($path === "" || $path === $p) && $i === null;
 
 $if_1 = File::exist([
-    // `lot\page\home-slug.{page,archive}`
+    // `.\lot\page\home-slug.{page,archive}`
     PAGE . DS . $p . '.page',
     PAGE . DS . $p . '.archive'
 ]);
 
 $if_2 = File::exist([
-    // `lot\page\page-slug\1.{page,archive}`
+    // `.\lot\page\page-slug\$.{page,archive}`
+    $folder . DS . '$.page',
+    $folder . DS . '$.archive',
+    // `.\lot\page\page-slug\1.{page,archive}`
     $folder . DS . $i . '.page',
     $folder . DS . $i . '.archive',
-    // `lot\page\page-slug\1\$.{page,archive}`
+    // `.\lot\page\page-slug\1\$.{page,archive}`
     $folder . DS . $i . DS . '$.page',
-    $folder . DS . $i . DS . '$.archive',
-    // `lot\page\page-slug\$.{page,archive}`
-    $folder . DS . '$.page',
-    $folder . DS . '$.archive'
+    $folder . DS . $i . DS . '$.archive'
 ]);
 
 $if_3 = File::exist([
-    // `lot\page\page-slug.{page,archive}`
+    // `.\lot\page\page-slug.{page,archive}`
     $folder . '.page',
     $folder . '.archive',
     $if_2
@@ -59,19 +59,21 @@ $if_5 = glob($folder . DS . '*.page', GLOB_NOSORT);
 
 $folder = Path::D($folder);
 $if_6 = File::exist([
-    // `lot\page\parent-slug.{page,archive}`
+    // `.\lot\page\parent-slug.{page,archive}`
     $folder . '.page',
     $folder . '.archive',
     $folder . DS . '$.page',
     $folder . DS . '$.archive'
 ]);
 
+$pages = $i !== null || $path === "" && $if_4 || $path !== "" && !$if_2 && $if_5;
+
 Config::set('is', [
     '$' => $if_0 ? $if_1 : false,
     'error' => $path === "" && !$if_1 || $path !== "" && !$if_3 ? 404 : false,
     'home' => $if_0 ? $if_1 : false, // alias for `$`
-    'page' => $path === "" && $if_1 || $path !== "" && $if_3 ? ($path === "" ? $if_1 : $if_3) : false,
-    'pages' => $i !== null || $path === "" && $if_4 || $path !== "" && !$if_2 && $if_5 ? ($path === "" ? $if_4 : $if_5) : false,
+    'page' => $pages ? false : ($path === "" ? $if_1 : $if_3),
+    'pages' => $pages ? ($path === "" ? $if_4 : $if_5) : false,
     'search' => HTTP::is('get', Config::get('q'))
 ]);
 
@@ -79,7 +81,7 @@ $pages = $path === "" ? count($if_4) : count($if_5);
 
 Config::set('has', [
     'next' => Config::is('pages') && $pages > ($i ?: 1) * Config::page('chunk', 5),
-    'page' => Config::is('page') ? 1 : 0,
+    'page' => $if_1 || $if_3 ? 1 : 0,
     'pages' => $pages ? $pages : 0,
     'parent' => strpos($path, '/') !== false && $if_6 ? $if_6 : false,
     'previous' => Config::is('pages') && $i > 1,

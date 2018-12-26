@@ -1,11 +1,12 @@
 <?php
 
-class Shield extends Genome {
+class Shield extends Extend {
 
+    public static $id = null;
     protected static $lot = [];
 
     public static function path($in, $fail = false) {
-        $NS = c2f($c = static::class, '_', '/') . '.' . __FUNCTION__;
+        $c = static::class;
         $out = [];
         if (is_string($in)) {
             if (strpos($in, ROOT) !== 0) {
@@ -23,18 +24,19 @@ class Shield extends Genome {
         } else {
             $out = $in;
         }
+        $folder = constant(u(static::class));
         foreach ((array) $out as $k => $v) {
             $id = $v;
             $v = strtr($v, '/', DS);
-            if (strpos($v, SHIELD) !== 0) {
+            if (strpos($v, $folder) !== 0) {
                 if (substr($v, -4) !== '.php') {
                     $v .= '.php';
                 }
-                $v = SHIELD . DS . Config::get('shield') . DS . $v;
+                $v = $folder . DS . self::$id . DS . $v;
             }
             $out[$k] = $v;
         }
-        return File::exist(Hook::fire($NS, [$out, $in]), $fail);
+        return File::exist($out, $fail);
     }
 
     public static function set($id, string $path = null) {
@@ -65,11 +67,12 @@ class Shield extends Genome {
             extract(Lot::get(), EXTR_SKIP);
             require $path;
             $out = ob_get_clean();
+            $c = static::class;
             // Begin shield
-            Hook::fire($NS . '.enter', [$out, $in, $path]);
-            $out = Hook::fire($NS . '.' . __FUNCTION__, [$out, $in, $path]);
+            Hook::fire($NS . '.enter', [$out, $in, $path], null, $c);
+            $out = Hook::fire($NS . '.' . __FUNCTION__, [$out, $in, $path], null, $c);
             // End shield
-            Hook::fire($NS . '.exit', [$out, $in, $path]);
+            Hook::fire($NS . '.exit', [$out, $in, $path], null, $c);
         }
         if (!$print) {
             return $out;
@@ -105,6 +108,10 @@ class Shield extends Genome {
         $i = is_string($code) ? explode('/', strtr($code, DS, '/'))[0] : '404';
         HTTP::status((int) $i);
         return Shield::attach($code, $fail);
+    }
+
+    public static function exist(string $id) {
+        return is_dir(constant(u(static::class)) . DS . $id);
     }
 
     public static function __callStatic($kin, array $lot = []) {

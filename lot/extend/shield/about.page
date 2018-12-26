@@ -3,13 +3,13 @@ title: Shield
 description: Common automation package used to speed up theme development.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.0
+version: 1.1.0
 ...
 
 ### Features
 
  - Detect asset path relative to the `.\lot\asset` folder.
- - Detect shield path relative to the `.\lot\shield\{$folder}` folder, where `{$folder}` is the active shield folder.
+ - Detect shield path relative to the `.\lot\shield\<folder>` folder, where `<folder>` is the active shield folder.
  - Add HTML classes automatically to the `<html>` element based on the current page conditional statements.
 
 ### Class
@@ -25,9 +25,9 @@ These HTML classes will be added to the `<html>` element that has a `class` attr
  - `has-step` → Will be added if page URL contains the page offset.
  - `is-$` → Will be added on home page.
  - `is-error` → Will be added if there is no page or pages to load.
- - `is-home` → Will be added on home page.
- - `is-page` → Will be added if page is available.
- - `is-pages` → Will be added if current page contains children.
- - `is-search` → Will be added on search results page.
+ - `is-home` → Will be added on home page view.
+ - `is-page` → Will be added on item view.
+ - `is-pages` → Will be added on items view.
+ - `is-search` → Will be added on search results view.
 
 <!-- block:donate -->

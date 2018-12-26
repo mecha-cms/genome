@@ -16,8 +16,15 @@ namespace fn\art {
         return $content;
     }
     function config() {
-        global $config;
-        if ($path = $config->is('page')) {
+        global $config, $url;
+        $folder = PAGE . DS . $url->path;
+        $i = $url->i ?: 1;
+        if ($path = \File::exist([
+            $folder . DS . $i . '.page',
+            $folder . DS . $i . '.archive',
+            $folder . '.page',
+            $folder . '.archive'
+        ])) {
             extract(\Page::open($path)->get([
                 'css' => null,
                 'js' => null

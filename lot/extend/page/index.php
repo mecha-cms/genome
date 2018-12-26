@@ -39,7 +39,20 @@ function url($url = "", array $lot = []) {
     $name = \Path::B($folder);
     $i = ($h = $step ?: 1) - 1; // 0-based index…
     \Config::set('trace', new \Anemon([$config->title], ' &#x00B7; '));
-    if ($file = $config->is('page')) {
+    if ($file = \File::exist([
+        // `.\lot\page\page-slug.{page,archive}`
+        $folder . '.page',
+        $folder . '.archive',
+        // `.\lot\page\page-slug\$.{page,archive}`
+        $folder . DS . '$.page',
+        $folder . DS . '$.archive',
+        // `.\lot\page\page-slug\1.{page,archive}`
+        $folder . DS . $h . '.page',
+        $folder . DS . $h . '.archive',
+        // `.\lot\page\page-slug\1\$.{page,archive}`
+        $folder . DS . $h . DS . '$.page',
+        $folder . DS . $h . DS . '$.archive'
+    ])) {
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
         $sort = $config->page('sort', [1, 'path']);
@@ -87,7 +100,7 @@ function url($url = "", array $lot = []) {
             $pager_previous => !!$pager->{$pager_previous},
             $pager_next => !!$pager->{$pager_next}
         ]);
-        if (!$config->is('pages')) {
+        if ($config->is('page')) {
             // Page(s) view has been disabled!
         } else {
             $pages = \Get::pages($folder, 'page', $sort, 'path');
