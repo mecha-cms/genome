@@ -1,6 +1,6 @@
 <?php
 
-class Union extends Genome {
+abstract class Union extends Genome {
 
     const config = [
         'union' => [
@@ -43,7 +43,7 @@ class Union extends Genome {
             if (is_array($v) || (is_object($v) && !fn\is\instance($v))) {
                 $v = json_encode($v);
             }
-            $out .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . static::x($v) . $u[2] : $k);
+            $out .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . self::x($v) . $u[2] : $k);
         }
         return $out;
     }
@@ -63,7 +63,7 @@ class Union extends Genome {
             $unit = $unit[0];
         }
         // `$union->unite('div', "", ['id' => 'foo'], 0)`
-        $dent = static::dent($dent);
+        $dent = self::dent($dent);
         $u = $this->union[1][0];
         $s = $dent . $u[0] . $unit . $this->_data_($data);
         return $s . ($content === false ? $u[1] : $u[1] . $content . $u[0] . $u[2] . $unit . $u[1]);
@@ -115,7 +115,7 @@ class Union extends Genome {
 
     // Union comment
     protected function ____(string $content = "", int $dent = 0, $block = N) {
-        $dent = static::dent($dent);
+        $dent = self::dent($dent);
         $begin = $end = $block;
         if (strpos($block, N) !== false) {
             $end = $block . $dent;
@@ -126,7 +126,7 @@ class Union extends Genome {
 
     // Base union unit open
     protected function _begin_($unit = null, array $data = [], $dent = 0) {
-        $dent = static::dent($dent);
+        $dent = self::dent($dent);
         $this->unit[] = $unit;
         $this->dent[] = $dent;
         $u = $this->union[1][0];
@@ -144,7 +144,7 @@ class Union extends Genome {
             return $out;
         }
         $unit = $unit ?? array_pop($this->unit);
-        $dent = isset($dent) ? static::dent($dent) : array_pop($this->dent);
+        $dent = isset($dent) ? self::dent($dent) : array_pop($this->dent);
         $u = $this->union[1][0];
         return $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "";
     }
@@ -160,8 +160,8 @@ class Union extends Genome {
     }
 
     public function __construct(array $config = []) {
-        $this->union = static::$config['union'];
-        $this->pattern = static::$config['pattern'];
+        $this->union = extend(self::$config['union'], static::$config['union']);
+        $this->pattern = extend(self::$config['pattern'], static::$config['pattern']);
         if ($config) {
             foreach (['union', 'pattern'] as $k) {
                 if (!empty($config[$k])) {

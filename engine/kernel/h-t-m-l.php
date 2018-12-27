@@ -2,8 +2,6 @@
 
 class HTML extends Union {
 
-    public static $config = self::config;
-
     // Build HTML attribute(s)…
     protected function _data_($a = []) {
         if (is_array($a)) {
