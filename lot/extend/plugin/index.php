@@ -9,7 +9,7 @@ call_user_func(function() {
         $plugins[$v] = (float) File::open(Path::D($v) . DS . 'stack.data')->get(0, 10);
     }
     asort($plugins);
-    extract($seeds);
+    extract($seeds, EXTR_SKIP);
     Config::set('plugin[]', $plugins);
     $c = [];
     foreach ($plugins as $k => $v) {
@@ -25,7 +25,7 @@ call_user_func(function() {
         d($f . 'kernel', function($w, $n) use($f, $seeds) {
             $f .= 'plug' . DS . $n . '.php';
             if (file_exists($f)) {
-                extract($seeds);
+                extract($seeds, EXTR_SKIP);
                 require $f;
             }
         }, $seeds);

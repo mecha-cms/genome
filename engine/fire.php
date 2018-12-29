@@ -118,7 +118,7 @@ foreach (g(EXTEND . DS . '*', 'index.php') as $v) {
 }
 
 asort($extends);
-extract($seeds);
+extract($seeds, EXTR_SKIP);
 Config::set('extend[]', $extends);
 $c = [];
 foreach ($extends as $k => $v) {
@@ -134,7 +134,7 @@ foreach ($extends as $k => $v) {
     d($f . 'kernel', function($w, $n) use($f, $seeds) {
         $f .= 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
-            extract($seeds);
+            extract($seeds, EXTR_SKIP);
             require $f;
         }
     }, $seeds);
@@ -163,7 +163,7 @@ if ($task = File::exist(ROOT . DS . 'task.php')) {
 // Load extension(s)…
 foreach (array_keys($extends) as $v) {
     call_user_func(function() use($v) {
-        extract(Lot::get());
+        extract(Lot::get(), EXTR_SKIP);
         if ($k = File::exist(dirname($v) . DS . 'task.php')) {
             include $k;
         }

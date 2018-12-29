@@ -4,7 +4,7 @@ $state = new State(Extend::state('asset'));
 
 foreach ([
     'css' => function($value, $key, $attr) use($state) {
-        extract($value);
+        extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
@@ -20,7 +20,7 @@ foreach ([
         ]));
     },
     'js' => function($value, $key, $attr) use($state) {
-        extract($value);
+        extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
@@ -40,7 +40,7 @@ foreach ([
 
 foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
     Asset::_('.' . $v, function($value, $key, $attr) use($state) {
-        extract($value);
+        extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';

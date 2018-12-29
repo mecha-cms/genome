@@ -341,7 +341,7 @@ namespace {
             $n = c2f($w);
             $f = $f . DS . $n . '.php';
             if (file_exists($f)) {
-                if ($s__) extract($s__);
+                if ($s__) extract($s__, EXTR_SKIP);
                 require $f;
                 if (is_callable($fn)) {
                     call_user_func($fn, $w, $n, $s__);
@@ -942,7 +942,7 @@ namespace {
         if (is_string($a[0])) {
             foreach (g($a[0], $a[1] ?? 'php', "", true) as $v) {
                 call_user_func(function() use($a, $v) {
-                    extract($a[2] ?? []);
+                    extract($a[2] ?? [], EXTR_SKIP);
                     include $v;
                 });
             }
@@ -956,7 +956,7 @@ namespace {
             foreach ($a[0] as $v) {
                 $v = $r . DS . $v . '.php';
                 call_user_func(function() use($a, $r, $v) {
-                    extract($a[$r ? 2 : 1] ?? []);
+                    extract($a[$r ? 2 : 1] ?? [], EXTR_SKIP);
                     include $v;
                 });
             }
@@ -1009,7 +1009,7 @@ namespace {
         if (is_string($a[0])) {
             foreach (g($a[0], $a[1] ?? 'php', "", true) as $v) {
                 call_user_func(function() use($a, $v) {
-                    extract($a[2] ?? []);
+                    extract($a[2] ?? [], EXTR_SKIP);
                     require $v;
                 });
             }
@@ -1025,7 +1025,7 @@ namespace {
                     continue;
                 }
                 call_user_func(function() use($a, $r, $v) {
-                    extract($a[$r ? 2 : 1] ?? []);
+                    extract($a[$r ? 2 : 1] ?? [], EXTR_SKIP);
                     require $v;
                 });
             }
@@ -1100,7 +1100,7 @@ namespace {
         // By path
         if (is_string($x) && strlen($x) <= 260 && realpath($x) && is_file($x)) {
             ob_start();
-            extract($a);
+            extract($a, EXTR_SKIP);
             require $x;
             return ob_get_clean();
         // By function
