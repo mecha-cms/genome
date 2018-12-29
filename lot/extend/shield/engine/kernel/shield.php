@@ -26,20 +26,19 @@ class Shield extends Extend {
         }
         $folder = constant(u(static::class));
         foreach ((array) $out as $k => $v) {
-            $id = $v;
             $v = strtr($v, '/', DS);
             if (strpos($v, $folder) !== 0) {
                 if (substr($v, -4) !== '.php') {
                     $v .= '.php';
                 }
-                $v = $folder . DS . self::$id . DS . $v;
+                $v = $folder . DS . static::$id . DS . $v;
             }
             $out[$k] = $v;
         }
         return File::exist($out, $fail);
     }
 
-    public static function set($id, string $path = null) {
+    public static function set($id, $path = null) {
         $c = static::class;
         if (is_array($id)) {
             foreach ($id as $k => $v) {
@@ -48,7 +47,7 @@ class Shield extends Extend {
         } else {
             if (!isset(self::$lot[$c][0][$id])) {
                 $id = strtr($id, DS, '/');
-                self::$lot[$c][1][$id] = $path;
+                self::$lot[$c][1][$id] = is_callable($path) ? fn($path, [$id], null, $c) : $path;
             }
         }
         return new static;
