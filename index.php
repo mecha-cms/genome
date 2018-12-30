@@ -20,7 +20,7 @@
 !defined('LOT') && define('LOT', ROOT . DS . 'lot');
 
 foreach (glob(ROOT . DS . 'lot' . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
-    $b = strtoupper(str_replace(['-', '.'], ['_', "\\"], basename($lot)));
+    $b = strtoupper(strtr(basename($lot), '-.', "_\\"));
     !defined($b) && define($b, $lot);
     $b = "LOT\\" . $b; // Alias
     !defined($b) && define($b, $lot);
