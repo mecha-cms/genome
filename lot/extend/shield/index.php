@@ -15,7 +15,7 @@ Hook::set('on.ready', function() {
     extract(Lot::get());
 
     // Load user language(s) from the current shield folder if any
-    $folder = SHIELD . DS . $config->shield . DS;
+    $folder = SHIELD . DS . Shield::$id . DS;
     $i18n = $folder . 'language' . DS;
     if ($l = File::exist([
         $i18n . $config->language . '.page',
@@ -53,7 +53,7 @@ Hook::set('on.ready', function() {
                     continue;
                 }
                 // Relative to the `asset` folder of current shield
-                if ($path = File::exist(SHIELD . DS . $config->shield . DS . 'asset' . DS . $kk)) {
+                if ($path = File::exist(SHIELD . DS . Shield::$id . DS . 'asset' . DS . $kk)) {
                     Asset::reset($kk)->set($path, $vv['stack']);
                 }
             }
