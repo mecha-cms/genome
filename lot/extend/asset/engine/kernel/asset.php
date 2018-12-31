@@ -32,11 +32,12 @@ class Asset extends Genome {
         $c = static::class;
         foreach ((array) $path as $k => $v) {
             $x = Path::X($v);
-            if (!isset(self::$lot[$c][0][$x][$v])) {
-                self::$lot[$c][1][$x][$v] = [
+            if (!isset(self::$lot[$c][0][$x][$data['id'] ?? $v])) {
+                $id = sprintf('%u', crc32($v));
+                self::$lot[$c][1][$x][$data['id'] ?? $v] = [
                     'path' => self::path($v),
                     'url' => self::URL($v),
-                    'id' => sprintf('%u', crc32($v)),
+                    'id' => is_array($path) ? $id : ($data['id'] ?? $id),
                     'data' => $data,
                     'stack' => (float) ($stack[$k] ?? (end($stack) !== false ? end($stack) : 10) + $i)
                 ];
@@ -72,10 +73,10 @@ class Asset extends Genome {
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        $path = array_shift($lot);
-        $a = array_shift($lot) ?: [];
-        $c = static::class;
         if ($v = self::_('.' . $kin)) {
+            $c = static::class;
+            $path = array_shift($lot);
+            $a = array_shift($lot) ?: [];
             $fn = $v[0];
             if (isset($path)) {
                 $g = self::get($path, [
@@ -86,6 +87,9 @@ class Asset extends Genome {
                     'stack' => null
                 ]);
                 $data = is_array($a) && is_array($g['data']) ? extend($a, $g['data']) : ($g['data'] ?: $a);
+                if (!empty($data['id'])) {
+                    $g['id'] = $data['id'];
+                }
                 return is_callable($fn) ? call_user_func($fn, $g, $path, $data) : ($g['path'] ? file_get_contents($g['path']) : "");
             }
             if (isset(self::$lot[$c][1][$kin])) {
