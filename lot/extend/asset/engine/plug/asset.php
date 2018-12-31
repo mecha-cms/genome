@@ -55,3 +55,19 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
         ]));
     });
 }
+
+foreach (['script', 'style'] as $v) {
+    Asset::_($v, function(string $content, float $stack = null, array $data = []) use($v) {
+        $c = static::class;
+        $id = $data['id'] ?? $v . ':' . sprintf('%u', crc32($content));
+        if (!isset(static::$lot[$c][0][':' . $v][$id])) {
+            static::$lot[$c][1][':' . $v][$id] = [
+                'content' => trim($content),
+                'id' => $id,
+                'data' => $data,
+                'stack' => (float) ($stack ?? 10)
+            ];
+        }
+        return new static;
+    });
+}

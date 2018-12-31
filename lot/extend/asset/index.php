@@ -7,11 +7,31 @@ function asset($content) {
 }
 
 \Hook::set('asset:head', function($content) {
-    return $content . \Hook::fire('asset.css', [\Asset::css()], null, \Asset::class);
+    $a = \Hook::fire('asset.css', [\Asset::css()], null, \Asset::class);
+    $b = "";
+    $lot = \Asset::get();
+    if (!empty($lot[':style'])) {
+        foreach (\Anemon::eat($lot[':style'])->sort([1, 'stack'], true) as $k => $v) {
+            if (!empty($v['content'])) {
+                $b .= N . \HTML::unite('style', N . $v['content'] . N, $v['data']);
+            }
+        }
+    }
+    return $content . $a . $b; // Put inline CSS after remote CSS
 });
 
 \Hook::set('asset:body', function($content) {
-    return $content . \Hook::fire('asset.js', [\Asset::js()], null, \Asset::class);
+    $a = \Hook::fire('asset.js', [\Asset::js()], null, \Asset::class);
+    $b = "";
+    $lot = \Asset::get();
+    if (!empty($lot[':script'])) {
+        foreach (\Anemon::eat($lot[':script'])->sort([1, 'stack'], true) as $k => $v) {
+            if (!empty($v['content'])) {
+                $b .= N . \HTML::unite('script', N . $v['content'] . N, $v['data']);
+            }
+        }
+    }
+    return $content . $a . $b; // Put inline JS after remote JS
 });
 
 \Hook::set('shield.yield', __NAMESPACE__ . "\\asset", 0);
