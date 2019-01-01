@@ -113,7 +113,7 @@ class Shield extends Extend {
         return is_dir(constant(u(static::class)) . DS . $id);
     }
 
-    public static function __callStatic($kin, array $lot = []) {
+    public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
