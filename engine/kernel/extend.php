@@ -10,11 +10,12 @@ class Extend extends Genome {
 
     public static function state(...$lot) {
         $c = static::class;
-        $id = basename(array_shift($lot));
+        $parts = explode(':', basename(array_shift($lot)));
+        $id = $parts[0];
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: constant(u($c));
-        $state = $folder . DS . $id . DS . 'lot' . DS . 'state' . DS . 'config.php';
+        $state = $folder . DS . $id . DS . 'lot' . DS . 'state' . DS . ($parts[1] ?? 'config') . '.php';
         $id = strtr($id, '.', '/');
         if (!file_exists($state)) {
             return is_array($key) ? $key : $fail;
