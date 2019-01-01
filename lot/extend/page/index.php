@@ -126,8 +126,8 @@ function url($url = "", array $lot = []) {
                 // Greater than the maximum step or less than `1`, abort!
                 \Config::set('is.error', 404);
                 \Config::set('has', [
-                    $pager->config['direction']['<'] => false,
-                    $pager->config['direction']['>'] => false
+                    $pager_previous => false,
+                    $pager_next => false
                 ]);
                 return \Shield::abort('404/' . $path_canon);
             } else {

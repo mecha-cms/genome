@@ -15,13 +15,13 @@ class Guardian extends Genome {
     }
 
     public static function check(string $token, $id = 0, $fail = false) {
-        $previous = Session::get(self::$config['session']['token'] . '.' . $id);
+        $previous = Session::get(static::$config['session']['token'] . '.' . $id);
         return $previous && $token && $previous === $token ? $token : $fail;
     }
 
     public static function token($id = 0) {
         $token = self::hash($id);
-        Session::set(self::$config['session']['token'] . '.' . $id, $token);
+        Session::set(static::$config['session']['token'] . '.' . $id, $token);
         return $token;
     }
 
