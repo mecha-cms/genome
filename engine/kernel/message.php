@@ -32,7 +32,7 @@ class Message extends Genome {
     }
 
     public static function set(...$lot) {
-        $id = self::$config['session']['previous'];
+        $id = static::$config['session']['previous'];
         $kin = array_shift($lot);
         $previous = Session::get($id, []);
         if (!isset($previous[$kin])) {
@@ -49,13 +49,13 @@ class Message extends Genome {
     }
 
     public static function reset(string $kin = null) {
-        Session::reset(self::$config['session']['previous'] . ($kin ? '.' . $kin : ""));
+        Session::reset(static::$config['session']['previous'] . ($kin ? '.' . $kin : ""));
         return new static;
     }
 
     public static function get(string $kin = null, $reset = true) {
         global $language;
-        $id = self::$config['session']['previous'];
+        $id = static::$config['session']['previous'];
         $c = c2f($cc = static::class, '_', '/');
         $a = [];
         foreach (Session::get($id, []) as $k => $v) {
@@ -66,12 +66,12 @@ class Message extends Genome {
                 $text = $vv[0];
                 $key = $c . '_' . $k . '_' . $text;
                 $t = $language->get($key, $vv[1] ?? [], $vv[2] ?? false);
-                $s = candy(HTML::unite(self::$config['message']), [$k, $t === $key ? $text : $t]);
+                $s = candy(HTML::unite(static::$config['message']), [$k, $t === $key ? $text : $t]);
                 $a[] = Hook::fire($c . '.' . __FUNCTION__ . '.' . $k, [$s], null, $cc);
             }
         }
         if ($reset) self::reset($kin);
-        $out = $a ? candy(HTML::unite(self::$config['messages']), [N . implode(N, $a) . N]) : "";
+        $out = $a ? candy(HTML::unite(static::$config['messages']), [N . implode(N, $a) . N]) : "";
         return Hook::fire($c . '.' . __FUNCTION__, [$out], null, $cc);
     }
 
@@ -103,11 +103,11 @@ class Message extends Genome {
             'X-Mailer' => 'PHP/' . phpversion()
         ]], null, $c);
         $body = Hook::fire($n . 'body', [$message, $header], null, $c);
-        $lot = "";
+        $lot = [];
         foreach ($header as $k => $v) {
-            $lot .= $k . ': ' . $v . N;
+            $lot[$k] = $k . ': ' . $v;
         }
-        return mail($to, $title, $body, rtrim($lot, N));
+        return mail($to, $title, $body, implode("\r\n", $lot));
     }
 
     public static function __callStatic(string $kin, array $lot = []) {

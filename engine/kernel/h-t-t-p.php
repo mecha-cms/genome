@@ -82,7 +82,7 @@ class HTTP extends Genome {
         } else {
             $key = $data;
         }
-        $id = self::$config['session']['gate'];
+        $id = static::$config['session']['gate'];
         $cache = Session::get($id, []);
         Session::set($id, extend($cache, $key));
         return new static;
@@ -90,7 +90,7 @@ class HTTP extends Genome {
 
     // Restore state
     public static function restore($key = null, $fail = null) {
-        $id = self::$config['session']['gate'];
+        $id = static::$config['session']['gate'];
         $cache = Session::get($id, []);
         if (isset($key)) {
             self::delete($key);
@@ -102,13 +102,23 @@ class HTTP extends Genome {
 
     // Delete state
     public static function delete($key = null) {
-        Session::reset(self::$config['session']['gate'] . (isset($key) ? '.' . $key : ""));
+        Session::reset(static::$config['session']['gate'] . (isset($key) ? '.' . $key : ""));
         return new static;
     }
 
     // Fetch remote URL
-    public static function fetch($url, $fail = false, string $agent = null) {
-        $agent = $agent ?? 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
+    public static function fetch($url, $fail = false, $agent = null) {
+        $header = [];
+        $a = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
+        // `HTTP::fetch('/', false, ['Content-Type' => 'text/html'])`
+        if (is_array($agent)) {
+            foreach ($agent as $k => $v) {
+                $header[$k] = $k . ': ' . $v;
+            }
+        }
+        if (!isset($header['User-Agent'])) {
+            $header['User-Agent'] = 'User-Agent: ' . $a;
+        }
         if (extension_loaded('curl')) {
             $curl = curl_init($url);
             curl_setopt_array($curl, [
@@ -118,7 +128,8 @@ class HTTP extends Genome {
                 CURLOPT_MAXREDIRS => 2,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_TIMEOUT => 15,
-                CURLOPT_USERAGENT => $agent
+                // CURLOPT_USERAGENT => $a,
+                CURLOPT_HTTPHEADER => array_values($header)
             ]);
             $out = curl_exec($curl);
             curl_close($curl);
@@ -127,7 +138,7 @@ class HTTP extends Genome {
                 'http' => [
                     'method' => 'GET',
                     // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
-                    'header' => 'User-Agent: ' . $agent
+                    'header' => implode("\r\n", $header)
                 ]
             ]));
         }
