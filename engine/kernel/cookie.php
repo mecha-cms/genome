@@ -18,7 +18,7 @@ class Cookie extends Genome {
         return new static;
     }
 
-    public static function get($key = null, $fail = null) {
+    public static function get(string $key = null, $fail = null) {
         if (!isset($key)) {
             $o = [];
             foreach ($_COOKIE as $k => $v) {

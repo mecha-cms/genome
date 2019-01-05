@@ -109,8 +109,9 @@ class Shield extends Extend {
         return Shield::attach($code, $fail);
     }
 
-    public static function exist(string $id) {
-        return is_dir(constant(u(static::class)) . DS . $id);
+    public static function exist(string $id, $active = true) {
+        $exist = is_dir(constant(u(static::class)) . DS . $id);
+        return $active ? ($exist && static::$id === $id) : $exist;
     }
 
     public static function __callStatic(string $kin, array $lot = []) {

@@ -20,7 +20,7 @@ class Elevator extends Genome {
         return HTML::unite($in);
     }
 
-    public function __construct(array $in = [], $chunk = [5, 0], $path = true, $config = []) {
+    public function __construct(array $in = [], $chunk = [5, 0], string $path = null, $config = []) {
         $key = c2f(static::class, '_', '/');
         $this->c = [
             // <: previous
@@ -60,7 +60,7 @@ class Elevator extends Genome {
             $chunk = extend([5, 0], $chunk);
             $in = array_chunk($in, $chunk[0]);
         }
-        if ($path === true) {
+        if (!isset($path)) {
             $path = $r;
         }
         $path = rtrim($path, '/');
@@ -89,7 +89,7 @@ class Elevator extends Genome {
         parent::__construct();
     }
 
-    public function __get($key) {
+    public function __get(string $key) {
         if (self::_($key)) {
             return parent::__call($key);
         }
@@ -97,11 +97,11 @@ class Elevator extends Genome {
     }
 
     // Fix case for `isset($elevator->key)` or `!empty($elevator->key)`
-    public function __isset($key) {
+    public function __isset(string $key) {
         return !!$this->__get($key);
     }
 
-    public function __unset($key) {
+    public function __unset(string $key) {
         unset($this->lot[$key]);
     }
 

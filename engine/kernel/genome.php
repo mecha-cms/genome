@@ -28,7 +28,7 @@ abstract class Genome {
         self::$__instance__[] = $this;
     }
 
-    public function __get($kin) {
+    public function __get(string $kin) {
         if (method_exists($this, $kin)) {
             return $this->{$kin}();
         }

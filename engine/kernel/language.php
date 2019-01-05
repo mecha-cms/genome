@@ -57,7 +57,7 @@ class Language extends Config {
         return self::get($kin, $kin);
     }
 
-    public function __get($key) {
+    public function __get(string $key) {
         return self::get($key, $key);
     }
 

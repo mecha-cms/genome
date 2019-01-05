@@ -53,13 +53,6 @@ class Page extends Genome {
                 $t = new Date($n);
                 $this->lot['time'] = $t->format(DATE_WISE);
                 $this->lot['title'] = $t->format(strtr(DATE_WISE, '-', '/'));
-            // Else, set `time` value from the page’s `time.data` if any
-            } else if ($path && $t = File::open(Path::F($path) . DS . 'time.data')->get()) {
-                $this->lot['time'] = $t;
-            }
-            // Static `update` value from the page’s `update.data` if any
-            if ($path && $t = File::open(Path::F($path) . DS . 'update.data')->get()) {
-                $this->lot['update'] = $t;
             }
             self::$page[$id] = $this->lot;
         }
@@ -138,20 +131,20 @@ class Page extends Genome {
     // public $_hook;
     // public $_hook_count;
 
-    public function __set($key, $value = null) {
+    public function __set(string $key, $value = null) {
         $this->lot[$key] = self::$page[$this->hash][$key] = $value;
     }
 
-    public function __get($key) {
+    public function __get(string $key) {
         return $this->__call($key);
     }
 
     // Fix case for `isset($page->key)` or `!empty($page->key)`
-    public function __isset($key) {
+    public function __isset(string $key) {
         return !!$this->__call($key);
     }
 
-    public function __unset($key) {
+    public function __unset(string $key) {
         $this->__set($key, null);
     }
 

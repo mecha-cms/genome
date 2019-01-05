@@ -94,20 +94,20 @@ class Config extends Genome {
         return self::get($kin, $fail);
     }
 
-    public function __set($key, $value = null) {
+    public function __set(string $key, $value = null) {
         return self::set($key, $value);
     }
 
-    public function __get($key) {
+    public function __get(string $key) {
         return self::get($key, null);
     }
 
     // Fix case for `isset($config->key)` or `!empty($config->key)`
-    public function __isset($key) {
+    public function __isset(string $key) {
         return !!self::get($key);
     }
 
-    public function __unset($key) {
+    public function __unset(string $key) {
         self::reset($key);
     }
 

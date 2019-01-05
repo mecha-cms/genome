@@ -109,6 +109,7 @@ class HTTP extends Genome {
     // Fetch remote URL
     public static function fetch($url, $fail = false, $agent = null) {
         $header = [];
+        // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
         $a = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
         // `HTTP::fetch('/', false, ['Content-Type' => 'text/html'])`
         if (is_array($agent)) {
@@ -132,13 +133,16 @@ class HTTP extends Genome {
                 CURLOPT_HTTPHEADER => array_values($header)
             ]);
             $out = curl_exec($curl);
+            if (defined('DEBUG') && DEBUG && $out === false) {
+                echo fail(curl_error($curl));
+                exit;
+            }
             curl_close($curl);
         } else {
             $out = file_get_contents($url, false, stream_context_create([
                 'http' => [
                     'method' => 'GET',
-                    // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
-                    'header' => implode("\r\n", $header)
+                    'header' => implode("\r\n", array_values($header))
                 ]
             ]));
         }

@@ -2,10 +2,15 @@
 
 class Extend extends Genome {
 
+    // Cache!
     protected static $state = [];
 
-    public static function exist(string $id) {
-        return file_exists(constant(u(static::class)) . DS . $id . DS . 'index.php');
+    public static function exist(string $id, $active = true) {
+        $path = constant(u(static::class));
+        if ($active) {
+            return is_file($path . DS . $id . DS . 'index.php');
+        }
+        return is_dir($path . DS . $id);
     }
 
     public static function state(...$lot) {
