@@ -15,7 +15,8 @@ class Extend extends Genome {
 
     public static function state(...$lot) {
         $c = static::class;
-        $parts = explode(':', basename(array_shift($lot)));
+        $q = basename(array_shift($lot));
+        $parts = explode(':', $q);
         $id = $parts[0];
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
@@ -26,7 +27,7 @@ class Extend extends Genome {
             return is_array($key) ? $key : $fail;
         }
         $state = self::$state[$c][$id] ?? include $state;
-        $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $id, [$state], null, $c);
+        $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $q, [$state], null, $c);
         if (is_array($key)) {
             return extend($key, $state);
         }

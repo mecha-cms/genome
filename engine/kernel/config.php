@@ -51,8 +51,8 @@ class Config extends Genome {
     public static function reset($key = null) {
         $c = static::class;
         if (isset($key)) {
-            foreach ((array) $key as $value) {
-                Anemon::reset(self::$lot[$c], $value);
+            foreach ((array) $key as $v) {
+                Anemon::reset(self::$lot[$c], $v);
             }
         } else {
             self::$lot[$c] = [];

@@ -410,10 +410,7 @@ class File extends Genome {
     }
 
     // Upload a file
-    public static function push($blob, string $path = ROOT) {
-        if (!is_array($blob)) {
-            return null; // Invalid blob input
-        }
+    public static function push(array $blob, string $path = ROOT) {
         $path = rtrim(strtr($path, '/', DS), DS);
         if (!empty($blob['error'])) {
             return $blob['error']; // Has error, abort!
@@ -429,7 +426,7 @@ class File extends Genome {
         return $f; // There is no error, the file uploaded with success
     }
 
-    // Download the file
+    // Download a file
     public static function pull(string $file, $type = null) {
         HTTP::header([
             'Content-Description' => 'File Transfer',
