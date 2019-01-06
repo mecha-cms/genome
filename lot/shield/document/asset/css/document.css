@@ -268,22 +268,22 @@ hr {
   text-align:center;
   margin:var(--s) 0;
 }
+hr::before {content:'\2022\2002\2022\2002\2022'}
 fieldset {
   border:1px dotted;
   padding:0 var(--x) var(--y);
 }
 legend {padding:0 calc(var(--z) * .5)}
-hr::before {content:'\2022\2002\2022\2002\2022'}
+blockquote {
+  font-size:120%;
+  padding-left:var(--x);
+  border-left:1px solid;
+}
 code,.code {
   font-weight:normal;
   font-style:normal;
   font-size:90%;
   font-family:var(--text-code);
-}
-blockquote {
-  font-size:120%;
-  padding-left:var(--x);
-  border-left:1px solid;
 }
 pre code {
   display:block;
