@@ -120,17 +120,18 @@ class HTTP extends Genome {
         if (!isset($header['User-Agent'])) {
             $header['User-Agent'] = 'User-Agent: ' . $a;
         }
+        $header = array_values($header);
         if (extension_loaded('curl')) {
             $curl = curl_init($url);
             curl_setopt_array($curl, [
                 CURLOPT_FAILONERROR => true,
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTPGET => true,
+                CURLOPT_HTTPHEADER => $header,
                 CURLOPT_MAXREDIRS => 2,
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 15,
-                // CURLOPT_USERAGENT => $a,
-                CURLOPT_HTTPHEADER => array_values($header)
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_TIMEOUT => 15
             ]);
             $out = curl_exec($curl);
             if (defined('DEBUG') && DEBUG && $out === false) {
@@ -142,7 +143,7 @@ class HTTP extends Genome {
             $out = file_get_contents($url, false, stream_context_create([
                 'http' => [
                     'method' => 'GET',
-                    'header' => implode("\r\n", array_values($header))
+                    'header' => implode("\r\n", $header)
                 ]
             ]));
         }
