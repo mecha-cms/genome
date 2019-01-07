@@ -93,7 +93,7 @@ class File extends Genome {
     }
 
     // Export value to a PHP file
-    public static function export(array $data, $format = '<?php return %{0}%;') {
+    public static function export(array $data, string $format = '<?php return %{0}%;') {
         $self = new static;
         $self->content = candy($format, z($data));
         return $self;
@@ -170,11 +170,12 @@ class File extends Genome {
     }
 
     // Copy the file/folder to … (folder)
-    public function copyTo(string $folder = ROOT, string $pattern = '%{name}%.%{i}%.%{extension}%') {
+    public function copyTo($folder = ROOT, string $pattern = '%{name}%.%{i}%.%{extension}%') {
         $i = 1;
         $path = $this->path;
         $out = [];
         if (isset($path)) {
+            $out[0] = $path;
             $b = basename($path);
             // Copy folder
             if (is_dir($path)) {
@@ -183,7 +184,7 @@ class File extends Genome {
                     if (!is_dir($dir)) {
                         mkdir($dir, 0775, true);
                     }
-                    $out = extend($out, self::open($k)->copyTo($dir, $pattern), false);
+                    $out[1][] = self::open($k)->copyTo($dir, $pattern)[1][0];
                 }
                 $this->path = $folder . DS . $b;
                 return $out;
@@ -196,7 +197,7 @@ class File extends Genome {
                 $v .= DS . $b;
                 if (!file_exists($v)) {
                     if (copy($path, $v)) {
-                        $out[$path] = $v;
+                        $out[1][] = $v;
                     }
                     $i = 1;
                 } else if ($pattern) {
@@ -206,12 +207,12 @@ class File extends Genome {
                         'extension' => pathinfo($v, PATHINFO_EXTENSION)
                     ]);
                     if (copy($path, $v)) {
-                        $out[$path] = $v;
+                        $out[1][] = $v;
                     }
                     ++$i;
                 } else {
                     if (copy($path, $v)) {
-                        $out[$path] = $v;
+                        $out[1][] = $v;
                     }
                 }
                 $this->path = $v;
@@ -230,7 +231,7 @@ class File extends Genome {
                 $b = new \RecursiveIteratorIterator($a, \RecursiveIteratorIterator::CHILD_FIRST);
                 foreach ($b as $v) {
                     $p = $v->getPathname();
-                    $out[$p] = 1;
+                    $out[] = $p;
                     if ($v->isFile()) {
                         unlink($p);
                     } else {
@@ -241,7 +242,7 @@ class File extends Genome {
             } else {
                 unlink($path);
             }
-            $out[$path] = 1;
+            $out[] = $path;
         }
         return $out;
     }
