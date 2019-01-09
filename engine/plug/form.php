@@ -1,22 +1,22 @@
 <?php
 
 foreach (['reset', 'submit'] as $kin) {
-    Form::_($kin, function($name = null, $value = null, $text = "", $attr = [], $dent = 0) use($kin) {
+    Form::_($kin, function(string $name = null, $value = null, string $text = null, array $attr = [], $dent = 0) use($kin) {
         $attr['type'] = $kin;
         return Form::button($name, $value, $text, $attr, $dent);
     });
 }
 
 foreach ([
-    'hidden' => function($name = null, $value = null, $attr = [], $dent = 0) {
+    'hidden' => function(string $name = null, $value = null, array $attr = [], $dent = 0) {
         // Do not cache any request data of hidden form element(s)
         HTTP::delete($name);
         return Form::input($name, 'hidden', $value, null, $attr, $dent);
     },
-    'file' => function($name = null, $attr = [], $dent = 0) {
+    'file' => function(string $name = null, array $attr = [], $dent = 0) {
         return Form::input($name, 'file', null, null, $attr, $dent);
     },
-    'checkbox' => function($name = null, $value = null, $check = false, $text = "", $attr = [], $dent = 0) {
+    'checkbox' => function(string $name = null, $value = null, $check = false, string $text = null, array $attr = [], $dent = 0) {
         $a = ['checked' => $check ? true : null];
         if ($value === true) {
             $value = 'true';
@@ -24,7 +24,16 @@ foreach ([
         $text = $text ? '&#x0020;' . HTML::span($text) : "";
         return HTML::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, extend($a, $attr)) . $text);
     },
-    'radio' => function($name = null, $options = [], $select = null, $attr = [], $dent = 0) {
+    'color' => function(string $name = null, $value = null, array $attr = [], $dent = 0) {
+        // TODO: color converter for `$value`
+        return Form::input($name, 'color', $value, null, $attr, $dent);
+    },
+    'date' => function(string $name = null, $value = null, string $placeholder = null, array $attr = [], $dent = 0) {
+        // <https://www.w3.org/TR/2011/WD-html-markup-20110405/input.date.html>
+        $value = (new Date($value))->format('Y-m-d');
+        return Form::input($name, 'date', $value, $placeholder, $attr, $dent);
+    },
+    'radio' => function(string $name = null, array $options = [], $select = null, array $attr = [], $dent = 0) {
         $out = [];
         $select = s($select);
         $id = $attr['id'] ?? null;
@@ -45,8 +54,9 @@ foreach ([
         }
         return implode(HTML::unite('br', false), $out);
     },
-    'range' => function($name = null, $range = [0, 0, 1], $attr = [], $dent = 0) {
-        if (is_array($value)) {
+    'range' => function(string $name = null, $range = [], array $attr = [], $dent = 0) {
+        if (is_array($range)) {
+            $range = extend([0, 0, 1], $range);
             if (!array_key_exists('min', $attr)) {
                 $attr['min'] = $range[0];
             }
@@ -60,8 +70,8 @@ foreach ([
     Form::_($k, $v);
 }
 
-foreach (['color', 'date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url'] as $kin) {
-    Form::_($kin, function($name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) use($kin) {
+foreach (['email', 'number', 'password', 'search', 'tel', 'text', 'url'] as $kin) {
+    Form::_($kin, function(string $name = null, $value = null, string $placeholder = null, array $attr = [], $dent = 0) use($kin) {
         return Form::input($name, $kin, $value, $placeholder, $attr, $dent);
     });
 }

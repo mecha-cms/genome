@@ -3,7 +3,7 @@
 class Form extends HTML {
 
     // `<button>`
-    public static function button($name = null, $value = null, $text = "", $attr = [], $dent = 0) {
+    public static function button(string $name = null, $value = null, string $text = null, array $attr = [], $dent = 0) {
         if (!array_key_exists('type', $attr)) {
             $attr['type'] = 'button';
         }
@@ -14,7 +14,7 @@ class Form extends HTML {
     }
 
     // `<input>`
-    public static function input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0) {
+    public static function input(string $name = null, string $type = 'text', $value = null, string $placeholder = null, array $attr = [], $dent = 0) {
         $a = [
             'placeholder' => self::v($placeholder),
             'type' => $type
@@ -25,14 +25,14 @@ class Form extends HTML {
     }
 
     // `<select>`
-    public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
+    public static function select(string $name = null, array $options = [], $select = null, array $attr = [], $dent = 0) {
         $o = "";
         $a = [];
         self::name($name, $a);
         unset($a['required']);
         $select = (string) HTTP::restore(self::key($name), $select);
         $a = extend($a, $attr);
-        foreach ($option as $key => $value) {
+        foreach ($options as $key => $value) {
             $tag = new static;
             // option list group
             if (is_array($value)) {
@@ -71,7 +71,7 @@ class Form extends HTML {
     }
 
     // `<textarea>`
-    public static function textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0) {
+    public static function textarea(string $name = null, $value = null, string $placeholder = null, array $attr = [], $dent = 0) {
         $a = [];
         self::name($name, $a);
         // <https://www.w3.org/TR/html5/forms.html#the-placeholder-attribute>
