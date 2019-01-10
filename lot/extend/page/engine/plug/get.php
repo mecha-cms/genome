@@ -1,6 +1,6 @@
 <?php namespace fn\get;
 
-function pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = null) {
+function pages(string $folder = PAGE, string $state = 'page', $sort = [-1, 'time'], string $key = null): \Anemon {
     $k = is_array($sort) && isset($sort[1]) ? $sort[1] : 'path';
     $key = $key ?? $k;
     $pages = \Anemon::eat(\g($folder, $state))->not(function($v) {

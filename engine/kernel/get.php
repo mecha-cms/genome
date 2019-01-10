@@ -35,7 +35,7 @@ class Get extends Genome {
                 }
                 return !empty($out) ? $out : $fail;
             }
-            return Anemon::get($GLOBALS[$id], $key, $value);
+            return Anemon::get($GLOBALS[$id], $key, $fail);
         }
         return parent::__callStatic($kin, $lot);
     }

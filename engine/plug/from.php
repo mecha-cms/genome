@@ -42,7 +42,7 @@ function yaml_array($in) {
     return $in;
 }
 
-function yaml($in, $d = '  ', $e = true) {
+function yaml($in, string $d = '  ', $e = true) {
     // Normalize white-space(s)…
     $in = trim(\n($in), "\n");
     if ($in === "") {
@@ -148,7 +148,7 @@ foreach ([
         }
         return json_decode($in);
     },
-    'query' => function($in, $c = []) {
+    'query' => function($in, array $c = []) {
         $c = extend(['?', '&', '=', ""], $c, false);
         if (!is_string($in)) {
             return [];
@@ -182,9 +182,10 @@ foreach ([
         }
         if (strpos($lot[0] = \n($lot[0]), "---\n") === 0) {
             $out = [];
-            $lot[0] = str_replace([X . "---\n", "\n..." . X, X], "", X . $lot[0] . X);
+            $lot[0] = str_replace([X . "---\n", "\n---" . X, "\n..." . X, X], "", X . $lot[0] . X);
+            $o = array_slice($lot, 1);
             foreach (explode("\n---\n", $lot[0]) as $v) {
-                $out[] = yaml(...$lot);
+                $out[] = yaml($v, ...$o);
             }
             return $out;
         }
