@@ -29,7 +29,7 @@ Hook::set('on.ready', function() {
 
     // Load current shield state if any
     if ($state = File::exist($folder . 'state' . DS . 'config.php')) {
-        Lot::set('state', new State($state));
+        Lot::set('state', $state = new State($state));
     }
 
     // Run shield task if any

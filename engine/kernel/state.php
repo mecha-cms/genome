@@ -5,6 +5,7 @@ class State extends Genome {
     protected $lot = [];
 
     public function __construct($in = [], array $lot = []) {
+        extract(Lot::get(), EXTR_SKIP);
         $this->lot = extend(Is::file($in) ? require $in : $in, $lot);
         parent::__construct();
     }
