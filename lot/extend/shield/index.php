@@ -60,4 +60,4 @@ Hook::set('on.ready', function() {
         }
     }
 
-}, 0);
+}, -10); // Must come before any `on.ready` event(s)

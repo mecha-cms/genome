@@ -26,8 +26,13 @@ class Extend extends Genome {
         if (!file_exists($state)) {
             return is_array($key) ? $key : $fail;
         }
-        $state = self::$state[$c][$id] ?? include $state;
-        $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $q, [$state], null, $c);
+        extract(Lot::get(), EXTR_SKIP);
+        if (!empty(self::$state[$c][$q])) {
+            $state = self::$state[$c][$q];
+        } else {
+            $state = include $state;
+        }
+        $state = self::$state[$c][$q] = Hook::fire(c2f($c, '_', '/') . '.state.' . $q, [$state], null, $c);
         if (is_array($key)) {
             return extend($key, $state);
         }
