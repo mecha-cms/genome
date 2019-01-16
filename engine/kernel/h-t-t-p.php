@@ -2,14 +2,6 @@
 
 class HTTP extends Genome {
 
-    const config = [
-        'session' => [
-            'gate' => '136c8c95'
-        ]
-    ];
-
-    public static $config = self::config;
-
     public static function status(int $i = null) {
         if (is_int($i)) {
             http_response_code($i);
@@ -69,40 +61,6 @@ class HTTP extends Genome {
 
     public static function type(string $mime, string $charset = null) {
         header('Content-Type: ' . $mime . (isset($charset) ? '; charset=' . $charset : ""));
-        return new static;
-    }
-
-    // Save state
-    public static function save($key = null, $value = null) {
-        $data = $_POST ?? [];
-        if (isset($key)) {
-            if (!is_array($key)) {
-                $key = [$key => $value];
-            }
-        } else {
-            $key = $data;
-        }
-        $id = static::$config['session']['gate'];
-        $cache = Session::get($id, []);
-        Session::set($id, extend($cache, $key));
-        return new static;
-    }
-
-    // Restore state
-    public static function restore($key = null, $fail = null) {
-        $id = static::$config['session']['gate'];
-        $cache = Session::get($id, []);
-        if (isset($key)) {
-            self::delete($key);
-            return Anemon::get($cache, $key, $fail);
-        }
-        self::delete($id);
-        return $cache;
-    }
-
-    // Delete state
-    public static function delete($key = null) {
-        Session::reset(static::$config['session']['gate'] . (isset($key) ? '.' . $key : ""));
         return new static;
     }
 
