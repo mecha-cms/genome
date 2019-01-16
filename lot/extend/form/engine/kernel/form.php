@@ -2,6 +2,8 @@
 
 class Form extends HTML {
 
+    const session = 'form.session';
+
     // `<button>`
     public static function button(string $name = null, $value = null, string $text = null, array $attr = [], $dent = 0) {
         if (!array_key_exists('type', $attr)) {
@@ -20,7 +22,7 @@ class Form extends HTML {
             'type' => $type
         ];
         self::name($name, $a);
-        $a['value'] = HTTP::restore(self::key($name), $value);
+        $a['value'] = Session::get(self::session . '.' . self::key($name), $value);
         return self::unite('input', false, extend($a, $attr), $dent);
     }
 
@@ -30,7 +32,7 @@ class Form extends HTML {
         $a = [];
         self::name($name, $a);
         unset($a['required']);
-        $select = (string) HTTP::restore(self::key($name), $select);
+        $select = (string) Session::get(self::session . '.' . self::key($name), $select);
         $a = extend($a, $attr);
         foreach ($options as $key => $value) {
             $tag = new static;
@@ -83,7 +85,7 @@ class Form extends HTML {
             $placeholder = substr(self::v(explode("\n", n($placeholder), 2)[0]), 0, 300); // TODO
         }
         $a['placeholder'] = $placeholder;
-        $value = HTTP::restore(self::key($name), $value);
+        $value = Session::get(self::session . '.' . self::key($name), $value);
         return self::unite('textarea', self::v(htmlentities($value)), extend($a, $attr), $dent);
     }
 

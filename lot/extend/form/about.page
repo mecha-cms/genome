@@ -1,0 +1,29 @@
+---
+title: Form
+description: HTML form’s element helper.
+author: Taufik Nurrohman
+type: Markdown
+version: 1.0.0
+...
+
+### Features
+
+ - Quick HTML form’s element creation.
+ - Ability to save and restore previous submitted form data.
+
+### Example
+
+Create HTML `<input type="text">` element:
+
+~~~ .php
+echo Form::text();
+~~~
+
+Store previous form data on error:
+
+~~~ .php
+if (Message::$x) {
+    Session::set(Form::session, HTTP::post());
+}
+~~~
+

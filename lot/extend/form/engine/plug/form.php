@@ -3,18 +3,18 @@
 foreach (['reset', 'submit'] as $kin) {
     Form::_($kin, function(string $name = null, $value = null, string $text = null, array $attr = [], $dent = 0) use($kin) {
         $attr['type'] = $kin;
-        return Form::button($name, $value, $text, $attr, $dent);
+        return static::button($name, $value, $text, $attr, $dent);
     });
 }
 
 foreach ([
     'hidden' => function(string $name = null, $value = null, array $attr = [], $dent = 0) {
         // Do not cache any request data of hidden form element(s)
-        HTTP::delete($name);
-        return Form::input($name, 'hidden', $value, null, $attr, $dent);
+        Session::reset(static::session . '.' . static::key($name));
+        return static::input($name, 'hidden', $value, null, $attr, $dent);
     },
     'file' => function(string $name = null, array $attr = [], $dent = 0) {
-        return Form::input($name, 'file', null, null, $attr, $dent);
+        return static::input($name, 'file', null, null, $attr, $dent);
     },
     'checkbox' => function(string $name = null, $value = null, $check = false, string $text = null, array $attr = [], $dent = 0) {
         $a = ['checked' => $check ? true : null];
@@ -26,12 +26,12 @@ foreach ([
     },
     'color' => function(string $name = null, $value = null, array $attr = [], $dent = 0) {
         // TODO: color converter for `$value`
-        return Form::input($name, 'color', $value, null, $attr, $dent);
+        return static::input($name, 'color', $value, null, $attr, $dent);
     },
     'date' => function(string $name = null, $value = null, string $placeholder = null, array $attr = [], $dent = 0) {
         // <https://www.w3.org/TR/2011/WD-html-markup-20110405/input.date.html>
         $value = (new Date($value))->format('Y-m-d');
-        return Form::input($name, 'date', $value, $placeholder, $attr, $dent);
+        return static::input($name, 'date', $value, $placeholder, $attr, $dent);
     },
     'radio' => function(string $name = null, array $options = [], $select = null, array $attr = [], $dent = 0) {
         $out = [];
@@ -64,7 +64,7 @@ foreach ([
                 $attr['max'] = $range[2];
             }
         }
-        return Form::input($name, 'range', is_array($range) ? $range[1] : $range, null, $attr, $dent);
+        return static::input($name, 'range', is_array($range) ? $range[1] : $range, null, $attr, $dent);
     }
 ] as $k => $v) {
     Form::_($k, $v);
@@ -72,7 +72,7 @@ foreach ([
 
 foreach (['email', 'number', 'password', 'search', 'tel', 'text', 'url'] as $kin) {
     Form::_($kin, function(string $name = null, $value = null, string $placeholder = null, array $attr = [], $dent = 0) use($kin) {
-        return Form::input($name, $kin, $value, $placeholder, $attr, $dent);
+        return static::input($name, $kin, $value, $placeholder, $attr, $dent);
     });
 }
 
