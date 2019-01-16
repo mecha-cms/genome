@@ -4,10 +4,8 @@ class Message extends Genome {
 
     public static $x = 0;
 
+    const session = 'message.previous';
     const config = [
-        'session' => [
-            'previous' => 'c49f8055'
-        ],
         'message' => [
             0 => 'p',
             1 => '%{1}%',
@@ -32,14 +30,13 @@ class Message extends Genome {
     }
 
     public static function set(...$lot) {
-        $id = static::$config['session']['previous'];
         $kin = array_shift($lot);
-        $previous = Session::get($id, []);
+        $previous = Session::get(self::session, []);
         if (!isset($previous[$kin])) {
             $previous[$kin] = [];
         }
         $previous[$kin][] = $lot;
-        Session::set($id, $previous);
+        Session::set(self::session, $previous);
         return new static;
     }
 
@@ -49,16 +46,15 @@ class Message extends Genome {
     }
 
     public static function reset(string $kin = null) {
-        Session::reset(static::$config['session']['previous'] . ($kin ? '.' . $kin : ""));
+        Session::reset(self::session . ($kin ? '.' . $kin : ""));
         return new static;
     }
 
     public static function get(string $kin = null, $reset = true) {
         global $language;
-        $id = static::$config['session']['previous'];
         $c = c2f($cc = static::class, '_', '/');
         $a = [];
-        foreach (Session::get($id, []) as $k => $v) {
+        foreach (Session::get(self::session, []) as $k => $v) {
             if ($kin && $kin !== $k) {
                 continue;
             }

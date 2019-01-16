@@ -34,5 +34,7 @@ return [
     ],
     'table_class' => 'table',
     'table_align_class' => 'text-%s',
-    'footnote_class' => 'notes p'
+    'footnote_class' => 'notes p',
+    'footnote_link_class' => 'note-to',
+    'footnote_back_link_class' => 'note-of'
 ];

@@ -55,8 +55,9 @@ function url($url = "", array $lot = []) {
     ])) {
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
-        $sort = $config->page('sort', [1, 'path']);
-        $chunk = $config->page('chunk', 5);
+        $page = new \Page($file);
+        $sort = $page->sort ?? $config->page('sort', [1, 'path']);
+        $chunk = $page->chunk ?? $config->page('chunk', 5);
         foreach (explode('/', '/' . $path) as $v) {
             $k .= $v ? DS . $v : "";
             if ($f = \File::exist([
@@ -64,12 +65,11 @@ function url($url = "", array $lot = []) {
                 $k . '.archive'
             ])) {
                 $f = new \Page($f);
-                $sort = $f->sort ?: $sort;
-                $chunk = $f->chunk ?: $chunk;
+                $sort = $f->sort ?? $sort;
+                $chunk = $f->chunk ?? $chunk;
             }
             if ($fn = \File::exist($k . DS . 'index.php')) include $fn;
         }
-        $page = new \Page($file);
         // Create pager for single page mode
         $parent_folder = \Path::D($folder);
         $parent_path = \Path::D($path);
@@ -81,12 +81,15 @@ function url($url = "", array $lot = []) {
         ])) {
             $parent_page = new \Page($parent_file);
             // Inherit parent’s `sort` and `chunk` property where possible
-            $sort = $parent_page->sort ?: $sort;
-            $chunk = $parent_page->chunk ?: $chunk;
+            $sort = $parent_page->sort ?? $sort;
+            $chunk = $parent_page->chunk ?? $chunk;
             $parent_files = \Get::pages($parent_folder, 'page', $sort, 'slug')->vomit();
         } else {
             $parent_files = [];
         }
+        // Inherit page’s `sort` and `chunk` property
+        \Config::set('sort', $sort);
+        \Config::set('chunk', $chunk);
         $pager = new \Pager($parent_files, $page->slug, $url . '/' . $parent_path);
         $pager_previous = $pager->config['direction']['<'];
         $pager_next = $pager->config['direction']['>'];

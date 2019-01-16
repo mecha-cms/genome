@@ -9,13 +9,19 @@ Lot::set('site', $config);
 // Alias for `Config`
 class_alias('Config', 'Site');
 
-Hook::set('on.ready', function() {
+// Load current shield state if any
+Lot::set('state', new State);
+$folder = SHIELD . DS . Shield::$id . DS;
+if ($state = File::exist($folder . 'state' . DS . 'config.php')) {
+    Lot::set('state', $state = new State($state));
+}
+
+Hook::set('on.ready', function() use($folder) {
 
     // Include global variable(s)…
-    extract(Lot::get());
+    extract(Lot::get(), EXTR_SKIP);
 
     // Load user language(s) from the current shield folder if any
-    $folder = SHIELD . DS . Shield::$id . DS;
     $i18n = $folder . 'language' . DS;
     if ($l = File::exist([
         $i18n . $config->language . '.page',
@@ -25,11 +31,6 @@ Hook::set('on.ready', function() {
         $fn = 'From::' . $i18n->type;
         $c = $i18n->content;
         Language::set(is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
-    }
-
-    // Load current shield state if any
-    if ($state = File::exist($folder . 'state' . DS . 'config.php')) {
-        Lot::set('state', $state = new State($state));
     }
 
     // Run shield task if any
@@ -53,7 +54,7 @@ Hook::set('on.ready', function() {
                     continue;
                 }
                 // Relative to the `asset` folder of current shield
-                if ($path = File::exist(SHIELD . DS . Shield::$id . DS . 'asset' . DS . $kk)) {
+                if ($path = File::exist($folder . 'asset' . DS . $kk)) {
                     Asset::reset($kk)->set($path, $vv['stack']);
                 }
             }
