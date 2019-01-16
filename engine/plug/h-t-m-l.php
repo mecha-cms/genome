@@ -1,15 +1,15 @@
 <?php
 
 foreach([
-    'a' => function($text = "", $href = null, $target = null, $attr = [], $dent = 0) {
+    'a' => function(string $text = "", string $href = null, $target = null, array $attr = [], $dent = 0) {
         $a = [
             'target' => $target === true ? '_blank' : ($target === false ? null : $target)
         ];
         $attr = extend($a, $attr);
         $attr['href'] = URL::long(str_replace('&amp;', '&', $href));
-        return HTML::unite('a', $text, $attr, $dent);
+        return static::unite('a', $text, $attr, $dent);
     },
-    'img' => function($src = null, $alt = null, $attr = [], $dent = 0) {
+    'img' => function(string $src = null, string $alt = "", array $attr = [], $dent = 0) {
         if (strpos($src, ROOT) === 0) {
             $path = $src;
             $src = To::URL($src);
@@ -29,29 +29,29 @@ foreach([
         ];
         $attr = extend($a, $attr);
         $attr['src'] = URL::long(str_replace('&amp;', '&', $src));
-        return HTML::unite('img', false, $attr, $dent);
+        return static::unite('img', false, $attr, $dent);
     }
 ] as $k => $v) {
     HTML::_($k, $v);
 }
 
 foreach (['br', 'hr'] as $kin) {
-    HTML::_($kin, function($i = 1, $attr = [], $dent = 0) use($kin) {
-        return HTML::dent($dent) . str_repeat(HTML::unite($kin, false, $attr), $i);
+    HTML::_($kin, function(int $i = 1, array $attr = [], $dent = 0) use($kin) {
+        return static::dent($dent) . str_repeat(static::unite($kin, false, $attr), $i);
     });
 }
 
 foreach (['ol', 'ul'] as $kin) {
-    HTML::_($kin, function($list = [], $attr = [], $dent = 0) use($kin) {
-        $tag = new HTML;
+    HTML::_($kin, function(array $list = [], array $attr = [], $dent = 0) use($kin) {
+        $tag = new static;
         $html = $tag->begin($kin, $attr, $dent) . N;
         foreach ($list as $k => $v) {
             if (is_array($v)) {
                 $html .= $tag->begin('li', [], $dent + 1) . $k . N;
-                $html .= HTML::unite($kin, $v, $attr, $dent + 2) . N;
+                $html .= call_user_func('static::' . $kin, $v, $attr, $dent + 2) . N;
                 $html .= $tag->end('li', $dent + 1) . N;
             } else {
-                $html .= HTML::unite('li', $v, [], $dent + 1) . N;
+                $html .= static::unite('li', $v, [], $dent + 1) . N;
             }
         }
         return $html . $tag->end($kin, $dent);
