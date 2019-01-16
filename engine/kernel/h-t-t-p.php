@@ -33,8 +33,12 @@ class HTTP extends Genome {
             if (is_int($key)) {
                 self::status($key);
             } else {
-                if (isset($value)) {
+                if ($value === false) {
+                    header_remove($key);
+                } else if (isset($value)) {
                     header($key . ': ' . $value);
+                } else if ($key === false) {
+                    header_remove();
                 } else {
                     header($key);
                 }
@@ -65,7 +69,7 @@ class HTTP extends Genome {
     }
 
     // Fetch remote URL
-    public static function fetch($url, $fail = false, $agent = null) {
+    public static function fetch(string $url, $fail = false, $agent = null) {
         $header = [];
         // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
         $a = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
