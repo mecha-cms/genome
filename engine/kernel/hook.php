@@ -21,7 +21,7 @@ class Hook extends Genome {
             }
         } else {
             foreach ($id as $v) {
-                self::set($v, $fn, $stack);
+                self::set((string) $v, $fn, $stack);
             }
         }
         return new static;
@@ -59,7 +59,7 @@ class Hook extends Genome {
         return new static;
     }
 
-    public static function get($id = null, $fail = false) {
+    public static function get(string $id = null, $fail = false) {
         $c = static::class;
         if (isset($id)) {
             return self::$lot[1][$c][$id] ?? $fail ?: $fail;
@@ -67,9 +67,8 @@ class Hook extends Genome {
         return self::$lot[1][$c] ?? $fail ?: $fail;
     }
 
-    public static function fire($id, array $lot = [], $that = null, $scope = null) {
+    public static function fire($id, array $lot = [], $that = null, string $scope = null) {
         $c = static::class;
-        $scope = $scope ?? 'static';
         if (!array_key_exists(0, $lot)) {
             $lot = [null];
         }

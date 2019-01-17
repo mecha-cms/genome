@@ -159,6 +159,10 @@ namespace {
         // `concat([…], […], […])`
         return array_merge_recursive($a, ...$b);
     }
+    // A equal to B
+    function eq($a, $b) {
+        return q($a) === $b;
+    }
     // Extend array value(s)
     function extend(array $a = [], ...$b) {
         // `extend([…], […], […], false)`
@@ -187,7 +191,7 @@ namespace {
         return null;
     }
     // Trigger function with parameter(s) and optional scope
-    function fn(callable $fn, array $a = [], $that = null, $scope = null) {
+    function fn(callable $fn, array $a = [], $that = null, string $scope = null) {
         $fn = $fn instanceof \Closure ? $fn : \Closure::fromCallable($fn);
         return call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
     }
@@ -217,6 +221,14 @@ namespace {
         }
         return strtr($s, X, ','); // return a regular expression string without the delimiter(s)
     }
+    // A greater than or equal to B
+    function ge($a, $b) {
+        return q($a) >= $b;
+    }
+    // A greater than B
+    function gt($a, $b) {
+        return q($a) > $b;
+    }
     // Check if an element exists in array
     function has(array $a = [], string $s = "", string $x = X) {
         return strpos($x . implode($x, $a) . $x, $x . $s . $x) !== false;
@@ -230,9 +242,21 @@ namespace {
         }
         return $fn ? array_filter($a, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($a);
     }
+    // A less than or equal to B
+    function le($a, $b) {
+        return q($a) <= $b;
+    }
+    // A less than B
+    function lt($a, $b) {
+        return q($a) < $b;
+    }
     // Manipulate array value(s)
     function map(array $a = [], callable $fn) {
         return array_map($fn, $a, array_keys($a));
+    }
+    // A not equal to B
+    function ne($a, $b) {
+        return q($a) !== $b;
     }
     // Filter out element(s) that does not pass the function test
     function not(array $a = [], $fn = null) {

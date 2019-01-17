@@ -2,13 +2,6 @@
 
 class Is extends Genome {
 
-    protected $lot = [];
-
-    // Initialize…
-    public static function this($in) {
-        return new static($in);
-    }
-
     // Check for empty string, array or object
     public static function void($x) {
         return (
@@ -30,9 +23,9 @@ class Is extends Genome {
     }
 
     // Check for valid local path address (whether it is exists or not)
-    public static function path($x, $e = false) {
+    public static function path($x, $exist = false) {
         if (!is_string($x)) return false;
-        return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$e || file_exists($x));
+        return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$exist || file_exists($x));
     }
 
     // Check for email address
@@ -53,39 +46,6 @@ class Is extends Genome {
     // Check for valid folder name
     public static function folder($x) {
         return is_string($x) && strlen($x) <= 260 && realpath($x) && is_dir($x);
-    }
-
-    // Is equal to `$x`
-    public function EQ($x) {
-        return q($this->lot) === $x;
-    }
-
-    // Is less than `$x`
-    public function LT($x) {
-        return q($this->lot) < $x;
-    }
-
-    // Is greater than `$x`
-    public function GT($x) {
-        return q($this->lot) > $x;
-    }
-
-    // Is less than or equal to `$x`
-    public function LE($x) {
-        return q($this->lot) <= $x;
-    }
-
-    // Is greater than or equal to `$x`
-    public function GE($x) {
-        return q($this->lot) >= $x;
-    }
-
-    public function __construct($in = []) {
-        $this->lot = $in;
-    }
-
-    public function __call(string $kin, array $lot = []) {
-        return self::_($kin) ? parent::__call($kin, $lot) : null;
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
