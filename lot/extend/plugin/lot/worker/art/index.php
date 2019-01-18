@@ -15,7 +15,7 @@ namespace fn\art {
         }
         return $content;
     }
-    function config() {
+    function union() {
         global $config, $url;
         $folder = PAGE . DS . $url->path;
         $i = $url->i ?: 1;
@@ -38,7 +38,7 @@ namespace fn\art {
         }
     }
     if (!\HTTP::is('get', 'art') || \HTTP::get('art')) {
-        \Hook::set('on.ready', __NAMESPACE__ . "\\config", 0);
+        \Hook::set('on.ready', __NAMESPACE__ . "\\union", 0);
         \Hook::set('page.css', __NAMESPACE__ . "\\css", 2);
         \Hook::set('page.js', __NAMESPACE__ . "\\js", 2);
         \Hook::set('shield.yield', __NAMESPACE__, 1);

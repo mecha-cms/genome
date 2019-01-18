@@ -11,7 +11,7 @@ class HTML extends Union {
                 if ($k === 'data[]') {
                     ksort($v);
                     foreach ($v as $kk => $vv) {
-                        if (!isset($vv)) continue;
+                        if (!isset($vv) || $vv === false) continue;
                         $a['data-' . $kk] = fn\is\anemon($vv) ? json_encode($vv) : $vv;
                     }
                     unset($a[$k]);
@@ -30,7 +30,7 @@ class HTML extends Union {
                     $css = "";
                     // ksort($v);
                     foreach ($v as $kk => $vv) {
-                        if (!isset($vv)) continue;
+                        if (!isset($vv) || $vv === false) continue;
                         $css .= $kk . ':' . $vv . ';';
                     }
                     $a['style'] = $css !== "" ? $css : null;

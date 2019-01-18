@@ -39,11 +39,11 @@ abstract class Union extends Genome {
         $u = $this->union[1][1];
         ksort($a);
         foreach ($a as $k => $v) {
-            if (!isset($v)) continue;
+            if (!isset($v) || $v === false) continue;
             if (is_array($v) || (is_object($v) && !fn\is\instance($v))) {
                 $v = json_encode($v);
             }
-            $out .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . self::x($v) . $u[2] : $k);
+            $out .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . s(self::x($v)) . $u[2] : $k);
         }
         return $out;
     }

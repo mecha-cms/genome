@@ -1,10 +1,10 @@
 <?php namespace fn\shield;
 
 // Generate HTML class(es) based on current page conditional statement(s)
-function config($content) {
-    $if = \Extend::state('shield', 'if');
-    if (strpos($content, '<' . $if[0] . ' ') !== false) {
-        return preg_replace_callback('#<' . \x($if[0]) . '(?:\s[^<>]*?)?>#', function($m) use($if) {
+function union($content) {
+    $unit = \Shield::$config['union'][0];
+    if (strpos($content, '<' . $unit . ' ') !== false) {
+        return preg_replace_callback('#<' . \x($unit) . '(?:\s[^<>]*?)?>#', function($m) {
             if (
                 strpos($m[0], ' class="') !== false ||
                 strpos($m[0], ' class ') !== false ||
@@ -33,4 +33,4 @@ function config($content) {
     return $content;
 }
 
-\Hook::set('shield.yield', __NAMESPACE__ . "\\config", 0);
+\Hook::set('shield.yield', __NAMESPACE__ . "\\union", 0);

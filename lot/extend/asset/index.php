@@ -17,7 +17,7 @@ function asset($content) {
             }
         }
     }
-    return $content . $a . $b; // Put inline CSS after remote CSS
+    return $content . $a . $b . N; // Put inline CSS after remote CSS
 });
 
 \Hook::set('asset:body', function($content) {
@@ -31,7 +31,7 @@ function asset($content) {
             }
         }
     }
-    return $content . $a . $b; // Put inline JS after remote JS
+    return $content . $a . $b . N; // Put inline JS after remote JS
 });
 
 \Hook::set('shield.yield', __NAMESPACE__ . "\\asset", 0);

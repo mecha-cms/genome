@@ -1,19 +1,20 @@
 <?php
 
-// Include worker(s)…
-r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot::get());
-
 // Alias for `$config`
 Lot::set('site', $config);
+// Prepare current shield state
+Lot::set('state', new State);
 
 // Alias for `Config`
 class_alias('Config', 'Site');
 
+// Include worker(s)…
+r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot::get());
+
 // Load current shield state if any
-Lot::set('state', new State);
-$folder = SHIELD . DS . Shield::$id . DS;
+$folder = SHIELD . DS . Shield::$config['id'] . DS;
 if ($state = File::exist($folder . 'state' . DS . 'config.php')) {
-    Lot::set('state', $state = new State($state));
+    Lot::set('state', new State($state));
 }
 
 Hook::set('on.ready', function() use($folder) {

@@ -10,7 +10,7 @@ class Message extends Genome {
             0 => 'p',
             1 => '%{1}%',
             2 => [
-                'class[]' => ['container', 'block', 'message', 'message-%{0}%']
+                'class[]' => ['message', 'message-%{0}%']
             ],
             3 => 1 // dent
         ],
@@ -18,7 +18,7 @@ class Message extends Genome {
             0 => 'div',
             1 => '%{0}%',
             2 => [
-                'class[]' => ['container', 'block', 'messages', 'p']
+                'class[]' => ['messages', 'p']
             ]
         ]
     ];

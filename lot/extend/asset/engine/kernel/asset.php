@@ -5,10 +5,10 @@ class Asset extends Genome {
     public static $lot = [];
 
     public static function path(string $path, $fail = false) {
-        global $url;
         if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
             // External URL, nothing to check!
-            if (strpos($path, '://' . $url->host) === false && strpos($path, '//' . $url->host) !== 0) {
+            $host = $GLOBALS['URL']['host'] ?? "";
+            if (strpos($path, '://' . $host) === false && strpos($path, '//' . $host) !== 0) {
                 return $fail;
             }
         }
@@ -18,7 +18,7 @@ class Asset extends Genome {
         }
         // Return the path relative to the `.\lot\asset` or `.` folder if exist!
         $s = ltrim($path, DS);
-        return File::exist([ASSET . DS . $s, ROOT . DS . $s], $fail);
+        return File::exist([constant(u(static::class)) . DS . $s, ROOT . DS . $s], $fail);
     }
 
     public static function URL(string $url, $fail = false) {

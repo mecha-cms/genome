@@ -2,40 +2,58 @@
 
 class Shield extends Extend {
 
-    public static $id = null;
+    const config = [
+        'union' => ['html', "", ['class' => true]],
+        'id' => 'document',
+        'extension' => ['html', 'php']
+    ];
+
+    public static $config = self::config;
+
     protected static $lot = [];
 
     public static function path($in, $fail = false) {
         $c = static::class;
         $out = [];
         if (is_string($in)) {
-            if (strpos($in, ROOT) !== 0) {
-                $id = strtr($in, DS, '/');
-                if (!isset(self::$lot[$c][0][$id]) && isset(self::$lot[$c][1][$id])) {
-                    $out = self::$lot[$c][1][$id];
-                } else {
-                    $out = Anemon::step($id, '/');
-                    array_unshift($out, strtr($out[0], '/', '.'));
-                    $out = array_unique($out);
-                }
-            } else {
-                $out = $in;
+            // Full path, be quick!
+            if (strpos($in, ROOT) === 0) {
+                return File::exist($in, $fail);
             }
+            $id = strtr($in, DS, '/');
+            // Added by the `Shield::get()`
+            if (!isset(self::$lot[$c][0][$id]) && isset(self::$lot[$c][1][$id])) {
+                return File::exist(self::$lot[$c][1][$id], $fail);
+            }
+            // Guessing …
+            $out = Anemon::step($id, '/');
+            array_unshift($out, strtr($out[0], '/', '.'));
+            $out = array_unique($out);
         } else {
             $out = $in;
         }
+        $o = [];
         $folder = constant(u(static::class));
-        foreach ((array) $out as $k => $v) {
+        $id = static::$config['id'];
+        $extension = static::$config['extension'];
+        foreach ((array) $out as $v) {
             $v = strtr($v, '/', DS);
             if (strpos($v, $folder) !== 0) {
-                if (substr($v, -4) !== '.php') {
-                    $v .= '.php';
+                foreach ($extension as $x) {
+                    $vv = "";
+                    $xx = pathinfo($v, PATHINFO_EXTENSION);
+                    if (!$xx) {
+                        $vv = '.' . $x;
+                    } else if ($xx !== $x) {
+                        continue;
+                    }
+                    $o[] = $folder . DS . $id . DS . $v . $vv;
                 }
-                $v = $folder . DS . static::$id . DS . $v;
+            } else {
+                $o[] = $v;
             }
-            $out[$k] = $v;
         }
-        return File::exist($out, $fail);
+        return File::exist($o, $fail);
     }
 
     public static function set($id, $path = null) {
@@ -111,7 +129,7 @@ class Shield extends Extend {
 
     public static function exist(string $id, $active = true) {
         $exist = is_dir(constant(u(static::class)) . DS . $id);
-        return $active ? ($exist && static::$id === $id) : $exist;
+        return $active ? ($exist && static::$config['id'] === $id) : $exist;
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
