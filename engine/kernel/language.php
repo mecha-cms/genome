@@ -2,17 +2,11 @@
 
 class Language extends Config {
 
-    public static function ignite(...$lot) {
-        $language = Config::get('language');
-        $f = LANGUAGE . DS . $language . '.page';
-        $content = Cache::expire($f) ? Cache::set($f, function($f) {
-            $i18n = new Page($f, [], ['*', 'language']);
-            $fn = 'From::' . $i18n->type;
-            $c = $i18n->content;
-            return is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
-        }) : Cache::get($f);
-        return self::set($content)->get();
-    }
+    const config = [
+        'id' => 'en-us'
+    ];
+
+    public static $config = self::config;
 
     public static function get($key = null, $vars = [], $preserve_case = false) {
         $c = static::class;
@@ -31,8 +25,18 @@ class Language extends Config {
         return o($v);
     }
 
-    public function __construct($in = []) {
-        parent::__construct(is_array($in) ? $in : From::YAML($in));
+    public function __construct() {
+        parent::__construct();
+        $id = static::$config['id'];
+        $f = constant(u($c = static::class)) . DS . $id . '.page';
+        $content = Cache::expire($f) ? Cache::set($f, function($f) use($c) {
+            $i18n = new Page($f, [], ['*', c2f($c, '_', '/')]);
+            $fn = 'From::' . $i18n->type;
+            $c = $i18n->content;
+            return is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
+        }) : Cache::get($f);
+        self::$lot[$c] = extend(self::$lot[$c] ?? [], $content);
+        self::$a[$c] = extend(self::$a[$c] ?? [], $content);
     }
 
     public function __call(string $kin, array $lot = []) {

@@ -13,7 +13,7 @@ function url($url = "", array $lot = []) {
         return $url;
     }
     $path = \Path::R(\Path::F($path), PAGE, '/');
-    return rtrim($GLOBALS['URL']['$'] . '/' . ltrim($path, '/'), '/');
+    return \rtrim($GLOBALS['URL']['$'] . '/' . \ltrim($path, '/'), '/');
 }
 
 \Hook::set('page.url', __NAMESPACE__ . "\\url", 2);
@@ -27,15 +27,15 @@ function url($url = "", array $lot = []) {
 
 \Route::set(['%*%/%i%', '%*%', ""], function(string $path = "", $step = null) use($state) {
     // Include global variable(s)…
-    extract(\Lot::get(), EXTR_SKIP);
+    extract(\Lot::get(), \EXTR_SKIP);
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
-    $path = str_replace('../', "", urldecode($path));
-    $path_canon = ltrim($path === "" ? $config->path : $path, '/');
+    $path = \str_replace('../', "", \urldecode($path));
+    $path_canon = \ltrim($path === "" ? $config->path : $path, '/');
     if ($step === 1 && !$url->query && $path === $config->path) {
         \Message::info('kick', '<code>' . $url->current . '</code>');
         \Guardian::kick(""); // Redirect to home page…
     }
-    $folder = rtrim(PAGE . DS . \To::path($path_canon), DS);
+    $folder = \rtrim(PAGE . DS . \To::path($path_canon), DS);
     $name = \Path::B($folder);
     $i = ($h = $step ?: 1) - 1; // 0-based index…
     \Config::set('trace', new \Anemon([$config->title], ' &#x00B7; '));
@@ -58,7 +58,7 @@ function url($url = "", array $lot = []) {
         $page = new \Page($file);
         $sort = $page->sort ?? $config->page('sort', [1, 'path']);
         $chunk = $page->chunk ?? $config->page('chunk', 5);
-        foreach (explode('/', '/' . $path) as $v) {
+        foreach (\explode('/', '/' . $path) as $v) {
             $k .= $v ? DS . $v : "";
             if ($f = \File::exist([
                 $k . '.page',
@@ -110,11 +110,11 @@ function url($url = "", array $lot = []) {
             if ($query = \l(\HTTP::get($config->q, ""))) {
                 \Config::set('is.search', true);
                 \Config::set('trace', new \Anemon([$language->search . ': ' . $query, $page->title, $config->title], ' &#x00B7; '));
-                $query = explode(' ', $query);
+                $query = \explode(' ', $query);
                 $pages = $pages->is(function($v) use($query) {
-                    $v = str_replace('-', "", \Path::N($v));
+                    $v = \str_replace('-', "", \Path::N($v));
                     foreach ($query as $q) {
-                        if (strpos($v, $q) !== false) {
+                        if (\strpos($v, $q) !== false) {
                             return true;
                         }
                     }
@@ -132,7 +132,7 @@ function url($url = "", array $lot = []) {
                     $pager_previous => false,
                     $pager_next => false
                 ]);
-                return \Shield::abort('404/' . $path_canon);
+                return \Shield::abort('404/' . $path_canon . '/' . $h);
             } else {
                 \Lot::set([
                     'pager' => $pager,
@@ -150,7 +150,7 @@ function url($url = "", array $lot = []) {
             \Message::info('kick', '<code>' . $url->current . '</code>');
             \Guardian::kick($parent_path);
         }
-        return \Shield::attach('page/' . $path_canon);
+        return \Shield::attach('page/' . $path_canon . '/' . $h);
     }
-    return \Shield::abort('404/' . $path_canon);
+    return \Shield::abort('404/' . $path_canon . '/' . $h);
 }, 20);

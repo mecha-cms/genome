@@ -1,8 +1,8 @@
 <?php namespace fn;
 
 function asset($content) {
-    $content = str_replace('</head>', \Hook::fire('asset:head', [""], null, \Asset::class) . '</head>', $content);
-    $content = str_replace('</body>', \Hook::fire('asset:body', [""], null, \Asset::class) . '</body>', $content);
+    $content = \str_replace('</head>', \Hook::fire('asset:head', [""], null, \Asset::class) . '</head>', $content);
+    $content = \str_replace('</body>', \Hook::fire('asset:body', [""], null, \Asset::class) . '</body>', $content);
     return $content;
 }
 

@@ -2,7 +2,7 @@
 
 class Session extends Genome {
 
-    public static function ignite(...$lot) {
+    public static function start(...$lot) {
         $path = array_shift($lot);
         $path = $path ? $path : constant(u(static::class));
         if (isset($path)) {

@@ -5,7 +5,7 @@ class Config extends Genome {
     protected static $lot = [];
     protected static $a = [];
 
-    public static function ignite(...$lot) {
+    public static function load(...$lot) {
         $c = static::class;
         if (!isset($lot[0])) {
             return (self::$lot[$c] = []);

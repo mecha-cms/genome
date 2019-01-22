@@ -2,6 +2,7 @@
 
 class Folder extends File {
 
+    public function __construct() {}
     public function __toString() {
         return "";
     }

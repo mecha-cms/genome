@@ -2,22 +2,22 @@
 
 namespace fn\art {
     function css($content) {
-        $content = trim($content);
-        if ($content && strpos($content, '</style>') === false && strpos($content, '<link ') === false) {
+        $content = \trim($content);
+        if ($content && \strpos($content, '</style>') === false && \strpos($content, '<link ') === false) {
             return '<style media="screen">' . N . $content . N . '</style>';
         }
         return $content;
     }
     function js($content) {
-        $content = trim($content);
-        if ($content && strpos($content, '</script>') === false && strpos($content, '<script ') === false) {
+        $content = \trim($content);
+        if ($content && \strpos($content, '</script>') === false && \strpos($content, '<script ') === false) {
             return '<script>' . N . $content . N . '</script>';
         }
         return $content;
     }
     function union() {
         global $config, $url;
-        $folder = PAGE . DS . $url->path;
+        $folder = PAGE . DS . ($url->path ?: $config->path);
         $i = $url->i ?: 1;
         if ($path = \File::exist([
             $folder . DS . $i . '.page',
@@ -51,9 +51,9 @@ namespace fn {
             return $content;
         }
         // Append custom CSS before `</head>`…
-        $content = str_replace('</head>', $page->css . '</head>', $content);
+        $content = \str_replace('</head>', $page->css . '</head>', $content);
         // Append custom JS before `</body>`…
-        $content = str_replace('</body>', $page->js . '</body>', $content);
+        $content = \str_replace('</body>', $page->js . '</body>', $content);
         return $content;
     }
 }

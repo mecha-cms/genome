@@ -35,8 +35,9 @@ d($f . 'kernel', function($w, $n) use($f) {
 $x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
 File::$config['extension'] = array_unique(explode(',', $x));
 
-Session::ignite();
-Config::ignite(STATE . DS . 'config.php');
+Session::start();
+
+Config::load(STATE . DS . 'config.php');
 
 // Generate static URL data
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
@@ -95,8 +96,8 @@ Date::zone($config->zone);
 // Set default document status
 HTTP::status(200); // “OK”
 
-// Must be set after date time zone set
-Language::ignite();
+// Set current language
+Language::$config['id'] = $config->language ?? 'en-us';
 
 $date = new Date;
 $language = new Language;
