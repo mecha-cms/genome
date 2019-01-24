@@ -33,7 +33,6 @@ class Asset extends Genome {
         foreach ((array) $path as $k => $v) {
             $x = Path::X($v);
             if (!isset(self::$lot[$c][0][$x][$v])) {
-                $uid = sprintf('%u', crc32($v));
                 self::$lot[$c][1][$x][$v] = [
                     'path' => self::path($v),
                     'url' => self::URL($v),

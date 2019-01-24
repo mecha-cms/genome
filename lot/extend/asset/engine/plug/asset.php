@@ -63,7 +63,6 @@ foreach (['script', 'style'] as $v) {
         if (!isset(static::$lot[$c][0][':' . $v][$id])) {
             static::$lot[$c][1][':' . $v][$id] = [
                 'content' => trim($content),
-                'id' => $id,
                 'data' => $data,
                 'stack' => (float) ($stack ?? 10)
             ];

@@ -9,7 +9,7 @@ Lot::set('state', new State);
 class_alias('Config', 'Site');
 
 // Include worker(s)…
-r(['config', 'hook'], __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker', Lot::get());
+r(__DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . '%[config,hook]%');
 
 // Load current shield state if any
 $folder = SHIELD . DS . Shield::$config['id'] . DS;

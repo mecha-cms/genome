@@ -160,8 +160,8 @@ abstract class Union extends Genome {
     }
 
     public function __construct(array $config = []) {
-        $this->union = extend(self::$config['union'], static::$config['union'] ?? []);
-        $this->pattern = extend(self::$config['pattern'], static::$config['pattern'] ?? []);
+        $this->union = extend(self::config['union'], static::$config['union'] ?? []);
+        $this->pattern = extend(self::config['pattern'], static::$config['pattern'] ?? []);
         if ($config) {
             foreach (['union', 'pattern'] as $k) {
                 if (!empty($config[$k])) {

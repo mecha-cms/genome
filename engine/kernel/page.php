@@ -12,16 +12,17 @@ class Page extends Genome {
 
     public function __construct(string $path = null, array $lot = [], $NS = []) {
         $key = c2f(static::class, '_', '/');
+        $f = is_string($path);
         $this->path = $path;
         $this->NS = is_array($NS) ? extend(['*', $key], $NS, false) : $NS;
-        $this->hash = $id = json_encode([$path, $lot, $this->NS]);
-        if (isset(self::$page[$id])) {
-            $this->lot = self::$page[$id];
+        $this->hash = $hash = json_encode([$path, $lot, $this->NS]);
+        if (isset(self::$page[$hash])) {
+            $this->lot = self::$page[$hash];
         } else {
-            $n = $path ? Path::N($path) : null;
-            $x = $path ? Path::X($path) : null;
+            $n = $f ? Path::N($path) : null;
+            $x = $f ? Path::X($path) : null;
             $c = $m = $_SERVER['REQUEST_TIME'] ?? time();
-            if (file_exists($path)) {
+            if ($f && file_exists($path)) {
                 $c = filectime($path); // File creation time
                 $m = filemtime($path); // File modification time
             }
@@ -32,9 +33,9 @@ class Page extends Genome {
                 'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
                 'state' => $x,
                 'type' => $x !== null ? u($x) : null, // Fake `type` data from the page’s file extension
-                'id' => sprintf('%u', $c),
+                'id' => $f ? sprintf('%u', (string) $c) : null,
                 'path' => $path,
-                'url' => $path !== null ? To::URL($path) : null
+                'url' => $f ? To::URL($path) : null
             ], (array) Config::get($key, [], true), $lot, false);
             // Set `time` value from the page’s file name
             if (
@@ -53,8 +54,9 @@ class Page extends Genome {
                 $t = new Date($n);
                 $this->lot['time'] = $t->format(DATE_WISE);
                 $this->lot['title'] = $t->format(strtr(DATE_WISE, '-', '/'));
+                $this->lot['id'] = sprintf('%u', (string) $t->format('U'));
             }
-            self::$page[$id] = $this->lot;
+            self::$page[$hash] = $this->lot;
         }
         parent::__construct();
     }
@@ -88,29 +90,29 @@ class Page extends Genome {
             $a[$key] = e($data);
         }
         // Check for valid time format, render it as `Date` instance
-        $t = $a[$key];
+        $value = a($a[$key]);
         if (
-            $t &&
-            is_string($t) && 
-            strlen($t) >= 19 &&
-            preg_match('#^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1]) ([0-1]\d|2[0-4])(:([0-5]\d|60)){2}$#', $t)
+            $value &&
+            is_string($value) && 
+            strlen($value) >= 19 &&
+            preg_match('#^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1]) ([0-1]\d|2[0-4])(:([0-5]\d|60)){2}$#', $value)
         ) {
-            $a[$key] = new Date($t);
+            $a[$key] = $value = new Date($value);
         }
         $this->lot = self::$page[$this->hash] = $a;
         $test = $lot[0] ?? null;
         if ($test === false) {
             // Disable hook(s) with `$page->foo(false)`
-            return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key];
+            return isset($keys) && is_array($value) ? Anemon::get($value, $keys, null) : $value;
         } else {
             if ($test instanceof \Closure) {
                 // As function call with `$page->foo(function($text) { … })`
-                $a[$key] = fn($test, [$a[$key]], $this, static::class);
+                $a[$key] = $value = fn($test, [$value], $this, static::class);
             }
         }
         if ($this->NS === false) {
             // Disable hook(s) with `$page = new Page('.\path\to\file.page', [], false)`
-            return isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key];
+            return isset($keys) && is_array($value) ? Anemon::get($value, $keys, null) : $value;
         } else if (is_array($this->NS)) {
             $name = [];
             foreach ($this->NS as $v) {
@@ -119,7 +121,7 @@ class Page extends Genome {
         } else {
             $name = $this->NS . '.' . $key;
         }
-        $v = Hook::fire($name, [isset($keys) ? Anemon::get($a[$key], $keys, null) : $a[$key], $lot], $this, static::class);
+        $v = Hook::fire($name, [isset($keys) && is_array($value) ? Anemon::get($value, $keys, null) : $value, $lot], $this, static::class);
         if (count($lot) && $x = fn\is\instance($v)) {
             if (method_exists($x, '__invoke')) {
                 $v = call_user_func([$x, '__invoke'], ...$lot);
@@ -179,11 +181,11 @@ class Page extends Genome {
         if (is_array($key)) {
             $out = [];
             foreach ($key as $k => $v) {
-                $out[$k] = $this->__call($k, [$v]);
+                $out[$k] = $this->__call($k) ?? $v;
             }
             return $out;
         }
-        return $this->__call($key, [$fail]);
+        return $this->__call($key) ?? $fail;
     }
 
     public function has($key) {

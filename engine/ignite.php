@@ -961,26 +961,34 @@ namespace {
             return $h . l($m[0]);
         }, f($x, $a, x($h) . $i)));
     }
-    function i(...$a) {
-        // `i('.\engine')`
-        if (\is_string($a[0])) {
-            foreach (g($a[0], $a[1] ?? 'php', "", true) as $v) {
-                \call_user_func(function() use($a, $v) {
-                    extract($a[2] ?? [], \EXTR_SKIP);
-                    include $v;
+    function i(string $r) {
+        if (\strpos($r, ROOT) !== 0) {
+            $r = ROOT . DS . $r;
+        }
+        if (\pathinfo($r, \PATHINFO_EXTENSION) !== 'php') {
+            $r .= '.php';
+        }
+        if (\strpos($r, '%') === false) {
+            if (\is_file($r)) {
+                \call_user_func(function() use($r) {
+                    extract($GLOBALS, \EXTR_SKIP);
+                    include $r;
                 });
             }
-        // `i(['foo', 'bar', 'baz'])`
-        } else if (\is_array($a[0])) {
-            $r = "";
-            // `i(['foo', 'bar', 'baz'], '.\engine')`
-            if (isset($a[1]) && \is_string($a[1])) {
-                $r = \rtrim($a[1], DS);
-            }
-            foreach ($a[0] as $v) {
-                $v = $r . DS . $v . '.php';
-                \call_user_func(function() use($a, $r, $v) {
-                    extract($a[$r ? 2 : 1] ?? [], \EXTR_SKIP);
+        } else {
+            $r = \str_replace([
+                '%s%',
+                '%i%',
+                '%[', ']%'
+            ], [
+                '*',
+                '[0-9]+',
+                '{', '}'
+            ], $r);
+            foreach (\glob($r, \GLOB_BRACE | \GLOB_NOSORT) as $v) {
+                if (!\is_file($v)) continue;
+                \call_user_func(function() use($v) {
+                    extract($GLOBALS, \EXTR_SKIP);
                     include $v;
                 });
             }
@@ -1028,28 +1036,34 @@ namespace {
         }
         return \count($x, $deep ? \COUNT_RECURSIVE : \COUNT_NORMAL);
     }
-    function r(...$a) {
-        // `r('.\engine')`
-        if (\is_string($a[0])) {
-            foreach (g($a[0], $a[1] ?? 'php', "", true) as $v) {
-                \call_user_func(function() use($a, $v) {
-                    extract($a[2] ?? [], \EXTR_SKIP);
-                    require $v;
+    function r(string $r) {
+        if (\strpos($r, ROOT) !== 0) {
+            $r = ROOT . DS . $r;
+        }
+        if (\pathinfo($r, \PATHINFO_EXTENSION) !== 'php') {
+            $r .= '.php';
+        }
+        if (\strpos($r, '%') === false) {
+            if (\is_file($r)) {
+                \call_user_func(function() use($r) {
+                    extract($GLOBALS, \EXTR_SKIP);
+                    require $r;
                 });
             }
-        // `r(['foo', 'bar', 'baz'])`
-        } else if (\is_array($a[0])) {
-            $r = "";
-            // `r(['foo', 'bar', 'baz'], '.\engine')`
-            if (isset($a[1]) && \is_string($a[1])) {
-                $r = \rtrim($a[1], DS);
-            }
-            foreach ($a[0] as $v) {
-                if (!\file_exists($v = $r . DS . $v . '.php')) {
-                    continue;
-                }
-                \call_user_func(function() use($a, $r, $v) {
-                    extract($a[$r ? 2 : 1] ?? [], \EXTR_SKIP);
+        } else {
+            $r = \str_replace([
+                '%s%',
+                '%i%',
+                '%[', ']%'
+            ], [
+                '*',
+                '[0-9]+',
+                '{', '}'
+            ], $r);
+            foreach (\glob($r, \GLOB_BRACE | \GLOB_NOSORT) as $v) {
+                if (!\is_file($v)) continue;
+                \call_user_func(function() use($v) {
+                    extract($GLOBALS, \EXTR_SKIP);
                     require $v;
                 });
             }
