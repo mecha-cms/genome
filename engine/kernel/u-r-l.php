@@ -2,6 +2,8 @@
 
 class URL extends Genome {
 
+    const session = 'u-r-l';
+
     protected $s = null;
     protected $lot = [];
 

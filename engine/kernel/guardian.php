@@ -2,7 +2,7 @@
 
 class Guardian extends Genome {
 
-    const session = 'guardian.token';
+    const session = 'guardian';
 
     public static $config = self::config;
 
@@ -11,13 +11,13 @@ class Guardian extends Genome {
     }
 
     public static function check(string $token, $id = 0, $fail = false) {
-        $previous = Session::get(self::session . '.' . $id);
+        $previous = Session::get(self::session . '.token.' . $id);
         return $previous && $token && $previous === $token ? $token : $fail;
     }
 
     public static function token($id = 0) {
         $token = self::hash($id);
-        Session::set(self::session . '.' . $id, $token);
+        Session::set(self::session . '.token.' . $id, $token);
         return $token;
     }
 
@@ -25,7 +25,7 @@ class Guardian extends Genome {
         $c = static::class;
         $current = $GLOBALS['URL']['current'];
         $path = $path ?? $current;
-        Session::set('url.previous', $current);
+        Session::set(URL::session . '.previous', $current);
         $long = URL::long($path);
         $long = Hook::fire(c2f($c, '_', '/') . '.' . __FUNCTION__, [$long, $path], null, $c);
         header('Location: ' . str_replace('&amp;', '&', $long));

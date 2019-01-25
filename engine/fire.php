@@ -68,22 +68,23 @@ if (is_numeric(end($parts))) {
     $i = null;
 }
 $clean = trim($url . '/' . $path, '/');
+$u = Session::get(URL::session, []);
 $GLOBALS['URL'] = [
     'scheme' => $scheme,
     'protocol' => $protocol,
     'host' => $host,
     'directory' => $directory,
     'port' => (int) $_SERVER['SERVER_PORT'],
-    'user' => $_SESSION['url']['user'] ?? null,
-    'pass' => $_SESSION['url']['pass'] ?? null,
+    'user' => $u['user'] ?? null,
+    'pass' => $u['pass'] ?? null,
     'path' => $path,
     'i' => $i,
     '$' => $url,
     'clean' => $clean,
     'current' => trim($clean . '/' . $i, '/'),
     'query' => $query,
-    'previous' => $_SESSION['url']['previous'] ?? null,
-    'next' => $_SESSION['url']['next'] ?? null,
+    'previous' => $u['previous'] ?? null,
+    'next' => $u['next'] ?? null,
     'hash' => null // TODO
 ];
 

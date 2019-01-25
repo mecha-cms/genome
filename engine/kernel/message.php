@@ -4,7 +4,7 @@ class Message extends Genome {
 
     public static $x = 0;
 
-    const session = 'message.previous';
+    const session = 'message';
     const config = [
         'message' => [
             0 => 'p',

@@ -2,7 +2,7 @@
 
 class Form extends HTML {
 
-    const session = 'form.session';
+    const session = 'form';
 
     // `<button>`
     public static function button(string $name = null, $value = null, string $text = null, array $attr = [], $dent = 0) {
