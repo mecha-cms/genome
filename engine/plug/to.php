@@ -14,41 +14,66 @@ function query($array, $key) {
     return $out;
 }
 
-function yaml($in, $d = '  ', $safe = false, $dent = 0) {
-    if (\fn\is\anemon($in)) {
-        $out = "";
-        $li = \fn\is\anemon_0($in) && !$safe; // is numeric array?
-        $t = \str_repeat($d, $dent);
-        foreach ($in as $k => $v) {
-            if (\strpos($k, ':') !== false) {
-                $k = '"' . $k . '"';
-            }
-            if (!\fn\is\anemon($v) || empty($v)) {
-                if (\is_array($v)) {
-                    $v = '[]';
-                } else if (\is_object($v)) {
-                    $v = '{}';
-                } else if ($v === "") {
-                    $v = '""';
-                } else {
-                    $v = \s($v);
-                }
-                $v = \strpos($v, "\n") !== false ? "|\n" . $t . $d . \str_replace("\n", "\n" . $t . $d, $v) : $v;
-                // Comment…
-                if (\strpos($v, '#') === 0) {
-                    $out .= $t . \trim($v) . "\n";
-                // …
-                } else {
-                    $out .= $t . ($li ? '- ' : \trim($k) . ': ') . $v . "\n";
-                }
-            } else {
-                $out .= $t . $k . ":\n" . yaml($v, $d, $safe, $dent + 1) . "\n";
-            }
-        }
-        return \rtrim($out, "\n");
+$yaml_it = function(string $k, string $m, $v) {
+    // Check for safe key pattern, otherwise, wrap it with quote
+    if ($k !== "" && (\is_numeric($k) || (\ctype_alnum($k) && !\is_numeric($k[0])) || \preg_match('#^[a-z_-]+(?:[_-]+[a-z\d]+)*$#i', $k))) {
+    } else {
+        $k = "'" . \str_replace("'", "\\\'", $k) . "'";
     }
-    return \strpos($in, ': ') === false ? \json_encode($in) : $in;
-}
+    return $k . $m . \s($v, ['null' => '~']);
+};
+
+$yaml_list = function(array $data) use(&$yaml_set) {
+    $out = [];
+    foreach ($data as $v) {
+        if (\is_array($v)) {
+            $out[] = '- ' . \str_replace("\n", "\n  ", $yaml_set($v));
+        } else {
+            $out[] = '- ' . \s($v, ['null' => '~']);
+        }
+    }
+    return \implode("\n", $out);
+};
+
+$yaml = function(array $data, string $dent = '  ') use(&$yaml, &$yaml_it, &$yaml_list) {
+    $out = [];
+    foreach ($data as $k => $v) {
+        if (\is_array($v)) {
+            $i = \count($v);
+            if ($i && \array_keys($v) === \range(0, $i - 1)) {
+                $out[] = $yaml_it($k, ":\n", $yaml_list($v));
+            } else {
+                $out[] = $yaml_it($k, ":\n", $dent . \str_replace("\n", "\n" . $dent, $yaml($v, $dent)));
+            }
+        } else {
+            if (\is_string($v)) {
+                if (\strpos($v, "\n") !== false) {
+                    $v = "|\n" . $dent . \str_replace(["\n", "\n" . $dent . "\n"], ["\n" . $dent, "\n\n"], $v);
+                } else if (\strlen($v) > 80) {
+                    $v = ">\n" . $dent . \wordwrap($v, 80, "\n" . $dent);
+                } else if (\strtr($v, "!#%&*,-:<=>?@[\\]{|}", '-------------------') !== $v) {
+                    $v = "'" . $v . "'";
+                } else if (\is_numeric($v)) {
+                    $v = "'" . $v . "'";
+                }
+            }
+            $out[] = $yaml_it($k, ': ', $v, $dent);
+        }
+    }
+    return \implode("\n", $out);
+};
+
+$yaml_docs = function(array $data, string $dent = '  ') use(&$yaml) {
+    $out = $s = "";
+    if (isset($data["\t"])) {
+        $s = $data["\t"];
+        unset($data["\t"]);
+    }
+    for ($i = 0, $count = \count($data); $i < $count; ++$i) {
+        $out .= "---\n" . $data[$i] . "\n";
+    }
+    return $out . "...\n\n" . \trim($s, "\n");
+};
 
 foreach([
     'anemon' => function($in) {
@@ -227,14 +252,14 @@ foreach([
         $in = \str_replace([ROOT, DS, '\\', $s], [$u['$'], '/', '/', $u['$']], $in);
         return $raw ? \rawurldecode($in) : \urldecode($in);
     },
-    'YAML' => function(...$lot) {
-        if (!\fn\is\anemon($lot[0])) {
-            return \s($lot[0]);
+    'YAML' => function($in, string $dent = '  ', $docs = false) use(&$yaml, &$yaml_docs) {
+        if (!\is_array($in)) {
+            return \s($in, ['null' => '~']);
         }
-        if (\is_string($lot[0]) && \Is::path($lot[0], true)) {
-            $lot[0] = include $lot[0];
+        if (\Is::file($in)) {
+            $in = require $in;
         }
-        return yaml(...$lot);
+        return $docs ? $yaml_docs($in, $dent) : $yaml($in, $dent);
     }
 ] as $k => $v) {
     \To::_($k, $v);

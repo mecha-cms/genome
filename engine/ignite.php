@@ -3,11 +3,10 @@
 namespace fn\is {
     // Check for valid data collection (array or object)
     function anemon($x = null, $t = null) {
-        if (\is_string($t)) {
+        if (\is_string($t))
             return anemon_a($x);
-        } else if (\is_int($t)) {
+        if (\is_int($t))
             return anemon_0($x);
-        }
         return \is_array($x) || \is_object($x);
     }
     // `[1,2,3]`
@@ -24,12 +23,14 @@ namespace fn\is {
     }
     // Check for any valid class instance
     function instance($x = null) {
-        if (!\is_object($x)) return false;
+        if (!\is_object($x))
+            return false;
         return ($s = \get_class($x)) && $s !== 'stdClass' ? $x : false;
     }
     // Check for valid JSON string format
-    function json($x = null) {
-        if (!\is_string($x) || \trim($x) === "") return false;
+    function json($x = null, $r = false) {
+        if (!\is_string($x) || \trim($x) === "")
+            return false;
         return (
             // Maybe an empty string, array or object
             $x === '""' ||
@@ -41,20 +42,19 @@ namespace fn\is {
             $x[0] === '[' && \substr($x, -1) === ']' ||
             // Maybe an associative array
             $x[0] === '{' && \substr($x, -1) === '}'
-        ) && \json_decode($x) !== null;
+        ) && (($x = \json_decode($x, true)) !== null) ? ($r ? $x : true) : false;
     }
     // Check for valid serialized string format
-    function serial($x = null) {
-        if (!\is_string($x) || \trim($x) === "") {
+    function serial($x = null, $r = false) {
+        if (!\is_string($x) || \trim($x) === "")
             return false;
-        } else if ($x === 'N;') {
-            return true;
-        } else if (\strpos($x, ':') === false) {
+        if ($x === 'N;')
+            return $r ? \unserialize($x) : true;
+        if (\strpos($x, ':') === false)
             return false;
-        } else if ($x === 'b:1;' || $x === 'b:0;' || $x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}') {
-            return true;
-        }
-        return \strpos($x, 'a:') === 0 || \strpos($x, 'O:') === 0 || \strpos($x, 'd:') === 0 || \strpos($x, 'i:') === 0 || \strpos($x, 's:') === 0;
+        if ($x === 'b:1;' || $x === 'b:0;' || $x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}')
+            return $r ? \unserialize($x) : true;
+        return \strpos($x, 'a:') === 0 || \strpos($x, 'O:') === 0 || \strpos($x, 'd:') === 0 || \strpos($x, 'i:') === 0 || \strpos($x, 's:') === 0 ? ($r ? \unserialize($x) : true) : false;
     }
 }
 
@@ -373,17 +373,11 @@ namespace {
             }
         });
     }
-    function e($s = "", array $x = []) {
-        if (\is_string($s)) {
-            if ($s === "") return $s;
-            if (\is_numeric($s)) {
-                return \strpos($s, '.') !== false ? (float) $s : (int) $s;
-            } else if (\fn\is\json($s) && $v = \json_decode($s)) {
-                return $v;
-            } else if ($s[0] === '"' || $s[0] === "'") {
-                return t($s, $s[0]);
-            }
-            $a = [
+    function e($x = "", $e = []) {
+        if (\is_string($x)) {
+            if ($x === "")
+                return $x;
+            if (\is_array($e) && \array_key_exists($x, $a = \array_replace([
                 'TRUE' => true,
                 'FALSE' => false,
                 'NULL' => null,
@@ -398,18 +392,38 @@ namespace {
                 'no' => false,
                 'on' => true,
                 'off' => false
-            ];
-            return \array_key_exists($s, $a) ? $a[$s] : $s;
-        } else if (\fn\is\anemon($s)) {
-            $x = X . \implode(X, (array) $x) . X;
-            foreach ($s as $k => &$v) {
-                if (\strpos($x, X . $k . X) === false) {
-                    $v = e($v, (array) $x);
+            ], $e))) {
+                return $a[$x];
+            } else if (\is_callable($e)) {
+                return \call_user_func($e, $x);
+            }
+            if (\is_numeric($x))
+                return \strpos($x, '.') !== false ? (float) $x : (int) $x;
+            if (($v = \fn\is\json($x, true)) !== false)
+                return $v;
+            // `"abcdef"` or `'abcdef'`
+            if ($x[0] === '"' || $x[0] === "'") {
+                $v = \substr(\substr($x, 1), 0, -1);
+                $a = \strpos($v, $x[0]);
+                $b = \strpos($v, "\\");
+                // `'ab\'cd\'ef'`
+                if (
+                    $a !== false &&
+                    $a === $b + 1 &&
+                    \preg_match('#^' . $x[0] . '(?:[^' . $x[0] . '\\]|\\.)*' . $x[0] . '$#', $x)
+                ) {
+                    return \str_replace("\\" . $x[0], $x[0], $v);
                 }
+                return $v;
+            }
+            return $x;
+        } else if (\is_array($x)) {
+            foreach ($x as $k => &$v) {
+                $v = e($v, $e);
             }
             unset($v);
         }
-        return $s;
+        return $x;
     }
     // $x: the string input
     // $a: replace multi-byte string into their accent
@@ -969,12 +983,12 @@ namespace {
             $r .= '.php';
         }
         if (\strpos($r, '%') === false) {
-            if (\is_file($r)) {
-                \call_user_func(function() use($r) {
-                    extract($GLOBALS, \EXTR_SKIP);
-                    include $r;
-                });
-            }
+            if (!\is_file($r))
+                return;
+            \call_user_func(function() use($r) {
+                extract($GLOBALS, \EXTR_SKIP);
+                include $r;
+            });
         } else {
             $r = \str_replace([
                 '%s%',
@@ -986,7 +1000,8 @@ namespace {
                 '{', '}'
             ], $r);
             foreach (\glob($r, \GLOB_BRACE | \GLOB_NOSORT) as $v) {
-                if (!\is_file($v)) continue;
+                if (!\is_file($v))
+                    continue;
                 \call_user_func(function() use($v) {
                     extract($GLOBALS, \EXTR_SKIP);
                     include $v;
@@ -1044,12 +1059,12 @@ namespace {
             $r .= '.php';
         }
         if (\strpos($r, '%') === false) {
-            if (\is_file($r)) {
-                \call_user_func(function() use($r) {
-                    extract($GLOBALS, \EXTR_SKIP);
-                    require $r;
-                });
-            }
+            if (!\is_file($r))
+                return;
+            \call_user_func(function() use($r) {
+                extract($GLOBALS, \EXTR_SKIP);
+                require $r;
+            });
         } else {
             $r = \str_replace([
                 '%s%',
@@ -1061,7 +1076,8 @@ namespace {
                 '{', '}'
             ], $r);
             foreach (\glob($r, \GLOB_BRACE | \GLOB_NOSORT) as $v) {
-                if (!\is_file($v)) continue;
+                if (!\is_file($v))
+                    continue;
                 \call_user_func(function() use($v) {
                     extract($GLOBALS, \EXTR_SKIP);
                     require $v;
@@ -1069,23 +1085,28 @@ namespace {
             }
         }
     }
-    function s($x = "") {
-        if ($x === true) {
-            return 'true';
-        } else if ($x === false) {
-            return 'false';
-        } else if ($x === null) {
-            return 'null';
-        } else if (\fn\is\anemon($x)) {
+    function s($x = "", $e = []) {
+        if (\is_callable($e))
+            return \call_user_func($e, $x);
+        if ($x === true)
+            return $e['true'] ?? 'true';
+        if ($x === false)
+            return $e['false'] ?? 'false';
+        if ($x === null)
+            return $e['null'] ?? 'null';
+        if (\is_object($x))
+            return \json_encode($x);
+        if (\is_array($x)) {
             foreach ($x as &$v) {
-                $v = s($v);
+                $v = s($v, $e);
             }
             unset($v);
             return $x;
         }
-        return (string) $x;
+        $x = (string) $x;
+        return $e[$x] ?? $x;
     }
-    function t(string $x = "", string $o = '"', $c = null) {
+    function t(string $x = "", string $o = '"', string $c = null) {
         if ($x) {
             if ($o !== "" && \strpos($x, $o) === 0) {
                 $x = \substr($x, \strlen($o));

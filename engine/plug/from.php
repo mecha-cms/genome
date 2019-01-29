@@ -1,135 +1,210 @@
 <?php namespace fn\from;
 
-// Get key and value pair…
-function yaml_pair($in) {
-    if ((\strpos($in, "'") === 0 || \strpos($in, '"') === 0) && \preg_match('#(\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*") *: +([^\n]*)#', $in, $m)) {
-        $out = [\t($m[1], $in[0]), $m[2]];
-    } else {
-        $out = \explode(': ', $in, 2);
-    }
-    $out[0] = \trim($out[0]);
-    // If value is an empty string, replace with `[]`
-    $out[1] = isset($out[1]) && $out[1] !== "" ? \trim($out[1]) : [];
-    return $out;
-}
-
-// Parse array-like string…
-function yaml_array($in) {
-    if (!\is_string($in)) {
-        return $in;
-    }
-    if (\strpos($in, '[') === 0 && \substr($in, -1) === ']' || \strpos($in, '{') === 0 && \substr($in, -1) === '}') {
-        $out = "";
-        foreach (\preg_split('#(\s*(?:\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*"|[\[\]\{\}:,])\s*)#', $in, null, \PREG_SPLIT_DELIM_CAPTURE) as $v) {
-            if (($v = \trim($v)) === "") {
-                continue;
-            }
-            if (\strpos('[]{}:,', $v) !== false || \is_numeric($v) || $v === 'true' || $v === 'false' || $v === 'null') {
-                // Do nothing!
-            } else if (\strpos($v, '"') === 0 && \substr($v, -1) === '"') {
-                if (\json_decode($v) === null) {
-                    $v = \json_encode(\t($v, '"'));
-                }
-            } else if (\strpos($v, "'") === 0 && \substr($v, -1) === "'") {
-                $v = \json_encode(\t($v, "'"));
-            } else {
-                $v = \json_encode($v);
-            }
-            $out .= $v;
+// Break into structure(s)
+$yaml_select = function(string $in) {
+    $out = [];
+    $s = $n = null;
+    foreach (\explode("\n", $in) as $v) {
+        if (\substr($vv = \trim($v), 0, 1) === '#') {
+            continue; // Remove comment(s)
         }
-        return \json_decode($out, true);
+        if ($v && $v[0] !== ' ' && \strpos($v, '- ') !== 0 && $vv !== '-') {
+            if ($s !== null) {
+                $out[] = \rtrim($s);
+            }
+            $s = $v;
+        } else {
+            $s .= $n ? ' ' . \ltrim($v) : "\n" . $v;
+        }
+        $n = $vv === '-';
+    }
+    $out[] = \rtrim($s);
+    return $out;
+};
+
+// Dedent from `$dent`
+$yaml_shift = function(string $in, string $dent) {
+    if (\strpos($in, $dent) === 0) {
+        return \str_replace("\n" . $dent, "\n", \substr($in, \strlen($dent)));
     }
     return $in;
-}
+};
 
-function yaml($in, string $d = '  ', $e = true) {
-    // Normalize white-space(s)…
-    $in = \trim(\n($in), "\n");
-    if ($in === "") {
-        return [];
-    }
-    $key = $out = $i = [];
-    $len = \strlen($d);
-    $x = \x($d);
-    if (\strpos($in, ': ') !== false && (\strpos($in, '|') !== false || \strpos($in, '>') !== false)) {
-        $in = \preg_replace_callback('#((?:' . $x . ')*)([^\n]+): +([|>])\s*\n((?:(?:(?:\1' . $x . '[^\n]*)?\n?)+|$))#', function($m) use($d) {
-            $s = \str_replace("\n" . $m[1] . $d, "\n", "\n" . $m[4]);
-            if ($m[3] === '>') {
-                $s = \str_replace([
-                    "\n\n",
-                    "\n",
-                    X
-                ], [
-                    X,
-                    ' ',
-                    "\n\n"
-                ], \trim($s, "\n"));
-            } else {
-                $s = \t($s, "\n");
-            }
-            return $m[1] . $m[2] . ': ' . \json_encode($s) . "\n";
-        }, $in);
-    }
-    foreach (\explode("\n", $in) as $v) {
-        $test = \trim($v);
-        // Ignore empty line-break and comment(s)…
-        if ($test === "" || \strpos($test, '#') === 0) {
-            continue;
+// Folded-style string
+$yaml_block = function(string $in) {
+    $out = "";
+    $e = false; // Previous is empty
+    $x = false; // Has back-slash at the end of string
+    foreach (\explode("\n", $in) as $k => $v) {
+        $t = \trim($v);
+        if ($t === "") {
+            $out .= "\n";
+        } else if (!$e && !$x) {
+            $out .= ' ';
         }
-        $dent = 0;
-        while (\substr($v, 0, $len) === $d) {
-            ++$dent;
-            $v = \substr($v, $len);
+        if ($t !== "" && \substr($t, -1) === "\\") {
+            $out .= \ltrim(\substr($v, 0, -1));
+        } else if ($t !== "") {
+            $out .= $t;
         }
-        // Start with `- `
-        if (\strpos($v, '- ') === 0) {
-            ++$dent;
-            if (isset($i[$dent])) {
-                $i[$dent] += 1;
-            } else {
-                $i[$dent] = 0;
-            }
-            $v = \substr_replace($v, $i[$dent] . ': ', 0, 2);
-        // TODO
-        } else if ($v === '-') {
-            ++$dent;
-            if (isset($i[$dent])) {
-                $i[$dent] += 1;
-            } else {
-                $i[$dent] = 0;
-            }
-            $v = $i[$dent] . ':';
+        if ($t === "") {
+            $e = true;
+            $x = false;
+        } else if (\substr($t, -1) === "\\") {
+            $e = false;
+            $x = true;
         } else {
-            $i = [];
+            $e = $x = false;
         }
-        while ($dent < \count($key)) {
-            \array_pop($key);
-        }
-        $v = \trim($v);
-        $a = yaml_pair(\substr($v, -1) === ':' ? $v . ' ' : $v);
-        $key[$dent] = $a[0];
-        if (\is_string($a[1])) {
-            // Ignore comment(s)…
-            if (\strpos($a[1], '#') === 0) {
-                $a[1] = [];
-            } else {
-                $s = \strpos($a[1], "'") === 0 || \strpos($a[1], '"') === 0 ? $a[1] : \explode('#', $a[1])[0];
-                $s = \trim($s);
-                $s = $s === '~' ? null : $s;
-                $a[1] = yaml_array($e ? \e($s) : $s);
-            }
-        }
-        $parent =& $out;
-        foreach ($key as $kk) {
-            if (!isset($parent[$kk])) {
-                $parent[$kk] = $a[1];
-                break;
-            }
-            $parent =& $parent[$kk];
+    }
+    return \trim($out);
+};
+
+$yaml_list = function(string $in, string $dent) use(&$yaml, &$yaml_break, &$yaml_shift, &$yaml_value) {
+    $out = [];
+    $in = $yaml_shift($in, '  ' /* hard-coded */);
+    foreach (\explode("\n- ", \substr($in, 2)) as $v) {
+        $v = \str_replace("\n  ", "\n", $v);
+        list($k, $m) = $yaml_break($v);
+        if ($m === false) {
+            $out[] = $yaml_value($v);
+        } else {
+            $out[] = $yaml($v, $dent);
         }
     }
     return $out;
-}
+};
+
+// Parse flow-style collection(s)
+$yaml_span = function(string $in) {
+    $out = "";
+    // Validate to JSON
+    foreach (\preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, \PREG_SPLIT_DELIM_CAPTURE) as $v) {
+        if ($v === "") continue;
+        if (\strpos('[]{}:,', $v) !== false) {
+            $out .= $v;
+        } else if (
+            // $v[0] === '"' && \substr($v, -1) === '"' ||
+            $v[0] === "'" && \substr($v, -1) === "'"
+        ) {
+            $out .= '"' . \substr(\substr($v, 1), 0, -1) . '"';
+        } else {
+            $out .= \json_encode($v);
+        }
+    }
+    return \json_decode($out, true) ?? $in;
+};
+
+// Remove comment(s)
+$yaml_value = function(string $in) {
+    $in = \trim($in);
+    if (\strpos($in, '"') === 0 || \strpos($in, "'") === 0) {
+        $q = $in[0];
+        if (\preg_match('#^(' . $q . '(?:[^' . $q . '\\\]|\\\.)*' . $q . ')\s*\#.*$#', $in, $m)) {
+            return $m[1];
+        }
+    }
+    return \trim(\explode('#', $in, 2)[0]);
+};
+
+// Get key and value pair(s)
+$yaml_break = function(string $in) {
+    if (\strpos($in, '"') === 0 || strpos($in, "'") === 0) {
+        $q = $in[0];
+        if (\preg_match('#^(' . $q . '(?:[^' . $q . '\\\]|\\\.)*' . $q . ')\s*(:[ \n])([\s\S]*)$#', $in, $m)) {
+            \array_shift($m);
+            $m[0] = \e($m[0]);
+            return $m;
+        }
+    } else if (\strpos($in, ':') !== false) {
+        $m = \explode(':', $in, 2);
+        $m[0] = \trim($m[0]);
+        if (\strpos($m[1], '#') !== false) {
+            $m[1] = \preg_replace('#^\s*\#.*$#m', "", $m[1]);
+        }
+        $m[2] = \ltrim(\rtrim($m[1] ?? ""), "\n");
+        $m[1] = ':' . ($m[1][0] ?? "");
+        return $m;
+    }
+    return [false, false, $in];
+};
+
+$yaml_set = function(&$out, string $in, string $dent) use(&$yaml, &$yaml_block, &$yaml_break, &$yaml_list, &$yaml_shift, &$yaml_span, &$yaml_value) {
+    list($k, $m, $v) = $yaml_break($in);
+    $vv = $yaml_shift($v, $dent);
+    // Get first token
+    $t = \substr(\trim($vv), 0, 1);
+    // A literal-style or folded-style scalar value
+    if ($t === '|' || $t === '>') {
+        $vv = $yaml_shift(\ltrim(\substr(\ltrim($vv), 1), "\n"), $dent);
+        $out[$k] = $t === '>' ? $yaml_block($vv) : $vv;
+    // Maybe a YAML collection(s)
+    } else if ($m === ":\n") {
+        // Sequence
+        if (\strpos($vv, '- ') === 0) {
+            // Indented sequence
+            if (\strpos($v, $dent . '-') === 0) {
+                $v = $vv;
+            }
+            $out[$k] = $yaml_list($v, $dent);
+        // Else
+        } else {
+            $out[$k] = $vv !== "" ? $yaml($vv, $dent) : [];
+        }
+    } else {
+        $vv = $yaml_value($vv);
+        if (\strpos($vv, '- ') === 0) {
+            $out = $yaml_list($vv, $dent);
+            return;
+        }
+        if ($vv === "" || $vv === '[]' || $vv === '{}') {
+            $vv = [];
+        } else if (
+            $vv && (
+                $vv[0] === '[' && \substr($vv, -1) === ']' ||
+                $vv[0] === '{' && \substr($vv, -1) === '}'
+            )
+        ) {
+            // Use native JSON parser where possible
+            $vv = \json_decode($vv) ?? $yaml_span($vv);
+        }
+        $out[$k] = $vv;
+    }
+};
+
+$yaml = function(string $in, string $dent = '  ') use(&$yaml_select, &$yaml_set) {
+    $out = [];
+    // Normalize line-break
+    $in = \trim(\n($in));
+    if ($in === "") {
+        return $out;
+    }
+    foreach ($yaml_select($in) as $v) {
+        $yaml_set($out, $v, $dent);
+    }
+    return $out;
+};
+
+$yaml_docs = function(string $in, string $dent = '  ') use(&$yaml) {
+    $docs = [];
+    // Normalize line-break
+    $in = \trim(\n($in));
+    // Remove the first separator
+    $in = \strpos($in, '---') === 0 && \substr($in, 3, 1) !== '-' ? \preg_replace('#^-{3}\s*#', "", $in) : $in;
+    // Skip any string after `...`
+    $parts = \explode("\n...\n", \trim($in) . "\n", 2);
+    foreach (\explode("\n---", $parts[0]) as $v) {
+        $docs[] = $yaml(\trim($v), $dent);
+    }
+    // Take the rest of the YAML stream just in case you need it!
+    if (isset($parts[1])) {
+        // We use tab character as array key because based on the specification,
+        // this character should not be written in a YAML document
+        // <https://yaml.org/spec/1.2/spec.html#id2777534>
+        $docs["\t"] = \trim($parts[1], "\n");
+    }
+    return $docs;
+};
 
 foreach ([
     'anemon' => function($in) {
@@ -173,23 +248,17 @@ foreach ([
     'URL' => function($in, $raw = false) {
         return $raw ? \rawurlencode($in) : \urlencode($in);
     },
-    'YAML' => function(...$lot) {
-        if (\fn\is\anemon($lot[0])) {
-            return \a($lot[0]);
+    'YAML' => function($in, string $dent = '  ', $docs = false, $e = true) use(&$yaml, &$yaml_docs) {
+        if (\is_array($in))
+            return $in;
+        if (\is_object($in)) {
+            return \a($in);
         }
-        if (\Is::path($lot[0], true)) {
-            $lot[0] = \file_get_contents($lot[0]);
+        if (\Is::file($in)) {
+            $in = \file_get_contents($in);
         }
-        if (\strpos($lot[0] = \n($lot[0]), "---\n") === 0) {
-            $out = [];
-            $lot[0] = \str_replace([X . "---\n", "\n---" . X, "\n..." . X, X], "", X . $lot[0] . X);
-            $o = \array_slice($lot, 1);
-            foreach (\explode("\n---\n", $lot[0]) as $v) {
-                $out[] = yaml($v, ...$o);
-            }
-            return $out;
-        }
-        return yaml(...$lot);
+        $out = $docs ? $yaml_docs($in, $dent) : $yaml($in, $dent);
+        return $e ? \e($out, ['~' => null]) : $out;
     }
 ] as $k => $v) {
     \From::_($k, $v);
