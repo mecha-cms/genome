@@ -17,7 +17,7 @@ class Language extends Config {
         $v = Anemon::get($v, $key, $key);
         $vars = extend([""], (array) $vars, false);
         if (is_string($v)) {
-            if (!$preserve_case && strpos($v, '%') !== 0 && u($vars[0]) !== $vars[0]) {
+            if (!$preserve_case && strpos($v, '%') !== 0 && !ctype_upper($vars[0])) {
                 $vars[0] = l($vars[0]);
             }
             return candy($v, $vars);
