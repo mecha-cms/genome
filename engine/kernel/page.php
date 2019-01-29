@@ -31,7 +31,7 @@ class Page extends Genome {
                 'update' => date(DATE_WISE, $m),
                 'slug' => $n,
                 'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
-                'state' => $x,
+                'x' => $x,
                 'type' => $x !== null ? u($x) : null, // Fake `type` data from the page’s file extension
                 'id' => $f ? sprintf('%u', (string) $c) : null,
                 'path' => $path,
@@ -77,9 +77,9 @@ class Page extends Genome {
             // Prioritize data from a file…
             if ($data = File::open($extern)->get()) {
                 $extern = null; // Stop!
-                $a[$key] = e($data);
+                $a[$key] = $key !== '$' && $key !== 'content' ? e($data) : $data;
             } else if ($page = file_get_contents($path)) {
-                $a = extend($a, self::apart($page, null, null, ['$', 'content']), false);
+                $a = extend($a, self::apart($page, null, null, true), false);
             }
         }
         if (!array_key_exists($key, $a)) {
@@ -87,7 +87,7 @@ class Page extends Genome {
         }
         // Prioritize data from a file…
         if ($extern && $data = File::open($extern)->get()) {
-            $a[$key] = e($data);
+            $a[$key] = $key !== '$' && $key !== 'content' ? e($data) : $data;
         }
         // Check for valid time format, render it as `Date` instance
         $value = a($a[$key]);
@@ -208,6 +208,7 @@ class Page extends Genome {
     }
 
     public static function apart(string $in, $key = null, $fail = null, $eval = false) {
+        $eval = $eval && (!isset($key) || $key !== '$' && $key !== 'content');
         // Get specific property…
         if ($key === 'content') {
             $in = explode("\n...", n(Is::file($in) ? file_get_contents($in) : $in), 2);
@@ -229,7 +230,7 @@ class Page extends Genome {
                         }
                     }
                     fclose($o);
-                    return $eval ? e($out, is_array($eval) ? $eval : []) : $out;
+                    return $eval ? e($out, ['~' => null]) : $out;
                 }
                 return $fail;
             }
@@ -240,7 +241,7 @@ class Page extends Genome {
             if ($s !== false && $ss !== false && $ss < $s) {
                 $in = substr($in, $ss + strlen($k)) . "\n";
                 $out = trim(substr($in, 0, strpos($in, "\n")));
-                return $eval ? e($out, is_array($eval) ? $eval : []) : $out;
+                return $eval ? e($out, ['~' => null]) : $out;
             }
             return $fail;
         }
@@ -250,15 +251,10 @@ class Page extends Genome {
         if (strpos($in, "---\n") !== 0) {
             $data['content'] = $in;
         } else {
-            $in = str_replace([X . "---\n", X], "", X . $in . "\n\n");
-            $in = explode("\n...\n\n", $in, 2);
-            // Do data…
-            $data = From::YAML($in[0], '  ', [], false);
-            $data = $eval ? e($data, is_array($eval) ? $eval : []) : $data;
-            // Do content…
-            if (!isset($data['content'])) {
-                $data['content'] = trim(isset($in[1]) ? $in[1] : "", "\n");
-            }
+            $parts = From::YAML($in, '  ', true, false);
+            $data = $parts[0];
+            $data['content'] = $parts["\t"] ?? "";
+            $data = $eval ? e($data, ['~' => null]) : $data;
         }
         return $data;
     }
@@ -270,7 +266,7 @@ class Page extends Genome {
             unset($in['content']);
         }
         $header = To::YAML($in);
-        return ($header ? "---\n" . $header . "\n..." : "") . ($content ? "\n\n" . $content : "");
+        return ($header ? "---\n" . $header . "\n..." : "") . ($content !== "" ? "\n\n" . $content : "");
     }
 
     public static function open($path = null, array $lot = [], $NS = []) {

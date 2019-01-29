@@ -6,7 +6,7 @@
     <?php if ($s = To::text($page->description($site->description))): ?>
     <meta name="description" content="<?php echo $s; ?>">
     <?php endif; ?>
-    <?php if ($page->state === 'archive'): ?>
+    <?php if ($page->x === 'archive'): ?>
     <!-- Prevent search engines from indexing pages with `archive` state -->
     <meta name="robots" content="noindex">
     <?php endif; ?>

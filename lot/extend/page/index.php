@@ -146,7 +146,7 @@ function url($url = "", array $lot = []) {
             }
         }
         // Redirect to parent page if user tries to access the placeholder page…
-        if ($name === '$' && \File::exist($folder . '.' . $page->state)) {
+        if ($name === '$' && \File::exist($folder . '.' . $page->x)) {
             \Message::info('kick', '<code>' . $url->current . '</code>');
             \Guardian::kick($parent_path);
         }
