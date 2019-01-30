@@ -1171,21 +1171,14 @@ namespace {
         return false;
     }
     // $b: use `[]` or `array()` syntax?
-    function z(array $a = [], $b = true, $safe = true) {
-        $a = \json_encode($a);
-        $a = \preg_split('#("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')#', $a, -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE);
-        $s = "";
-        foreach ($a as $v) {
-            if ($v[0] === '"' && \substr($v, -1) === '"') {
-                $v = \json_decode($v);
-                if ($safe) {
-                    $v = \str_replace(['<?', '?>'], ['&lt;?', '?&gt;'], $v);
-                }
-                $s .= "'" . \str_replace(["\\", "'"], ["\\\\", "\\'"], $v) . "'";
-            } else {
-                $s .= \str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
+    function z($a = [], $b = true) {
+        if (\is_array($a)) {
+            $o = [];
+            foreach ($a as $k => $v) {
+                $o[] = \var_export($k, true) . '=>' . z($v, $b);
             }
+            return ($b ? '[' : 'array(') . \implode(',', $o) . ($b ? ']' : ')');
         }
-        return $s;
+        return \var_export($a, true);
     }
 }
