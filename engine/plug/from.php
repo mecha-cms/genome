@@ -81,16 +81,7 @@ $yaml_span = function(string $in) {
     // Validate to JSON
     foreach (\preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, \PREG_SPLIT_DELIM_CAPTURE) as $v) {
         if ($v === "") continue;
-        if (\strpos('[]{}:,', $v) !== false) {
-            $out .= $v;
-        } else if (
-            // $v[0] === '"' && \substr($v, -1) === '"' ||
-            $v[0] === "'" && \substr($v, -1) === "'"
-        ) {
-            $out .= '"' . \substr(\substr($v, 1), 0, -1) . '"';
-        } else {
-            $out .= \json_encode($v);
-        }
+        $out .= \strpos('[]{}:,', $v) !== false ? $v : \json_encode($v);
     }
     return \json_decode($out, true) ?? $in;
 };
