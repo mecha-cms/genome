@@ -29,12 +29,14 @@ class Language extends Config {
         parent::__construct();
         $id = static::$config['id'];
         $f = constant(u($c = static::class)) . DS . $id . '.page';
-        $content = Cache::expire($f) ? Cache::set($f, function($f) use($c) {
-            $i18n = new Page($f, [], ['*', c2f($c, '_', '/')]);
-            $fn = 'From::' . $i18n->type;
-            $c = $i18n->content;
-            return is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
-        }) : Cache::get($f);
+        if (!file_exists($f)) {
+            return; // TODO
+        }
+        $content = Cache::of($f, function() use($f) {
+            $fn = 'From::' . Page::apart($f, 'type', "");
+            $content = Page::apart($f, 'content', "");
+            return is_callable($fn) ? call_user_func($fn, $content) : [];
+        }, filemtime($f), []);
         self::$lot[$c] = extend(self::$lot[$c] ?? [], $content);
         self::$a[$c] = extend(self::$a[$c] ?? [], $content);
     }

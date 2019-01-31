@@ -7,13 +7,16 @@ class Cookie extends Genome {
             $config = ['expire' => (int) $config];
         }
         $config = extend([
-            'expire' => 1, // 1 day
+            'expire' => '1 day',
             'path' => '/',
             'domain' => "",
             'secure' => false,
             'http_only' => false
         ], $config);
-        $config['expire'] = time() + (60 * 60 * 24 * $config['expire']);
+        if (is_string($config['expire'])) {
+            $t = $_SERVER['REQUEST_TIME'] ?? time();
+            $config['expire'] = strtotime($config['expire'], $t) - $t;
+        }
         setcookie(self::key($key), self::x($value), ...array_values($config));
         return new static;
     }

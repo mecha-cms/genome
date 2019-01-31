@@ -1,7 +1,7 @@
 ---
 title: Bahasa Indonesia
 description: Bahasa nasional Republik Indonesia.
-version: 2.0.1
+version: 2.0.2
 type: YAML
 ...
 
@@ -67,22 +67,22 @@ day: Hari
 days: Hari
 
 days_long:
-  - Minggu
-  - Senin
-  - Selasa
-  - Rabu
-  - Kamis
-  - Jum’at
-  - Sabtu
+- Minggu
+- Senin
+- Selasa
+- Rabu
+- Kamis
+- Jum’at
+- Sabtu
 
 days_short:
-  - Min
-  - Sen
-  - Sel
-  - Rab
-  - Kam
-  - Jum
-  - Sab
+- Min
+- Sen
+- Sel
+- Rab
+- Kam
+- Jum
+- Sab
 
 default: Baku
 defaults: Baku
@@ -203,32 +203,32 @@ month: Bulan
 months: Bulan
 
 months_long:
-  - Januari
-  - Februari
-  - Maret
-  - April
-  - Mei
-  - Juni
-  - Juli
-  - Agustus
-  - September
-  - Oktober
-  - November
-  - Desember
+- Januari
+- Februari
+- Maret
+- April
+- Mei
+- Juni
+- Juli
+- Agustus
+- September
+- Oktober
+- November
+- Desember
 
 months_short:
-  - Jan
-  - Feb
-  - Mar
-  - Apr
-  - Mei
-  - Jun
-  - Jul
-  - Agt
-  - Sep
-  - Okt
-  - Nov
-  - Des
+- Jan
+- Feb
+- Mar
+- Apr
+- Mei
+- Jun
+- Jul
+- Agt
+- Sep
+- Okt
+- Nov
+- Des
 
 more: Lebih
 

@@ -134,7 +134,7 @@ namespace {
                 }
                 // `%{$}%`
                 if (\is_object($v) && \method_exists($v, '__toString')) {
-                    $s = \str_replace('%{' . $k . '}%', $v . "", $s);
+                    $s = \str_replace('%{' . $k . '}%', \strval($v), $s);
                 }
             // `%{a}%`
             } else if (\strpos($s, '%{' . $k . '}%') !== false) {
@@ -373,11 +373,11 @@ namespace {
             }
         });
     }
-    function e($x = "", $e = []) {
+    function e($x = "", array $a = []) {
         if (\is_string($x)) {
             if ($x === "")
                 return $x;
-            if (\is_array($e) && \array_key_exists($x, $a = \array_replace([
+            if (\array_key_exists($x, $a = \array_replace([
                 'TRUE' => true,
                 'FALSE' => false,
                 'NULL' => null,
@@ -392,10 +392,8 @@ namespace {
                 'no' => false,
                 'on' => true,
                 'off' => false
-            ], $e))) {
+            ], $a))) {
                 return $a[$x];
-            } else if (\is_callable($e)) {
-                return \call_user_func($e, $x);
             }
             if (\is_numeric($x))
                 return \strpos($x, '.') !== false ? (float) $x : (int) $x;
@@ -419,7 +417,7 @@ namespace {
             return $x;
         } else if (\is_array($x)) {
             foreach ($x as $k => &$v) {
-                $v = e($v, $e);
+                $v = e($v, $a);
             }
             unset($v);
         }
@@ -1085,26 +1083,24 @@ namespace {
             }
         }
     }
-    function s($x = "", $e = []) {
-        if (\is_callable($e))
-            return \call_user_func($e, $x);
+    function s($x = "", array $a = []) {
         if ($x === true)
-            return $e['true'] ?? 'true';
+            return $a['true'] ?? 'true';
         if ($x === false)
-            return $e['false'] ?? 'false';
+            return $a['false'] ?? 'false';
         if ($x === null)
-            return $e['null'] ?? 'null';
+            return $a['null'] ?? 'null';
         if (\is_object($x))
             return \json_encode($x);
         if (\is_array($x)) {
             foreach ($x as &$v) {
-                $v = s($v, $e);
+                $v = s($v, $a);
             }
             unset($v);
             return $x;
         }
         $x = (string) $x;
-        return $e[$x] ?? $x;
+        return $a[$x] ?? $x;
     }
     function t(string $x = "", string $o = '"', string $c = null) {
         if ($x) {

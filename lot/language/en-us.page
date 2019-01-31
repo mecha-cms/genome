@@ -4,7 +4,7 @@ description: >
   American English, also called United States English
   or U.S. English, is the set of varieties of the English
   language native to the United States.
-version: 2.0.1
+version: 2.0.2
 type: YAML
 ...
 
@@ -81,22 +81,22 @@ day: Day
 days: Days
 
 days_long:
-  - Sunday
-  - Monday
-  - Tuesday
-  - Wednesday
-  - Thursday
-  - Friday
-  - Saturday
+- Sunday
+- Monday
+- Tuesday
+- Wednesday
+- Thursday
+- Friday
+- Saturday
 
 days_short:
-  - Sun
-  - Mon
-  - Tue
-  - Wed
-  - Thu
-  - Fri
-  - Sat
+- Sun
+- Mon
+- Tue
+- Wed
+- Thu
+- Fri
+- Sat
 
 default: Default
 defaults: Defaults
@@ -217,32 +217,32 @@ month: Month
 months: Months
 
 months_long:
-  - January
-  - February
-  - March
-  - April
-  - May
-  - June
-  - July
-  - August
-  - September
-  - October
-  - November
-  - December
+- January
+- February
+- March
+- April
+- May
+- June
+- July
+- August
+- September
+- October
+- November
+- December
 
 months_short:
-  - Jan
-  - Feb
-  - Mar
-  - Apr
-  - May
-  - Jun
-  - Jul
-  - Aug
-  - Sep
-  - Oct
-  - Nov
-  - Dec
+- Jan
+- Feb
+- Mar
+- Apr
+- May
+- Jun
+- Jul
+- Aug
+- Sep
+- Oct
+- Nov
+- Dec
 
 more: More
 

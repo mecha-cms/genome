@@ -93,7 +93,7 @@ class File extends Genome {
     }
 
     // Export value to a PHP file
-    public static function export(array $data, string $format = '<?php return %{0}%;') {
+    public static function export($data, string $format = '<?php return %{0}%;') {
         $self = new static;
         $self->content = candy($format, z($data));
         return $self;

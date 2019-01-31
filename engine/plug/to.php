@@ -16,7 +16,7 @@ function query($array, $key) {
 
 $yaml_it = function(string $k, string $m, $v) {
     // Check for safe key pattern, otherwise, wrap it with quote
-    if ($k !== "" && (\is_numeric($k) || (\ctype_alnum($k) && !\is_numeric($k[0])) || \preg_match('#^[a-z_-]+(?:[_-]+[a-z\d]+)*$#i', $k))) {
+    if ($k !== "" && (\is_numeric($k) || (\ctype_alnum($k) && !\is_numeric($k[0])) || \preg_match('#^[a-z][a-z\d]*(?:[_-]+[a-z\d]+)*$#i', $k))) {
     } else {
         $k = "'" . \str_replace("'", "\\\'", $k) . "'";
     }

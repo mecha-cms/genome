@@ -100,6 +100,7 @@ $yaml_value = function(string $in) {
 
 // Get key and value pair(s)
 $yaml_break = function(string $in) {
+    $in = \trim($in, "\n");
     if (\strpos($in, '"') === 0 || strpos($in, "'") === 0) {
         $q = $in[0];
         if (\preg_match('#^(' . $q . '(?:[^' . $q . '\\\]|\\\.)*' . $q . ')\s*(:[ \n])([\s\S]*)$#', $in, $m)) {
@@ -107,7 +108,11 @@ $yaml_break = function(string $in) {
             $m[0] = \e($m[0]);
             return $m;
         }
-    } else if (\strpos($in, ':') !== false) {
+    } else if (
+        \strpos($in, ':') !== false &&
+        \strpos($in, '- ') !== 0 &&
+        \strpos('[{', $in[0]) === false
+    ) {
         $m = \explode(':', $in, 2);
         $m[0] = \trim($m[0]);
         if (\strpos($m[1], '#') !== false) {
@@ -117,11 +122,20 @@ $yaml_break = function(string $in) {
         $m[1] = ':' . ($m[1][0] ?? "");
         return $m;
     }
-    return [false, false, $in];
+    return [false, false, \trim(\explode('#', $in, 2)[0])];
 };
 
 $yaml_set = function(&$out, string $in, string $dent) use(&$yaml, &$yaml_block, &$yaml_break, &$yaml_list, &$yaml_shift, &$yaml_span, &$yaml_value) {
     list($k, $m, $v) = $yaml_break($in);
+    if ($k === false && $m === false && $v !== "") {
+        if (
+            $v[0] === '[' && \substr($v, -1) === ']' ||
+            $v[0] === '{' && \substr($v, -1) === '}'
+        ) {
+            $out = $yaml_span($v);
+            return;
+        }
+    }
     $vv = $yaml_shift($v, $dent);
     // Get first token
     $t = \substr(\trim($vv), 0, 1);
