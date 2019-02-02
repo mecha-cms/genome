@@ -79,8 +79,7 @@ $yaml_list = function(string $in, string $dent) use(&$yaml, &$yaml_break, &$yaml
 $yaml_span = function(string $in) {
     $out = "";
     // Validate to JSON
-    foreach (\preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, \PREG_SPLIT_DELIM_CAPTURE) as $v) {
-        if ($v === "") continue;
+    foreach (\preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE) as $v) {
         $out .= \strpos('[]{}:,', $v) !== false ? $v : \json_encode($v);
     }
     return \json_decode($out, true) ?? $in;
@@ -185,6 +184,8 @@ $yaml = function(string $in, string $dent = '  ') use(&$yaml_select, &$yaml_set)
         return $out;
     }
     foreach ($yaml_select($in) as $v) {
+        if ($v === "")
+            continue;
         $yaml_set($out, $v, $dent);
     }
     return $out;
@@ -203,8 +204,10 @@ $yaml_docs = function(string $in, string $dent = '  ') use(&$yaml) {
     }
     // Take the rest of the YAML stream just in case you need it!
     if (isset($parts[1])) {
-        // We use tab character as array key because based on the specification,
-        // this character should not be written in a YAML document
+        // We use tab character as array key placeholder because based
+        // on the specification, this character should not be written in
+        // a YAML document, so it will be impossible that, there will be
+        // a YAML key denoted by a human using a tab character.
         // <https://yaml.org/spec/1.2/spec.html#id2777534>
         $docs["\t"] = \trim($parts[1], "\n");
     }
