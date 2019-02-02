@@ -5,8 +5,9 @@ class File extends Genome {
     public $path = null;
     public $content = null;
 
+    public $exist = false;
+
     // Cache!
-    private static $inspect = [];
     private static $explore = [];
 
     const config = [
@@ -17,13 +18,18 @@ class File extends Genome {
     public static $config = self::config;
 
     public function __construct($path = null) {
-        $this->path = is_string($path) ? (file_exists($path) ? realpath($path) : null) : $path;
         $this->content = "";
+        if (is_string($path)) {
+            $this->exist = $exist = file_exists($path);
+            $this->path = $exist ? realpath($path) : null;
+        } else {
+            $this->path = $path;
+        }
         parent::__construct();
     }
 
     public function __toString() {
-        return $this->path . "";
+        return $this->exist ? $this->path : "";
     }
 
     // Print the file content
@@ -253,55 +259,82 @@ class File extends Genome {
     }
 
     // Set file permission
-    public function consent($consent) {
+    public function consent($consent = null) {
         $path = $this->path;
         if (isset($path)) {
-            chmod($path, $consent);
+            if (!isset($consent)) {
+                $consent = fileperms($path);
+                return substr(sprintf('%o', $consent), -4);
+            }
+            chmod($path, is_string($consent) ? octdec($consent) : $consent);
         }
-        return $path;
+        return $this;
     }
 
-    // Inspect file path
-    public static function inspect(string $path, $key = null, $fail = false) {
-        $id = json_encode(func_get_args());
-        if (isset(self::$inspect[$id])) {
-            $out = self::$inspect[$id];
-            return isset($key) ? Anemon::get($out, $key, $fail) : $out;
+    public function _consent(): int {
+        return $this->exist ? fileperms($this->path) : -1;
+    }
+
+    public function name($x = false) {
+        if ($this->exist) {
+            $path = $this->path;
+            if ($x === true) {
+                return basename($path);
+            }
+            return pathinfo($path, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
         }
-        $path = To::path($path);
-        $n = Path::N($path);
-        $x = Path::X($path);
-        $exist = file_exists($path);
-        $create = $exist ? filectime($path) : null;
-        $update = $exist ? filemtime($path) : null;
-        $consent = $exist ? fileperms($path) : null;
-        $create_date = $create ? date(DATE_WISE, $create) : null;
-        $update_date = $update ? date(DATE_WISE, $update) : null;
-        $out = [
-            'path' => $path,
-            'name' => $n,
-            'url' => To::URL($path),
-            'extension' => is_file($path) ? $x : null,
-            'type' => $exist ? mime_content_type($path) : null,
-            'create' => $create_date,
-            'update' => $update_date,
-            'size' => $exist ? self::size($path) : null,
-            'consent' => substr(sprintf('%o', $consent), -4),
-            'is' => [
-                'exist' => $exist,
-                // Hidden file/folder only
-                'hidden' => $n === "" || strpos($n, '.') === 0 || strpos($n, '_') === 0,
-                'file' => is_file($path),
-                'files' => is_dir($path),
-                'folder' => is_dir($path) // alias for `is.files`
-            ],
-            '_create' => $create,
-            '_update' => $update,
-            '_size' => $exist ? filesize($path) : null,
-            '_consent' => $consent
-        ];
-        self::$inspect[$id] = $out;
-        return isset($key) ? Anemon::get($out, $key, $fail) : $out;
+        return null;
+    }
+
+    public function directory(int $i = 1, string $r = null) {
+        return $this->exist ? Path::D($r ? Path::R($this->path, $r) : $this->path, $i) : null;
+    }
+
+    public function path(string $r = null) {
+        return $this->exist ? ($r ? Path::R($this->path, $r) : $this->path) : null;
+    }
+
+    // Convert file size to …
+    public function size(string $unit = null, $prec = 2, int $size = null /* @internal */) {
+        $size = $size ?? ($this->exist ? filesize($this->path) : 0);
+        $i = log($size, 1024);
+        $x = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $u = array_search((string) $unit, $x);
+        if (!isset($unit) || $unit === '*' || !$u) {
+            $u = $size > 0 ? floor($i) : 0;
+        }
+        $out = round($size / pow(1024, $u), $prec);
+        return $out < 0 ? null : trim($out . ' ' . $x[$u]);
+    }
+
+    public function _size(): int {
+        return $this->exist ? filesize($this->path) : -1;
+    }
+
+    public function time(): int {
+        return $this->exist ? filectime($this->path) : -1;
+    }
+
+    public function type() {
+        return $this->exist ? mime_content_type($this->path) : null;
+    }
+
+    public function update(): int {
+        return $this->exist ? filemtime($this->path) : -1;
+    }
+
+    public function URL(string $r = null) {
+        return $this->exist ? To::URL($r ? Path::R($this->path, $r) : $this->path) : null;
+    }
+
+    public function x() {
+        if ($this->exist) {
+            if (strpos($path, '.') === false)
+                return null;
+            $x = pathinfo($path, PATHINFO_EXTENSION);
+            return $x ? strtolower($x) : null;
+        }
+        return null;
     }
 
     // List all file(s) from a folder
@@ -440,18 +473,6 @@ class File extends Genome {
         // Show the browser saving dialog!
         readfile($file);
         exit;
-    }
-
-    // Convert file size to …
-    public static function size($file, $unit = null, $prec = 2) {
-        $size = is_numeric($file) ? $file : filesize($file);
-        $size_base = log($size, 1024);
-        $x = ['B', 'KB', 'MB', 'GB', 'TB'];
-        if (!$u = array_search((string) $unit, $x)) {
-            $u = $size > 0 ? floor($size_base) : 0;
-        }
-        $out = round($size / pow(1024, $u), $prec);
-        return $out < 0 ? null : trim($out . ' ' . $x[$u]);
     }
 
 }

@@ -2,7 +2,6 @@
 
 class Folder extends File {
 
-    public function __construct() {}
     public function __toString() {
         return "";
     }
@@ -47,18 +46,18 @@ class Folder extends File {
         return $path && is_dir($path) ? $path : $fail;
     }
 
-    public static function size($folder, $unit = null, $prec = 2) {
-        if (!is_dir($folder)) {
-            return false;
-        }
-        if (!glob($folder . DS . '*', GLOB_NOSORT)) {
-            return parent::size(0, $unit, $prec);
-        }
+    public function size(string $unit = null, $prec = 2, int $size = null /* @internal */) {
         $sizes = 0;
-        foreach (parent::explore([$folder, 1], true, []) as $k => $v) {
-            $sizes += filesize($k);
+        if ($this->exist) {
+            if (!is_dir($this->path))
+                return false;
+            if (!glob($this->path . DS . '*', GLOB_NOSORT))
+                return parent::size($unit, $prec);
+            foreach (parent::explore([$folder, 1], true, []) as $k => $v) {
+                $sizes += filesize($k);
+            }
         }
-        return parent::size($sizes, $unit, $prec);
+        return parent::size($unit, $prec, $sizes);
     }
 
 }
