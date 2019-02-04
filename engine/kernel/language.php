@@ -32,11 +32,11 @@ class Language extends Config {
         if (!file_exists($f)) {
             return; // TODO
         }
-        $content = Cache::of($f, function() use($f) {
+        $content = Cache::hit($f, function($f): array {
             $fn = 'From::' . Page::apart($f, 'type', "");
             $content = Page::apart($f, 'content', "");
-            return is_callable($fn) ? call_user_func($fn, $content) : [];
-        }, filemtime($f), []);
+            return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
+        }) ?? [];
         self::$lot[$c] = extend(self::$lot[$c] ?? [], $content);
         self::$a[$c] = extend(self::$a[$c] ?? [], $content);
     }

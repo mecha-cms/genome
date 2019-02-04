@@ -130,11 +130,11 @@ foreach ($extends as $k => $v) {
         $ff . 'en-us.page'
     ])) {
         // Load extension(s)’ language…
-        Language::set(Cache::of($ff, function() use($ff) {
+        Language::set(Cache::hit($ff, function($ff): array {
             $fn = 'From::' . Page::apart($ff, 'type', "");
             $content = Page::apart($ff, 'content', "");
-            return is_callable($fn) ? call_user_func($fn, $content) : [];
-        }, filemtime($ff), []));
+            return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
+        }) ?? []);
     }
     $f .= 'engine' . DS;
     d($f . 'kernel', function($w, $n) use($f, $seeds) {
