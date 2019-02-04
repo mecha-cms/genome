@@ -11,8 +11,8 @@ class File extends Genome {
     private static $explore = [];
 
     const config = [
-        'size' => [0, 2097152], // Range of allowed file size(s)
-        'extension' => ['txt'] // List of allowed file extension(s)
+        'x' => ['txt'], // List of allowed file extension(s)
+        'size' => [0, 2097152] // Range of allowed file size(s)
     ];
 
     public static $config = self::config;
@@ -176,7 +176,7 @@ class File extends Genome {
     }
 
     // Copy the file/folder to … (folder)
-    public function copyTo($folder = ROOT, string $pattern = '%{name}%.%{i}%.%{extension}%') {
+    public function copyTo($folder = ROOT, string $pattern = '%{name}%.%{i}%.%{x}%') {
         $i = 1;
         $path = $this->path;
         $out = [];
@@ -210,7 +210,7 @@ class File extends Genome {
                     $v = dirname($v) . DS . candy($pattern, [
                         'name' => pathinfo($v, PATHINFO_FILENAME),
                         'i' => $i,
-                        'extension' => pathinfo($v, PATHINFO_EXTENSION)
+                        'x' => pathinfo($v, PATHINFO_EXTENSION)
                     ]);
                     if (copy($path, $v)) {
                         $out[1][] = $v;

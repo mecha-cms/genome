@@ -33,7 +33,7 @@ d($f . 'kernel', function($w, $n) use($f) {
 });
 
 $x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
-File::$config['extension'] = array_unique(explode(',', $x));
+File::$config['x'] = array_unique(explode(',', $x));
 
 Session::start();
 
