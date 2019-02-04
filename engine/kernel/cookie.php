@@ -2,22 +2,25 @@
 
 class Cookie extends Genome {
 
-    public static function set(string $key, $value = "", $config = []) {
-        if (is_numeric($config)) {
-            $config = ['expire' => (int) $config];
+    const config = [
+        'expire' => '1 day',
+        'path' => '/',
+        'domain' => "",
+        'secure' => false,
+        'http_only' => false
+    ];
+
+    public static $config = self::config;
+
+    public static function set(string $key, $value = "", $expire = null) {
+        if (is_scalar($expire)) {
+            $expire = ['expire' => $expire];
         }
-        $config = extend([
-            'expire' => '1 day',
-            'path' => '/',
-            'domain' => "",
-            'secure' => false,
-            'http_only' => false
-        ], $config);
-        if (is_string($config['expire'])) {
-            $t = $_SERVER['REQUEST_TIME'] ?? time();
-            $config['expire'] = strtotime($config['expire'], $t) - $t;
+        $c = extend(self::$config, $expire);
+        if (is_string($c['expire'])) {
+            $c['expire'] = strtotime($c['expire'], $t = time()) - $t;
         }
-        setcookie(self::key($key), self::x($value), ...array_values($config));
+        setcookie(self::key($key), self::x($value), ...array_values($c));
         return new static;
     }
 
@@ -57,7 +60,7 @@ class Cookie extends Genome {
     }
 
     private static function v($value) {
-        return json_decode(base64_decode($value));
+        return json_decode(base64_decode($value), true);
     }
 
     private static function key($key) {
