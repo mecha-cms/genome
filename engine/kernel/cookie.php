@@ -12,14 +12,15 @@ class Cookie extends Genome {
 
     public static $config = self::config;
 
-    public static function set(string $key, $value = "", $expire = null) {
-        if (is_scalar($expire)) {
+    public static function set(string $key, $value = "", $expire = '1 day') {
+        if (!is_array($expire)) {
             $expire = ['expire' => $expire];
         }
         $c = extend(self::$config, $expire);
         if (is_string($c['expire'])) {
-            $c['expire'] = strtotime($c['expire'], $t = time()) - $t;
+            $c['expire'] = (int) (strtotime($c['expire'], $t = time()) - $t);
         }
+        $c['expire'] += time();
         setcookie(self::key($key), self::x($value), ...array_values($c));
         return new static;
     }
