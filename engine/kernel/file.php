@@ -260,11 +260,10 @@ class File extends Genome {
 
     // Set file permission
     public function consent($consent = null) {
-        $path = $this->path;
-        if (isset($path)) {
+        if ($this->exist) {
+            $path = $this->path;
             if (!isset($consent)) {
-                $consent = fileperms($path);
-                return substr(sprintf('%o', $consent), -4);
+                return substr(sprintf('%o', fileperms($path)), -4);
             }
             chmod($path, is_string($consent) ? octdec($consent) : $consent);
         }
@@ -286,14 +285,6 @@ class File extends Genome {
         return null;
     }
 
-    public function directory(int $i = 1, string $r = null) {
-        return $this->exist ? Path::D($r ? Path::R($this->path, $r) : $this->path, $i) : null;
-    }
-
-    public function path(string $r = null) {
-        return $this->exist ? ($r ? Path::R($this->path, $r) : $this->path) : null;
-    }
-
     // Convert file size to …
     public function size(string $unit = null, $prec = 2, int $size = null /* @internal */) {
         $size = $size ?? ($this->exist ? filesize($this->path) : 0);
@@ -311,24 +302,33 @@ class File extends Genome {
         return $this->exist ? filesize($this->path) : -1;
     }
 
-    public function time(): int {
-        return $this->exist ? filectime($this->path) : -1;
+    public function time(string $format = null) {
+        if ($this->exist) {
+            $i = filectime($this->path);
+            return $format ? date($format, $i) : $i;
+        }
+        return null;
     }
 
     public function type() {
         return $this->exist ? mime_content_type($this->path) : null;
     }
 
-    public function update(): int {
-        return $this->exist ? filemtime($this->path) : -1;
+    public function update(string $format = null) {
+        if ($this->exist) {
+            $i = filemtime($this->path);
+            return $format ? date($format, $i) : $i;
+        }
+        return null;
     }
 
-    public function URL(string $r = null) {
-        return $this->exist ? To::URL($r ? Path::R($this->path, $r) : $this->path) : null;
+    public function URL() {
+        return $this->exist ? To::URL($this->path) : null;
     }
 
     public function x() {
         if ($this->exist) {
+            $path = $this->path;
             if (strpos($path, '.') === false)
                 return null;
             $x = pathinfo($path, PATHINFO_EXTENSION);
@@ -461,18 +461,22 @@ class File extends Genome {
     }
 
     // Download a file
-    public static function pull(string $file, $type = null) {
-        HTTP::header([
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => $type ?? 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="' . basename($file) . '"',
-            'Content-Length' => filesize($file),
-            'Expires' => 0,
-            'Pragma' => 'public'
-        ]);
-        // Show the browser saving dialog!
-        readfile($file);
-        exit;
+    public function pull(string $name = null, string $type = null) {
+        if ($this->exist) {
+            $path = $this->path;
+            HTTP::header([
+                'Content-Description' => 'File Transfer',
+                'Content-Type' => $type ?? 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="' . ($name ?? basename($path)) . '"',
+                'Content-Length' => filesize($path),
+                'Expires' => 0,
+                'Pragma' => 'public'
+            ]);
+            // Show the browser saving dialog!
+            readfile($path);
+            exit;
+        }
+        return $this;
     }
 
 }

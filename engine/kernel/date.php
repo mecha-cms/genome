@@ -62,12 +62,12 @@ class Date extends Genome {
         return strtr($this->source, '- :', str_repeat($separator, 3));
     }
 
-    public function W3C() {
+    public function ISO8601() {
         return $this->format('c');
     }
 
     public function to(string $zone = 'UTC') {
-        $date = new \DateTime($this->W3C());
+        $date = new \DateTime($this->ISO8601());
         $date->setTimeZone(new \DateTimeZone($zone));
         if (!isset($this->o[$zone])) {
             $this->o[$zone] = new static($date->format(DATE_WISE));
