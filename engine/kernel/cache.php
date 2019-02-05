@@ -11,11 +11,17 @@ class Cache extends Genome {
         return File::open(self::f($id))->import(null);
     }
 
-    public static function reset(string $id = null): array {
+    public static function reset($id = null): array {
+        $out = [];
         if (!isset($id)) {
-            $out = [];
             foreach (glob(constant(u(static::class)) . DS . '*', GLOB_NOSORT) as $v) {
                 $out = concat($out, File::open($v)->delete());
+            }
+            return $out;
+        }
+        if (is_array($id)) {
+            foreach ($id as $v) {
+                $out[] = File::open(self::f($v))->delete();
             }
             return $out;
         }
@@ -34,12 +40,23 @@ class Cache extends Genome {
         return self::expire($id, $at) ? self::set($id, $fn, [$id, self::f($id)])[0] : self::get($id);
     }
 
-    public static function hit(string $file, callable $fn) {
-        if (!is_file($file)) {
-            return self::set($file, $fn)[0];
+    public static function hit($file, callable $fn) {
+        if (is_array($file)) {
+            $i = 0;
+            $files = [];
+            foreach ($file as $v) {
+                if (is_file($v)) {
+                    $files[] = $v;
+                    if ($i < ($t = filemtime($v))) {
+                        $i = $t;
+                    }
+                }
+            }
+            $f = self::f($id = json_encode($files));
+            return !is_file($f) || $i > filemtime($f) ? self::set($id, $fn, [$files, $f])[0] : self::get($id);
         }
         $f = self::f($file);
-        return filemtime($file) > filemtime($f) ? self::set($file, $fn, [$file, $f])[0] : self::get($file);
+        return !is_file($f) || filemtime($file) > filemtime($f) ? self::set($file, $fn, [$file, $f])[0] : self::get($file);
     }
 
     protected static function at($in, $t = null) {

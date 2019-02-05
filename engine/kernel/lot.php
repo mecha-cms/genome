@@ -3,13 +3,13 @@
 class Lot extends Genome {
 
     public static function set($key, $value = null) {
+        $scope = '.' . md5(static::class);
         if (is_array($key) || is_object($key)) {
-            $scope = '.' . md5(static::class);
             foreach ($key as $k => $v) {
                 $GLOBALS[$scope][$k] = $v;
             }
         } else {
-            $GLOBALS['.' . md5(static::class)][$key] = $value;
+            $GLOBALS[$scope][$key] = $value;
         }
         return new static;
     }

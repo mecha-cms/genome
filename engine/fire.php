@@ -122,19 +122,15 @@ foreach (g(EXTEND . DS . '*', 'index.php') as $v) {
 asort($extends);
 extract($seeds, EXTR_SKIP);
 Config::set('extend[]', $extends);
+$files = [];
 foreach ($extends as $k => $v) {
-    $f = Path::D($k) . DS;
+    $f = dirname($k) . DS;
     $ff = $f . 'lot' . DS . 'language' . DS;
     if ($ff = File::exist([
         $ff . $config->language . '.page',
         $ff . 'en-us.page'
     ])) {
-        // Load extension(s)’ language…
-        Language::set(Cache::hit($ff, function($ff): array {
-            $fn = 'From::' . Page::apart($ff, 'type', "");
-            $content = Page::apart($ff, 'content', "");
-            return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
-        }) ?? []);
+        $files[] = $ff;
     }
     $f .= 'engine' . DS;
     d($f . 'kernel', function($w, $n) use($f, $seeds) {
@@ -145,6 +141,17 @@ foreach ($extends as $k => $v) {
         }
     }, $seeds);
 }
+
+// Load extension(s)’ language…
+Language::set(Cache::hit($files, function($files): array {
+    $out = [];
+    foreach ($files as $file) {
+        $fn = 'From::' . Page::apart($file, 'type', "");
+        $content = Page::apart($file, 'content', "");
+        $out = extend($out, is_callable($fn) ? (array) call_user_func($fn, $content) : []);
+    }
+    return $out;
+}) ?? []);
 
 // Run main task if any
 if ($task = File::exist(ROOT . DS . 'task.php')) {

@@ -16,12 +16,12 @@ class Cookie extends Genome {
         if (!is_array($expire)) {
             $expire = ['expire' => $expire];
         }
-        $c = extend(self::$config, $expire);
-        if (is_string($c['expire'])) {
-            $c['expire'] = (int) (strtotime($c['expire'], $t = time()) - $t);
+        $c = array_values(extend(self::$config, $expire));
+        if (is_string($c[0])) {
+            $c[0] = (int) (strtotime($c[0], $t = time()) - $t);
         }
-        $c['expire'] += time();
-        setcookie(self::key($key), self::x($value), ...array_values($c));
+        $c[0] += time();
+        setcookie(self::key($key), self::x($value), ...$c);
         return new static;
     }
 

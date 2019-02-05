@@ -11,19 +11,15 @@ call_user_func(function() {
     asort($plugins);
     extract($seeds, EXTR_SKIP);
     Config::set('plugin[]', $plugins);
+    $files = [];
     foreach ($plugins as $k => $v) {
-        $f = Path::D($k) . DS;
+        $f = dirname($k) . DS;
         $ff = $f . 'lot' . DS . 'language' . DS;
         if ($ff = File::exist([
             $ff . $config->language . '.page',
             $ff . 'en-us.page'
         ])) {
-            // Load plugin(s)’ language…
-            Language::set(Cache::hit($ff, function($ff): array {
-                $fn = 'From::' . Page::apart($ff, 'type', "");
-                $content = Page::apart($ff, 'content', "");
-                return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
-            }) ?? []);
+            $files[] = $ff;
         }
         $f .= 'engine' . DS;
         d($f . 'kernel', function($w, $n) use($f, $seeds) {
@@ -34,6 +30,16 @@ call_user_func(function() {
             }
         }, $seeds);
     }
+    // Load plugin(s)’ language…
+    Language::set(Cache::hit($files, function($files): array {
+        $out = [];
+        foreach ($files as $file) {
+            $fn = 'From::' . Page::apart($file, 'type', "");
+            $content = Page::apart($file, 'content', "");
+            $out = extend($out, is_callable($fn) ? (array) call_user_func($fn, $content) : []);
+        }
+        return $out;
+    }) ?? []);
     foreach (array_keys($plugins) as $v) {
         if ($k = File::exist(dirname($v) . DS . 'task.php')) {
             include $k;
