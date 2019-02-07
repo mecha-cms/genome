@@ -146,8 +146,8 @@ namespace {
         return $s;
     }
     // Convert class name to file name
-    function c2f(string $s = "", string $h = '-', string $n = '.') {
-        return \ltrim(\str_replace(['\\', $n . $h], $n, h($s, $h, false, '\\\\')), $h);
+    function c2f(string $s, string $h = '-', string $n = '.') {
+        return \ltrim(\str_replace(['\\', $n . $h, '_' . $h], [$n, $n, '_'], h($s, $h, false, '_\\\\')), $h);
     }
     // Merge array value(s)
     function concat(array $a = [], ...$b) {
@@ -178,9 +178,11 @@ namespace {
         return '<p style="background:#f00;color:#fff;margin:0;padding:.5em 1em;">' . $s . '</p>';
     }
     // Convert file name to class name
-    function f2c(string $s = "", string $h = '-', string $n = '.') {
-        return \str_replace($n, '\\', p(\str_replace($n, $n . '-', $s), false, $n));
+    function f2c(string $s, string $h = '-', string $n = '.') {
+        return \str_replace($n, '\\', p(\str_replace($n, $n . '-', $s), false, $n . '_'));
     }
+    // Convert file name to class method name
+    function f2m(string $s, string $h = '-') { /* TODO */ }
     // Return the first element found in array that passed the function test
     function find(array $a = [], callable $fn) {
         foreach ($a as $k => $v) {
@@ -254,6 +256,8 @@ namespace {
     function map(array $a = [], callable $fn) {
         return \array_map($fn, $a, \array_keys($a));
     }
+    // Convert class method name to file name
+    function m2f(string $s, string $h = '-') { /* TODO */ }
     // A not equal to B
     function ne($a, $b) {
         return q($a) !== $b;
@@ -356,9 +360,9 @@ namespace {
         return $x;
     }
     function c(string $x = "", $a = false, string $i = "") {
-        return \preg_replace_callback('# ([\p{L}\p{N}' . $i . '])#u', function($m) {
-            return u($m[1]);
-        }, f($x, $a, $i));
+        return \str_replace(' ', "", \preg_replace_callback('#([ ' . $i . '])([\p{L}\p{N}' . $i . '])#u', function($m) {
+            return $m[1] . u($m[2]);
+        }, f($x, $a, $i)));
     }
     function d(string $f = "", $fn = null, array $s__ = []) {
         \spl_autoload_register(function($w) use($f, $fn, $s__) {
@@ -400,7 +404,7 @@ namespace {
             if (($v = \fn\is\json($x, true)) !== false)
                 return $v;
             // `"abcdef"` or `'abcdef'`
-            if ($x[0] === '"' || $x[0] === "'") {
+            if ($x[0] === '"' && \substr($x, -1) === '"' || $x[0] === "'" && \substr($x, -1) === "'") {
                 $v = \substr(\substr($x, 1), 0, -1);
                 $a = \strpos($v, $x[0]);
                 $b = \strpos($v, "\\");
@@ -408,7 +412,7 @@ namespace {
                 if (
                     $a !== false &&
                     $a === $b + 1 &&
-                    \preg_match('#^' . $x[0] . '(?:[^' . $x[0] . '\\]|\\.)*' . $x[0] . '$#', $x)
+                    \preg_match('#^' . $x[0] . '(?:[^' . $x[0] . '\\\]|\\\.)*' . $x[0] . '$#', $x)
                 ) {
                     return \str_replace("\\" . $x[0], $x[0], $v);
                 }

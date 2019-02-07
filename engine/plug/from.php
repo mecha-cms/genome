@@ -60,29 +60,31 @@ $yaml_block = function(string $in) {
     return \trim($out);
 };
 
-$yaml_list = function(string $in, string $dent) use(&$yaml, &$yaml_break, &$yaml_shift, &$yaml_value) {
+$yaml_list = function(string $in, string $dent, $e) use(&$yaml, &$yaml_break, &$yaml_shift, &$yaml_value) {
     $out = [];
     $in = $yaml_shift($in, '  ' /* hard-coded */);
     foreach (\explode("\n- ", \substr($in, 2)) as $v) {
         $v = \str_replace("\n  ", "\n", $v);
         list($k, $m) = $yaml_break($v);
         if ($m === false) {
-            $out[] = $yaml_value($v);
+            $v = $yaml_value($v);
+            $out[] = $e ? \e($v, ['~' => null]) : $v;
         } else {
-            $out[] = $yaml($v, $dent);
+            $out[] = $yaml($v, $dent, $e);
         }
     }
     return $out;
 };
 
 // Parse flow-style collection(s)
-$yaml_span = function(string $in) {
+$yaml_span = function(string $in, $e) {
     $out = "";
     // Validate to JSON
     foreach (\preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE) as $v) {
         $out .= \strpos('[]{}:,', $v) !== false ? $v : \json_encode($v);
     }
-    return \json_decode($out, true) ?? $in;
+    $out = \json_decode($out, true) ?? $in;
+    return $e ? \e($out, ['~' => null]) : $out;
 };
 
 // Remove comment(s)
@@ -90,7 +92,7 @@ $yaml_value = function(string $in) {
     $in = \trim($in);
     if (\strpos($in, '"') === 0 || \strpos($in, "'") === 0) {
         $q = $in[0];
-        if (\preg_match('#^(' . $q . '(?:[^' . $q . '\\\]|\\\.)*' . $q . ')\s*\#.*$#', $in, $m)) {
+        if (\preg_match('#^(' . $q . '(?:[^' . $q . '\\\]|\\\.)*' . $q . ')(\s*\#.*)?$#', $in, $m)) {
             return $m[1];
         }
     }
@@ -124,14 +126,14 @@ $yaml_break = function(string $in) {
     return [false, false, \trim(\explode('#', $in, 2)[0])];
 };
 
-$yaml_set = function(&$out, string $in, string $dent) use(&$yaml, &$yaml_block, &$yaml_break, &$yaml_list, &$yaml_shift, &$yaml_span, &$yaml_value) {
+$yaml_set = function(&$out, string $in, string $dent, $e) use(&$yaml, &$yaml_block, &$yaml_break, &$yaml_list, &$yaml_shift, &$yaml_span, &$yaml_value) {
     list($k, $m, $v) = $yaml_break($in);
     if ($k === false && $m === false && $v !== "") {
         if (
             $v[0] === '[' && \substr($v, -1) === ']' ||
             $v[0] === '{' && \substr($v, -1) === '}'
         ) {
-            $out = $yaml_span($v);
+            $out = $yaml_span($v, $e);
             return;
         }
     }
@@ -150,19 +152,19 @@ $yaml_set = function(&$out, string $in, string $dent) use(&$yaml, &$yaml_block, 
             if (\strpos($v, $dent . '-') === 0) {
                 $v = $vv;
             }
-            $out[$k] = $yaml_list($v, $dent);
+            $out[$k] = $yaml_list($v, $dent, $e);
         // Else
         } else {
-            $out[$k] = $vv !== "" ? $yaml($vv, $dent) : [];
+            $out[$k] = $vv !== "" ? $yaml($vv, $dent, $e) : [];
         }
     } else {
         $vv = $yaml_value($vv);
         if (\strpos($vv, '- ') === 0) {
-            $out = $yaml_list($vv, $dent);
+            $out = $yaml_list($vv, $dent, $e);
             return;
         }
         if ($vv === "" || $vv === '[]' || $vv === '{}') {
-            $vv = [];
+            $vv = []; // Empty array
         } else if (
             $vv && (
                 $vv[0] === '[' && \substr($vv, -1) === ']' ||
@@ -170,28 +172,28 @@ $yaml_set = function(&$out, string $in, string $dent) use(&$yaml, &$yaml_block, 
             )
         ) {
             // Use native JSON parser where possible
-            $vv = \json_decode($vv) ?? $yaml_span($vv);
+            $vv = \json_decode($vv, true) ?? $yaml_span($vv, $e);
+        } else if ($e) {
+            $vv = \e($vv, ['~' => null]);
         }
         $out[$k] = $vv;
     }
 };
 
-$yaml = function(string $in, string $dent = '  ') use(&$yaml_select, &$yaml_set) {
+$yaml = function(string $in, string $dent = '  ', $e = true) use(&$yaml_select, &$yaml_set) {
     $out = [];
     // Normalize line-break
     $in = \trim(\n($in));
     if ($in === "") {
-        return $out;
+        return $out; // Empty array
     }
     foreach ($yaml_select($in) as $v) {
-        if ($v === "")
-            continue;
-        $yaml_set($out, $v, $dent);
+        $v !== "" && $yaml_set($out, $v, $dent, $e);
     }
     return $out;
 };
 
-$yaml_docs = function(string $in, string $dent = '  ') use(&$yaml) {
+$yaml_docs = function(string $in, string $dent = '  ', $e = true) use(&$yaml) {
     $docs = [];
     // Normalize line-break
     $in = \trim(\n($in));
@@ -200,7 +202,7 @@ $yaml_docs = function(string $in, string $dent = '  ') use(&$yaml) {
     // Skip any string after `...`
     $parts = \explode("\n...\n", \trim($in) . "\n", 2);
     foreach (\explode("\n---", $parts[0]) as $v) {
-        $docs[] = $yaml(\trim($v), $dent);
+        $docs[] = $yaml(\trim($v), $dent, $e);
     }
     // Take the rest of the YAML stream just in case you need it!
     if (isset($parts[1])) {
@@ -259,14 +261,12 @@ foreach ([
     'YAML' => function($in, string $dent = '  ', $docs = false, $e = true) use(&$yaml, &$yaml_docs) {
         if (\is_array($in))
             return $in;
-        if (\is_object($in)) {
+        if (\is_object($in))
             return \a($in);
-        }
         if (\Is::file($in)) {
             $in = \file_get_contents($in);
         }
-        $out = $docs ? $yaml_docs($in, $dent) : $yaml($in, $dent);
-        return $e ? \e($out, ['~' => null]) : $out;
+        return $docs ? $yaml_docs($in, $dent, $e) : $yaml($in, $dent, $e);
     }
 ] as $k => $v) {
     \From::_($k, $v);
