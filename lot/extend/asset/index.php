@@ -21,17 +21,24 @@ function asset($content) {
 });
 
 \Hook::set('asset:body', function($content) {
-    $a = \Hook::fire('asset.js', [\Asset::js()], null, \Asset::class);
-    $b = "";
+    $js = \Hook::fire('asset.js', [\Asset::js()], null, \Asset::class);
+    $script = $template = "";
     $lot = \Asset::get();
     if (!empty($lot[':script'])) {
         foreach (\Anemon::eat($lot[':script'])->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v['content'])) {
-                $b .= N . \HTML::unite('script', N . $v['content'] . N, $v['data']);
+                $script .= N . \HTML::unite('script', N . $v['content'] . N, $v['data']);
             }
         }
     }
-    return $content . $a . $b . N; // Put inline JS after remote JS
+    if (!empty($lot[':template'])) {
+        foreach (\Anemon::eat($lot[':template'])->sort([1, 'stack'], true) as $k => $v) {
+            if (!empty($v['content'])) {
+                $template .= N . \HTML::unite('template', N . DENT . \str_replace("\n", DENT . "\n", $v['content']) . N, $v['data']);
+            }
+        }
+    }
+    return $content . $template . $script . N; // Put inline JS after remote JS
 });
 
 \Hook::set('shield.yield', __NAMESPACE__ . "\\asset", 0);
