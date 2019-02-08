@@ -1,5 +1,10 @@
 <?php
 
+// Class methods naming follows how the HTML class names their methods.
+// “camelCase” and “ABBR” (abreviation) specifications do not apply here
+// because naming methods in the HTML class follows the HTML tag naming
+// standards that are not case-sensitive.
+
 foreach (['reset', 'submit'] as $kin) {
     Form::_($kin, function(string $name = null, $value = null, string $text = null, array $attr = [], $dent = 0) use($kin) {
         $attr['type'] = $kin;
@@ -25,7 +30,23 @@ foreach ([
         return HTML::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, extend($a, $attr)) . $text);
     },
     'color' => function(string $name = null, $value = null, array $attr = [], $dent = 0) {
-        // TODO: color converter for `$value`
+        // Convert RGB to HEX
+        $c = '\d{1,2}|[1][0-9][0-9]|[2][0-5][0-5]';
+        if (strpos($value, 'rgb') === 0 && preg_match('#rgba?\(\s*(' . $c . ')\s*,\s*(' . $c . ')\s*,\s*(' . $c . ')(?:\s*,\s*((?:0?\.)?\d+))?\)#', $value, $m)) {
+            // <https://stackoverflow.com/a/32977705>
+            $value = sprintf("#%02x%02x%02x", (int) $m[1], (int) $m[2], (int) $m[3]);
+        } else {
+            $value = '#000000';
+        }
+        // Validate HEX color
+        if (strpos($value, '#') === 0 && ctype_xdigit(substr($value, 1))) {
+            if (strlen($value) === 4) {
+                $c = str_split(substr($value, 1));
+                $value = '#' . $c[0] . $c[0] . $c[1] . $c[1] . $c[2] . $c[2];
+            } else if (strlen($value) !== 7) {
+                $value = '#000000';
+            }
+        }
         return static::input($name, 'color', $value, null, $attr, $dent);
     },
     'date' => function(string $name = null, $value = null, string $placeholder = null, array $attr = [], $dent = 0) {
@@ -72,7 +93,7 @@ foreach ([
 
 foreach (['email', 'number', 'password', 'search', 'tel', 'text', 'url'] as $kin) {
     Form::_($kin, function(string $name = null, $value = null, string $placeholder = null, array $attr = [], $dent = 0) use($kin) {
-        return static::input($name, $kin, $value, $placeholder, $attr, $dent);
+        return static::input($name, strtolower($kin), $value, $placeholder, $attr, $dent);
     });
 }
 

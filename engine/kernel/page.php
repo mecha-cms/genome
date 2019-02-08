@@ -19,23 +19,18 @@ class Page extends Genome {
         if (isset(self::$page[$hash])) {
             $this->lot = self::$page[$hash];
         } else {
-            $n = $f ? Path::N($path) : null;
-            $x = $f ? Path::X($path) : null;
-            $c = $m = $_SERVER['REQUEST_TIME'] ?? time();
-            if ($f && file_exists($path)) {
-                $c = filectime($path); // File creation time
-                $m = filemtime($path); // File modification time
-            }
+            $file = new File($path);
             $this->lot = extend([
-                'time' => date(DATE_WISE, $c),
-                'update' => date(DATE_WISE, $m),
-                'slug' => $n,
+                'time' => $t = $file->time(DATE_WISE),
+                'update' => $file->update(DATE_WISE),
+                'name' => $n = $file->name,
+                'x' => $x = $file->x,
+                'id' => $f ? sprintf('%u', (string) $t) : null,
+                'slug' => $file->name,
                 'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
-                'x' => $x,
                 'type' => $x !== null ? u($x) : null, // Fake `type` data from the page’s file extension
-                'id' => $f ? sprintf('%u', (string) $c) : null,
                 'path' => $path,
-                'url' => $f ? To::URL($path) : null
+                'url' => $file->URL
             ], (array) Config::get($key, [], true), $lot, false);
             // Set `time` value from the page’s file name
             if (
@@ -72,7 +67,7 @@ class Page extends Genome {
         }
         $a = $this->lot;
         $path = $this->path;
-        $extern = $path ? Path::F($path) . DS . strtr($key, '_', '-') . '.data' : null;
+        $extern = $path ? Path::F($path) . DS . $key . '.data' : null;
         if ($extern && is_file($path)) {
             // Prioritize data from a file…
             if ($data = File::open($extern)->get()) {
@@ -251,10 +246,9 @@ class Page extends Genome {
         if (strpos($in, "---\n") !== 0) {
             $data['content'] = $in;
         } else {
-            $parts = From::YAML($in, '  ', true, false);
+            $parts = From::YAML($in, '  ', true, $eval);
             $data = $parts[0];
             $data['content'] = $parts["\t"] ?? "";
-            $data = $eval ? e($data, ['~' => null]) : $data;
         }
         return $data;
     }

@@ -82,7 +82,7 @@ class Form extends HTML {
         // value or a brief description of the expected format. The attribute, if specified, must
         // have a value that contains no “LF” (U+000A) or “CR” (U+000D) character(s).
         if (isset($placeholder)) {
-            $placeholder = substr(self::v(explode("\n", n($placeholder), 2)[0]), 0, 300); // TODO
+            $placeholder = substr(self::v(explode("\n", n($placeholder), 2)[0]), 0, 120);
         }
         $a['placeholder'] = $placeholder;
         $value = Session::get(self::session . '.' . self::key($name), $value);

@@ -193,7 +193,7 @@ $yaml = function(string $in, string $dent = '  ', $e = true) use(&$yaml_select, 
     return $out;
 };
 
-$yaml_docs = function(string $in, string $dent = '  ', $e = true) use(&$yaml) {
+$yaml_docs = function(string $in, string $dent = '  ', $e = true, $content = "\t") use(&$yaml) {
     $docs = [];
     // Normalize line-break
     $in = \trim(\n($in));
@@ -211,7 +211,7 @@ $yaml_docs = function(string $in, string $dent = '  ', $e = true) use(&$yaml) {
         // a YAML document, so it will be impossible that, there will be
         // a YAML key denoted by a human using a tab character.
         // <https://yaml.org/spec/1.2/spec.html#id2777534>
-        $docs["\t"] = \trim($parts[1], "\n");
+        $docs[$content] = \trim($parts[1], "\n");
     }
     return $docs;
 };
@@ -266,7 +266,7 @@ foreach ([
         if (\Is::file($in)) {
             $in = \file_get_contents($in);
         }
-        return $docs ? $yaml_docs($in, $dent, $e) : $yaml($in, $dent, $e);
+        return $docs ? $yaml_docs($in, $dent, $e, $docs === true ? "\t" : $docs) : $yaml($in, $dent, $e);
     }
 ] as $k => $v) {
     \From::_($k, $v);

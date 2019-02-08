@@ -1,5 +1,8 @@
 <?php
 
+// Class methods naming follows how the HTML tag naming standards that are not
+// case-sensitive. “camelCase” and “ABBR” (abreviation) specifications do not apply here.
+
 foreach([
     'a' => function(string $text = "", string $href = null, $target = null, array $attr = [], $dent = 0) {
         $a = [

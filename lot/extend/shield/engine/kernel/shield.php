@@ -3,9 +3,9 @@
 class Shield extends Extend {
 
     const config = [
-        'union' => ['html', "", ['class' => true]],
+        'x' => ['html', 'php'],
         'id' => 'document',
-        'extension' => ['html', 'php']
+        'union' => ['html', "", ['class' => true]]
     ];
 
     public static $config = self::config;
@@ -35,7 +35,7 @@ class Shield extends Extend {
         $o = [];
         $folder = constant(u(static::class));
         $id = static::$config['id'];
-        $extension = static::$config['extension'];
+        $extension = static::$config['x'];
         foreach ((array) $out as $v) {
             $v = strtr($v, '/', DS);
             if (strpos($v, $folder) !== 0) {

@@ -7,7 +7,7 @@ version: 1.5.5
 
 dependency:
   extension:
-    - shield
+  - shield
 ...
 
 This extension activates the basic features of a website by utilizing the structure of the page file placement in the `.\lot\page` folder. This extension also adds some useful properties to the `$site` variable.
