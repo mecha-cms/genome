@@ -6,13 +6,11 @@ abstract class Union extends Genome {
         'union' => [
             // 0 => [
             //     0 => ['\<', '\>', '\/'],
-            //     1 => ['\=', '\"', '\"', '\s'],
-            //     2 => ['\<\!\-\-', '\-\-\>']
+            //     1 => ['\=', '\"', '\"', '\s']
             // ],
             1 => [
                 0 => ['<', '>', '/'],
-                1 => ['=', '"', '"', ' '],
-                2 => ['<!--', '-->']
+                1 => ['=', '"', '"', ' ']
             ]
         ],
         'pattern' => [
@@ -31,7 +29,7 @@ abstract class Union extends Genome {
 
     // Build union attribute(s)…
     protected function _data_($a = []) {
-        if (!is_array($a)) {
+        if (is_scalar($a)) {
             $a = trim((string) $a);
             return strlen($a) ? ' ' . $a : "";
         }
@@ -39,7 +37,9 @@ abstract class Union extends Genome {
         $u = $this->union[1][1];
         ksort($a);
         foreach ($a as $k => $v) {
-            if (!isset($v) || $v === false) continue;
+            if (!isset($v) || $v === false) {
+                continue;
+            }
             if (is_array($v) || (is_object($v) && !fn\is\instance($v))) {
                 $v = json_encode($v);
             }
@@ -103,7 +103,7 @@ abstract class Union extends Genome {
                     $s = To::HTML(v($mm[2][$k]));
                     $s = $eval ? e($s) : $s;
                     if ($s === "" && strpos($mm[0][$k], $d[0] . $d[1] . $d[2]) === false) {
-                        $s = $v;
+                        $s = $eval ? true : $v;
                     }
                     $out[2][$v] = $s;
                 }
@@ -111,17 +111,6 @@ abstract class Union extends Genome {
             return $out;
         }
         return false;
-    }
-
-    // Union comment
-    protected function ____(string $content = "", int $dent = 0, $block = N) {
-        $dent = self::dent($dent);
-        $begin = $end = $block;
-        if (strpos($block, N) !== false) {
-            $end = $block . $dent;
-        }
-        $u = $this->union[1][2];
-        return $dent . $u[0] . $begin . $content . $end . $u[1];
     }
 
     // Base union unit open
