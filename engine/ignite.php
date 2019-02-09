@@ -179,10 +179,12 @@ namespace {
     }
     // Convert file name to class name
     function f2c(string $s, string $h = '-', string $n = '.') {
-        return \str_replace($n, '\\', p(\str_replace($n, $n . '-', $s), false, $n . '_'));
+        return \str_replace($n, '\\', p(\str_replace([$n, '_'], [$n . $h, '_' . $h], $s), false, $n . '_'));
     }
-    // Convert file name to class method name
-    function f2m(string $s, string $h = '-') { /* TODO */ }
+    // Convert file name to class property name
+    function f2p(string $s, string $h = '-', string $n = '.') {
+        return c(\str_replace([$n, '_'], [$h . '__', $h . '_'], $s), false, $n . '_');
+    }
     // Return the first element found in array that passed the function test
     function find(array $a = [], callable $fn) {
         foreach ($a as $k => $v) {
@@ -256,8 +258,6 @@ namespace {
     function map(array $a = [], callable $fn) {
         return \array_map($fn, $a, \array_keys($a));
     }
-    // Convert class method name to file name
-    function m2f(string $s, string $h = '-') { /* TODO */ }
     // A not equal to B
     function ne($a, $b) {
         return q($a) !== $b;
@@ -278,6 +278,10 @@ namespace {
         return \array_filter(\array_map(function($v) use($k, $fail) {
             return $v[$k] ?? $fail;
         }, $a));
+    }
+    // Convert class property name to file name
+    function p2f(string $s, string $h = '-', string $n = '.') {
+        return \str_replace('__', $n, h($s, $h, false, '_'));
     }
     // Shake array
     function shake(array $a = [], $preserve_key = true) {
