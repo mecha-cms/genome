@@ -6,7 +6,8 @@ class HTML extends Union {
     protected function _data_($a = []) {
         if (is_array($a)) {
             foreach ($a as $k => $v) {
-                if (!is_array($v)) continue;
+                if (!is_array($v))
+                    continue;
                 // HTML5 `data-*` attribute
                 if ($k === 'data[]') {
                     ksort($v);
@@ -30,7 +31,8 @@ class HTML extends Union {
                     $css = "";
                     // ksort($v);
                     foreach ($v as $kk => $vv) {
-                        if (!isset($vv) || $vv === false) continue;
+                        if (!isset($vv) || $vv === false)
+                            continue;
                         $css .= $kk . ':' . $vv . ';';
                     }
                     $a['style'] = $css !== "" ? $css : null;
@@ -55,9 +57,11 @@ class HTML extends Union {
                     if ($v !== 'style') {
                         // TODO: preserve `;` inside quote(s)
                         foreach (explode(';', $v) as $vv) {
-                            if (trim($vv) === "") continue;
+                            if (trim($vv) === "")
+                                continue;
                             $a = explode(':', $vv . ':');
-                            if (trim($a[1]) === "") continue;
+                            if (trim($a[1]) === "")
+                                continue;
                             $out[2]['style[]'][trim($a[0])] = e(trim($a[1]));
                         }
                     } else {
@@ -68,6 +72,17 @@ class HTML extends Union {
             }
         }
         return $out;
+    }
+
+    // HTML comment
+    protected function _comment_(string $content = "", int $dent = 0, $block = false) {
+        $dent = self::dent($dent);
+        $begin = $end = $block ? N : ' ';
+        if ($block) {
+            $content = $dent . str_replace(N, N . $dent, $content);
+            $end = N . $dent;
+        }
+        return $dent . '<!--' . $begin . $content . $end . '-->';
     }
 
     public function __call(string $kin, array $lot = []) {
