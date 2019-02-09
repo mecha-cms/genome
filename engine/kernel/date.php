@@ -16,14 +16,6 @@ class Date extends Genome {
             global $language;
             $i = explode('.', $this->format('Y.m.d.H.i.s.A.w.h.e'));
             $this->lot = [
-                '%year%' => $i[0],
-                '%month%' => $i[1],
-                '%day%' => $i[2],
-                '%hour%' => $i[3],
-                '%minute%' => $i[4],
-                '%second%' => $i[5],
-                '%noon%' => $i[6],
-                '%week%' => ($w = str_pad($i[7] + 1, 2, '0', STR_PAD_LEFT)),
                 '%zone%' => $i[9],
                 '%~M%' => $language->months_long[(int) $i[1] - 1],
                 '%~D%' => $language->days_long[(int) $i[7]],
@@ -34,12 +26,16 @@ class Date extends Genome {
                 '%m%' => $i[4],
                 '%s%' => $i[5],
                 '%N%' => $i[6],
-                '%W%' => $w,
+                '%W%' => str_pad($i[7] + 1, 2, '0', STR_PAD_LEFT),
                 '%h%' => $i[8],
                 '%Z%' => $i[9]
             ];
         }
         return $this;
+    }
+
+    public function year() {
+        return $this->format('Y');
     }
 
     public function month($type = null) {
@@ -56,6 +52,14 @@ class Date extends Genome {
 
     public function hour($type = null) {
         return $this->extract()->lot['%' . ($type === 12 ? 'h' : '~h') . '%'];
+    }
+
+    public function minute() {
+        return $this->format('i');
+    }
+
+    public function second() {
+        return $this->format('s');
     }
 
     public function slug($separator = '-') {
