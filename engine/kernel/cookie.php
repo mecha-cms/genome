@@ -3,20 +3,20 @@
 class Cookie extends Genome {
 
     const config = [
-        'expire' => '1 day',
+        'expires' => '1 day',
         'path' => '/',
         'domain' => "",
         'secure' => false,
-        'http_only' => false
+        'httponly' => false
     ];
 
     public static $config = self::config;
 
-    public static function set(string $key, $value = "", $expire = '1 day') {
-        if (!is_array($expire)) {
-            $expire = ['expire' => $expire];
+    public static function set(string $key, $value = "", $expires = '1 day') {
+        if (!is_array($expires)) {
+            $expires = ['expires' => $expires];
         }
-        $c = array_values(extend(self::$config, $expire));
+        $c = array_values(extend(self::$config, $expires));
         if (is_string($c[0])) {
             $c[0] = (int) (strtotime($c[0], $t = time()) - $t);
         }
