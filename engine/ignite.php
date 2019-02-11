@@ -438,7 +438,7 @@ namespace {
         // this function does not trim white-space at the start and end of the string
         $x = \preg_replace([
             // remove HTML tag(s) and character(s) reference
-            '#<[^<>]*?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);#i',
+            '#<[^>]+?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);#i',
             // remove anything except character(s) white-list
             '#[^\p{L}\p{N}\s' . $i . ']#u',
             // convert multiple white-space to single space

@@ -184,7 +184,7 @@ foreach([
             $out = "";
             $done = $i = 0;
             $tags = [];
-            while ($done < $x[0] && \preg_match('#</?([a-z\d:.-]+)(?:\s[^<>]*?)?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*#i', $s, $m, \PREG_OFFSET_CAPTURE, $i)) {
+            while ($done < $x[0] && \preg_match('#</?([a-z\d:.-]+)(?:\s[^>]*?)?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*#i', $s, $m, \PREG_OFFSET_CAPTURE, $i)) {
                 list($tag, $pos) = $m[0];
                 $str = \substr($s, $i, $pos - $i);
                 if ($done + \strlen($str) > $x[0]) {
@@ -209,7 +209,7 @@ foreach([
                         assert($open === $n); // Check that tag(s) are properly nested!
                         $out .= $tag;
                     // `<tag/>`
-                    } else if (\substr($tag, -2) === '/>' || \preg_match('#<(?:br|hr|img|input|link|meta|svg)(?:\s[^<>]*?)?>#i', $tag)) {
+                    } else if (\substr($tag, -2) === '/>' || \preg_match('#<(?:br|hr|img|input|link|meta|svg)(?:\s[^>]*?)?>#i', $tag)) {
                         $out .= $tag;
                     // `<tag>`
                     } else {

@@ -12,16 +12,17 @@ class HTML extends Union {
                 if ($k === 'data[]') {
                     ksort($v);
                     foreach ($v as $kk => $vv) {
-                        if (!isset($vv) || $vv === false) continue;
+                        if (!isset($vv) || $vv === false)
+                            continue;
                         $a['data-' . $kk] = fn\is\anemon($vv) ? json_encode($vv) : $vv;
                     }
                     unset($a[$k]);
                 // Class value as array
                 } else if ($k === 'class[]') {
                     if (isset($a['class'])) {
-                        $v = concat(explode(' ', $a['class']), $v);
+                        $v = $a['class'] !== true ? concat(explode(' ', $a['class']), $v) : [];
                     }
-                    $v = is(array_unique($v));
+                    $v = array_filter(array_unique($v));
                     sort($v);
                     $v = implode(' ', $v);
                     $a['class'] = $v !== "" ? $v : null;
@@ -51,7 +52,7 @@ class HTML extends Union {
                     $out[2]['data[]'][substr($k, 5)] = $v;
                     unset($out[2][$k]);
                 } else if ($k === 'class') {
-                    $out[2]['class[]'] = $v === 'class' ? [] : array_unique(explode(' ', $v));
+                    $out[2]['class[]'] = ($eval && $v === true || !$eval && $v === 'class') ? [] : array_unique(explode(' ', $v));
                     unset($out[2][$k]);
                 } else if ($k === 'style') {
                     if ($v !== 'style') {

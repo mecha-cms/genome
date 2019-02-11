@@ -3,34 +3,34 @@
 $state = new State(['state' => Extend::state('asset')]);
 
 foreach ([
-    'css' => function($value, $key, $attr) use($state) {
+    'css' => function($value, $key, $data) use($state) {
         extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
         }
         $href = $path === false ? $url : candy($state->state['url'], [$url, file_exists($path) ? filemtime($path) : 0]);
-        if (isset($attr['href']) && is_callable($attr['href'])) {
-            $href = fn($attr['href'], [$href, $value, $key, $attr], $state, Asset::class);
-            unset($attr['href']);
+        if (isset($data['href']) && is_callable($data['href'])) {
+            $href = fn($data['href'], [$href, $value, $key, $data], $state, Asset::class);
+            unset($data['href']);
         }
-        return HTML::unite('link', false, extend($attr, [
+        return HTML::unite('link', false, extend($data, [
             'href' => $href,
             'rel' => 'stylesheet'
         ]));
     },
-    'js' => function($value, $key, $attr) use($state) {
+    'js' => function($value, $key, $data) use($state) {
         extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
         }
         $src = $path === false ? $url : candy($state->state['url'], [$url, file_exists($path) ? filemtime($path) : 0]);
-        if (isset($attr['src']) && is_callable($attr['src'])) {
-            $src = fn($attr['src'], [$src, $value, $key, $attr], $state, Asset::class);
-            unset($attr['src']);
+        if (isset($data['src']) && is_callable($data['src'])) {
+            $src = fn($data['src'], [$src, $value, $key, $data], $state, Asset::class);
+            unset($data['src']);
         }
-        return HTML::unite('script', "", extend($attr, [
+        return HTML::unite('script', "", extend($data, [
             'src' => $src
         ]));
     }
@@ -39,18 +39,18 @@ foreach ([
 }
 
 foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
-    Asset::_('.' . $v, function($value, $key, $attr) use($state) {
+    Asset::_('.' . $v, function($value, $key, $data) use($state) {
         extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
         if ($path === false && !$x) {
             return '<!-- ' . $key . ' -->';
         }
         $src = $path === false ? $url : candy($state->state['url'], [$url, file_exists($path) ? filemtime($path) : 0]);
-        if (isset($attr['src']) && is_callable($attr['src'])) {
-            $src = fn($attr['src'], [$src, $value, $key, $attr], $state, Asset::class);
-            unset($attr['src']);
+        if (isset($data['src']) && is_callable($data['src'])) {
+            $src = fn($data['src'], [$src, $value, $key, $data], $state, Asset::class);
+            unset($data['src']);
         }
-        return HTML::unite('img', false, extend($attr, [
+        return HTML::unite('img', false, extend($data, [
             'src' => $src
         ]));
     });
