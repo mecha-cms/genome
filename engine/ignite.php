@@ -2,7 +2,7 @@
 
 namespace fn\is {
     // Check for valid data collection (array or object)
-    function anemon($x = null, $t = null) {
+    function anemon($x, $t = null) {
         if (\is_string($t))
             return anemon_a($x);
         if (\is_int($t))
@@ -10,25 +10,25 @@ namespace fn\is {
         return \is_array($x) || \is_object($x);
     }
     // `[1,2,3]`
-    function anemon_0($x = null) {
+    function anemon_0($x) {
         $a = (array) $x;
         $count = \count($a);
         return $count && \array_keys($a) === \range(0, $count - 1);
     }
     // `{"a":1,"b":2,"c":3}`
-    function anemon_a($x = null) {
+    function anemon_a($x) {
         $a = (array) $x;
         $count = \count($a);
         return $count && \array_keys($a) !== \range(0, $count - 1);
     }
     // Check for any valid class instance
-    function instance($x = null) {
+    function instance($x) {
         if (!\is_object($x))
             return false;
         return ($s = \get_class($x)) && $s !== 'stdClass' ? $x : false;
     }
     // Check for valid JSON string format
-    function json($x = null, $r = false) {
+    function json($x, $r = false) {
         if (!\is_string($x) || \trim($x) === "")
             return false;
         return (
@@ -45,7 +45,7 @@ namespace fn\is {
         ) && (($x = \json_decode($x, true)) !== null) ? ($r ? $x : true) : false;
     }
     // Check for valid serialized string format
-    function serial($x = null, $r = false) {
+    function serial($x, $r = false) {
         if (!\is_string($x) || \trim($x) === "")
             return false;
         if ($x === 'N;')
@@ -60,14 +60,14 @@ namespace fn\is {
 
 namespace {
     // Shortcut for `switch` and `case` statement(s)
-    function alt($k = "", array $a = [], $fail = null) {
+    function alt($k, array $a = [], $fail = null) {
         // Return `$a[$k]` value if exist
         // or `$fail` value if `$a[$k]` does not exist
         // or `$k` value if `$fail` is `null`
         return \array_key_exists((string) $k, $a) ? $a[$k] : ($fail ?? $k);
     }
     // Check if array contains …
-    function any(array $a = [], $fn = null) {
+    function any(array $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
@@ -81,7 +81,7 @@ namespace {
         return false;
     }
     // Replace pattern to its value
-    function candy(string $s = "", $a = [], $x = "\n", $r = true) {
+    function candy(string $s, $a = [], $x = "\n", $r = true) {
         if (!$s || \strpos($s, '%') === false) return $s;
         $a = (array) $a;
         foreach ($a as $k => $v) {
@@ -150,7 +150,7 @@ namespace {
         return \ltrim(\str_replace(['\\', $n . $h, '_' . $h], [$n, $n, '_'], h($s, $h, false, '_\\\\')), $h);
     }
     // Merge array value(s)
-    function concat(array $a = [], ...$b) {
+    function concat(array $a, ...$b) {
         // `concat([…], […], […], false)`
         if (\count($b) > 1 && \end($b) === false) {
             \array_pop($b);
@@ -164,7 +164,7 @@ namespace {
         return q($a) === $b;
     }
     // Extend array value(s)
-    function extend(array $a = [], ...$b) {
+    function extend(array $a, ...$b) {
         // `extend([…], […], […], false)`
         if (\count($b) > 1 && \end($b) === false) {
             \array_pop($b);
@@ -186,7 +186,7 @@ namespace {
         return c(\str_replace([$n, '_'], [$h . '__', $h . '_'], $s), false, $n . '_');
     }
     // Return the first element found in array that passed the function test
-    function find(array $a = [], callable $fn) {
+    function find(array $a, callable $fn) {
         foreach ($a as $k => $v) {
             if (\call_user_func($fn, $v, $k)) {
                 return $v;
@@ -200,7 +200,7 @@ namespace {
         return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
     }
     // Replace pattern to regular expression
-    function format(string $s = "", string $x = "\n", string $d = '#', $r = true) {
+    function format(string $s, string $x = "\n", string $d = '#', $r = true) {
         if (!$s || \strpos($s, '%') === false) return $s;
         $r = $r ? "" : '?';
         $s = \str_replace([
@@ -234,11 +234,11 @@ namespace {
         return q($a) > $b;
     }
     // Check if an element exists in array
-    function has(array $a = [], string $s = "", string $x = X) {
+    function has(array $a, string $s = "", string $x = X) {
         return \strpos($x . \implode($x, $a) . $x, $x . $s . $x) !== false;
     }
     // Filter out element(s) that pass the function test
-    function is(array $a = [], $fn = null) {
+    function is(array $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
@@ -255,7 +255,7 @@ namespace {
         return q($a) < $b;
     }
     // Manipulate array value(s)
-    function map(array $a = [], callable $fn) {
+    function map(array $a, callable $fn) {
         return \array_map($fn, $a, \array_keys($a));
     }
     // A not equal to B
@@ -263,7 +263,7 @@ namespace {
         return q($a) !== $b;
     }
     // Filter out element(s) that does not pass the function test
-    function not(array $a = [], $fn = null) {
+    function not(array $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
@@ -274,7 +274,7 @@ namespace {
         }, \ARRAY_FILTER_USE_BOTH);
     }
     // Generate new array contains value from the key
-    function pluck(array $a = [], string $k, $fail = null) {
+    function pluck(array $a, string $k, $fail = null) {
         return \array_filter(\array_map(function($v) use($k, $fail) {
             return $v[$k] ?? $fail;
         }, $a));
@@ -284,7 +284,7 @@ namespace {
         return \str_replace('__', $n, h($s, $h, false, '_'));
     }
     // Shake array
-    function shake(array $a = [], $preserve_key = true) {
+    function shake(array $a, $preserve_key = true) {
         if (\is_callable($preserve_key)) {
             // `$preserve_key` as `$fn`
             $a = \call_user_func($preserve_key, $a);
@@ -344,7 +344,7 @@ namespace {
 // z: export array/object into a compact PHP file
 
 namespace {
-    function a($o = [], $safe = true) {
+    function a($o, $safe = true) {
         if (\fn\is\anemon($o)) {
             if ($safe) {
                 $o = \fn\is\instance($o) ? $o : (array) $o;
@@ -358,17 +358,17 @@ namespace {
         }
         return $o;
     }
-    function b($x = 0, $a = 0, $b = null) {
+    function b($x, $a = 0, $b = null) {
         if (isset($a) && $x < $a) return $a;
         if (isset($b) && $x > $b) return $b;
         return $x;
     }
-    function c(string $x = "", $a = false, string $i = "") {
+    function c(string $x, $a = false, string $i = "") {
         return \str_replace(' ', "", \preg_replace_callback('#([ ' . $i . '])([\p{L}\p{N}' . $i . '])#u', function($m) {
             return $m[1] . u($m[2]);
         }, f($x, $a, $i)));
     }
-    function d(string $f = "", $fn = null, array $s__ = []) {
+    function d(string $f, $fn = null, array $s__ = []) {
         \spl_autoload_register(function($w) use($f, $fn, $s__) {
             $n = c2f($w);
             $f = $f . DS . $n . '.php';
@@ -381,7 +381,7 @@ namespace {
             }
         });
     }
-    function e($x = "", array $a = []) {
+    function e($x, array $a = []) {
         if (\is_string($x)) {
             if ($x === "")
                 return $x;
@@ -434,7 +434,7 @@ namespace {
     // $x: the string input
     // $a: replace multi-byte string into their accent
     // $i: character(s) white-list
-    function f(string $x = "", $a = true, string $i = "") {
+    function f(string $x, $a = true, string $i = "") {
         // this function does not trim white-space at the start and end of the string
         $x = \preg_replace([
             // remove HTML tag(s) and character(s) reference
@@ -934,7 +934,7 @@ namespace {
     // $q: filter by query
     // $o: order?
     // $h: include hidden file(s)?
-    function g(string $s = ROOT, string $x = '*', $q = "", $o = false, $h = true) {
+    function g(string $s, string $x = '*', $q = "", $o = false, $h = true) {
         $s = \rtrim($s, DS) . DS;
         $x = \str_replace(' ', "", $x);
         $f = \GLOB_BRACE | \GLOB_NOSORT;
@@ -976,7 +976,7 @@ namespace {
         unset($g);
         return $r;
     }
-    function h(string $x = "", string $h = '-', $a = false, $i = "") {
+    function h(string $x, string $h = '-', $a = false, $i = "") {
         return \str_replace([' ', $h . $h], $h, \preg_replace_callback('#\p{Lu}#', function($m) use($h) {
             return $h . l($m[0]);
         }, f($x, $a, x($h) . $i)));
@@ -1017,20 +1017,20 @@ namespace {
     }
     function j() {}
     function k() {}
-    function l(string $x = "") {
+    function l(string $x) {
         return \extension_loaded('mbstring') ? \mb_strtolower($x) : \strtolower($x);
     }
     function m($x, array $a, array $b) {
         // <https://stackoverflow.com/a/14224813/1163000>
         return ($x - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
     }
-    function n(string $x = "", string $t = '    ') {
+    function n(string $x, string $t = '    ') {
         // <https://stackoverflow.com/a/18870840/1163000>
         $x = \str_replace("\xEF\xBB\xBF", "", $x);
         // Tab to 4 space(s), line-break to `\n`
         return \str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
     }
-    function o($a = [], $safe = true) {
+    function o($a, $safe = true) {
         if (\fn\is\anemon($a)) {
             if ($safe) {
                 $a = \fn\is\anemon_a($a) ? (object) $a : $a;
@@ -1044,10 +1044,10 @@ namespace {
         }
         return $a;
     }
-    function p(string $x = "", $a = false, $i = "") {
+    function p(string $x, $a = false, $i = "") {
         return \ltrim(c(' ' . $x, $a, $i), ' ');
     }
-    function q($x = null, $deep = false) {
+    function q($x, $deep = false) {
         if (\is_int($x) || \is_float($x)) {
             return $x;
         } else if (\is_string($x)) {
@@ -1091,7 +1091,7 @@ namespace {
             }
         }
     }
-    function s($x = "", array $a = []) {
+    function s($x, array $a = []) {
         if ($x === true)
             return $a['true'] ?? 'true';
         if ($x === false)
@@ -1110,7 +1110,7 @@ namespace {
         $x = (string) $x;
         return $a[$x] ?? $x;
     }
-    function t(string $x = "", string $o = '"', string $c = null) {
+    function t(string $x, string $o = '"', string $c = null) {
         if ($x) {
             if ($o !== "" && \strpos($x, $o) === 0) {
                 $x = \substr($x, \strlen($o));
@@ -1122,15 +1122,15 @@ namespace {
         }
         return $x;
     }
-    function u(string $x = "") {
+    function u(string $x) {
         return \extension_loaded('mbstring') ? \mb_strtoupper($x) : \strtoupper($x);
     }
-    function v(string $x = "") {
+    function v(string $x) {
         return \stripslashes($x);
     }
     // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
     // $n: @keep line-break in the output or replace them with a space? (default is !@keep)
-    function w(/* string */$x = "", $c = [], $n = false) {
+    function w(string $x, $c = [], $n = false) {
         // Should be a HTML input
         if (\strpos($x, '<') !== false || \strpos($x, ' ') !== false || \strpos($x, "\n") !== false) {
             $c = '<' . \implode('><', \is_string($c) ? \explode(',', $c) : (array) $c) . '>';
@@ -1156,10 +1156,10 @@ namespace {
             '-'
         ], \urldecode($x));
     }
-    function x(string $x = "", string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
+    function x(string $x, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
         return \addcslashes($x, $d . $c);
     }
-    function y($x = null, array $a = []) {
+    function y($x, array $a = []) {
         // By path
         if (\is_string($x) && \strlen($x) <= 260 && \realpath($x) && \is_file($x)) {
             \ob_start();
@@ -1175,7 +1175,7 @@ namespace {
         return false;
     }
     // $b: use `[]` or `array()` syntax?
-    function z($a = [], $b = true) {
+    function z($a, $b = true) {
         if (\is_array($a)) {
             $o = [];
             foreach ($a as $k => $v) {
