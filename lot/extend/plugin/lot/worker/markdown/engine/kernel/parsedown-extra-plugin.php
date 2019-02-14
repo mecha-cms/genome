@@ -349,7 +349,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         // Allow compact attributes ...
         $text = str_replace(array('#', '.'), array(' #', ' .'), $text);
         if (strpos($text, '="') !== false || strpos($text, '=\'') !== false) {
-            $text = preg_replace_callback('#([-\w]+=)(["\'])([^\n]*?)\2#', function($m) {
+            $text = preg_replace_callback('#([-\w]+=)([\'"])([^\n]*?)\2#', function($m) {
                 $s = str_replace(array(
                     ' #',
                     ' .',
@@ -396,7 +396,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         return $attrs;
     }
 
-    protected $regexAttribute = '(?:[#.][-\w:\\\]+[ ]*|[-\w:\\\]+(?:=(?:["\'][^\n]*?["\']|[^\s]+)?)?[ ]*)';
+    protected $regexAttribute = '(?:[#.][-\w:\\\]+[ ]*|[-\w:\\\]+(?:=(?:[\'"][^\n]*?[\'"]|[^\s]+)?)?[ ]*)';
 
     // Allow empty abbreviations ...
     protected function blockAbbreviation($line) {

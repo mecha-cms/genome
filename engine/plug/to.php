@@ -39,8 +39,7 @@ $yaml = function(array $data, string $dent = '  ') use(&$yaml, &$yaml_it, &$yaml
     $out = [];
     foreach ($data as $k => $v) {
         if (\is_array($v)) {
-            $i = \count($v);
-            if ($i && \array_keys($v) === \range(0, $i - 1)) {
+            if (\fn\is\anemon_0($v)) {
                 $out[] = $yaml_it($k, ":\n", $yaml_list($v));
             } else {
                 $out[] = $yaml_it($k, ":\n", $dent . \str_replace("\n", "\n" . $dent, $yaml($v, $dent)));
