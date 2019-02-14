@@ -115,16 +115,17 @@ $seeds = [
 Lot::set($seeds);
 
 $extends = [];
-foreach (g(EXTEND . DS . '*', 'index.php') as $v) {
-    $extends[$v] = (float) File::open(Path::D($v) . DS . 'stack.data')->get(0, 10);
+foreach (glob(EXTEND . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
+    $extends[$v] = File::open(dirname($v) . DS . 'stack.data')->get(0, $v);
 }
 
+// Sort by stack or path
 asort($extends);
 extract($seeds, EXTR_SKIP);
-Config::set('extend[]', $extends);
+Config::set('extend[]', $extends = array_keys($extends));
 $files = [];
-foreach ($extends as $k => $v) {
-    $f = dirname($k) . DS;
+foreach ($extends as $v) {
+    $f = dirname($v) . DS;
     $ff = $f . 'lot' . DS . 'language' . DS;
     if ($ff = File::exist([
         $ff . $config->language . '.page',
@@ -159,7 +160,7 @@ if ($task = File::exist(ROOT . DS . 'task.php')) {
 }
 
 // Load extension(s)…
-foreach (array_keys($extends) as $v) {
+foreach ($extends as $v) {
     call_user_func(function() use($v) {
         extract(Lot::get(), EXTR_SKIP);
         if ($k = File::exist(dirname($v) . DS . 'task.php')) {

@@ -5,15 +5,16 @@ define('PLUGIN', __DIR__ . DS . 'lot' . DS . 'worker');
 call_user_func(function() {
     $plugins = [];
     $seeds = Lot::get();
-    foreach (g(PLUGIN . DS . '*', 'index.php') as $v) {
-        $plugins[$v] = (float) File::open(Path::D($v) . DS . 'stack.data')->get(0, 10);
+    foreach (glob(PLUGIN . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
+        $plugins[$v] = File::open(Path::D($v) . DS . 'stack.data')->get(0, $v);
     }
+    // Sort by stack or path
     asort($plugins);
     extract($seeds, EXTR_SKIP);
-    Config::set('plugin[]', $plugins);
+    Config::set('plugin[]', $plugins = array_keys($plugins));
     $files = [];
-    foreach ($plugins as $k => $v) {
-        $f = dirname($k) . DS;
+    foreach ($plugins as $v) {
+        $f = dirname($v) . DS;
         $ff = $f . 'lot' . DS . 'language' . DS;
         if ($ff = File::exist([
             $ff . $config->language . '.page',
@@ -40,7 +41,7 @@ call_user_func(function() {
         }
         return $out;
     }) ?? []);
-    foreach (array_keys($plugins) as $v) {
+    foreach ($plugins as $v) {
         if ($k = File::exist(dirname($v) . DS . 'task.php')) {
             include $k;
         }
