@@ -324,7 +324,7 @@ namespace {
 // f: filter/sanitize string
 // g: advance PHP `glob` function
 // h: convert text to snake case with `-` (hyphen) as the default separator
-// i: include file(s) with callback
+// i: include file(s) with callback (TODO)
 // j:
 // k:
 // l: convert text to lower case
@@ -333,7 +333,7 @@ namespace {
 // o: convert array to object
 // p: convert text to pascal case
 // q: quantity (length of string, number or anemon)
-// r: require file(s) with callback
+// r: require file(s) with callback (TODO)
 // s: convert data type to their string format
 // t: trim string from specific prefix and suffix
 // u: convert text to upper case
@@ -368,15 +368,15 @@ namespace {
             return $m[1] . u($m[2]);
         }, f($x, $a, $i)));
     }
-    function d(string $f, $fn = null, array $s__ = []) {
-        \spl_autoload_register(function($w) use($f, $fn, $s__) {
-            $n = c2f($w);
+    function d(string $f, $fn = null) {
+        \spl_autoload_register(function($c) use($f, $fn) {
+            $n = c2f($c);
             $f = $f . DS . $n . '.php';
             if (\file_exists($f)) {
-                if ($s__) extract($s__, \EXTR_SKIP);
+                extract($GLOBALS, \EXTR_SKIP);
                 require $f;
                 if (\is_callable($fn)) {
-                    \call_user_func($fn, $w, $n, $s__);
+                    \call_user_func($fn, $c, $n);
                 }
             }
         });
@@ -981,40 +981,7 @@ namespace {
             return $h . l($m[0]);
         }, f($x, $a, x($h) . $i)));
     }
-    function i(string $r) {
-        if (\strpos($r, ROOT) !== 0) {
-            $r = ROOT . DS . $r;
-        }
-        if (\pathinfo($r, \PATHINFO_EXTENSION) !== 'php') {
-            $r .= '.php';
-        }
-        if (\strpos($r, '%') === false) {
-            if (!\is_file($r))
-                return;
-            \call_user_func(function() use($r) {
-                extract($GLOBALS, \EXTR_SKIP);
-                include $r;
-            });
-        } else {
-            $r = \str_replace([
-                '%s%',
-                '%i%',
-                '%[', ']%'
-            ], [
-                '*',
-                '[0-9]+',
-                '{', '}'
-            ], $r);
-            foreach (\glob($r, \GLOB_BRACE | \GLOB_NOSORT) as $v) {
-                if (!\is_file($v))
-                    continue;
-                \call_user_func(function() use($v) {
-                    extract($GLOBALS, \EXTR_SKIP);
-                    include $v;
-                });
-            }
-        }
-    }
+    function i() {}
     function j() {}
     function k() {}
     function l(string $x) {
@@ -1057,40 +1024,7 @@ namespace {
         }
         return \count($x, $deep ? \COUNT_RECURSIVE : \COUNT_NORMAL);
     }
-    function r(string $r) {
-        if (\strpos($r, ROOT) !== 0) {
-            $r = ROOT . DS . $r;
-        }
-        if (\pathinfo($r, \PATHINFO_EXTENSION) !== 'php') {
-            $r .= '.php';
-        }
-        if (\strpos($r, '%') === false) {
-            if (!\is_file($r))
-                return;
-            \call_user_func(function() use($r) {
-                extract($GLOBALS, \EXTR_SKIP);
-                require $r;
-            });
-        } else {
-            $r = \str_replace([
-                '%s%',
-                '%i%',
-                '%[', ']%'
-            ], [
-                '*',
-                '[0-9]+',
-                '{', '}'
-            ], $r);
-            foreach (\glob($r, \GLOB_BRACE | \GLOB_NOSORT) as $v) {
-                if (!\is_file($v))
-                    continue;
-                \call_user_func(function() use($v) {
-                    extract($GLOBALS, \EXTR_SKIP);
-                    require $v;
-                });
-            }
-        }
-    }
+    function r() {}
     function s($x, array $a = []) {
         if ($x === true)
             return $a['true'] ?? 'true';
@@ -1163,7 +1097,7 @@ namespace {
         // By path
         if (\is_string($x) && \strlen($x) <= 260 && \realpath($x) && \is_file($x)) {
             \ob_start();
-            extract($a, \EXTR_SKIP);
+            extract($GLOBALS, \EXTR_SKIP);
             require $x;
             return \ob_get_clean();
         // By function
