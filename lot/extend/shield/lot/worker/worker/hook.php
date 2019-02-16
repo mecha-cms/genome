@@ -4,7 +4,7 @@
 function union($content) {
     $unit = \Shield::$config['union'][0];
     if (\strpos($content, '<' . $unit . ' ') !== false) {
-        return \preg_replace_callback('#<' . \x($unit) . '(?:\s[^<>]*?)?>#', function($m) {
+        return \preg_replace_callback('#<' . \x($unit) . '(?:\s[^>]*)?>#', function($m) {
             if (
                 \strpos($m[0], ' class="') !== false ||
                 \strpos($m[0], ' class ') !== false ||
