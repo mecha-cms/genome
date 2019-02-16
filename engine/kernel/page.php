@@ -133,6 +133,9 @@ class Page extends Genome {
     }
 
     public function __get(string $key) {
+        if (method_exists($this, $key)) {
+            return $this->{$key}();
+        }
         return $this->__call($key);
     }
 
