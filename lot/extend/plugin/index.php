@@ -6,10 +6,10 @@ call_user_func(function() {
     $plugins = [];
     $seeds = Lot::get();
     foreach (glob(PLUGIN . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
-        $plugins[$v] = File::open(Path::D($v) . DS . 'stack.data')->get(0, $v);
+        $plugins[$v] = File::open(dirname($v) . DS . 'name')->get(0, basename(dirname($v)));
     }
-    // Sort by stack or path
-    asort($plugins);
+    // Sort by name
+    natsort($plugins);
     extract($seeds, EXTR_SKIP);
     Config::set('plugin[]', $plugins = array_keys($plugins));
     $files = [];
@@ -23,7 +23,7 @@ call_user_func(function() {
             $files[] = $ff;
         }
         $f .= 'engine' . DS;
-        d($f . 'kernel', function($w, $n) use($f, $seeds) {
+        d($f . 'kernel', function($c, $n) use($f, $seeds) {
             $f .= 'plug' . DS . $n . '.php';
             if (file_exists($f)) {
                 extract($seeds, EXTR_SKIP);

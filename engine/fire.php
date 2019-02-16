@@ -25,7 +25,7 @@ array_walk_recursive($vars, function(&$v) {
 });
 
 $f = ENGINE . DS;
-d($f . 'kernel', function($w, $n) use($f) {
+d($f . 'kernel', function($c, $n) use($f) {
     $f .= 'plug' . DS . $n . '.php';
     if (file_exists($f)) {
         require $f;
@@ -96,6 +96,8 @@ Date::zone($config->zone);
 
 // Set default document status
 HTTP::status(200); // “OK”
+// Set default `X-Powered-By` value
+HTTP::header('X-Powered-By', 'Mecha/' . Mecha::version);
 
 // Set current language
 Language::$config['id'] = $config->language ?? 'en-us';
@@ -116,11 +118,11 @@ Lot::set($seeds);
 
 $extends = [];
 foreach (glob(EXTEND . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
-    $extends[$v] = File::open(dirname($v) . DS . 'stack.data')->get(0, $v);
+    $extends[$v] = File::open(dirname($v) . DS . 'name')->get(0, basename(dirname($v)));
 }
 
-// Sort by stack or path
-asort($extends);
+// Sort by name
+natsort($extends);
 extract($seeds, EXTR_SKIP);
 Config::set('extend[]', $extends = array_keys($extends));
 $files = [];
@@ -134,7 +136,7 @@ foreach ($extends as $v) {
         $files[] = $ff;
     }
     $f .= 'engine' . DS;
-    d($f . 'kernel', function($w, $n) use($f, $seeds) {
+    d($f . 'kernel', function($c, $n) use($f, $seeds) {
         $f .= 'plug' . DS . $n . '.php';
         if (file_exists($f)) {
             extract($seeds, EXTR_SKIP);
