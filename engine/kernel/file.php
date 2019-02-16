@@ -65,7 +65,7 @@ class File extends Genome {
     }
 
     // Print the file content line by line
-    public function get($stop = null, $fail = false, $ch = 1024) {
+    public function get($stop = null, $fail = null, $ch = 1024) {
         $i = 0;
         $out = "";
         if (isset($this->path) && filesize($this->path) > 0 && ($hand = fopen($this->path, 'r'))) {
@@ -286,16 +286,8 @@ class File extends Genome {
     }
 
     // Convert file size to …
-    public function size(string $unit = null, $prec = 2, int $size = null /* @internal */) {
-        $size = $size ?? ($this->exist ? filesize($this->path) : 0);
-        $i = log($size, 1024);
-        $x = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $u = array_search((string) $unit, $x);
-        if (!isset($unit) || $unit === '*' || !$u) {
-            $u = $size > 0 ? floor($i) : 0;
-        }
-        $out = round($size / pow(1024, $u), $prec);
-        return $out < 0 ? null : trim($out . ' ' . $x[$u]);
+    public function size(string $unit = null, $prec = 2) {
+        return self::sizer($this->exist ? filesize($this->path) : 0, $unit, $prec);
     }
 
     public function _size(): int {
@@ -443,23 +435,6 @@ class File extends Genome {
         return new static(...$lot);
     }
 
-    // Upload a file
-    public static function push(array $blob, string $path = ROOT) {
-        $path = rtrim(strtr($path, '/', DS), DS);
-        if (!empty($blob['error'])) {
-            return $blob['error']; // Has error, abort!
-        }
-        if (file_exists($f = $path . DS . $blob['name'])) {
-            return false; // File already exists
-        }
-        // Destination folder does not exist
-        if (!file_exists($path) || !is_dir($path)) {
-            mkdir($path, 0775, true); // Create one!
-        }
-        move_uploaded_file($blob['tmp_name'], $f);
-        return $f; // There is no error, the file uploaded with success
-    }
-
     // Download a file
     public function pull(string $name = null, string $type = null) {
         if ($this->exist) {
@@ -477,6 +452,31 @@ class File extends Genome {
             exit;
         }
         return $this;
+    }
+
+    // Upload a file
+    public static function push(array $blob, string $path = ROOT) {
+        $path = rtrim(strtr($path, '/', DS), DS);
+        if (!empty($blob['error'])) {
+            return $blob['error']; // Has error, abort!
+        }
+        if (file_exists($f = $path . DS . $blob['name'])) {
+            return false; // File already exists
+        }
+        // Destination folder does not exist
+        if (!file_exists($path) || !is_dir($path)) {
+            mkdir($path, 0775, true); // Create one!
+        }
+        move_uploaded_file($blob['tmp_name'], $f);
+        return $f; // There is no error, the file uploaded with success
+    }
+
+    public static function sizer(float $size, string $unit = null, $prec = 2) {
+        $i = log($size, 1024);
+        $x = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $u = $unit ? array_search($unit, $x) : ($size > 0 ? floor($i) : 0);
+        $out = round($size / pow(1024, $u), $prec);
+        return $out < 0 ? null : trim($out . ' ' . $x[$u]);
     }
 
 }

@@ -46,18 +46,18 @@ class Folder extends File {
         return $path && is_dir($path) ? $path : $fail;
     }
 
-    public function size(string $unit = null, $prec = 2, int $size = null /* @internal */) {
+    public function size(string $unit = null, $prec = 2) {
         $sizes = 0;
         if ($this->exist) {
             if (!is_dir($this->path))
                 return false;
             if (!glob($this->path . DS . '*', GLOB_NOSORT))
-                return parent::size($unit, $prec);
+                return parent::sizer(0, $unit, $prec);
             foreach (parent::explore([$folder, 1], true, []) as $k => $v) {
                 $sizes += filesize($k);
             }
         }
-        return parent::size($unit, $prec, $sizes);
+        return parent::sizer($sizes, $unit, $prec);
     }
 
 }

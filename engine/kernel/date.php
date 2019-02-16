@@ -16,7 +16,6 @@ class Date extends Genome {
             global $language;
             $i = explode('.', $this->format('Y.m.d.H.i.s.A.w.h.e'));
             $this->lot = [
-                '%zone%' => $i[9],
                 '%~M%' => $language->months_long[(int) $i[1] - 1],
                 '%~D%' => $language->days_long[(int) $i[7]],
                 '%~h%' => $i[3],
