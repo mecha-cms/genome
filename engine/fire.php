@@ -5,12 +5,12 @@ if (defined('DEBUG')) {
     ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
     if (DEBUG) {
         ini_set('max_execution_time', 300); // 5 minute(s)
-    }
-    if (DEBUG === true) {
-        error_reporting(E_ALL | E_STRICT);
-        ini_set('display_errors', true);
-        ini_set('display_startup_errors', true);
-        ini_set('html_errors', 1);
+        if (DEBUG === true) {
+            error_reporting(E_ALL | E_STRICT);
+            ini_set('display_errors', true);
+            ini_set('display_startup_errors', true);
+            ini_set('html_errors', 1);
+        }
     } else if (DEBUG === false) {
         error_reporting(0);
         ini_set('display_errors', false);
@@ -27,7 +27,7 @@ array_walk_recursive($vars, function(&$v) {
 $f = ENGINE . DS;
 d($f . 'kernel', function($c, $n) use($f) {
     $f .= 'plug' . DS . $n . '.php';
-    if (file_exists($f)) {
+    if (is_file($f)) {
         require $f;
     }
 });
@@ -68,7 +68,7 @@ if (is_numeric(end($parts))) {
     $i = null;
 }
 $clean = trim($url . '/' . $path, '/');
-$u = Session::get(URL::session, []);
+$u = Session::get(URL::session) ?? [];
 $GLOBALS['URL'] = [
     'scheme' => $scheme,
     'protocol' => $protocol,
@@ -118,7 +118,8 @@ Lot::set($seeds);
 
 $extends = [];
 foreach (glob(EXTEND . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
-    $extends[$v] = File::open(dirname($v) . DS . 'name')->get(0, basename(dirname($v)));
+    $b = basename($d = dirname($v));
+    $extends[$v] = content($d . DS . $b) ?: $b;
 }
 
 // Sort by name
@@ -149,6 +150,7 @@ foreach ($extends as $v) {
 Language::set(Cache::hit($files, function($files): array {
     $out = [];
     foreach ($files as $file) {
+        $file = file_get_contents($file);
         $fn = 'From::' . Page::apart($file, 'type', "");
         $content = Page::apart($file, 'content', "");
         $out = extend($out, is_callable($fn) ? (array) call_user_func($fn, $content) : []);
@@ -173,12 +175,12 @@ foreach ($extends as $v) {
 }
 
 // Document is ready
-function ready() {
+Hook::set('on.ready', function() {
     // Load all route(s)…
     Route::fire();
     // Clear message(s)…
     Message::reset();
-}
+}, 20);
 
 // Fire!
-Hook::set('on.ready', 'ready', 20)->fire('on.ready');
+Hook::fire('on.ready');

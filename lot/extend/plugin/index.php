@@ -6,7 +6,8 @@ call_user_func(function() {
     $plugins = [];
     $seeds = Lot::get();
     foreach (glob(PLUGIN . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
-        $plugins[$v] = File::open(dirname($v) . DS . 'name')->get(0, basename(dirname($v)));
+        $b = basename($d = dirname($v));
+        $plugins[$v] = content($d . DS . $b) ?: $b;
     }
     // Sort by name
     natsort($plugins);
@@ -35,6 +36,7 @@ call_user_func(function() {
     Language::set(Cache::hit($files, function($files): array {
         $out = [];
         foreach ($files as $file) {
+            $file = file_get_contents($file);
             $fn = 'From::' . Page::apart($file, 'type', "");
             $content = Page::apart($file, 'content', "");
             $out = extend($out, is_callable($fn) ? (array) call_user_func($fn, $content) : []);
