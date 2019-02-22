@@ -1,273 +1,224 @@
 <?php
 
-class Page extends Genome {
+class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \Serializable {
 
-    public $path = null;
-    public $lot = [];
+    private $read;
 
-    private $NS = "";
-    private $hash = "";
+    protected static $page;
 
-    private static $page = []; // Cache!
+    protected $id;
+    protected $lot;
+    protected $prefix;
 
-    public function __construct(string $path = null, array $lot = [], $NS = []) {
-        $key = c2f(static::class, '_', '/');
-        $f = is_string($path);
-        $this->path = $path;
-        $this->NS = is_array($NS) ? extend(['*', $key], $NS, false) : $NS;
-        $this->hash = $hash = json_encode([$path, $lot, $this->NS]);
-        if (isset(self::$page[$hash])) {
-            $this->lot = self::$page[$hash];
+    public $exist;
+    public $f;
+    public $path;
+
+    // Set pre-defined page property
+    public static $data = [];
+
+    protected function _set_($key, $value = null) {
+        $id = $this->id ?? "";
+        if (!$this->exist) {
+            $this->lot = self::$page[$id] = [];
+        }
+        if (is_array($key)) {
+            foreach ($key as $k => $v) {
+                if ($v === false) {
+                    unset($this->lot[$k], self::$page[$id][$k]);
+                    continue;
+                }
+                $this->lot[$k] = $v;
+            }
+        } else if (isset($value)) {
+            $this->lot[$key] = $value;
         } else {
-            $file = new File($path);
-            $this->lot = extend([
-                'time' => $t = $file->time(DATE_WISE),
-                'update' => $file->update(DATE_WISE),
-                'name' => $n = $file->name,
-                'x' => $x = $file->x,
-                'id' => $f ? sprintf('%u', (string) $t) : null,
-                'slug' => $file->name,
-                'title' => $n !== null ? To::title($n) : null, // Fake `title` data from the page’s file name
-                'type' => $x !== null ? u($x) : null, // Fake `type` data from the page’s file extension
-                'path' => $path,
-                'url' => $file->URL
-            ], (array) Config::get($key, [], true), $lot, false);
-            // Set `time` value from the page’s file name
-            if (
-                $n &&
-                is_string($n) &&
-                is_numeric($n[0]) &&
-                (
-                    // `2017-04-21.page`
-                    substr_count($n, '-') === 2 ||
-                    // `2017-04-21-14-25-00.page`
-                    substr_count($n, '-') === 5
-                ) &&
-                is_numeric(str_replace('-', "", $n)) &&
-                preg_match('#^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$#', $n)
-            ) {
-                $t = new Date($n);
-                $this->lot['time'] = $t->format(DATE_WISE);
-                $this->lot['title'] = $t->format(strtr(DATE_WISE, '-', '/'));
-                $this->lot['id'] = sprintf('%u', (string) $t->format('U'));
-            }
-            self::$page[$hash] = $this->lot;
-        }
-        parent::__construct();
-    }
-
-    public function __call(string $key, array $lot = []) {
-        if (self::_($key) || $key === 'set') { // @see `function _set_()`
-            return parent::__call($key, $lot);
-        }
-        // Example: `$page->__call('foo.bar')`
-        $keys = null;
-        if (strpos($key, '.') !== false) {
-            list($key, $keys) = explode('.', $key, 2);
-        }
-        $a = $this->lot;
-        $path = $this->path;
-        $extern = $path ? Path::F($path) . DS . $key . '.data' : null;
-        if ($extern && is_file($path)) {
-            // Prioritize data from a file…
-            if ($data = File::open($extern)->get()) {
-                $extern = null; // Stop!
-                $a[$key] = $key !== '$' && $key !== 'content' ? e($data) : $data;
-            } else if ($page = file_get_contents($path)) {
-                $a = extend($a, self::apart($page, null, null, true), false);
-            }
-        }
-        if (!array_key_exists($key, $a)) {
-            $a[$key] = null;
-        }
-        // Prioritize data from a file…
-        if ($extern && $data = File::open($extern)->get()) {
-            $a[$key] = $key !== '$' && $key !== 'content' ? e($data) : $data;
-        }
-        // Check for valid time format, render it as `Date` instance
-        $value = a($a[$key]);
-        if (
-            $value &&
-            is_string($value) && 
-            strlen($value) >= 19 &&
-            preg_match('#^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1]) ([0-1]\d|2[0-4])(:([0-5]\d|60)){2}$#', $value)
-        ) {
-            $a[$key] = $value = new Date($value);
-        }
-        $this->lot = self::$page[$this->hash] = $a;
-        $test = $lot[0] ?? null;
-        if ($test === false) {
-            // Disable hook(s) with `$page->foo(false)`
-            return isset($keys) && is_array($value) ? Anemon::get($value, $keys, null) : $value;
-        } else {
-            if ($test instanceof \Closure) {
-                // As function call with `$page->foo(function($text) { … })`
-                $a[$key] = $value = fn($test, [$value], $this, static::class);
-            }
-        }
-        if ($this->NS === false) {
-            // Disable hook(s) with `$page = new Page('.\path\to\file.page', [], false)`
-            return isset($keys) && is_array($value) ? Anemon::get($value, $keys, null) : $value;
-        } else if (is_array($this->NS)) {
-            $name = [];
-            foreach ($this->NS as $v) {
-                $name[] = $v . '.' . $key;
-            }
-        } else {
-            $name = $this->NS . '.' . $key;
-        }
-        $v = Hook::fire($name, [isset($keys) && is_array($value) ? Anemon::get($value, $keys, null) : $value, $lot], $this, static::class);
-        if (count($lot) && $x = fn\is\instance($v)) {
-            if (method_exists($x, '__invoke')) {
-                $v = call_user_func([$x, '__invoke'], ...$lot);
-            }
-        }
-        return $v;
-    }
-
-    // public $_hook;
-    // public $_hook_count;
-
-    public function __set(string $key, $value = null) {
-        $this->lot[$key] = self::$page[$this->hash][$key] = $value;
-    }
-
-    public function __get(string $key) {
-        if (method_exists($this, $key)) {
-            return $this->{$key}();
-        }
-        return $this->__call($key);
-    }
-
-    // Fix case for `isset($page->key)` or `!empty($page->key)`
-    public function __isset(string $key) {
-        return !!$this->__call($key);
-    }
-
-    public function __unset(string $key) {
-        $this->__set($key, null);
-    }
-
-    public function __toString() {
-        if ($str = $this->__call('$')) {
-            return $str;
-        }
-        $path = $this->path;
-        return $path && file_exists($path) ? file_get_contents($path) : "";
-    }
-
-    protected function _set_($in, $fn = null) {
-        $path = $this->path;
-        $data = is_file($path) ? self::apart(file_get_contents($path)) : [];
-        $this->lot = extend($data, ['path' => $path], false);
-        if (!is_array($in)) {
-            if (is_callable($fn)) {
-                $this->lot[$in] = call_user_func($fn, ...$this->lot);
-                $in = [];
-            } else {
-                $in = ['content' => $in];
-            }
-        }
-        $this->lot = extend($this->lot, $in);
-        foreach ($this->lot as $k => $v) {
-            if ($v === false) unset($this->lot[$k]);
+            // `$page->set('<p>abcdef</p>')`
+            $this->lot['content'] = $key;
         }
         return $this;
     }
 
-    public function get($key, $fail = null) {
+    public function __call(string $key, array $lot = []) {
+         // @see `function _set_()`
+        if ($key === 'set' || self::_($key)) {
+            return parent::__call($key, $lot);
+        }
+        if (isset(self::$page[$id = $this->id][$key])) {
+            $v = self::$page[$id][$key]; // Load from cache…
+        } else {
+            $v = $this->offsetGet($key);
+            // Set…
+            $this->lot[$key] = self::$page[$id][$key] = $v;
+            // Do the hook once!
+            $v = Hook::fire(map($this->prefix, function($v) use($key) {
+                return $v .= '.' . $key;
+            }), [$v, $lot], $this);
+            if ($lot && $c = fn\is\instance($v)) {
+                if (is_callable($c)) {
+                    $v = call_user_func($c, ...$lot);
+                }
+            }
+            // Set…
+            $this->lot[$key] = self::$page[$id][$key] = $v;
+        }
+        return $v;
+    }
+
+    public function __construct(string $path = null, array $lot = [], array $prefix = []) {
+        parent::__construct();
+        $c = c2f(static::class, '_', '/');
+        $prefix = array_replace(['*', $c], $prefix);
+        $id = json_encode([$path, $lot, $prefix]);
+        $this->exist = $f = is_file($path);
+        $this->f = $file = new File($path);
+        $this->id = $id;
+        $this->path = $f ? $path : null;
+        $this->prefix = $prefix;
+        // Set pre-defined page property
+        $this->lot = extend([
+            'id' => $f ? sprintf('%u', (string) $file->time) : null,
+            'name' => $n = $file->name,
+            'path' => $path,
+            'slug' => $n,
+            'time' => $file->time(DATE_WISE),
+            'title' => $f ? To::title($n) : null,
+            'update' => $file->update(DATE_WISE),
+            'url' => $file->URL,
+            'x' => $file->x
+        ], (array) static::$data, $lot);
+    }
+
+    public function __get(string $key) {
+        if (method_exists($this, $key)) {
+            if ((new \ReflectionMethod($this, $key))->isPublic()) {
+                return $this->{$key}();
+            }
+        }
+        return $this->__call($key);
+    }
+
+    public function __set(string $key, $value) {
+        $this->{$key} = $value; // Native!
+    }
+
+    public function __toString() {
+        if (is_string($v = $this->__call('$'))) {
+            return $v;
+        }
+        $path = $this->path;
+        return $path ? file_get_contents($path) : "";
+    }
+
+    public function count() {
+        return $this->exist ? 1 : 0;
+    }
+
+    public function get($key) {
         if (is_array($key)) {
             $out = [];
             foreach ($key as $k => $v) {
+                // `$page->get(['foo.bar' => 0])`
+                if (strpos($k, '.') !== false) {
+                    $kk = explode('.', $k, 2);
+                    if (is_array($vv = $this->__call($kk[0]))) {
+                        $out[$k] = Anemon::get($vv, $kk[1]) ?? $v;
+                        continue;
+                    }
+                }
                 $out[$k] = $this->__call($k) ?? $v;
             }
             return $out;
         }
-        return $this->__call($key) ?? $fail;
-    }
-
-    public function has($key) {
-        $data = Path::F($this->path) . DS . $key . '.data';
-        return file_exists($data) ? filesize($data) > 0 : self::apart($this->path, $key) !== null;
-    }
-
-    public function saveTo(string $path, $consent = 0600) {
-        unset($this->lot['path']);
-        return File::put(self::unite($this->lot))->saveTo($path, $consent);
-    }
-
-    public function saveAs(string $name, $consent = 0600) {
-        $path = $this->path;
-        return $path ? $this->saveTo(dirname($path) . DS . basename($name), $consent) : false;
-    }
-
-    public function save($consent = 0600) {
-        return $this->saveTo($this->path, $consent);
-    }
-
-    public static function apart(string $in, $key = null, $fail = null, $eval = false) {
-        $eval = $eval && (!isset($key) || $key !== '$' && $key !== 'content');
-        // Get specific property…
-        if ($key === 'content') {
-            $in = explode("\n...", n(Is::file($in) ? file_get_contents($in) : $in), 2);
-            return trim($in[1] ?? $in[0], "\n");
-        } else if (isset($key)) {
-            // By path… (faster)
-            if (Is::file($in)) {
-                if ($o = fopen($in, 'r')) {
-                    $out = $fail;
-                    while (($s = fgets($o, 1024)) !== false) {
-                        $s = trim($s);
-                        if ($s === '...') {
-                            break; // Page header end!
-                        }
-                        if (strpos($s, $key . ': ') === 0) {
-                            $s = explode(': ', $s, 2);
-                            $out = isset($s[1]) ? trim($s[1]) : $fail;
-                            break;
-                        }
-                    }
-                    fclose($o);
-                    return $eval ? e($out, ['~' => null]) : $out;
-                }
-                return $fail;
+        // `$page->get('foo.bar')`
+        if (strpos($key, '.') !== false) {
+            $k = explode('.', $key, 2);
+            if (is_array($v = $this->__call($k[0]))) {
+                return Anemon::get($v, $k[1]);
             }
-            // By content…
-            $in = n($in);
-            $s = strpos($in, "\n...");
-            $ss = strpos($in, $k = "\n" . $key . ': ');
-            if ($s !== false && $ss !== false && $ss < $s) {
-                $in = substr($in, $ss + strlen($k)) . "\n";
-                $out = trim(substr($in, 0, strpos($in, "\n")));
-                return $eval ? e($out, ['~' => null]) : $out;
-            }
-            return $fail;
         }
-        // Get all propert(y|ies) embedded…
-        $data = [];
-        $in = n($in);
-        if (strpos($in, "---\n") !== 0) {
-            $data['content'] = $in;
+        return $this->__call($key);
+    }
+
+    public function getIterator() {
+        return new \ArrayIterator($this->lot);
+    }
+
+    public function offsetExists($i) {
+        return isset($this->lot[$i]);
+    }
+
+    public function offsetGet($i) {
+        if ($this->exist && empty($this->read)) {
+            // Prioritize data from a file…
+            $f = Path::F($this->path) . DS . $i . '.data';
+            if (is_file($f)) {
+                return ($this->lot[$i] = e(file_get_contents($f)));
+            }
+            // Read the file content once!
+            $this->read = true;
+            $this->lot = extend($this->lot, self::apart(file_get_contents($this->path), null, true));
+        }
+        return $this->lot[$i] ?? null;
+    }
+
+    public function offsetSet($i, $value) {
+        if (isset($i)) {
+            $this->lot[$i] = $value;
         } else {
-            $parts = From::YAML($in, '  ', true, $eval);
-            $data = $parts[0];
-            $data['content'] = $parts["\t"] ?? "";
+            $this->lot[] = $value;
         }
-        return $data;
     }
 
-    public static function unite(array $in = []) {
-        $content = "";
-        if (isset($in['content'])) {
-            $content = $in['content'];
-            unset($in['content']);
-        }
-        $header = To::YAML($in);
-        return ($header ? "---\n" . $header . "\n..." : "") . ($content !== "" ? "\n\n" . $content : "");
+    public function offsetUnset($i) {
+        unset($this->lot[$i]);
     }
 
-    public static function open($path = null, array $lot = [], $NS = []) {
-        return new static($path, $lot, $NS);
+    public function save() {
+        return $this->saveTo($this->path, 0600);
+    }
+
+    public function saveAs(string $name) {
+        if ($this->exist) {
+            return $this->saveTo(dirname($this->path) . DS . basename($name), 0600);
+        }
+        return false;
+    }
+
+    public function saveTo(string $path) {
+        unset($this->lot['path']);
+        return File::put(self::unite($this->lot))->saveTo($path, 0600);
+    }
+
+    public function serialize() {
+        if ($this->exist) {
+            return serialize(self::apart(file_get_contents($this->path)));
+        }
+        return serialize([]);
+    }
+
+    public function unserialize($lot) {
+        $this->__construct(null, unserialize($lot));
+    }
+
+    public static function apart(string $in, $key = null, $eval = false) {
+        $v = From::YAML($in, '  ', true, $eval);
+        $v = $v[0] + ['content' => $v["\t"] ?? ""];
+        return isset($key) ? (array_key_exists($key, $v) ? $v[$key] : null) : $v;
+    }
+
+    public static function open(string $path, array $lot = [], array $prefix = []) {
+        return new static($path, $lot, $prefix);
+    }
+
+    public static function unite(array $lot) {
+        $content = $lot['content'] ?? "";
+        unset($lot['content']);
+        $lot = [
+            0 => $lot,
+            "\t" => $content
+        ];
+        return To::YAML($lot, '  ', true);
     }
 
 }
