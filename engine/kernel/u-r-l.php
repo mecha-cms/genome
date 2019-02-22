@@ -4,8 +4,12 @@ class URL extends Genome {
 
     const session = 'u-r-l';
 
-    protected $s = null;
     protected $lot = [];
+    protected $s = null;
+
+    public function __call(string $kin, array $lot = []) {
+        return array_key_exists($kin, $this->lot) ? $this->lot[$kin] : null;
+    }
 
     public function __construct(string $in = null, string $self = '$') {
         $this->s = $self;
@@ -38,6 +42,29 @@ class URL extends Genome {
         parent::__construct();
     }
 
+    // Fix case for `isset($url->key)` or `!empty($url->key)`
+    public function __isset(string $key) {
+        return !!$this->__get($key);
+    }
+
+    public function __set(string $key, $value = null) {
+        $this->lot[$key] = $value;
+    }
+
+    public function __toString() {
+        return (string) $this->lot[$this->s] ?? "";
+    }
+
+    public function __unset(string $key) {
+        unset($this->lot[$key]);
+    }
+
+    // `$url->hash('#!')`
+    public function hash(string $prefix = null) {
+        $hash = $this->lot['hash'];
+        return isset($prefix) ? $prefix . substr($hash, 1) : $hash;
+    }
+
     // `$url->path('.')`
     public function path(string $separator = null) {
         $path = $this->lot['path'];
@@ -59,31 +86,11 @@ class URL extends Genome {
         return $query;
     }
 
-    // `$url->hash('#!')`
-    public function hash(string $prefix = null) {
-        $hash = $this->lot['hash'];
-        return isset($prefix) ? $prefix . substr($hash, 1) : $hash;
-    }
-
-    public function __call(string $kin, array $lot = []) {
-        return array_key_exists($kin, $this->lot) ? $this->lot[$kin] : null;
-    }
-
-    public function __set(string $key, $value = null) {
-        $this->lot[$key] = $value;
-    }
-
-    // Fix case for `isset($url->key)` or `!empty($url->key)`
-    public function __isset(string $key) {
-        return !!$this->__get($key);
-    }
-
-    public function __unset(string $key) {
-        unset($this->lot[$key]);
-    }
-
-    public function __toString() {
-        return (string) $this->lot[$this->s] ?? "";
+    public static function __callStatic(string $kin, array $lot = []) {
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
+        }
+        return (new static)->__call($kin, $lot);
     }
 
     public static function long(string $path = "", $root = true) {
@@ -122,13 +129,6 @@ class URL extends Genome {
             X . '//' . rtrim($url['host'] . '/' . $url['directory'], '/'),
             X
         ], "", X . $path), '/');
-    }
-
-    public static function __callStatic(string $kin, array $lot = []) {
-        if (self::_($kin)) {
-            return parent::__callStatic($kin, $lot);
-        }
-        return (new static)->__call($kin, $lot);
     }
 
 }

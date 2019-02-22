@@ -2,48 +2,6 @@
 
 class HTML extends Union {
 
-    // Build HTML attribute(s)…
-    protected function _data_($a = []) {
-        if (is_array($a)) {
-            foreach ($a as $k => $v) {
-                if (!is_array($v))
-                    continue;
-                // HTML5 `data-*` attribute
-                if ($k === 'data[]') {
-                    ksort($v);
-                    foreach ($v as $kk => $vv) {
-                        if (!isset($vv) || $vv === false)
-                            continue;
-                        $a['data-' . $kk] = fn\is\anemon($vv) ? json_encode($vv) : $vv;
-                    }
-                    unset($a[$k]);
-                // Class value as array
-                } else if ($k === 'class[]') {
-                    if (isset($a['class'])) {
-                        $v = $a['class'] !== true ? concat(explode(' ', $a['class']), $v) : [];
-                    }
-                    $v = array_filter(array_unique($v));
-                    sort($v);
-                    $v = implode(' ', $v);
-                    $a['class'] = $v !== "" ? $v : null;
-                    unset($a[$k]);
-                // Inline CSS via `style[]` attribute
-                } else if ($k === 'style[]') {
-                    $css = "";
-                    // ksort($v);
-                    foreach ($v as $kk => $vv) {
-                        if (!isset($vv) || $vv === false)
-                            continue;
-                        $css .= $kk . ':' . $vv . ';';
-                    }
-                    $a['style'] = $css !== "" ? $css : null;
-                    unset($a[$k]);
-                }
-            }
-        }
-        return parent::_data_($a);
-    }
-
     protected function _apart_(string $in = "", $eval = true) {
         $out = parent::_apart_($in, $eval);
         if (!empty($out[2])) {
@@ -84,6 +42,48 @@ class HTML extends Union {
             $end = N . $dent;
         }
         return $dent . '<!--' . $begin . $content . $end . '-->';
+    }
+
+    // Build HTML attribute(s)…
+    protected function _data_($a = []) {
+        if (is_array($a)) {
+            foreach ($a as $k => $v) {
+                if (!is_array($v))
+                    continue;
+                // HTML5 `data-*` attribute
+                if ($k === 'data[]') {
+                    ksort($v);
+                    foreach ($v as $kk => $vv) {
+                        if (!isset($vv) || $vv === false)
+                            continue;
+                        $a['data-' . $kk] = fn\is\anemon($vv) ? json_encode($vv) : $vv;
+                    }
+                    unset($a[$k]);
+                // Class value as array
+                } else if ($k === 'class[]') {
+                    if (isset($a['class'])) {
+                        $v = $a['class'] !== true ? concat(explode(' ', $a['class']), $v) : [];
+                    }
+                    $v = array_filter(array_unique($v));
+                    sort($v);
+                    $v = implode(' ', $v);
+                    $a['class'] = $v !== "" ? $v : null;
+                    unset($a[$k]);
+                // Inline CSS via `style[]` attribute
+                } else if ($k === 'style[]') {
+                    $css = "";
+                    // ksort($v);
+                    foreach ($v as $kk => $vv) {
+                        if (!isset($vv) || $vv === false)
+                            continue;
+                        $css .= $kk . ':' . $vv . ';';
+                    }
+                    $a['style'] = $css !== "" ? $css : null;
+                    unset($a[$k]);
+                }
+            }
+        }
+        return parent::_data_($a);
     }
 
     public function __call(string $kin, array $lot = []) {

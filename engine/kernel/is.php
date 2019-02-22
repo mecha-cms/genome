@@ -2,16 +2,6 @@
 
 class Is extends Genome {
 
-    // Check for empty string, array or object
-    public static function void($x) {
-        return (
-            $x === "" ||
-            is_string($x) && trim($x) === "" ||
-            is_array($x) && empty($x) ||
-            is_object($x) && empty((array) $x)
-        );
-    }
-
     // Check for IP address
     public static function IP($x) {
         return filter_var($x, FILTER_VALIDATE_IP);
@@ -22,20 +12,13 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_URL);
     }
 
-    // Check for valid local path address (whether it is exists or not)
-    public static function path($x, $exist = false) {
-        if (!is_string($x)) return false;
-        return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$exist || file_exists($x));
+    public static function __callStatic(string $kin, array $lot = []) {
+        return self::_($kin) ? parent::__callStatic($kin, $lot) : null;
     }
 
     // Check for email address
     public static function eMail($x) {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
-    }
-
-    // Check for valid boolean value
-    public static function toggle($x) {
-        return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
     // Check for valid file name
@@ -48,8 +31,25 @@ class Is extends Genome {
         return is_string($x) && strlen($x) <= 260 && realpath($x) && is_dir($x);
     }
 
-    public static function __callStatic(string $kin, array $lot = []) {
-        return self::_($kin) ? parent::__callStatic($kin, $lot) : null;
+    // Check for valid local path address (whether it is exists or not)
+    public static function path($x, $exist = false) {
+        if (!is_string($x)) return false;
+        return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$exist || stream_resolve_include_path($x));
+    }
+
+    // Check for valid boolean value
+    public static function toggle($x) {
+        return filter_var($x, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    // Check for empty string, array or object
+    public static function void($x) {
+        return (
+            $x === "" ||
+            is_string($x) && trim($x) === "" ||
+            is_array($x) && empty($x) ||
+            is_object($x) && empty((array) $x)
+        );
     }
 
 }

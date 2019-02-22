@@ -62,14 +62,14 @@ $yaml = function(array $data, string $dent = '  ') use(&$yaml, &$yaml_it, &$yaml
     return \implode("\n", $out);
 };
 
-$yaml_docs = function(array $data, string $dent = '  ') use(&$yaml) {
+$yaml_docs = function(array $data, string $dent = '  ', $content = "\t") use(&$yaml) {
     $out = $s = "";
-    if (isset($data["\t"])) {
-        $s = $data["\t"];
-        unset($data["\t"]);
+    if (isset($data[$content])) {
+        $s = $data[$content];
+        unset($data[$content]);
     }
     for ($i = 0, $count = \count($data); $i < $count; ++$i) {
-        $out .= "---\n" . $data[$i] . "\n";
+        $out .= "---\n" . $yaml($data[$i], $dent) . "\n";
     }
     return $out . "...\n\n" . \trim($s, "\n");
 };
@@ -151,7 +151,8 @@ foreach([
     'query' => function(array $in, $c = []) {
         $c = \extend(['?', '&', '=', ""], $c, false);
         foreach (query($in, "") as $k => $v) {
-            if (!isset($v) || $v === false) continue; // `['a' => 'false', 'b' => false, 'c' => 'null', 'd' => null]` → `a=false&c=null`
+            if ($v === false)
+                continue; // `['a' => 'false', 'b' => false, 'c' => 'null', 'd' => null]` → `a=false&c=null&d=null`
             $v = $v !== true ? $c[2] . \urlencode(\s($v)) : ""; // `['a' => 'true', 'b' => true]` → `a=true&b`
             $out[] = \urlencode($k) . $v;
         }
@@ -258,7 +259,7 @@ foreach([
         if (\Is::file($in)) {
             $in = require $in;
         }
-        return $docs ? $yaml_docs($in, $dent) : $yaml($in, $dent);
+        return $docs ? $yaml_docs($in, $dent, $docs === true ? "\t" : $docs) : $yaml($in, $dent);
     }
 ] as $k => $v) {
     \To::_($k, $v);

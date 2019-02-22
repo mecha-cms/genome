@@ -235,24 +235,24 @@ foreach ([
     },
     'query' => function($in, array $c = []) {
         $c = \extend(['?', '&', '=', ""], $c, false);
-        if (!\is_string($in)) {
-            return [];
-        }
-        $out = [];
-        foreach (\explode($c[1], \t($in, $c[0], $c[3])) as $v) {
-            $q = \explode($c[2], $v, 2);
-            $q[0] = \urldecode($q[0]);
-            if (isset($q[1])) {
-                $q[1] = \urldecode($q[1]);
-                // `a=TRUE&b` → `['a' => 'true', 'b' => true]`
-                // `a=true&b` → `['a' => 'true', 'b' => true]`
-                $q[1] = \e($q[1] === 'TRUE' || $q[1] === 'true' ? '"true"' : $q[1]);
-            } else {
-                $q[1] = true;
+        if (\is_string($in)) {
+            $out = [];
+            foreach (\explode($c[1], \t($in, $c[0], $c[3])) as $v) {
+                $q = \explode($c[2], $v, 2);
+                $q[0] = \urldecode($q[0]);
+                if (isset($q[1])) {
+                    $q[1] = \urldecode($q[1]);
+                    // `a=TRUE&b` → `['a' => 'true', 'b' => true]`
+                    // `a=true&b` → `['a' => 'true', 'b' => true]`
+                    $q[1] = \e($q[1] === 'TRUE' || $q[1] === 'true' ? '"true"' : $q[1]);
+                } else {
+                    $q[1] = true;
+                }
+                \Anemon::set($out, \str_replace(']', "", $q[0]), $q[1], '[');
             }
-            \Anemon::set($out, \str_replace(']', "", $q[0]), $q[1], '[');
+            return $out;
         }
-        return $out;
+        return [];
     },
     'serial' => "\\unserialize",
     'URL' => function($in, $raw = false) {
