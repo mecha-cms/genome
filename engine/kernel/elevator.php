@@ -2,22 +2,36 @@
 
 class Elevator extends Genome {
 
+    protected $NS = "";
+    protected $lot = [];
+
+    public $c = [];
+    public $config = [];
+
     const HUB = '&#x25C6;';
     const NORTH = '&#x25B2;';
     const SOUTH = '&#x25BC;';
     const WEST = '&#x25C0;';
     const EAST = '&#x25B6;';
 
-    public $config = [];
-    public $c = [];
-
-    protected $lot = [];
-    protected $NS = "";
-
     protected function unite($in, $alt = ['span']) {
         if (!$alt || !$in) return "";
         $in = extend($alt, $in);
         return HTML::unite($in);
+    }
+
+    public function __call(string $kin, array $lot = []) {
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
+        }
+        $text = array_shift($lot);
+        $u = $this->config['union'];
+        $d = array_search($kin, $this->config['direction']);
+        if ($d !== false && ($text || $text === "")) {
+            if ($text !== true) $u[$d][1] = $text;
+            return isset($this->lot[$kin]) ? $this->unite(extend($u[$d], [2 => ['href' => $this->lot[$kin]]])) : $this->unite($u['!'], $u[$d]);
+        }
+        return $this->lot[$kin] ?? $text;
     }
 
     public function __construct(array $in = [], $chunk = [5, 0], string $path = null, $config = []) {
@@ -91,7 +105,9 @@ class Elevator extends Genome {
 
     public function __get(string $key) {
         if (method_exists($this, $key)) {
-            return $this->{$key}();
+            if ((new \ReflectionMethod($this, $key))->isPublic()) {
+                return $this->{$key}();
+            }
         }
         if (self::_($key)) {
             return $this->__call($key);
@@ -102,24 +118,6 @@ class Elevator extends Genome {
     // Fix case for `isset($elevator->key)` or `!empty($elevator->key)`
     public function __isset(string $key) {
         return !!$this->__get($key);
-    }
-
-    public function __unset(string $key) {
-        unset($this->lot[$key]);
-    }
-
-    public function __call(string $kin, array $lot = []) {
-        if (self::_($kin)) {
-            return parent::__call($kin, $lot);
-        }
-        $text = array_shift($lot);
-        $u = $this->config['union'];
-        $d = array_search($kin, $this->config['direction']);
-        if ($d !== false && ($text || $text === "")) {
-            if ($text !== true) $u[$d][1] = $text;
-            return isset($this->lot[$kin]) ? $this->unite(extend($u[$d], [2 => ['href' => $this->lot[$kin]]])) : $this->unite($u['!'], $u[$d]);
-        }
-        return $this->lot[$kin] ?? $text;
     }
 
     public function __toString() {
@@ -135,6 +133,10 @@ class Elevator extends Genome {
         if ($d['>'] !== false)
             $html[] = $this->{$d['>']}(true);
         return Hook::fire($this->NS . '.yield', [implode(' ', $html)], $this, static::class);
+    }
+
+    public function __unset(string $key) {
+        unset($this->lot[$key]);
     }
 
 }
