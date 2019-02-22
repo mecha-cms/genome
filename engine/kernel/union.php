@@ -19,55 +19,13 @@ abstract class Union extends Genome {
         ]
     ];
 
-    public $union = [];
-    public $pattern = [];
-
-    protected $unit = [];
     protected $dent = [];
+    protected $unit = [];
+
+    public $pattern = [];
+    public $union = [];
 
     public static $config = self::config;
-
-    // Build union attribute(s)…
-    protected function _data_($a = []) {
-        if (is_scalar($a)) {
-            $a = trim((string) $a);
-            return strlen($a) ? ' ' . $a : "";
-        }
-        $out = "";
-        $u = $this->union[1][1];
-        ksort($a);
-        foreach ($a as $k => $v) {
-            if (!isset($v) || $v === false) {
-                continue;
-            }
-            if (is_array($v) || (is_object($v) && !fn\is\instance($v))) {
-                $v = json_encode($v);
-            }
-            $out .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . s(self::x($v)) . $u[2] : $k);
-        }
-        return $out;
-    }
-
-    // Base union constructor
-    protected function _unite_($unit = null, $content = "", array $data = [], $dent = 0) {
-        // `$union->unite(['div', "", ['id' => 'foo']], 1)`
-        if (is_array($unit)) {
-            $dent = $content ?: 0;
-            $unit = extend([
-                0 => null,
-                1 => "",
-                2 => []
-            ], $unit);
-            $data = $unit[2];
-            $content = $unit[1];
-            $unit = $unit[0];
-        }
-        // `$union->unite('div', "", ['id' => 'foo'], 0)`
-        $dent = self::dent($dent);
-        $u = $this->union[1][0];
-        $s = $dent . $u[0] . $unit . $this->_data_($data);
-        return $s . ($content === false ? $u[1] : $u[1] . $content . $u[0] . $u[2] . $unit . $u[1]);
-    }
 
     // Inverse version of `Union::unite()`
     protected function _apart_(string $in = "", $eval = true) {
@@ -122,6 +80,27 @@ abstract class Union extends Genome {
         return $dent . $u[0] . $unit . $this->_data_($data) . $u[1];
     }
 
+    // Build union attribute(s)…
+    protected function _data_($a = []) {
+        if (is_scalar($a)) {
+            $a = trim((string) $a);
+            return strlen($a) ? ' ' . $a : "";
+        }
+        $out = "";
+        $u = $this->union[1][1];
+        ksort($a);
+        foreach ($a as $k => $v) {
+            if (!isset($v) || $v === false) {
+                continue;
+            }
+            if (is_array($v) || (is_object($v) && !fn\is\instance($v))) {
+                $v = json_encode($v);
+            }
+            $out .= $u[3] . ($v !== true ? $k . $u[0] . $u[1] . s(self::x($v)) . $u[2] : $k);
+        }
+        return $out;
+    }
+
     // Base union unit close
     protected function _end_($unit = null, $dent = null) {
         if ($unit === true) {
@@ -138,14 +117,33 @@ abstract class Union extends Genome {
         return $unit ? $dent . $u[0] . $u[2] . $unit . $u[1] : "";
     }
 
-    // Indent…
-    public static function dent($i = 0) {
-        return is_numeric($i) ? str_repeat(DENT, (int) $i) : $i;
+    // Base union constructor
+    protected function _unite_($unit = null, $content = "", array $data = [], $dent = 0) {
+        // `$union->unite(['div', "", ['id' => 'foo']], 1)`
+        if (is_array($unit)) {
+            $dent = $content ?: 0;
+            $unit = extend([
+                0 => null,
+                1 => "",
+                2 => []
+            ], $unit);
+            $data = $unit[2];
+            $content = $unit[1];
+            $unit = $unit[0];
+        }
+        // `$union->unite('div', "", ['id' => 'foo'], 0)`
+        $dent = self::dent($dent);
+        $u = $this->union[1][0];
+        $s = $dent . $u[0] . $unit . $this->_data_($data);
+        return $s . ($content === false ? $u[1] : $u[1] . $content . $u[0] . $u[2] . $unit . $u[1]);
     }
 
-    // Encode all union’s special character(s)…
-    public static function x($v = "") {
-        return is_string($v) ? From::HTML($v) : $v;
+    public function __call(string $kin, array $lot = []) {
+        if (!self::_($kin) && !method_exists($this, '_' . $kin . '_')) {
+            array_unshift($lot, $kin);
+            return $this->_unite_(...$lot);
+        }
+        return parent::__call($kin, $lot);
     }
 
     public function __construct(array $config = []) {
@@ -160,19 +158,21 @@ abstract class Union extends Genome {
         }
     }
 
-    public function __call(string $kin, array $lot = []) {
-        if (!self::_($kin) && !method_exists($this, '_' . $kin . '_')) {
-            array_unshift($lot, $kin);
-            return $this->_unite_(...$lot);
-        }
-        return parent::__call($kin, $lot);
-    }
-
     public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {
             return (new static)->__call($kin, $lot);
         }
         return parent::__callStatic($kin, $lot);
+    }
+
+    // Indent…
+    public static function dent($i = 0) {
+        return is_numeric($i) ? str_repeat(DENT, (int) $i) : $i;
+    }
+
+    // Encode all union’s special character(s)…
+    public static function x($v = "") {
+        return is_string($v) ? From::HTML($v) : $v;
     }
 
 }
