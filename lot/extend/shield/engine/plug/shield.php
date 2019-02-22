@@ -1,5 +1,14 @@
 <?php
 
 Shield::_('message', function(string $kin = "") {
-    echo Message::get($kin, false);
+    if ($message = Message::get($kin, false)) {
+        $message = str_replace([
+            '<message type="',
+            '</message>'
+        ], [
+            '<p class="message message-',
+            '</p>'
+        ], $message);
+        echo '<div class="messages p">' . $message . '</div>';
+    }
 });

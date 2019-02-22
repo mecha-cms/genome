@@ -2,42 +2,38 @@
 
 class Message extends Genome {
 
-    public static $x = 0;
-
     const session = 'message';
-    const config = [
-        'message' => [
-            0 => 'p',
-            1 => '%{1}%',
-            2 => [
-                'class[]' => ['message', 'message-%{0}%']
-            ],
-            3 => 1 // dent
-        ],
-        'messages' => [
-            0 => 'div',
-            1 => '%{0}%',
-            2 => [
-                'class[]' => ['messages', 'p']
-            ]
-        ]
-    ];
 
-    public static $config = self::config;
+    public static $x = 0;
 
     public function __toString() {
         return self::get("", false);
     }
 
-    public static function set(...$lot) {
-        $kin = array_shift($lot);
-        $previous = Session::get(self::session, []);
-        if (!isset($previous[$kin])) {
-            $previous[$kin] = [];
+    public static function __callStatic(string $kin, array $lot = []) {
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
         }
-        $previous[$kin][] = $lot;
-        Session::set(self::session, $previous);
-        return new static;
+        array_unshift($lot, $kin);
+        return self::set(...$lot);
+    }
+
+    public static function get(string $kin = null, $reset = true) {
+        $c = c2f(static::class, '_', '/');
+        $out = [];
+        foreach ((array) Session::get(self::session) as $k => $v) {
+            if ($kin && $kin !== $k) {
+                continue;
+            }
+            foreach ($v as $vv) {
+                $text = $vv[0];
+                $key = $c . '_' . $k . '_' . $text;
+                $t = Language::get($key, $vv[1] ?? [], $vv[2] ?? false);
+                $out[] = '<message type="' . $k . '">' . ($t === $key ? $text : $t) . '</message>';
+            }
+        }
+        $reset && self::reset($kin);
+        return implode(N, $out);
     }
 
     public static function halt(...$lot) {
@@ -47,28 +43,6 @@ class Message extends Genome {
 
     public static function reset(string $kin = null) {
         Session::reset(self::session . ($kin ? '.' . $kin : ""));
-        return new static;
-    }
-
-    public static function get(string $kin = null, $reset = true) {
-        global $language;
-        $c = c2f($cc = static::class, '_', '/');
-        $a = [];
-        foreach (Session::get(self::session, []) as $k => $v) {
-            if ($kin && $kin !== $k) {
-                continue;
-            }
-            foreach ($v as $vv) {
-                $text = $vv[0];
-                $key = $c . '_' . $k . '_' . $text;
-                $t = $language->get($key, $vv[1] ?? [], $vv[2] ?? false);
-                $s = candy(HTML::unite(static::$config['message']), [$k, $t === $key ? $text : $t]);
-                $a[] = Hook::fire($c . '.' . __FUNCTION__ . '.' . $k, [$s], null, $cc);
-            }
-        }
-        if ($reset) self::reset($kin);
-        $out = $a ? candy(HTML::unite(static::$config['messages']), [N . implode(N, $a) . N]) : "";
-        return Hook::fire($c . '.' . __FUNCTION__, [$out], null, $cc);
     }
 
     public static function send(string $from, $to, string $title, string $message) {
@@ -106,12 +80,14 @@ class Message extends Genome {
         return mail($to, $title, $body, implode("\r\n", $lot));
     }
 
-    public static function __callStatic(string $kin, array $lot = []) {
-        if (self::_($kin)) {
-            return parent::__callStatic($kin, $lot);
+    public static function set(...$lot) {
+        $kin = array_shift($lot);
+        $previous = Session::get(self::session, []);
+        if (!isset($previous[$kin])) {
+            $previous[$kin] = [];
         }
-        array_unshift($lot, $kin);
-        return self::set(...$lot);
+        $previous[$kin][] = $lot;
+        Session::set(self::session, $previous);
     }
 
 }
