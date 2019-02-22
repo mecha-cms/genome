@@ -15,7 +15,6 @@ class Reset extends Genome {
             } else {
                 Anemon::reset($GLOBALS[$id], $key);
             }
-            return new static;
         }
         return parent::__callStatic($kin, $lot);
     }

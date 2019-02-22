@@ -29,15 +29,15 @@ namespace fn {
 }
 
 namespace {
-    From::_('Markdown', function(string $in = "", $span = false) {
+    From::_('markdown', function(string $in = "", $span = false) {
         return fn\markdown\b($in, $span ? 'span' : 'text');
     });
-    To::_('Markdown', function(string $in = "") {
+    To::_('markdown', function(string $in = "") {
         return $in; // TODO
     });
     // Alias(es)
-    From::_('markdown', From::_('Markdown'));
-    To::_('markdown', To::_('Markdown'));
+    From::_('Markdown', From::_('markdown'));
+    To::_('Markdown', To::_('markdown'));
     // Add `markdown` to the allowed file extension(s)
     File::$config['x'] = concat(File::$config['x'], [
         'markdown',

@@ -2,24 +2,12 @@
 
 class Lot extends Genome {
 
-    public static function set($key, $value = null) {
-        $scope = '.' . md5(static::class);
-        if (is_array($key) || is_object($key)) {
-            foreach ($key as $k => $v) {
-                $GLOBALS[$scope][$k] = $v;
-            }
-        } else {
-            $GLOBALS[$scope][$key] = $value;
-        }
-        return new static;
-    }
-
-    public static function get($key = null, $fail = false) {
+    public static function get($key = null) {
         $data = $GLOBALS['.' . md5(static::class)] ?? [];
         if (isset($key)) {
-            return array_key_exists($key, $data) ? $data[$key] : $fail;
+            return $data[$key] ?? null;
         }
-        return $data ?: $fail ?: [];
+        return $data;
     }
 
     public static function reset($key = null) {
@@ -35,7 +23,17 @@ class Lot extends Genome {
         } else {
             $GLOBALS[$scope] = [];
         }
-        return new static;
+    }
+
+    public static function set($key, $value = null) {
+        $scope = '.' . md5(static::class);
+        if (is_array($key) || is_object($key)) {
+            foreach ($key as $k => $v) {
+                $GLOBALS[$scope][$k] = $v;
+            }
+        } else {
+            $GLOBALS[$scope][$key] = $value;
+        }
     }
 
 }

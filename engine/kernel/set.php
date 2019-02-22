@@ -21,7 +21,6 @@ class Set extends Genome {
             } else {
                 Anemon::set($GLOBALS[$id], $key, $value);
             }
-            return new static;
         }
         return parent::__callStatic($kin, $lot);
     }

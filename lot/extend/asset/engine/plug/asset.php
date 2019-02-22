@@ -6,10 +6,10 @@ foreach ([
     'css' => function($value, $key, $data) use($state) {
         extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
-        if ($path === false && !$x) {
+        if (!isset($path) && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $href = $path === false ? $url : candy($state->state['url'], [$url, file_exists($path) ? filemtime($path) : 0]);
+        $href = isset($path) ? candy($state->state['url'], [$url, is_file($path) ? filemtime($path) : 0]) : $url;
         if (isset($data['href']) && is_callable($data['href'])) {
             $href = fn($data['href'], [$href, $value, $key, $data], $state, Asset::class);
             unset($data['href']);
@@ -22,10 +22,10 @@ foreach ([
     'js' => function($value, $key, $data) use($state) {
         extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
-        if ($path === false && !$x) {
+        if (!isset($path) && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $src = $path === false ? $url : candy($state->state['url'], [$url, file_exists($path) ? filemtime($path) : 0]);
+        $src = isset($path) ? candy($state->state['url'], [$url, is_file($path) ? filemtime($path) : 0]) : $url;
         if (isset($data['src']) && is_callable($data['src'])) {
             $src = fn($data['src'], [$src, $value, $key, $data], $state, Asset::class);
             unset($data['src']);
@@ -42,10 +42,10 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
     Asset::_('.' . $v, function($value, $key, $data) use($state) {
         extract($value, EXTR_SKIP);
         $x = strpos($url, '://') !== false || strpos($url, '//') === 0;
-        if ($path === false && !$x) {
+        if (!isset($path) && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $src = $path === false ? $url : candy($state->state['url'], [$url, file_exists($path) ? filemtime($path) : 0]);
+        $src = isset($path) ? candy($state->state['url'], [$url, is_file($path) ? filemtime($path) : 0]) : $url;
         if (isset($data['src']) && is_callable($data['src'])) {
             $src = fn($data['src'], [$src, $value, $key, $data], $state, Asset::class);
             unset($data['src']);
@@ -67,6 +67,5 @@ foreach (['script', 'style', 'template'] as $v) {
                 'stack' => (float) ($stack ?? 10)
             ];
         }
-        return new static;
     });
 }

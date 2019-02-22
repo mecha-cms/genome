@@ -42,7 +42,7 @@ namespace fn\is {
             $x[0] === '[' && \substr($x, -1) === ']' ||
             // Maybe an associative array
             $x[0] === '{' && \substr($x, -1) === '}'
-        ) && (($x = \json_decode($x, true)) !== null) ? ($r ? $x : true) : false;
+        ) && (null !== ($x = \json_decode($x, true))) ? ($r ? $x : true) : false;
     }
     // Check for valid serialized string format
     function serial($x, $r = false) {
@@ -60,11 +60,9 @@ namespace fn\is {
 
 namespace {
     // Shortcut for `switch` and `case` statement(s)
-    function alt($k, array $a = [], $fail = null) {
-        // Return `$a[$k]` value if exist
-        // or `$fail` value if `$a[$k]` does not exist
-        // or `$k` value if `$fail` is `null`
-        return \array_key_exists((string) $k, $a) ? $a[$k] : ($fail ?? $k);
+    function alt($k, array $a) {
+        // Return `$a[$k]` value if exist or `null`
+        return \array_key_exists((string) $k, $a) ? $a[$k] : null;
     }
     // Check if array contains …
     function any(array $a, $fn = null) {
@@ -80,9 +78,18 @@ namespace {
         }
         return false;
     }
+    // Convert class name to file name
+    function c2f(string $s, string $h = '-', string $n = '.') {
+        return \ltrim(\str_replace(['\\', $n . $h, '_' . $h], [$n, $n, '_'], h($s, $h, false, '_\\\\')), $h);
+    }
+    // Call function
+    function call(callable $fn, array $a = []) {
+        return \call_user_func_array($f, $a);
+    }
     // Replace pattern to its value
     function candy(string $s, $a = [], $x = "\n", $r = true) {
-        if (!$s || \strpos($s, '%') === false) return $s;
+        if (!$s || \strpos($s, '%') === false)
+            return $s;
         $a = (array) $a;
         foreach ($a as $k => $v) {
             if (\is_array($v) || \is_object($v)) {
@@ -145,9 +152,9 @@ namespace {
         }
         return $s;
     }
-    // Convert class name to file name
-    function c2f(string $s, string $h = '-', string $n = '.') {
-        return \ltrim(\str_replace(['\\', $n . $h, '_' . $h], [$n, $n, '_'], h($s, $h, false, '_\\\\')), $h);
+    // Get file content
+    function content(string $f) {
+        return \is_file($f) ? \file_get_contents($f) : false;
     }
     // Merge array value(s)
     function concat(array $a, ...$b) {
@@ -163,6 +170,17 @@ namespace {
     function eq($a, $b) {
         return q($a) === $b;
     }
+    // Error message
+    function err(string $s) {
+        echo '<details style="display:block;font:inherit;background:#000;color:#f00;margin:0;padding:0;">';
+        echo '<summary style="display:block;font:inherit;background:#f00;color:#fff;margin:0;padding:.5em 1em;cursor:help;">' . $s . '</summary>';
+        \ob_start();
+        \debug_print_backtrace();
+        $t = \explode("\n", \ob_get_clean(), 2)[1] ?? "";
+        $t = \str_replace("\n", '<br>', \trim($t));
+        echo '<span style="display:block;font-size:80%;padding:.5em 1em;">' . $t . '</span>';
+        echo '</details>';
+    }
     // Extend array value(s)
     function extend(array $a, ...$b) {
         // `extend([…], […], […], false)`
@@ -172,10 +190,6 @@ namespace {
         }
         // `extend([…], […], […])`
         return \array_replace_recursive($a, ...$b);
-    }
-    // Error message
-    function fail(string $s) {
-        return '<p style="background:#f00;color:#fff;margin:0;padding:.5em 1em;">' . $s . '</p>';
     }
     // Convert file name to class name
     function f2c(string $s, string $h = '-', string $n = '.') {
@@ -201,7 +215,8 @@ namespace {
     }
     // Replace pattern to regular expression
     function format(string $s, string $x = "\n", string $d = '#', $r = true) {
-        if (!$s || \strpos($s, '%') === false) return $s;
+        if (!$s || \strpos($s, '%') === false)
+            return $s;
         $r = $r ? "" : '?';
         $s = \str_replace([
             '%s%', // any string excludes `$x`
@@ -217,7 +232,7 @@ namespace {
             '([\s\S]+)' . $r
         ], x($s, $d));
         // group: `%[foo,bar,baz]%`
-        if (($i = \strpos($s, '%\\[')) !== false && \strpos($s, '\\]%') > $i) {
+        if (false !== ($i = \strpos($s, '%\\[')) && \strpos($s, '\\]%') > $i) {
             $s = \preg_replace_callback('#%\\\\\[([\s\S]+?)\\\\\]%#', function($m) use($r) {
                 $m[1] = \str_replace(['\\\\,', ','], [X, '|'], $m[1]);
                 return '(' . $m[1] . ')' . $r;
@@ -228,6 +243,15 @@ namespace {
     // A greater than or equal to B
     function ge($a, $b) {
         return q($a) >= $b;
+    }
+    // Get file content line by line
+    function get(string $f, int $c = 1024) {
+        if (\is_file($f) && $h = \fopen($f, 'r')) {
+            while (false !== ($v = \fgets($h, $c))) {
+                yield $v;
+            }
+            \fclose($h);
+        }
     }
     // A greater than B
     function gt($a, $b) {
@@ -274,9 +298,9 @@ namespace {
         }, \ARRAY_FILTER_USE_BOTH);
     }
     // Generate new array contains value from the key
-    function pluck(array $a, string $k, $fail = null) {
-        return \array_filter(\array_map(function($v) use($k, $fail) {
-            return $v[$k] ?? $fail;
+    function pluck(array $a, string $k, $alt = null) {
+        return \array_filter(\array_map(function($v) use($alt, $k) {
+            return $v[$k] ?? $alt;
         }, $a));
     }
     // Convert class property name to file name
@@ -405,7 +429,7 @@ namespace {
             }
             if (\is_numeric($x))
                 return \strpos($x, '.') !== false ? (float) $x : (int) $x;
-            if (($v = \fn\is\json($x, true)) !== false)
+            if (false !== ($v = \fn\is\json($x, true)))
                 return $v;
             // `"abcdef"` or `'abcdef'`
             if ($x[0] === '"' && \substr($x, -1) === '"' || $x[0] === "'" && \substr($x, -1) === "'") {
@@ -929,52 +953,17 @@ namespace {
             'Ỹ' => 'Y'
         ]) : $x;
     }
-    // $s: directory path
-    // $x: file extension or name pattern… `txt`, `log,txt`
-    // $q: filter by query
-    // $o: order?
-    // $h: include hidden file(s)?
-    function g(string $s, string $x = '*', $q = "", $o = false, $h = true) {
-        $s = \rtrim($s, DS) . DS;
-        $x = \str_replace(' ', "", $x);
-        $f = \GLOB_BRACE | \GLOB_NOSORT;
-        if (\strpos($s . $x, '{') !== false) {
-            // ...
-        } else if (\strpos($x, ',') !== false) {
-            $x = \strpos($x, '.') === false ? '*.{' . $x . '}' : '{' . $x . '}';
-        } else if (\strpos($x, '.') === false) {
-            $x = '*.' . $x;
-        }
-        $g = \glob($s . $x, $f);
-        if ($h) {
-            $g = concat($g, \glob($s . '.' . $x, $f));
-        }
-        if (!$q) {
-            if ($o) {
-                \natsort($g);
-            }
-            return $g;
-        }
-        $r = [];
-        if (\is_callable($q)) {
-            foreach ($g as $k => $v) {
-                if (\call_user_func($q, $v, $k)) {
-                    $r[] = $v;
+    function g(string $f, string $x = null) {
+        if (\is_dir($f) && $h = \opendir($f)) {
+            while (false !== ($b = \readdir($h))) {
+                if ($b !== '.' && $b !== '..') {
+                    if (!isset($x) || ($y = \pathinfo($b, \PATHINFO_EXTENSION)) && \strpos(',' . $x . ',', ',' . $y . ',') !== false) {
+                        yield $f . DS . $b;
+                    }
                 }
             }
-        } else {
-            foreach ($g as $k => $v) {
-                $s = \pathinfo($v, \PATHINFO_FILENAME);
-                if (\strpos($s, $q) !== false) {
-                    $r[] = $v;
-                }
-            }
+            \closedir($h);
         }
-        if ($o) {
-            \natsort($r);
-        }
-        unset($g);
-        return $r;
     }
     function h(string $x, string $h = '-', $a = false, $i = "") {
         return \str_replace([' ', $h . $h], $h, \preg_replace_callback('#\p{Lu}#', function($m) use($h) {
@@ -983,7 +972,31 @@ namespace {
     }
     function i() {}
     function j() {}
-    function k() {}
+    function k(string $f, array $q = [], $c = false) {
+        if (\is_dir($f) && $h = \opendir($f)) {
+            while (false !== ($b = \readdir($h))) {
+                if ($b !== '.' && $b !== '..') {
+                    $n = \pathinfo($b, \PATHINFO_FILENAME);
+                    foreach ($q as $v) {
+                        // Find by query in file name…
+                        if (\strpos($n, $v) !== false) {
+                            yield $r;
+                        // Find by query in file content…
+                        } else if ($c && \is_file($r)) {
+                            foreach (get($r) as $s) {
+                                foreach ($q as $v) {
+                                    if (\strpos($s, $v) !== false) {
+                                        yield $r;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            \closedir($h);
+        }
+    }
     function l(string $x) {
         return \extension_loaded('mbstring') ? \mb_strtolower($x) : \strtolower($x);
     }
@@ -1064,7 +1077,7 @@ namespace {
     }
     // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
     // $n: @keep line-break in the output or replace them with a space? (default is !@keep)
-    function w(string $x, $c = [], $n = false) {
+    function w(/*string*/ $x, $c = [], $n = false) {
         // Should be a HTML input
         if (\strpos($x, '<') !== false || \strpos($x, ' ') !== false || \strpos($x, "\n") !== false) {
             $c = '<' . \implode('><', \is_string($c) ? \explode(',', $c) : (array) $c) . '>';
@@ -1093,20 +1106,11 @@ namespace {
     function x(string $x, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
         return \addcslashes($x, $d . $c);
     }
-    function y($x, array $a = []) {
-        // By path
-        if (\is_string($x) && \strlen($x) <= 260 && \realpath($x) && \is_file($x)) {
-            \ob_start();
-            extract($GLOBALS, \EXTR_SKIP);
-            require $x;
-            return \ob_get_clean();
-        // By function
-        } else if (\is_callable($x)) {
-            \ob_start();
-            \call_user_func($x, ...$a);
-            return \ob_get_clean();
+    function y($a) {
+        if (\is_object($a) && $a instanceof \Generator) {
+            return \iterator_to_array($a);
         }
-        return false;
+        return $a;
     }
     // $b: use `[]` or `array()` syntax?
     function z($a, $b = true) {

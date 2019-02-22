@@ -14,7 +14,7 @@ function union($content) {
                 if (isset($a[2]['class[]'])) {
                     $c = [];
                     foreach (['has', 'is', 'not'] as $key) {
-                        foreach (\array_filter((array) \Config::get($key, [])) as $k => $v) {
+                        foreach (\array_filter((array) \Config::get($key)) as $k => $v) {
                             $c[] = $key . '-' . $k;
                         }
                     }

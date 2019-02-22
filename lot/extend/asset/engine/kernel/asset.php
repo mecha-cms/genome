@@ -4,70 +4,9 @@ class Asset extends Genome {
 
     public static $lot = [];
 
-    public static function path(string $path, $fail = false) {
-        if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
-            // External URL, nothing to check!
-            $host = $GLOBALS['URL']['host'] ?? "";
-            if (strpos($path, '://' . $host) === false && strpos($path, '//' . $host) !== 0) {
-                return $fail;
-            }
-        }
-        // Full path, be quick!
-        if (strpos($path = To::path($path), ROOT) === 0) {
-            return File::exist($path, $fail);
-        }
-        // Return the path relative to the `.\lot\asset` or `.` folder if exist!
-        $s = ltrim($path, DS);
-        return File::exist([constant(u(static::class)) . DS . $s, ROOT . DS . $s], $fail);
-    }
-
-    public static function URL(string $url, $fail = false) {
-        $path = self::path($url, false);
-        return $path !== false ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : $fail);
-    }
-
-    public static function set($path, float $stack = null, array $data = []) {
-        $i = 0;
-        $stack = (array) $stack;
-        $c = static::class;
-        foreach ((array) $path as $k => $v) {
-            $x = Path::X($v);
-            if (!isset(self::$lot[$c][0][$x][$v])) {
-                self::$lot[$c][1][$x][$v] = [
-                    'path' => self::path($v),
-                    'url' => self::URL($v),
-                    'data' => $data,
-                    'stack' => (float) ($stack[$k] ?? (end($stack) !== false ? end($stack) : 10) + $i)
-                ];
-                $i += .1;
-            }
-        }
-        return new static;
-    }
-
-    public static function get($path = null, $fail = false, int $i = 1) {
-        $c = static::class;
-        if (isset($path)) {
-            $x = Path::X($path);
-            return self::$lot[$c][$i][$x][$path] ?? $fail;
-        }
-        return !empty(self::$lot[$c][$i]) ? self::$lot[$c][$i] : $fail;
-    }
-
-    public static function reset($path = null) {
-        $c = static::class;
-        if (!isset($path)) {
-            self::$lot[$c] = [];
-        } else if (is_array($path)) {
-            foreach ($path as $v) {
-                self::reset($v);
-            }
-        } else {
-            $x = Path::X($path);
-            self::$lot[$c][0][$x][$path] = 1;
-            unset(self::$lot[$c][1][$x][$path]);
-        }
-        return new static;
+    public static function URL(string $url) {
+        $path = self::path($url);
+        return isset($path) ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : null);
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -105,6 +44,68 @@ class Asset extends Genome {
             return "";
         }
         return parent::__callStatic($kin, $lot);
+    }
+
+    public static function get(string $path = null, int $i = 1) {
+        $c = static::class;
+        if (isset($path)) {
+            $x = Path::X($path);
+            return self::$lot[$c][$i][$x][$path] ?? null;
+        }
+        return self::$lot[$c][$i] ?? [];
+    }
+
+    public static function path(string $path) {
+        if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
+            // External URL, nothing to check!
+            $host = $GLOBALS['URL']['host'] ?? "";
+            if (strpos($path, '://' . $host) === false && strpos($path, '//' . $host) !== 0) {
+                return null;
+            }
+        }
+        // Full path, be quick!
+        if (strpos($path = strtr($path, '/', DS), ROOT) === 0) {
+            return File::exist($path) ?: null;
+        }
+        // Return the path relative to the `.\lot\asset` or `.` folder if exist!
+        $s = ltrim($path, DS);
+        return File::exist([
+            constant(u(static::class)) . DS . $s,
+            ROOT . DS . $s
+        ]) ?: null;
+    }
+
+    public static function reset($path = null) {
+        $c = static::class;
+        if (is_array($path)) {
+            foreach ($path as $v) {
+                self::reset($v);
+            }
+        } else if (isset($path)) {
+            $x = Path::X($path);
+            self::$lot[$c][0][$x][$path] = 1;
+            unset(self::$lot[$c][1][$x][$path]);
+        } else {
+            self::$lot[$c] = [];
+        }
+    }
+
+    public static function set($path, float $stack = null, array $data = []) {
+        $i = 0;
+        $stack = (array) $stack;
+        $c = static::class;
+        foreach ((array) $path as $k => $v) {
+            $x = Path::X($v);
+            if (!isset(self::$lot[$c][0][$x][$v])) {
+                self::$lot[$c][1][$x][$v] = [
+                    'path' => self::path($v),
+                    'url' => self::URL($v),
+                    'data' => $data,
+                    'stack' => (float) ($stack[$k] ?? (end($stack) !== false ? end($stack) : 10) + $i)
+                ];
+                $i += .1;
+            }
+        }
     }
 
 }

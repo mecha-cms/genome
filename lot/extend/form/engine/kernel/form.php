@@ -4,6 +4,30 @@ class Form extends HTML {
 
     const session = 'form';
 
+    private static function name(&$s, &$a) {
+        if ($s && strpos('.!*', $s[0]) !== false) {
+            $a[alt($s[0], [
+                '.' => 'disabled',
+                '!' => 'readonly',
+                '*' => 'required'
+            ])] = true;
+            $s = substr($s, 1);
+        } else if (strlen($s) >= 2 && $s[0] === '\\' && strpos('.!*', $s[1]) !== false) { // escaped
+            $s = substr($s, 1);
+        }
+        $a['name'] = $s;
+    }
+
+    private static function v($value) {
+        // Only un-escape Unicode hex representation
+        if ($value && strpos($value . "", '&#x') !== false) {
+            return preg_replace_callback('#&\#x[a-f\d]+;#i', function($m) {
+                return html_entity_decode($m[0]);
+            }, $value);
+        }
+        return $value;
+    }
+
     // `<button>`
     public static function button(string $name = null, $value = null, string $text = null, array $attr = [], $dent = 0) {
         if (!array_key_exists('type', $attr)) {
@@ -22,8 +46,13 @@ class Form extends HTML {
             'type' => $type
         ];
         self::name($name, $a);
-        $a['value'] = Session::get(self::session . '.' . self::key($name), $value);
+        $a['value'] = Session::get(self::session . '.' . self::key($name)) ?? $value;
         return self::unite('input', false, extend($a, $attr), $dent);
+    }
+
+    public static function key($key) {
+        // Replace `foo[bar][baz]` to `foo.bar.baz`
+        return str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $key);
     }
 
     // `<select>`
@@ -32,7 +61,7 @@ class Form extends HTML {
         $a = [];
         self::name($name, $a);
         unset($a['required']);
-        $select = (string) Session::get(self::session . '.' . self::key($name), $select);
+        $select = (string) Session::get(self::session . '.' . self::key($name)) ?? $select;
         $a = extend($a, $attr);
         foreach ($options as $key => $value) {
             $tag = new static;
@@ -85,37 +114,8 @@ class Form extends HTML {
             $placeholder = substr(self::v(explode("\n", n($placeholder), 2)[0]), 0, 120);
         }
         $a['placeholder'] = $placeholder;
-        $value = Session::get(self::session . '.' . self::key($name), $value);
+        $value = Session::get(self::session . '.' . self::key($name)) ?? $value;
         return self::unite('textarea', self::v(htmlentities($value)), extend($a, $attr), $dent);
-    }
-
-    public static function key($key) {
-        // Replace `foo[bar][baz]` to `foo.bar.baz`
-        return str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $key);
-    }
-
-    private static function name(&$s, &$a) {
-        if ($s && strpos('.!*', $s[0]) !== false) {
-            $a[alt($s[0], [
-                '.' => 'disabled',
-                '!' => 'readonly',
-                '*' => 'required'
-            ])] = true;
-            $s = substr($s, 1);
-        } else if (strlen($s) >= 2 && $s[0] === '\\' && strpos('.!*', $s[1]) !== false) { // escaped
-            $s = substr($s, 1);
-        }
-        $a['name'] = $s;
-    }
-
-    private static function v($value) {
-        // Only un-escape Unicode hex representation
-        if ($value && strpos($value . "", '&#x') !== false) {
-            return preg_replace_callback('#&\#x[a-f\d]+;#i', function($m) {
-                return html_entity_decode($m[0]);
-            }, $value);
-        }
-        return $value;
     }
 
 }

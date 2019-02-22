@@ -3,7 +3,7 @@ title: Asset
 description: Add, remove, append, prepend and replace asset files from/to the HTML output without touching the shield files.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.5.6
+version: 1.6.0
 ...
 
 This extension works by finding two special places in the HTML document, i.e. right before the `</head>` and `</body>` tag, and then process all assets that have been added to the storage to be rendered as HTML tags in both places.

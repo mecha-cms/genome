@@ -4,21 +4,18 @@ class Guardian extends Genome {
 
     const session = 'guardian';
 
-    public static $config = self::config;
+    public static function abort(string $message, $exit = true) {
+        err($message);
+        $exit && exit;
+    }
+
+    public static function check(string $token, $id = 0) {
+        $previous = Session::get(self::session . '.token.' . $id);
+        return $previous && $token && $previous === $token ? $token : false;
+    }
 
     public static function hash(string $salt = "") {
         return sha1(uniqid(mt_rand(), true) . $salt);
-    }
-
-    public static function check(string $token, $id = 0, $fail = false) {
-        $previous = Session::get(self::session . '.token.' . $id);
-        return $previous && $token && $previous === $token ? $token : $fail;
-    }
-
-    public static function token($id = 0) {
-        $token = self::hash($id);
-        Session::set(self::session . '.token.' . $id, $token);
-        return $token;
     }
 
     public static function kick(string $path = null) {
@@ -32,9 +29,10 @@ class Guardian extends Genome {
         exit;
     }
 
-    public static function abort(string $message, $exit = true) {
-        echo fail($message);
-        if ($exit) exit;
+    public static function token($id = 0) {
+        $token = self::hash($id);
+        Session::set(self::session . '.token.' . $id, $token);
+        return $token;
     }
 
 }

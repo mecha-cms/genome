@@ -2,77 +2,14 @@
 
 class Config extends Genome {
 
-    protected static $lot = [];
     protected static $a = [];
-
-    public static function load(...$lot) {
-        $c = static::class;
-        if (!isset($lot[0])) {
-            return (self::$lot[$c] = []);
-        }
-        $a = Is::file($lot[0]) ? require $lot[0] : $lot[0];
-        return (self::$lot[$c] = self::$a[$c] = a($a));
-    }
-
-    public static function set($key, $value = null) {
-        $c = static::class;
-        $cargo = [];
-        $key = a($key);
-        $value = a($value);
-        if (!is_array($key)) {
-            Anemon::set($cargo, $key, $value);
-        } else {
-            $cargo = $key;
-        }
-        $o = (array) (self::$lot[$c] ?? []);
-        self::$lot[$c] = extend($o, $cargo);
-        return new static;
-    }
-
-    public static function get($key = null, $fail = false, $array = false) {
-        $c = static::class;
-        if (!isset($key)) {
-            $out = !empty(self::$lot[$c]) ? self::$lot[$c] : $fail;
-            return $array ? $out : o($out);
-        } else if (is_array($key) || is_object($key)) {
-            $out = [];
-            foreach ($key as $k => $v) {
-                $out[$k] = self::get($k, $v, $array);
-            }
-            // `get($keys = [], $array = false)`
-            return $fail ? $out : o($out);
-        }
-        // `get($key = null, $fail = false, $array = false)`
-        $out = (array) (self::$lot[$c] ?? []);
-        $out = Anemon::get($out, $key, $fail);
-        return $array ? $out : o($out);
-    }
-
-    public static function reset($key = null) {
-        $c = static::class;
-        if (isset($key)) {
-            foreach ((array) $key as $v) {
-                Anemon::reset(self::$lot[$c], $v);
-            }
-        } else {
-            self::$lot[$c] = [];
-        }
-        return new static;
-    }
-
-    public static function alt(...$lot) {
-        $c = static::class;
-        self::set(...$lot);
-        self::$lot[$c] = extend(self::$lot[$c], self::$a[$c]);
-        return new static;
-    }
+    protected static $lot = [];
 
     public function __call(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        $fail = $alt = false;
-        if (count($lot)) {
+        if ($lot) {
             $test = self::get($kin);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
@@ -85,27 +22,25 @@ class Config extends Genome {
             }
             // Else, static value
             $kin .= '.' . array_shift($lot);
-            $fail = array_shift($lot) ?: false;
-            $alt = array_shift($lot) ?: false;
+            $array = array_shift($lot) ?: false;
         }
-        if (is_callable($fail)) {
-            return fn($fail, [self::get($kin, $alt)], $this, static::class);
-        }
-        return self::get($kin, $fail);
-    }
-
-    public function __set(string $key, $value = null) {
-        return self::set($key, $value);
+        return self::get($kin, $array);
     }
 
     public function __get(string $key) {
         if (method_exists($this, $key)) {
-            return $this->{$key}();
+            if ((new \ReflectionMethod($this, $key))->isPublic()) {
+                return $this->{$key}();
+            }
         }
         if (self::_($key)) {
             return $this->__call($key);
         }
-        return self::get($key, null);
+        return self::get($key);
+    }
+
+    public function __invoke() {
+        return (array) self::get(null, true);
     }
 
     // Fix case for `isset($config->key)` or `!empty($config->key)`
@@ -113,24 +48,23 @@ class Config extends Genome {
         return !!self::get($key);
     }
 
-    public function __unset(string $key) {
-        self::reset($key);
+    public function __set(string $key, $value = null) {
+        return self::set($key, $value);
     }
 
     public function __toString() {
         return json_encode(self::get());
     }
 
-    public function __invoke($fail = []) {
-        return self::get(null, $fail, true);
+    public function __unset(string $key) {
+        self::reset($key);
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
-        $fail = $alt = false;
-        if (count($lot)) {
+        if ($lot) {
             $test = self::get($kin);
             // Asynchronous value with function closure
             if ($test instanceof \Closure) {
@@ -143,13 +77,64 @@ class Config extends Genome {
             }
             // Else, static value
             $kin .= '.' . array_shift($lot);
-            $fail = array_shift($lot) ?: false;
-            $alt = array_shift($lot) ?: false;
+            $array = array_shift($lot) ?: false;
         }
-        if (is_callable($fail)) {
-            return fn($fail, [self::get($kin, $alt)], null, static::class);
+        return self::get($kin, $array);
+    }
+
+    public static function alt(...$lot) {
+        $c = static::class;
+        self::set(...$lot);
+        self::$lot[$c] = extend(self::$lot[$c], self::$a[$c]);
+    }
+
+    public static function get($key = null, $array = false) {
+        $c = static::class;
+        if (is_array($key)) {
+            $out = [];
+            foreach ($key as $k => $v) {
+                $out[$k] = self::get($k, $array) ?? $v;
+            }
+            return $array ? $out : o($out);
+        } else if (isset($key)) {
+            $out = self::$lot[$c] ?? [];
+            $out = Anemon::get($out, $key);
+            return $array ? $out : o($out);
         }
-        return self::get($kin, $fail);
+        $out = self::$lot[$c] ?? [];
+        return $array ? $out : o($out);
+    }
+
+    public static function load(...$lot) {
+        $c = static::class;
+        if (isset($lot[0])) {
+            $a = Is::file($lot[0]) ? require $lot[0] : $lot[0];
+            return (self::$lot[$c] = self::$a[$c] = a($a));
+        }
+        return (self::$lot[$c] = []);
+    }
+
+    public static function reset($key = null) {
+        $c = static::class;
+        if (isset($key)) {
+            foreach ((array) $key as $v) {
+                Anemon::reset(self::$lot[$c], $v);
+            }
+        } else {
+            self::$lot[$c] = [];
+        }
+    }
+
+    public static function set($key, $value = null) {
+        $c = static::class;
+        $in = [];
+        if (is_array($key)) {
+            $in = $key;
+        } else {
+            Anemon::set($in, $key, $value);
+        }
+        $out = self::$lot[$c] ?? [];
+        self::$lot[$c] = extend($out, $in);
     }
 
 }

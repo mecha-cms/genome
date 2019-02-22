@@ -2,6 +2,7 @@
 
 // Require the plug manually…
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'page.php';
 
 // Include worker(s)…
 require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'config.php';
@@ -107,7 +108,7 @@ function url($url = "", array $lot = []) {
             // Page(s) view has been disabled!
         } else {
             $pages = \Get::pages($folder, 'page', $sort, 'path');
-            if ($query = \l(\HTTP::get($config->q, ""))) {
+            if ($query = \l(\HTTP::get($config->q) ?? "")) {
                 \Config::set('is.search', true);
                 \Config::set('trace', new \Anemon([$language->search . ': ' . $query, $page->title, $config->title], ' &#x00B7; '));
                 $query = \explode(' ', $query);

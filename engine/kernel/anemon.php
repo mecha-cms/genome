@@ -2,47 +2,11 @@
 
 class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \Serializable {
 
+    public $i = 0;
     public $lot = [];
-    public $value = [];
     public $parent = null;
     public $separator = "";
-    public $i = 0;
-
-    public function offsetSet($i, $value) {
-        if (!isset($i)) {
-            $this->value[] = $value;
-        } else {
-            $this->value[$i] = $value;
-        }
-    }
-
-    public function offsetExists($i) {
-        return isset($this->value[$i]);
-    }
-
-    public function offsetUnset($i) {
-        unset($this->value[$i]);
-    }
-
-    public function offsetGet($i) {
-        return $this->value[$i] ?? null;
-    }
-
-    public function count($deep = false) {
-        return count($this->value, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
-    }
-
-    public function getIterator() {
-        return new \ArrayIterator($this->value);
-    }
-
-    public function serialize() {
-        return serialize($this->value);
-    }
-
-    public function unserialize($lot) {
-        $this->lot = $this->value = unserialize($lot);
-    }
+    public $value = [];
 
     public function __construct(iterable $array = [], string $separator = ', ') {
         if ($array instanceof \Traversable) {
@@ -53,15 +17,121 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         parent::__construct();
     }
 
-    public function __toString() {
-        return $this->__invoke($this->separator);
-    }
-
     public function __invoke(string $separator = ', ', $is = true) {
         return implode($separator, $is ? $this->is(function($v, $k) {
             // Ignore `null` and `false` value and all item(s) with key prefixed by a `_`
             return isset($v) && $v !== false && strpos($k, '_') !== 0;
         })->value : $this->value);
+    }
+
+    public function __toString() {
+        return $this->__invoke($this->separator);
+    }
+
+    // Insert `$value` after current element
+    public function after($value, $key = null) {
+        $i = b($this->i + 1, 0, $this->count());
+        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
+        return $this;
+    }
+
+    // @see `.\engine\ignite.php#fn:any`
+    public function any($fn = null) {
+        return any($this->value, $fn);
+    }
+
+    // Insert `$value` to the end of array
+    public function append($value, $key = null) {
+        $this->i = count($v = $this->value) + 1;
+        if (isset($key)) {
+            $v += [$key => $value];
+        } else {
+            $v[] = $value;
+        }
+        $this->value = $v;
+        return $this;
+    }
+
+    // Insert `$value` before current element
+    public function before($value, $key = null) {
+        $i = b($this->i, 0, $this->count());
+        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
+        return $this;
+    }
+
+    // Move to the first array
+    public function begin() {
+        $this->i = 0;
+        return $this;
+    }
+
+    // Generate chunk(s) of array
+    public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
+        $clone = $this->mitose();
+        $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
+        if ($index !== -1) {
+            $clone->value = $clone->value[$clone->i = $index] ?? [];
+        }
+        return $clone;
+    }
+
+    public function count($deep = false) {
+        return count($this->value, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+    }
+
+    // Get current array value
+    public function current() {
+        $current = array_values($this->value);
+        return $current[$this->i] ?? null;
+    }
+
+    // Move to the last array
+    public function end() {
+        $this->i = $this->count() - 1;
+        return $this;
+    }
+
+    // @see `.\engine\ignite.php#fn:find`
+    public function find(callable $fn = null) {
+        return find($this->value, $fn);
+    }
+
+    // Get first array value
+    public function first($take = false) {
+        return $take ? array_shift($this->value) : reset($this->value);
+    }
+
+    public function getIterator() {
+        return new \ArrayIterator($this->value);
+    }
+
+    // @see `.\engine\ignite.php#fn:has`
+    public function has(string $value = "", string $separator = X) {
+        return has($this->value, $value, $separator);
+    }
+
+    // Get position by array key
+    public function index(string $key) {
+        $i = array_search($key, array_keys($this->value));
+        return $i !== false ? $search : null;
+    }
+
+    // @see `.\engine\ignite.php#fn:is`
+    public function is($fn = null) {
+        $clone = $this->mitose();
+        $clone->value = is($clone->value, $fn);
+        return $clone;
+    }
+
+    // Get array key by position
+    public function key(int $index) {
+        $array = array_keys($this->value);
+        return array_key_exists($index, $array) ? $array[$index] : null;
+    }
+
+    // Get last array value
+    public function last($take = false) {
+        return $take ? array_pop($this->value) : end($this->value);
     }
 
     public function lot(array $lot = [], $over = false) {
@@ -70,6 +140,13 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         }
         $this->value = $this->lot;
         return $this;
+    }
+
+    // @see `.\engine\ignite.php#fn:map`
+    public function map(callable $fn) {
+        $clone = $this->mitose();
+        $clone->value = map($clone->value, $fn);
+        return $clone;
     }
 
     // Clone the current instance
@@ -86,56 +163,38 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // Move to previous array index
-    public function previous(int $skip = 0) {
-        $this->i = b($this->i - 1 - $skip, 0, $this->count() - 1);
-        return $this;
+    // @see `.\engine\ignite.php#fn:not`
+    public function not($fn = null) {
+        $clone = $this->mitose();
+        $clone->value = not($clone->value, $fn);
+        return $clone;
     }
 
-    // Move to `$index` array index
-    public function to($index) {
-        $this->i = is_int($index) ? $index : $this->index($index, $index);
-        return $this;
+    public function offsetExists($i) {
+        return isset($this->value[$i]);
     }
 
-    // Move to the first array
-    public function begin() {
-        $this->i = 0;
-        return $this;
+    public function offsetGet($i) {
+        return $this->value[$i] ?? null;
     }
 
-    // Move to the last array
-    public function end() {
-        $this->i = $this->count() - 1;
-        return $this;
-    }
-
-    // Get first array value
-    public function first($take = false) {
-        return $take ? array_shift($this->value) : reset($this->value);
-    }
-
-    // Get current array value
-    public function current($fail = null) {
-        $current = array_values($this->value);
-        return $current[$this->i] ?? $fail;
-    }
-
-    // Get last array value
-    public function last($take = false) {
-        return $take ? array_pop($this->value) : end($this->value);
-    }
-
-    // Insert `$value` to the end of array
-    public function append($value, $key = null) {
-        $this->i = count($v = $this->value) + 1;
-        if (isset($key)) {
-            $v += [$key => $value];
+    public function offsetSet($i, $value) {
+        if (isset($i)) {
+            $this->value[$i] = $value;
         } else {
-            $v[] = $value;
+            $this->value[] = $value;
         }
-        $this->value = $v;
-        return $this;
+    }
+
+    public function offsetUnset($i) {
+        unset($this->value[$i]);
+    }
+
+    // @see `.\engine\ignite.php#fn:pluck`
+    public function pluck(string $key, $alt = null) {
+        $clone = $this->mitose();
+        $clone->value = pluck($clone->value, $key, $alt);
+        return $clone;
     }
 
     // Insert `$value` to the start of array
@@ -151,17 +210,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // Insert `$value` before current element
-    public function before($value, $key = null) {
-        $i = b($this->i, 0, $this->count());
-        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
-        return $this;
-    }
-
-    // Insert `$value` after current element
-    public function after($value, $key = null) {
-        $i = b($this->i + 1, 0, $this->count());
-        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
+    // Move to previous array index
+    public function previous(int $skip = 0) {
+        $this->i = b($this->i - 1 - $skip, 0, $this->count() - 1);
         return $this;
     }
 
@@ -178,26 +229,14 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // Get array key by position
-    public function key(int $index, $fail = null) {
-        $array = array_keys($this->value);
-        return array_key_exists($index, $array) ? $array[$index] : $fail;
+    public function serialize() {
+        return serialize($this->value);
     }
 
-    // Get position by array key
-    public function index(string $key, $fail = null) {
-        $search = array_search($key, array_keys($this->value));
-        return $search !== false ? $search : $fail;
-    }
-
-    // Generate chunk(s) of array
-    public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
-        $clone = $this->mitose();
-        $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
-        if ($index !== -1) {
-            $clone->value = $clone->value[$clone->i = $index] ?? [];
-        }
-        return $clone;
+    // @see `.\engine\ignite.php#fn:shake`
+    public function shake($preserve_key = true) {
+        $this->value = shake($this->value, $preserve_key);
+        return $this;
     }
 
     // Sort array value: `1` for “asc” and `-1` for “desc”
@@ -207,13 +246,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
             $preserve_key ? uasort($value, $sort) : usort($value, $sort);
         } else if (is_array($sort)) {
             $i = $sort[0];
-            if (!isset($sort[1])) {
-                if ($preserve_key) {
-                    $i === -1 ? arsort($value) : asort($value);
-                } else {
-                    $i === -1 ? rsort($value) : sort($value);
-                }
-            } else {
+            if (isset($sort[1])) {
                 $key = $sort[1];
                 $fn = $i === -1 ? function($a, $b) use($key) {
                     if (!isset($a[$key]) && !isset($b[$key]))
@@ -241,6 +274,12 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
                     unset($v);
                 }
                 $preserve_key ? uasort($value, $fn) : usort($value, $fn);
+            } else {
+                if ($preserve_key) {
+                    $i === -1 ? arsort($value) : asort($value);
+                } else {
+                    $i === -1 ? rsort($value) : sort($value);
+                }
             }
         } else {
             if ($preserve_key) {
@@ -253,98 +292,34 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // @see `.\engine\ignite.php#fn:any`
-    public function any($fn = null) {
-        return any($this->value, $fn);
-    }
-
-    // @see `.\engine\ignite.php#fn:find`
-    public function find(callable $fn = null, $fail = null) {
-        $found = find($this->value, $fn);
-        return $found !== null ? $found : $fail;
-    }
-
-    // @see `.\engine\ignite.php#fn:has`
-    public function has(string $value = "", string $separator = X) {
-        return has($this->value, $value, $separator);
-    }
-
-    // @see `.\engine\ignite.php#fn:is`
-    public function is($fn = null) {
-        $clone = $this->mitose();
-        $clone->value = is($clone->value, $fn);
-        return $clone;
-    }
-
-    // @see `.\engine\ignite.php#fn:map`
-    public function map(callable $fn) {
-        $clone = $this->mitose();
-        $clone->value = map($clone->value, $fn);
-        return $clone;
-    }
-
-    // @see `.\engine\ignite.php#fn:not`
-    public function not($fn = null) {
-        $clone = $this->mitose();
-        $clone->value = not($clone->value, $fn);
-        return $clone;
-    }
-
-    // @see `.\engine\ignite.php#fn:pluck`
-    public function pluck(string $key, $fail = null) {
-        $clone = $this->mitose();
-        $clone->value = pluck($clone->value, $key, $fail);
-        return $clone;
-    }
-
-    // @see `.\engine\ignite.php#fn:shake`
-    public function shake($preserve_key = true) {
-        $this->value = shake($this->value, $preserve_key);
+    // Move to `$index` array index
+    public function to($index) {
+        $this->i = is_int($index) ? $index : $this->index($index, $index);
         return $this;
     }
 
-    // Create list of namespace step(s)
-    public static function step($in, string $NS = '.', int $dir = 1) {
-        if (is_string($in) && strpos($in, $NS) !== false) {
-            $in = explode($NS, trim($in, $NS));
-            $a = $dir === -1 ? array_pop($in) : array_shift($in);
-            $out = [$a];
-            if ($dir === -1) {
-                while ($b = array_pop($in)) {
-                    $a = $b . $NS . $a;
-                    array_unshift($out, $a);
-                }
-            } else {
-                while ($b = array_shift($in)) {
-                    $a .= $NS . $b;
-                    array_unshift($out, $a);
-                }
-            }
-            return $out;
-        }
-        return (array) $in;
+    public function unserialize($lot) {
+        $this->lot = $this->value = unserialize($lot);
     }
 
-    // Set array value recursively
-    public static function set(array &$array, string $key, $value = null, string $NS = '.') {
-        $keys = explode($NS, str_replace("\\" . $NS, X, $key));
-        while (count($keys) > 1) {
-            $key = str_replace(X, $NS, array_shift($keys));
-            if (!array_key_exists($key, $array)) {
-                $array[$key] = [];
-            }
-            $array =& $array[$key];
+    public function vomit($key = null) {
+        if (isset($key)) {
+            return self::get($this->value, $key);
         }
-        return ($array[array_shift($keys)] = $value);
+        return $this->value;
+    }
+
+    public static function eat(iterable $array) {
+        return new static($array);
     }
 
     // Get array value recursively
-    public static function get(array &$array, string $key, $fail = false, string $NS = '.') {
-        $keys = explode($NS, str_replace("\\" . $NS, X, $key));
+    public static function get(array &$array, string $key, string $separator = '.') {
+        $keys = explode($separator, str_replace("\\" . $separator, X, $key));
         foreach ($keys as $value) {
-            $value = str_replace(X, $NS, $value);
+            $value = str_replace(X, $separator, $value);
             if (!is_array($array) || !array_key_exists($value, $array)) {
-                return $fail;
+                return null;
             }
             $array =& $array[$value];
         }
@@ -352,10 +327,10 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // Remove array value recursively
-    public static function reset(array &$array, string $key, string $NS = '.') {
-        $keys = explode($NS, str_replace("\\" . $NS, X, $key));
+    public static function reset(array &$array, string $key, string $separator = '.') {
+        $keys = explode($separator, str_replace("\\" . $separator, X, $key));
         while (count($keys) > 1) {
-            $key = str_replace(X, $NS, array_shift($keys));
+            $key = str_replace(X, $separator, array_shift($keys));
             if (array_key_exists($key, $array)) {
                 $array =& $array[$key];
             }
@@ -366,15 +341,39 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $array;
     }
 
-    public static function eat(iterable $array) {
-        return new static($array);
+    // Set array value recursively
+    public static function set(array &$array, string $key, $value = null, string $separator = '.') {
+        $keys = explode($separator, str_replace("\\" . $separator, X, $key));
+        while (count($keys) > 1) {
+            $key = str_replace(X, $separator, array_shift($keys));
+            if (!array_key_exists($key, $array)) {
+                $array[$key] = [];
+            }
+            $array =& $array[$key];
+        }
+        return ($array[array_shift($keys)] = $value);
     }
 
-    public function vomit($key = null, $fail = null) {
-        if (isset($key)) {
-            return self::get($this->value, $key, $fail);
+    // Create list of namespace step(s)
+    public static function step($in, string $separator = '.', int $dir = 1) {
+        if (is_string($in) && strpos($in, $separator) !== false) {
+            $in = explode($separator, trim($in, $separator));
+            $a = $dir === -1 ? array_pop($in) : array_shift($in);
+            $out = [$a];
+            if ($dir === -1) {
+                while ($b = array_pop($in)) {
+                    $a = $b . $separator . $a;
+                    array_unshift($out, $a);
+                }
+            } else {
+                while ($b = array_shift($in)) {
+                    $a .= $separator . $b;
+                    array_unshift($out, $a);
+                }
+            }
+            return $out;
         }
-        return $this->value;
+        return (array) $in;
     }
 
 }

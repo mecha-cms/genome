@@ -2,42 +2,40 @@
 
 class Get extends Genome {
 
-    public static function IP($fail = false) {
+    public static function IP() {
         $for = 'HTTP_X_FORWARDED_FOR';
         if (array_key_exists($for, $_SERVER) && !empty($_SERVER[$for])) {
             if (strpos($_SERVER[$for], ',') > 0) {
-                $ip = explode(',', $_SERVER[$for]);
-                $ip = trim($ip[0]);
+                $ip = trim(strstr($ip[0], ',', true));
             } else {
                 $ip = $_SERVER[$for];
             }
         } else {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-        return Is::IP($ip) ? $ip : $fail;
+        return Is::IP($ip) ? $ip : null;
     }
 
-    public static function UA($fail = false) {
-        return !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : $fail;
+    public static function UA() {
+        return $_SERVER['HTTP_USER_AGENT'] ?? null;
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        if (!self::_($kin)) {
-            $id = '_' . strtoupper($kin);
-            $key = array_shift($lot);
-            $fail = array_shift($lot);
-            if (!isset($key)) {
-                return $GLOBALS[$id] ?? [];
-            } else if (is_array($key)) {
-                $out = [];
-                foreach ($key as $k => $v) {
-                    $out[$k] = Anemon::get($GLOBALS[$id], $k, $v);
-                }
-                return !empty($out) ? $out : $fail;
-            }
-            return Anemon::get($GLOBALS[$id], $key, $fail);
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
         }
-        return parent::__callStatic($kin, $lot);
+        $id = '_' . strtoupper($kin);
+        $key = array_shift($lot);
+        if (isset($key)) {
+            return Anemon::get($GLOBALS[$id], $key);
+        } else if (is_array($key)) {
+            $out = [];
+            foreach ($key as $k => $v) {
+                $out[$k] = Anemon::get($GLOBALS[$id], $k) ?? $v;
+            }
+            return $out;
+        }
+        return $GLOBALS[$id] ?? [];
     }
 
 }
