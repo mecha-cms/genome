@@ -1,10 +1,9 @@
 ---
 title: English
 description: >
-  American English, also called United States English
-  or U.S. English, is the set of varieties of the English
-  language native to the United States.
-version: 2.0.2
+  American English, also called United States English or U.S. English, is
+  the set of varieties of the English language native to the United States.
+version: 2.0.3
 type: YAML
 ...
 
@@ -652,7 +651,7 @@ move: Move
 moveing: Moving
 moveed: Moved
 
-no: No
+no: "No"
 
 ok: OK
 okay: Okay
@@ -771,7 +770,7 @@ visit: Visit
 visiting: Visiting
 visited: Visited
 
-yes: Yes
+yes: "Yes"
 
 
 #. Message
