@@ -24,26 +24,28 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \Serializable {
         } else if (is_string($in)) {
             // Must starts with `<` and ends with `>`
             if (strpos($in, $c[0][0]) === 0 && substr($in, -strlen($c[0][1])) === $c[0][1]) {
-                $tag = x(implode("", $c[0]) . implode("", $c[1]));
+                $tag = x(implode("", $c[0]));
                 $tag_open = x($c[0][0]);
                 $tag_close = x($c[0][1]);
                 $tag_end = x($c[0][2]);
-                if (preg_match('/' . $tag_open . '([^' . $tag . '\s]+)(\s[^' . $tag_close . ']*)?' . $tag_close . '(?:([\s\S]*?)(?:' . $tag_open . $tag_end . '(\1)' . $tag_close . '))?/', $in, $m)) {
+                $attr = x(implode("", $c[1]));
+                $attr_open = x($c[1][2] . $c[1][0]);
+                $attr_close = x($c[1][1]);
+                if (preg_match('/' . $tag_open . '([^' . $tag . $attr . '\s]+)(\s[^' . $tag_close . ']*)?(?:' . $tag_close . '([\s\S]*?)(?:' . $tag_open . $tag_end . '(\1)' . $tag_close . ')|' . $tag_end . $tag_close . ')/', $in, $m)) {
                     $this->lot = [
                         0 => $m[1],
                         1 => isset($m[4]) ? $m[3] : false,
                         2 => []
                     ];
-                    $attr = x(implode("", $c[1]));
-                    $attr_open = x($c[1][2] . $c[1][0]);
-                    $attr_close = x($c[1][1]);
                     if (isset($m[2]) && preg_match_all('/\s+([^' . $attr . '\s]+)(' . $attr_open . '((?:[^' . x($c[1][0] . $c[1][1]) . '\\\]|\\\.)*)' . $attr_close . ')?/', $m[2], $mm)) {
-                        if (!empty($mm[1])) {test($mm);
+                        if (!empty($mm[1])) {
                             foreach ($mm[1] as $k => $v) {
                                 $this->lot[2][$v] = $mm[2][$k] === "" ? true : v($mm[3][$k]);
                             }
                         }
                     }
+                } else {
+                    throw new \Exception('Error!');
                 }
             } else {
                 throw new \Exception('Error!');
