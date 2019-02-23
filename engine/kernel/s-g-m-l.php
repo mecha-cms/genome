@@ -1,6 +1,6 @@
 <?php
 
-class SGML extends Genome implements \ArrayAccess, \Countable, \Serializable {
+class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable, \Serializable {
 
     const config = [
         0 => ['<', '>', '/'],
@@ -76,6 +76,10 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \Serializable {
 
     public function getIterator() {
         return new \ArrayIterator($this->lot);
+    }
+
+    public function jsonSerialize() {
+        return $this->lot;
     }
 
     public function offsetExists($i) {

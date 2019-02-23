@@ -1,6 +1,6 @@
 <?php
 
-class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \Serializable {
+class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
 
     private $read;
 
@@ -142,6 +142,10 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function getIterator() {
         return new \ArrayIterator($this->lot);
+    }
+
+    public function jsonSerialize() {
+        return $this->lot;
     }
 
     public function offsetExists($i) {
