@@ -3,62 +3,69 @@
 class SGML extends Genome implements \ArrayAccess, \Countable, \Serializable {
 
     const config = [
-        0 => [
-            0 => ['<!--', '-->']
-        ],
-        1 => [
-            0 => ['<', '>', '/'],
-            1 => ['=', '"', '"', ' ']
-        ]
+        0 => ['<', '>', '/'],
+        1 => ['"', '"', '=']
     ];
 
     protected $lot = [
-        0 => "", // `Element.nodeName`
-        1 => "", // `Element.innerHTML`
-        2 => []  // `Element.attributes`
+        0 => "",
+        1 => "",
+        2 => []
     ];
 
-    public $c = [];
-    public $type = 1;
+    public $c;
 
     public static $config = self::config;
 
-    public function __construct(...$lot) {
-        $this->type = $type = array_shift($lot) ?? 1;
-        $this->c = $c = extend(self::config, static::$config, array_shift($lot) ?? []);
-        if (is_string($type) && strlen($type)) {
-            $c = $c[$type] ?? [];
-            if (strpos($type, $c[0]) === 0 && substr($type, -strlen($c[1])) === $c[1]) {
-                // Do apart!
+    public function __construct($in = []) {
+        $this->c = $c = extend(self::config, static::$config);
+        if (is_array($in)) {
+            $this->c = $c = extend($c, $in);
+        } else if (is_string($in)) {
+            // Must starts with `<` and ends with `>`
+            if (strpos($in, $c[0][0]) === 0 && substr($in, -strlen($c[0][1])) === $c[0][1]) {
+                $tag = x(implode("", $c[0]) . implode("", $c[1]));
+                $tag_open = x($c[0][0]);
+                $tag_close = x($c[0][1]);
+                $tag_end = x($c[0][2]);
+                if (preg_match('/' . $tag_open . '([^' . $tag . '\s]+)(\s[^' . $tag_close . ']*)?' . $tag_close . '(?:([\s\S]*?)(?:' . $tag_open . $tag_end . '(\1)' . $tag_close . '))?/', $in, $m)) {
+                    $this->lot = [
+                        0 => $m[1],
+                        1 => isset($m[4]) ? $m[3] : false,
+                        2 => []
+                    ];
+                    $attr = x(implode("", $c[1]));
+                    $attr_open = x($c[1][2] . $c[1][0]);
+                    $attr_close = x($c[1][1]);
+                    if (isset($m[2]) && preg_match_all('/\s+([^' . $attr . '\s]+)(' . $attr_open . '((?:[^' . x($c[1][0] . $c[1][1]) . '\\\]|\\\.)*)' . $attr_close . ')?/', $m[2], $mm)) {
+                        if (!empty($mm[1])) {test($mm);
+                            foreach ($mm[1] as $k => $v) {
+                                $this->lot[2][$v] = $mm[2][$k] === "" ? true : v($mm[3][$k]);
+                            }
+                        }
+                    }
+                }
+            } else {
+                throw new \Exception('Error!');
             }
         }
         parent::__construct();
     }
 
     public function __toString() {
-        $c = $this->c[$k = $this->type] ?? [];
-        // Comment
-        if ($k === 0) {
-            return $c[0][0] . ($this->lot[1] ?? "") . $c[0][1];
-        // Element
-        } else if ($k === 1) {
-            $o = $this->lot;
-            $out = $c[0][0] . $o[0];
-            if (!empty($o[2])) {
-                foreach ($o[2] as $k => $v) {
-                    if (!is_string($v)) {
-                        $v = json_encode($v);
-                    }
-                    $out .= $c[1][3] . $k . $c[1][0] . $c[1][1] . $v . $c[1][2];
+        $c = $this->c;
+        $o = $this->lot;
+        $out = $c[0][0] . $o[0];
+        if (!empty($o[2])) {
+            foreach ($o[2] as $k => $v) {
+                if (!is_string($v)) {
+                    $v = json_encode($v);
                 }
+                $out .= $c[1][3] . $k . $c[1][0] . $c[1][1] . $v . $c[1][2];
             }
-            $out .= ($o[1] === false ? $c[0][2] : $c[0][1] . $o[1] . $c[0][0] . $c[0][2] . $o[0]) . $c[0][1];
-            return $out;
-        // Text
-        } else if ($k === 2) {
-            return $this->lot[1];
         }
-        return "";
+        $out .= ($o[1] === false ? $c[0][2] : $c[0][1] . $o[1] . $c[0][0] . $c[0][2] . $o[0]) . $c[0][1];
+        return $out;
     }
 
     public function count() {
@@ -78,10 +85,10 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \Serializable {
     }
 
     public function offsetSet($i, $value) {
-        if (!isset($i)) {
-            $this->lot[] = $value;
-        } else {
+        if (isset($i)) {
             $this->lot[$i] = $value;
+        } else {
+            $this->lot[] = $value;
         }
     }
 
