@@ -101,7 +101,7 @@ class File extends Genome {
                     mkdir($v, 0775, true);
                 }
                 $v .= DS . $b;
-                if (!file_exists($v)) {
+                if (!is_file($v)) {
                     if (copy($path, $v)) {
                         $out[1][] = $v;
                     }
@@ -205,7 +205,7 @@ class File extends Genome {
                     $this->path = $out[$k] = $v;
                 }
             } else {
-                if (!file_exists($folder) || is_file($folder)) {
+                if (!is_dir($folder)) {
                     mkdir($folder, 0775, true);
                 }
                 if (rename($path, $to = $folder . DS . ($as ?: $b))) {
@@ -263,7 +263,7 @@ class File extends Genome {
             $b = basename($path);
             $d = dirname($path) . DS;
             $v = $d . $name;
-            if ($name !== $b && !file_exists($v)) {
+            if ($name !== $b && !is_file($v)) {
                 rename($path, $v);
             }
             $this->path = $v;
@@ -290,7 +290,7 @@ class File extends Genome {
     public function saveTo(string $path, $consent = null) {
         $this->path = $path;
         $path = To::path($path);
-        if (!file_exists($d = dirname($path))) {
+        if (!is_dir($d = dirname($path))) {
             mkdir($d, 0775, true);
         }
         file_put_contents($path, $this->content);
