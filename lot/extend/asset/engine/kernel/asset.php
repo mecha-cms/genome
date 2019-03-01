@@ -9,43 +9,6 @@ class Asset extends Genome {
         return isset($path) ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : null);
     }
 
-    public static function __callStatic(string $kin, array $lot = []) {
-        if ($v = self::_('.' . $kin)) {
-            $c = static::class;
-            $path = array_shift($lot);
-            $a = array_shift($lot) ?: [];
-            $fn = $v[0];
-            if (isset($path)) {
-                $g = self::get($path, [
-                    'path' => self::path($path),
-                    'url' => self::URL($path),
-                    'data' => [],
-                    'stack' => null
-                ]);
-                $data = is_array($a) && is_array($g['data']) ? extend($a, $g['data']) : ($g['data'] ?: $a);
-                return is_callable($fn) ? call_user_func($fn, $g, $path, $data) : ($g['path'] ? file_get_contents($g['path']) : "");
-            }
-            if (isset(self::$lot[$c][1][$kin])) {
-                $assets = Anemon::eat(self::$lot[$c][1][$kin])->sort([1, 'stack'], true);
-                $out = "";
-                if (is_callable($fn)) {
-                    foreach ($assets as $k => $v) {
-                        $out .= call_user_func($fn, $v, $k, extend($a, $v['data'])) . N;
-                    }
-                } else {
-                    foreach ($assets as $k => $v) {
-                        if ($v['path'] !== false) {
-                            $out .= file_get_contents($v['path']) . N;
-                        }
-                    }
-                }
-                return strlen(N) ? substr($out, 0, -strlen(N)) : $out;
-            }
-            return "";
-        }
-        return parent::__callStatic($kin, $lot);
-    }
-
     public static function get(string $path = null, int $i = 1) {
         $c = static::class;
         if (isset($path)) {
@@ -53,6 +16,30 @@ class Asset extends Genome {
             return self::$lot[$c][$i][$x][$path] ?? null;
         }
         return self::$lot[$c][$i] ?? [];
+    }
+
+    public static function join(string $x, string $separator = "") {
+        if ($v = self::_('.' . $x)) {
+            $c = static::class;
+            $fn = $v[0];
+            if (isset(self::$lot[$c][1][$x])) {
+                $assets = Anemon::eat(self::$lot[$c][1][$x])->sort([1, 'stack'], true);
+                $out = [];
+                if (is_callable($fn)) {
+                    foreach ($assets as $k => $v) {
+                        $out[] = call_user_func($fn, $v, $k);
+                    }
+                } else {
+                    foreach ($assets as $k => $v) {
+                        if (isset($v['path']) && is_file($v['path'])) {
+                            $out[] = file_get_contents($v['path']);
+                        }
+                    }
+                }
+                return implode($separator, $out);
+            }
+        }
+        return "";
     }
 
     public static function path(string $path) {
