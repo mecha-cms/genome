@@ -146,7 +146,7 @@ foreach([
         $u = $GLOBALS['URL'];
         $s = \strtr($u['$'], '/', DS);
         $in = \str_replace([$u['$'], '\\', '/', $s], [ROOT, DS, DS, ROOT], $in);
-        return \file_exists($in) ? \realpath($in) : $in;
+        return \realpath($in) ?: $in;
     },
     'query' => function(array $in, $c = []) {
         $c = \extend(['?', '&', '=', ""], $c, false);
@@ -248,18 +248,15 @@ foreach([
     'URL' => function(string $in, $raw = false) {
         $u = $GLOBALS['URL'];
         $s = \strtr(ROOT, DS, '/');
-        $in = \file_exists($in) ? \realpath($in) : $in;
+        $in = \realpath($in) ?: $in;
         $in = \str_replace([ROOT, DS, '\\', $s], [$u['$'], '/', '/', $u['$']], $in);
         return $raw ? \rawurldecode($in) : \urldecode($in);
     },
     'YAML' => function($in, string $dent = '  ', $docs = false) use(&$yaml, &$yaml_docs) {
-        if (!\is_array($in)) {
-            return \s($in, ['null' => '~']);
-        }
         if (\Is::file($in)) {
             $in = require $in;
         }
-        return $docs ? $yaml_docs($in, $dent, $docs === true ? "\t" : $docs) : $yaml($in, $dent);
+        return $docs ? $yaml_docs(a($in), $dent, $docs === true ? "\t" : $docs) : $yaml(a($in), $dent);
     }
 ] as $k => $v) {
     \To::_($k, $v);
