@@ -7,41 +7,53 @@ function asset($content) {
 }
 
 \Hook::set('asset:head', function($content) {
-    $css = \Hook::fire('asset.css', [\Asset::css()], null, \Asset::class);
+    $css = \Hook::fire('asset.css', [\Asset::join('css')], null, \Asset::class);
     $style = "";
     $lot = \Asset::get();
     if (!empty($lot[':style'])) {
         foreach (\Anemon::eat($lot[':style'])->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v['content'])) {
-                $style .= N . \HTML::unite('style', N . $v['content'] . N, $v['data']);
+                $s = new \HTML;
+                $s[0] = 'style';
+                $s[1] = $v['content'];
+                $s[2] = $v['data'];
+                $style .= $s;
             }
         }
     }
     $style = \Hook::fire('asset:style', [$style], null, \Asset::class);
-    return $content . $css . $style . N; // Put inline CSS after remote CSS
+    return $content . $css . $style; // Put inline CSS after remote CSS
 });
 
 \Hook::set('asset:body', function($content) {
-    $js = \Hook::fire('asset.js', [\Asset::js()], null, \Asset::class);
+    $js = \Hook::fire('asset.js', [\Asset::join('js')], null, \Asset::class);
     $script = $template = "";
     $lot = \Asset::get();
     if (!empty($lot[':script'])) {
         foreach (\Anemon::eat($lot[':script'])->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v['content'])) {
-                $script .= N . \HTML::unite('script', N . $v['content'] . N, $v['data']);
+                $s = new \HTML;
+                $s[0] = 'script';
+                $s[1] = $v['content'];
+                $s[2] = $v['data'];
+                $script .= $s;
             }
         }
     }
     if (!empty($lot[':template'])) {
         foreach (\Anemon::eat($lot[':template'])->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v['content'])) {
-                $template .= N . \HTML::unite('template', N . DENT . \str_replace("\n", DENT . "\n", $v['content']) . N, $v['data']);
+                $t = new \HTML;
+                $t[0] = 'template';
+                $t[1] = $v['content'];
+                $t[2] = $v['data'];
+                $template .= $t;
             }
         }
     }
     $script = \Hook::fire('asset:script', [$script], null, \Asset::class);
     $template = \Hook::fire('asset:template', [$template], null, \Asset::class);
-    return $content . $template . $js . $script . N; // Put inline JS after remote JS
+    return $content . $template . $js . $script; // Put inline JS after remote JS
 });
 
-\Hook::set('shield.yield', __NAMESPACE__ . "\\asset", 0);
+\Hook::set('content', __NAMESPACE__ . "\\asset", 0);

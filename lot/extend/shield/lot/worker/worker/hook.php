@@ -1,31 +1,29 @@
 <?php namespace fn\shield;
 
 // Generate HTML class(es) based on current page conditional statement(s)
-function union($content) {
-    $unit = \Shield::$config['union'][0];
-    if (\strpos($content, '<' . $unit . ' ') !== false) {
-        return \preg_replace_callback('#<' . \x($unit) . '(?:\s[^>]*)?>#', function($m) {
+function root($content) {
+    $r = \Shield::$config['root'][0];
+    if (\strpos($content, '<' . $r . ' ') !== false) {
+        return \preg_replace_callback('#<' . \x($r) . '(?:\s[^>]*)?>#', function($m) use($r) {
             if (
                 \strpos($m[0], ' class="') !== false ||
                 \strpos($m[0], ' class ') !== false ||
                 \substr($m[0], -7) === ' class>'
             ) {
-                $a = \HTML::apart($m[0]);
-                if (isset($a[2]['class[]'])) {
-                    $c = [];
-                    foreach (['has', 'is', 'not'] as $key) {
-                        foreach (\array_filter((array) \Config::get($key)) as $k => $v) {
-                            $c[] = $key . '-' . $k;
-                        }
+                $root = new \HTML($m[0]);
+                $c = preg_split('#\s+#', $root['class'] ?? "");
+                foreach (['has', 'is', 'not'] as $key) {
+                    foreach (\array_filter((array) \Config::get($key)) as $k => $v) {
+                        $c[] = $key . '-' . $k;
                     }
-                    if ($x = \Config::get('is.error')) {
-                        $c[] = 'error-' . $x;
-                    }
-                    $c = \array_unique(\concat($a[2]['class[]'], $c));
-                    \sort($c);
-                    $a[2]['class[]'] = $c;
                 }
-                return \HTML::unite($a);
+                if ($x = \Config::get('is.error')) {
+                    $c[] = 'error-' . $x;
+                }
+                $c = array_unique($c);
+                sort($c);
+                $root['class'] = trim(implode(' ', $c));
+                return $root;
             }
             return $m[0];
         }, $content);
@@ -33,4 +31,4 @@ function union($content) {
     return $content;
 }
 
-\Hook::set('shield.yield', __NAMESPACE__ . "\\union", 0);
+\Hook::set('content', __NAMESPACE__ . "\\root", 0);
