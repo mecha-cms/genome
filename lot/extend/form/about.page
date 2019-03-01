@@ -1,29 +1,43 @@
 ---
 title: Form
-description: HTML form’s element helper.
+description: Persistent form data after submission.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.1.0
+version: 1.0.0
+
+dependency:
+  extension:
+  - shield
 ...
 
-### Feature
-
- - Quick HTML form’s element creation.
- - Ability to save and restore previous submitted form data.
-
-### Example
-
-Create HTML `<input type="text">` element:
+This is useful to prevent users fill in their form from the start when an error has occurred. To maintain form data after the submission action, save the form data to the session named `form`:
 
 ~~~ .php
-echo Form::text();
-~~~
-
-Store previous form data on error:
-
-~~~ .php
-if (Message::$x) {
-    Session::set(Form::session, HTTP::post());
+if ($files = HTTP::files('blob')) {
+    if (!empty($files['error'])) {
+        // Store all form data to session
+        Session::set('form', HTTP::post());
+    } else {
+        // Clear all form session on success
+        Session::reset('form');
+    }
 }
 ~~~
 
+The following is an example of generic HTML form markup:
+
+~~~ .html
+<form method="post" enctype="multipart/form-data">
+  <p>
+    <input name="image" type="file">
+  </p>
+  <p>
+    <!-- These two fields will have persistent form data. -->
+    <input name="file[name]" type="text">
+    <input name="file[x]" type="text">
+  </p>
+  <p>
+    <button type="submit">Upload</button>
+  </p>
+</form>
+~~~
