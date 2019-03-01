@@ -4,18 +4,18 @@ namespace fn\art {
     function css($content) {
         $content = \trim($content);
         if ($content && \strpos($content, '</style>') === false && \strpos($content, '<link ') === false) {
-            return '<style media="screen">' . N . $content . N . '</style>';
+            return '<style media="screen">' . $content . '</style>';
         }
         return $content;
     }
     function js($content) {
         $content = \trim($content);
         if ($content && \strpos($content, '</script>') === false && \strpos($content, '<script ') === false) {
-            return '<script>' . N . $content . N . '</script>';
+            return '<script>' . $content . '</script>';
         }
         return $content;
     }
-    function union() {
+    function start() {
         global $config, $url;
         $folder = PAGE . DS . ($url->path ?: $config->path);
         $i = $url->i ?: 1;
@@ -38,10 +38,10 @@ namespace fn\art {
         }
     }
     if (!\HTTP::is('get', 'art') || \HTTP::get('art')) {
-        \Hook::set('on.ready', __NAMESPACE__ . "\\union", 0);
+        \Hook::set('content', __NAMESPACE__, 1);
         \Hook::set('page.css', __NAMESPACE__ . "\\css", 2);
         \Hook::set('page.js', __NAMESPACE__ . "\\js", 2);
-        \Hook::set('shield.yield', __NAMESPACE__, 1);
+        \Hook::set('start', __NAMESPACE__ . "\\start", 0);
     }
 }
 

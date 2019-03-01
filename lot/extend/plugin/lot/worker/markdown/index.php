@@ -9,7 +9,7 @@ namespace fn\markdown {
         return $x->{$mode}((string) $in);
     }
     function i($in, array $lot = []) {
-        if ($this->type !== 'Markdown') {
+        if ($this['type'] !== 'Markdown') {
             return $in;
         }
         return \w(b($in, $lot), HTML_WISE_I);
@@ -21,7 +21,7 @@ namespace fn\markdown {
 
 namespace fn {
     function markdown($in = "", array $lot = []) {
-        if ($this->type !== 'Markdown') {
+        if ($this['type'] !== 'Markdown') {
             return $in;
         }
         return markdown\b($in, $lot);

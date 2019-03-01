@@ -26,26 +26,26 @@ call_user_func(function() {
         $f .= 'engine' . DS;
         d($f . 'kernel', function($c, $n) use($f, $seeds) {
             $f .= 'plug' . DS . $n . '.php';
-            if (file_exists($f)) {
+            if (is_file($f)) {
                 extract($seeds, EXTR_SKIP);
                 require $f;
             }
-        }, $seeds);
+        });
     }
     // Load plugin(s)’ language…
     Language::set(Cache::hit($files, function($files): array {
         $out = [];
         foreach ($files as $file) {
             $file = file_get_contents($file);
-            $fn = 'From::' . Page::apart($file, 'type', "");
-            $content = Page::apart($file, 'content', "");
+            $fn = 'From::' . Page::apart($file, 'type');
+            $content = Page::apart($file, 'content');
             $out = extend($out, is_callable($fn) ? (array) call_user_func($fn, $content) : []);
         }
         return $out;
     }) ?? []);
     foreach ($plugins as $v) {
-        if ($k = File::exist(dirname($v) . DS . 'task.php')) {
-            include $k;
+        if (is_file($k = dirname($v) . DS . 'task.php')) {
+            require $k;
         }
         require $v;
     }
