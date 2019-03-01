@@ -157,7 +157,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             // Prioritize data from a file…
             $f = Path::F($this->path) . DS . $i . '.data';
             if (is_file($f)) {
-                return ($this->lot[$i] = e(file_get_contents($f)));
+                return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
             // Read the file content once!
             $this->read = true;
