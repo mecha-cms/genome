@@ -1,6 +1,6 @@
 <?php
 
-class Reset extends Genome {
+final class Reset extends Genome {
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {

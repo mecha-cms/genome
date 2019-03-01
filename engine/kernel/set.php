@@ -1,6 +1,6 @@
 <?php
 
-class Set extends Genome {
+final class Set extends Genome {
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (!self::_($kin)) {

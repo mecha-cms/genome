@@ -1,6 +1,6 @@
 <?php
 
-class Cache extends Genome {
+final class Cache extends Genome {
 
     protected static function f($id) {
         $root = constant(u(static::class)) . DS;

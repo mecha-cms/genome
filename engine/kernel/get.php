@@ -1,6 +1,6 @@
 <?php
 
-class Get extends Genome {
+final class Get extends Genome {
 
     public static function IP() {
         $for = 'HTTP_X_FORWARDED_FOR';

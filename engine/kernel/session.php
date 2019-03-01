@@ -1,6 +1,6 @@
 <?php
 
-class Session extends Genome {
+final class Session extends Genome {
 
     public static function get($key = null) {
         return isset($key) ? Anemon::get($_SESSION, $key) : ($_SESSION ?? []);

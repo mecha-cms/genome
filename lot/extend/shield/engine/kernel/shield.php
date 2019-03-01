@@ -1,6 +1,6 @@
 <?php
 
-class Shield extends Extend {
+final class Shield extends Extend {
 
     protected static $lot = [];
     public static $config = self::config;
@@ -8,7 +8,7 @@ class Shield extends Extend {
     const config = [
         'x' => ['html', 'php'],
         'id' => 'document',
-        'union' => ['html', "", ['class' => true]]
+        'root' => ['html', "", ['class' => true]]
     ];
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -32,17 +32,19 @@ class Shield extends Extend {
     public static function abort($code = 404) {
         $i = is_string($code) ? explode('/', strtr($code, DS, '/'))[0] : '404';
         HTTP::status((int) $i);
-        return Shield::attach($code);
+        return self::attach($code);
     }
 
     public static function attach($in) {
+        $c = c2f(static::class, '_', '/');
+        Hook::fire('enter', [null, $in]);
         if (null === ($out = self::get($in, [], false))) {
             ob_start();
             err('<code>' . __METHOD__ . '(' . v(json_encode($in)) . ')</code>');
             $out = ob_get_clean();
         }
-        $out = Hook::fire(c2f(static::class, '_', '/') . '.yield', [$out, $in]);
-        echo $out;
+        $out = Hook::fire('content', [$out, $in]);
+        Hook::fire('exit', [$out, $in]);
         return $out;
     }
 
@@ -53,19 +55,12 @@ class Shield extends Extend {
 
     public static function get($in, array $lot = [], $print = true) {
         $out = null;
-        $prefix = c2f(static::class, '_', '/');
         Lot::set('lot', $lot);
         if ($path = self::path($in)) {
             ob_start();
             extract(Lot::get(), EXTR_SKIP);
             require $path;
             $out = ob_get_clean();
-            $c = static::class;
-            // Begin shield
-            Hook::fire($prefix . '.enter', [$out, $in, $path], null, $c);
-            $out = Hook::fire($prefix . '.' . __FUNCTION__, [$out, $in, $path], null, $c);
-            // End shield
-            Hook::fire($prefix . '.exit', [$out, $in, $path], null, $c);
         }
         if (!$print) {
             return $out;
@@ -74,7 +69,6 @@ class Shield extends Extend {
     }
 
     public static function path($in) {
-        $c = static::class;
         $out = [];
         if (is_string($in)) {
             // Full path, be quick!
@@ -83,10 +77,10 @@ class Shield extends Extend {
             }
             $id = strtr($in, DS, '/');
             // Added by the `Shield::get()`
-            if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
-                return File::exist(self::$lot[$c][1][$id]) ?: null;
+            if (isset(self::$lot[1][$id]) && !isset(self::$lot[0][$id])) {
+                return File::exist(self::$lot[1][$id]) ?: null;
             }
-            // Guessing …
+            // Guessing…
             $out = Anemon::step($id, '/');
             array_unshift($out, strtr($out[0], '/', '.'));
             $out = array_unique($out);
@@ -118,30 +112,28 @@ class Shield extends Extend {
     }
 
     public static function reset($id = null) {
-        $c = static::class;
         if (is_array($id)) {
             foreach ($id as $v) {
                 self::reset($v);
             }
         } else if (isset($id)) {
             $id = strtr($id, DS, '/');
-            self::$lot[$c][0][$id] = 1;
-            unset(self::$lot[$c][1][$id]);
+            self::$lot[0][$id] = 1;
+            unset(self::$lot[1][$id]);
         } else {
-            self::$lot[$c] = [];
+            self::$lot = [];
         }
     }
 
     public static function set($id, string $path = null) {
-        $c = static::class;
         if (is_array($id)) {
             foreach ($id as $k => $v) {
                 self::set($k, $v);
             }
         } else {
-            if (!isset(self::$lot[$c][0][$id])) {
+            if (!isset(self::$lot[0][$id])) {
                 $id = strtr($id, DS, '/');
-                self::$lot[$c][1][$id] = $path;
+                self::$lot[1][$id] = $path;
             }
         }
     }

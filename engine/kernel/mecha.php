@@ -1,6 +1,6 @@
 <?php
 
-class Mecha extends Genome {
+final class Mecha extends Genome {
 
     // Current version
     const version = '2.2.0';

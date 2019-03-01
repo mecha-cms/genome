@@ -1,6 +1,6 @@
 <?php
 
-class Guardian extends Genome {
+final class Guardian extends Genome {
 
     const session = 'guardian';
 

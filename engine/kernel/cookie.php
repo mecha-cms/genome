@@ -1,6 +1,6 @@
 <?php
 
-class Cookie extends Genome {
+final class Cookie extends Genome {
 
     const config = [
         'expires' => '1 day',

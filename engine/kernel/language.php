@@ -1,6 +1,6 @@
 <?php
 
-class Language extends Config {
+final class Language extends Config {
 
     const config = [
         'id' => 'en-us'
@@ -38,8 +38,8 @@ class Language extends Config {
         }
         $content = Cache::hit($f, function($f): array {
             $f = file_get_contents($f);
-            $fn = 'From::' . Page::apart($f, 'type', "");
-            $content = Page::apart($f, 'content', "");
+            $fn = 'From::' . Page::apart($f, 'type');
+            $content = Page::apart($f, 'content');
             return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
         }) ?? [];
         self::$lot[$c] = extend(self::$lot[$c] ?? [], $content);
@@ -59,7 +59,7 @@ class Language extends Config {
     }
 
     public function __toString() {
-        return To::YAML(self::get());
+        return To::YAML(self::get(null, true));
     }
 
     public static function get($key = null, $vars = [], $preserve_case = false) {

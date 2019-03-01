@@ -1,6 +1,6 @@
 <?php
 
-class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \Serializable {
+final class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \Serializable {
 
     public $i = 0;
     public $lot = [];

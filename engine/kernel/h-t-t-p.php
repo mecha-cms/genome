@@ -1,6 +1,6 @@
 <?php
 
-class HTTP extends Genome {
+final class HTTP extends Genome {
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
