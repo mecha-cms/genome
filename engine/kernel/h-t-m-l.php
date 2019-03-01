@@ -1,104 +1,62 @@
 <?php
 
-class HTML extends Union {
+class HTML extends SGML {
 
-    protected function _apart_(string $in = "", $eval = true) {
-        $out = parent::_apart_($in, $eval);
-        if (!empty($out[2])) {
-            foreach ($out[2] as $k => $v) {
-                if (strpos($k, 'data-') === 0) {
-                    $out[2]['data[]'][substr($k, 5)] = $v;
-                    unset($out[2][$k]);
-                } else if ($k === 'class') {
-                    $out[2]['class[]'] = ($eval && $v === true || !$eval && $v === 'class') ? [] : array_unique(explode(' ', $v));
-                    unset($out[2][$k]);
-                } else if ($k === 'style') {
-                    if ($v !== 'style') {
-                        // TODO: preserve `;` inside quote(s)
-                        foreach (explode(';', $v) as $vv) {
-                            if (trim($vv) === "")
-                                continue;
-                            $a = explode(':', $vv . ':');
-                            if (trim($a[1]) === "")
-                                continue;
-                            $out[2]['style[]'][trim($a[0])] = e(trim($a[1]));
-                        }
-                    } else {
-                        $out[2]['style[]'] = [];
-                    }
-                    unset($out[2][$k]);
+    public $strict = false;
+
+    public function __construct($in = []) {
+        parent::__construct($in);
+        if (!empty($this->lot[2])) {
+            foreach ($this->lot[2] as &$v) {
+                if (is_string($v)) {
+                    $v = e(htmlspecialchars_decode($v));
                 }
             }
         }
-        return $out;
     }
 
-    // HTML comment
-    protected function _comment_(string $content = "", int $dent = 0, $block = false) {
-        $dent = self::dent($dent);
-        $begin = $end = $block ? N : ' ';
-        if ($block) {
-            $content = $dent . str_replace(N, N . $dent, $content);
-            $end = N . $dent;
-        }
-        return $dent . '<!--' . $begin . $content . $end . '-->';
-    }
-
-    // Build HTML attribute(s)…
-    protected function _data_($a = []) {
-        if (is_array($a)) {
-            foreach ($a as $k => $v) {
-                if (!is_array($v))
+    public function __toString() {
+        if (!empty($this->lot[2])) {
+            $c = $this->c;
+            foreach ($this->lot[2] as $k => &$v) {
+                if ($v === true) {
                     continue;
-                // HTML5 `data-*` attribute
-                if ($k === 'data[]') {
-                    ksort($v);
-                    foreach ($v as $kk => $vv) {
-                        if (!isset($vv) || $vv === false)
-                            continue;
-                        $a['data-' . $kk] = fn\is\anemon($vv) ? json_encode($vv) : $vv;
-                    }
-                    unset($a[$k]);
-                // Class value as array
-                } else if ($k === 'class[]') {
-                    if (isset($a['class'])) {
-                        $v = $a['class'] !== true ? concat(explode(' ', $a['class']), $v) : [];
-                    }
-                    $v = array_filter(array_unique($v));
-                    sort($v);
-                    $v = implode(' ', $v);
-                    $a['class'] = $v !== "" ? $v : null;
-                    unset($a[$k]);
-                // Inline CSS via `style[]` attribute
-                } else if ($k === 'style[]') {
-                    $css = "";
-                    // ksort($v);
-                    foreach ($v as $kk => $vv) {
-                        if (!isset($vv) || $vv === false)
-                            continue;
-                        $css .= $kk . ':' . $vv . ';';
-                    }
-                    $a['style'] = $css !== "" ? $css : null;
-                    unset($a[$k]);
                 }
+                if (!isset($v) || $v === false) {
+                    unset($this->lot[2][$k]);
+                    continue;
+                }
+                $v = htmlspecialchars(is_array($v) ? json_encode($v) : s($v));
             }
+            unset($v);
         }
-        return parent::_data_($a);
+        return parent::__toString();
     }
 
-    public function __call(string $kin, array $lot = []) {
-        if (!self::_($kin) && !method_exists($this, '_' . $kin . '_')) {
-            array_unshift($lot, $kin);
-            return $this->_unite_(...$lot);
+    public function offsetGet($i) {
+        // Shortcut for `$baz = $foo[2]['bar']` with `$baz = $foo['bar']`
+        if (isset($i) && !is_numeric($i)) {
+            return $this->lot[2][$i] ?? null;
         }
-        return parent::__call($kin, $lot);
+        return parent::offsetGet($i);
     }
 
-    public static function __callStatic(string $kin, array $lot = []) {
-        if (!self::_($kin)) {
-            return (new static)->__call($kin, $lot);
+    public function offsetSet($i, $value) {
+        // Shortcut for `$foo[2]['bar'] = 'baz'` with `$foo['bar'] = 'baz'`
+        if (isset($i) && !is_numeric($i)) {
+            $this->lot[2][$i] = $value;
+        } else {
+            parent::offsetSet($i, $value);
         }
-        return parent::__callStatic($kin, $lot);
+    }
+
+    public function offsetUnset($i) {
+        // Shortcut for `unset($foo[2]['bar'])` with `unset($foo['bar'])`
+        if (isset($i) && !is_numeric($i)) {
+            unset($this->lot[2][$i]);
+        } else {
+            parent::offsetUnset($i);
+        }
     }
 
 }
