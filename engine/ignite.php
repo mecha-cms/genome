@@ -42,7 +42,7 @@ namespace fn\is {
             $x[0] === '[' && \substr($x, -1) === ']' ||
             // Maybe an associative array
             $x[0] === '{' && \substr($x, -1) === '}'
-        ) && (null !== ($x = \json_decode($x, true))) ? ($r ? $x : true) : false;
+        ) && (null !== ($x = \json_decode($x))) ? ($r ? $x : true) : false;
     }
     // Check for valid serialized string format
     function serial($x, $r = false) {
@@ -171,14 +171,14 @@ namespace {
         return q($a) === $b;
     }
     // Error message
-    function err(string $s) {
-        echo '<details style="display:block;font:inherit;background:#000;color:#f00;margin:0;padding:0;">';
-        echo '<summary style="display:block;font:inherit;background:#f00;color:#fff;margin:0;padding:.5em 1em;cursor:help;">' . $s . '</summary>';
+    function err(string $m) {
+        echo '<details style="display:block;font:inherit;background:#000;color:#fff;margin:0;padding:0;">';
+        echo '<summary style="display:block;font:inherit;background:#f00;margin:0;padding:.5em 1em;cursor:help;">' . $m . '</summary>';
         \ob_start();
         \debug_print_backtrace();
-        $t = \explode("\n", \ob_get_clean(), 2)[1] ?? "";
-        $t = \str_replace("\n", '<br>', \trim($t));
-        echo '<span style="display:block;font-size:80%;padding:.5em 1em;">' . $t . '</span>';
+        $trace = \explode("\n", \ob_get_clean(), 2)[1] ?? "";
+        $trace = \str_replace(ROOT, '.', trim($trace)); // Hide sensitive information
+        echo '<pre style="display:block;font:inherit;margin:0;padding:.5em .75em;font-size:80%;overflow:auto;">' . \htmlspecialchars($trace) . '</pre>';
         echo '</details>';
     }
     // Extend array value(s)
@@ -211,6 +211,11 @@ namespace {
     // Trigger function with parameter(s) and optional scope
     function fn(callable $fn, array $a = [], $that = null, string $scope = null) {
         $fn = $fn instanceof \Closure ? $fn : \Closure::fromCallable($fn);
+        // `fn($fn, [], Foo::class)`
+        if (\is_string($that)) {
+            $scope = $that;
+            $that = null;
+        }
         return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
     }
     // Replace pattern to regular expression
@@ -243,15 +248,6 @@ namespace {
     // A greater than or equal to B
     function ge($a, $b) {
         return q($a) >= $b;
-    }
-    // Get file content line by line
-    function get(string $f, int $c = 1024) {
-        if (\is_file($f) && $h = \fopen($f, 'r')) {
-            while (false !== ($v = \fgets($h, $c))) {
-                yield $v;
-            }
-            \fclose($h);
-        }
     }
     // A greater than B
     function gt($a, $b) {
@@ -329,6 +325,15 @@ namespace {
         }
         return $a;
     }
+    // Get file content line by line
+    function stream(string $f, int $c = 1024) {
+        if (\is_file($f) && $h = \fopen($f, 'r')) {
+            while (false !== ($v = \fgets($h, $c))) {
+                yield $v;
+            }
+            \fclose($h);
+        }
+    }
     // Dump PHP code
     function test(...$a) {
         foreach ($a as $b) {
@@ -395,8 +400,8 @@ namespace {
     function d(string $f, $fn = null) {
         \spl_autoload_register(function($c) use($f, $fn) {
             $n = c2f($c);
-            $f = $f . DS . $n . '.php';
-            if (\file_exists($f)) {
+            $f .= DS . $n . '.php';
+            if (\is_file($f)) {
                 extract($GLOBALS, \EXTR_SKIP);
                 require $f;
                 if (\is_callable($fn)) {
@@ -413,17 +418,9 @@ namespace {
                 'TRUE' => true,
                 'FALSE' => false,
                 'NULL' => null,
-                'YES' => true,
-                'NO' => false,
-                'ON' => true,
-                'OFF' => false,
                 'true' => true,
                 'false' => false,
-                'null' => null,
-                'yes' => true,
-                'no' => false,
-                'on' => true,
-                'off' => false
+                'null' => null
             ], $a))) {
                 return $a[$x];
             }
@@ -983,7 +980,7 @@ namespace {
                             yield $r;
                         // Find by query in file content…
                         } else if ($c && \is_file($r)) {
-                            foreach (get($r) as $s) {
+                            foreach (stream($r) as $s) {
                                 foreach ($q as $v) {
                                     if (\strpos($s, $v) !== false) {
                                         yield $r;
@@ -1039,14 +1036,6 @@ namespace {
     }
     function r() {}
     function s($x, array $a = []) {
-        if ($x === true)
-            return $a['true'] ?? 'true';
-        if ($x === false)
-            return $a['false'] ?? 'false';
-        if ($x === null)
-            return $a['null'] ?? 'null';
-        if (\is_object($x))
-            return \json_encode($x);
         if (\is_array($x)) {
             foreach ($x as &$v) {
                 $v = s($v, $a);
@@ -1054,8 +1043,17 @@ namespace {
             unset($v);
             return $x;
         }
-        $x = (string) $x;
-        return $a[$x] ?? $x;
+        if ($x === true)
+            return $a['true'] ?? 'true';
+        if ($x === true)
+            return $a['false'] ?? 'false';
+        if ($x === null)
+            return $a['null'] ?? 'null';
+        if (\is_object($x))
+            return \json_encode($x);
+        if (\is_string($x))
+            return $a[$x = (string) $x] ?? $x;
+        return $x;
     }
     function t(string $x, string $o = '"', string $c = null) {
         if ($x) {
