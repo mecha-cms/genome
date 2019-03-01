@@ -139,11 +139,11 @@ foreach ($extends as $v) {
     $f .= 'engine' . DS;
     d($f . 'kernel', function($c, $n) use($f, $seeds) {
         $f .= 'plug' . DS . $n . '.php';
-        if (file_exists($f)) {
+        if (is_file($f)) {
             extract($seeds, EXTR_SKIP);
             require $f;
         }
-    }, $seeds);
+    });
 }
 
 // Load extension(s)’ language…
@@ -151,36 +151,36 @@ Language::set(Cache::hit($files, function($files): array {
     $out = [];
     foreach ($files as $file) {
         $file = file_get_contents($file);
-        $fn = 'From::' . Page::apart($file, 'type', "");
-        $content = Page::apart($file, 'content', "");
+        $fn = 'From::' . Page::apart($file, 'type');
+        $content = Page::apart($file, 'content');
         $out = extend($out, is_callable($fn) ? (array) call_user_func($fn, $content) : []);
     }
     return $out;
 }) ?? []);
 
 // Run main task if any
-if ($task = File::exist(ROOT . DS . 'task.php')) {
-    include $task;
+if (is_file($task = ROOT . DS . 'task.php')) {
+    require $task;
 }
 
 // Load extension(s)…
 foreach ($extends as $v) {
     call_user_func(function() use($v) {
         extract(Lot::get(), EXTR_SKIP);
-        if ($k = File::exist(dirname($v) . DS . 'task.php')) {
-            include $k;
+        if (is_file($k = dirname($v) . DS . 'task.php')) {
+            require $k;
         }
         require $v;
     });
 }
 
 // Document is ready
-Hook::set('on.ready', function() {
+Hook::set('start', function() {
     // Load all route(s)…
-    Route::fire();
-    // Clear message(s)…
+    Route::start();
+    // Clear all message(s)…
     Message::reset();
 }, 20);
 
 // Fire!
-Hook::fire('on.ready');
+Hook::fire('start');
