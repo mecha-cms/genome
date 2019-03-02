@@ -42,8 +42,8 @@ final class Language extends Config {
             $content = Page::apart($f, 'content');
             return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
         }) ?? [];
-        self::$lot[$c] = extend(self::$lot[$c] ?? [], $content);
         self::$a[$c] = extend(self::$a[$c] ?? [], $content);
+        self::$lot[$c] = extend(self::$lot[$c] ?? [], $content);
     }
 
     public function __get(string $key) {

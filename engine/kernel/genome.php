@@ -29,7 +29,7 @@ abstract class Genome {
         } else if (method_exists($this, $m) && (new \ReflectionMethod($this, $m))->isProtected()) {
             return $this->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            err('Method <code>$' . c2f($c, '_', '/') . '-&gt;' . $kin . '()</code> does not exist.');
+            throw new \BadMethodCallException('Method $' . c2f($c, '_', '/') . '->' . $kin . '() does not exist.');
         }
     }
 
@@ -85,7 +85,7 @@ abstract class Genome {
         } else if (method_exists($that, $m) && (new \ReflectionMethod($that, $m))->isProtected()) {
             return $that->{$m}(...$lot);
         } else if (defined('DEBUG') && DEBUG) {
-            err('Method <code>' . $c . '::' . $kin . '()</code> does not exist.');
+            throw new \BadMethodCallException('Method ' . $c . '::' . $kin . '() does not exist.');
         }
     }
 
