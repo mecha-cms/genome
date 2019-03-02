@@ -14,7 +14,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
     ];
 
     public $c;
-    public $scrict = true;
+    public $strict = true;
 
     public static $config = self::config;
 
