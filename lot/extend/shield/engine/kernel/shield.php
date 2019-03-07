@@ -36,12 +36,9 @@ final class Shield extends Extend {
     }
 
     public static function attach($in) {
-        $c = c2f(static::class, '_', '/');
         Hook::fire('enter', [null, $in]);
         if (null === ($out = self::get($in, [], false))) {
-            ob_start();
-            err('<code>' . __METHOD__ . '(' . v(json_encode($in)) . ')</code>');
-            $out = ob_get_clean();
+            throw new \InvalidArgumentException('Folder ' . static::$config['id'] . ' does not exist.');
         }
         $out = Hook::fire('content', [$out, $in]);
         Hook::fire('exit', [$out, $in]);

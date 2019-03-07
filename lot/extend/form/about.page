@@ -10,11 +10,11 @@ dependency:
   - shield
 ...
 
-This is useful to prevent users fill in their form from the start when an error has occurred. To maintain form data after the submission action, save the form data to the session named `form`:
+This is useful when you want to validate the form after it has been submitted. It makes it more user friendly in the sense that the user does not have to re-populate certain pieces of information if they do something incorrectly. To maintain form data after the submission action, save the form data to the session named `form`:
 
 ~~~ .php
-if ($files = HTTP::files('blob')) {
-    if (!empty($files['error'])) {
+if ($blob = HTTP::files('blob')) {
+    if (!empty($blob['error'])) {
         // Store all form data to session
         Session::set('form', HTTP::post());
     } else {
@@ -29,7 +29,7 @@ The following is an example of generic HTML form markup:
 ~~~ .html
 <form method="post" enctype="multipart/form-data">
   <p>
-    <input name="image" type="file">
+    <input name="blob" type="file">
   </p>
   <p>
     <!-- These two fields will have persistent form data. -->

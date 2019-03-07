@@ -11,7 +11,7 @@ function root($content) {
                 \substr($m[0], -7) === ' class>'
             ) {
                 $root = new \HTML($m[0]);
-                $c = preg_split('#\s+#', $root['class'] ?? "");
+                $c = $root['class'] === true ? [] : preg_split('#\s+#', $root['class'] ?? "");
                 foreach (['has', 'is', 'not'] as $key) {
                     foreach (\array_filter((array) \Config::get($key)) as $k => $v) {
                         $c[] = $key . '-' . $k;

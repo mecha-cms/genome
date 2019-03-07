@@ -1,6 +1,6 @@
 <?php
 
-class Asset extends Genome {
+final class Asset extends Genome {
 
     public static $lot = [];
 
@@ -10,20 +10,18 @@ class Asset extends Genome {
     }
 
     public static function get(string $path = null, int $i = 1) {
-        $c = static::class;
         if (isset($path)) {
             $x = Path::X($path);
-            return self::$lot[$c][$i][$x][$path] ?? null;
+            return self::$lot[$i][$x][$path] ?? null;
         }
-        return self::$lot[$c][$i] ?? [];
+        return self::$lot[$i] ?? [];
     }
 
     public static function join(string $x, string $separator = "") {
         if ($v = self::_('.' . $x)) {
-            $c = static::class;
             $fn = $v[0];
-            if (isset(self::$lot[$c][1][$x])) {
-                $assets = Anemon::eat(self::$lot[$c][1][$x])->sort([1, 'stack'], true);
+            if (isset(self::$lot[1][$x])) {
+                $assets = Anemon::eat(self::$lot[1][$x])->sort([1, 'stack'], true);
                 $out = [];
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {
@@ -63,28 +61,26 @@ class Asset extends Genome {
     }
 
     public static function reset($path = null) {
-        $c = static::class;
         if (is_array($path)) {
             foreach ($path as $v) {
                 self::reset($v);
             }
         } else if (isset($path)) {
             $x = Path::X($path);
-            self::$lot[$c][0][$x][$path] = 1;
-            unset(self::$lot[$c][1][$x][$path]);
+            self::$lot[0][$x][$path] = 1;
+            unset(self::$lot[1][$x][$path]);
         } else {
-            self::$lot[$c] = [];
+            self::$lot = [];
         }
     }
 
     public static function set($path, float $stack = null, array $data = []) {
         $i = 0;
         $stack = (array) $stack;
-        $c = static::class;
         foreach ((array) $path as $k => $v) {
             $x = Path::X($v);
-            if (!isset(self::$lot[$c][0][$x][$v])) {
-                self::$lot[$c][1][$x][$v] = [
+            if (!isset(self::$lot[0][$x][$v])) {
+                self::$lot[1][$x][$v] = [
                     'path' => self::path($v),
                     'url' => self::URL($v),
                     'data' => $data,

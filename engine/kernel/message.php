@@ -91,3 +91,8 @@ class Message extends Genome {
     }
 
 }
+
+// TODO
+
+// Clear all message(s) on exit…
+register_shutdown_function('Message::reset');
