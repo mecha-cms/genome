@@ -56,10 +56,9 @@ abstract class Genome {
             return self::$_[$c][$lot[0]] ?? null;
         } else if ($lot[1] === null) {
             unset(self::$_[$c][$lot[0]]);
-            return true;
+        } else {
+            self::$_[$c][$lot[0]] = (array) $lot[1];
         }
-        self::$_[$c][$lot[0]] = (array) $lot[1];
-        return true;
     }
 
     // Call the added method with `Genome::foo()`

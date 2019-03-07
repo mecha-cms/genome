@@ -2,7 +2,7 @@
 
 final class Cache extends Genome {
 
-    protected static function f($id) {
+    private static function f($id) {
         $root = constant(u(static::class)) . DS;
         if (is_file($id)) {
             return $root . Path::R($id, LOT, DS) . '.php';
@@ -11,7 +11,7 @@ final class Cache extends Genome {
         return $root . $id . '.php';
     }
 
-    protected static function t($in, $t = null) {
+    private static function t($in, $t = null) {
         $t = $t ?? time();
         return is_string($in) ? strtotime($in, $t) - $t : $in;
     }

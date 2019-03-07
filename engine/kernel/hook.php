@@ -5,10 +5,6 @@ class Hook extends Genome {
     protected static $lot;
     protected static $current;
 
-    public static function is(string $id) {
-        return self::$current[static::class] === $id;
-    }
-
     public static function fire($id, array $lot = [], $that = null, string $scope = null) {
         $c = static::class;
         if (!array_key_exists(0, $lot)) {
@@ -43,6 +39,11 @@ class Hook extends Genome {
             return self::$lot[1][$c][$id] ?? null;
         }
         return self::$lot[1][$c] ?? [];
+    }
+
+    public static function is(string $id = null) {
+        $c = static::class;
+        return isset($id) ? self::$current[$c] === $id : self::$current[$c];
     }
 
     public static function reset($id = null, $x = null) {

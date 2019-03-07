@@ -2,15 +2,15 @@
 
 final class Route extends Genome {
 
-    protected static $lot = [];
-    protected static $lot_ = [];
+    private static $hook;
+    private static $lot;
 
     public static function fire(string $id, array $lot = []) {
         $id = trim($id, '/');
         if (isset(self::$lot[1][$id])) {
             // Loading hook(s)…
-            if (isset(self::$lot_[1][$id])) {
-                $fn = Anemon::eat(self::$lot_[1][$id])->sort([1, 'stack']);
+            if (isset(self::$hook[1][$id])) {
+                $fn = Anemon::eat(self::$hook[1][$id])->sort([1, 'stack']);
                 foreach ($fn as $v) {
                     if ($r = call_user_func($v['fn'], ...$lot)) {
                         break;
@@ -32,7 +32,7 @@ final class Route extends Genome {
         if (isset($id)) {
             if (isset($stack)) {
                 $any = [];
-                foreach (self::$lot_[1][$id] as $v) {
+                foreach (self::$hook[1][$id] as $v) {
                     if (
                         $v['fn'] === $stack || // `$stack` as `$fn`
                         is_numeric($stack) && $v['stack'] === (float) $stack
@@ -42,10 +42,10 @@ final class Route extends Genome {
                 }
                 return $any;
             } else {
-                return self::$lot_[1][$id] ?? null;
+                return self::$hook[1][$id] ?? null;
             }
         }
-        return self::$lot_[1] ?? [];
+        return self::$hook[1] ?? [];
     }
 
     public static function is(string $id, $pattern = false) {
@@ -75,8 +75,8 @@ final class Route extends Genome {
         $stack = (array) $stack;
         foreach ($id as $k => $v) {
             $v = trim($v, '/');
-            if (!isset(self::$lot_[0][$v])) {
-                self::$lot_[1][$v][] = [
+            if (!isset(self::$hook[0][$v])) {
+                self::$hook[1][$v][] = [
                     'fn' => $fn,
                     'stack' => (float) (($stack[$k] ?? (end($stack) !== false ? end($stack) : 10)) + $i),
                     'is' => ['pattern' => $pattern]
@@ -127,8 +127,8 @@ final class Route extends Genome {
                 // If matched with the URL path, then …
                 if (false !== ($m = self::is($k, false, $v['is']['pattern']))) {
                     // Loading hook(s)…
-                    if (isset(self::$lot_[1][$k])) {
-                        $fn = Anemon::eat(self::$lot_[1][$k])->sort([1, 'stack']);
+                    if (isset(self::$hook[1][$k])) {
+                        $fn = Anemon::eat(self::$hook[1][$k])->sort([1, 'stack']);
                         foreach ($fn as $f) {
                             if ($rr = call_user_func($f['fn'], ...$m['lot'])) {
                                 break;
