@@ -170,17 +170,6 @@ namespace {
     function eq($a, $b) {
         return q($a) === $b;
     }
-    // Error message
-    function err(string $m) {
-        echo '<details style="display:block;font:inherit;background:#000;color:#fff;margin:0;padding:0;">';
-        echo '<summary style="display:block;font:inherit;background:#f00;margin:0;padding:.5em 1em;cursor:help;">' . $m . '</summary>';
-        \ob_start();
-        \debug_print_backtrace();
-        $trace = \explode("\n", \ob_get_clean(), 2)[1] ?? "";
-        $trace = \str_replace(ROOT, '.', trim($trace)); // Hide sensitive information
-        echo '<pre style="display:block;font:inherit;margin:0;padding:.5em .75em;font-size:80%;overflow:auto;">' . \htmlspecialchars($trace) . '</pre>';
-        echo '</details>';
-    }
     // Extend array value(s)
     function extend(array $a, ...$b) {
         // `extend([…], […], […], false)`
@@ -233,7 +222,7 @@ namespace {
             '([^' . $x . ']+)' . $r,
             '(\-?\d+)' . $r,
             '(\-?(?:(?:\d+)?\.)?\d+)' . $r,
-            '(\b(?:TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b)' . $r,
+            '(\b(?:TRUE|FALSE|true|false)\b)' . $r,
             '([\s\S]+)' . $r
         ], x($s, $d));
         // group: `%[foo,bar,baz]%`

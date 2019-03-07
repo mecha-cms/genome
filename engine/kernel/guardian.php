@@ -4,9 +4,8 @@ final class Guardian extends Genome {
 
     const session = 'guardian';
 
-    public static function abort(string $message, $exit = true) {
-        err($message);
-        $exit && exit;
+    public static function abort(string $message) {
+        throw new \Exception($message);
     }
 
     public static function check(string $token, $id = 0) {

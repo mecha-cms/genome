@@ -33,30 +33,4 @@ class HTML extends SGML {
         return parent::__toString();
     }
 
-    public function offsetGet($i) {
-        // Shortcut for `$baz = $foo[2]['bar']` with `$baz = $foo['bar']`
-        if (isset($i) && !is_numeric($i)) {
-            return $this->lot[2][$i] ?? null;
-        }
-        return parent::offsetGet($i);
-    }
-
-    public function offsetSet($i, $value) {
-        // Shortcut for `$foo[2]['bar'] = 'baz'` with `$foo['bar'] = 'baz'`
-        if (isset($i) && !is_numeric($i)) {
-            $this->lot[2][$i] = $value;
-        } else {
-            parent::offsetSet($i, $value);
-        }
-    }
-
-    public function offsetUnset($i) {
-        // Shortcut for `unset($foo[2]['bar'])` with `unset($foo['bar'])`
-        if (isset($i) && !is_numeric($i)) {
-            unset($this->lot[2][$i]);
-        } else {
-            parent::offsetUnset($i);
-        }
-    }
-
 }

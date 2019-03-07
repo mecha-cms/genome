@@ -47,8 +47,7 @@ final class HTTP extends Genome {
             ]);
             $out = curl_exec($curl);
             if (defined('DEBUG') && DEBUG && $out === false) {
-                err(curl_error($curl));
-                exit;
+                throw new \UnexpectedValueException(curl_error($curl));
             }
             curl_close($curl);
         } else {

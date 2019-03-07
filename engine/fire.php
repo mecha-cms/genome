@@ -174,13 +174,8 @@ foreach ($extends as $v) {
     });
 }
 
-// Document is ready
-Hook::set('start', function() {
-    // Load all route(s)…
-    Route::start();
-    // Clear all message(s)…
-    Message::reset();
-}, 20);
-
 // Fire!
 Hook::fire('start');
+
+// Load all route(s)…
+Route::start();
