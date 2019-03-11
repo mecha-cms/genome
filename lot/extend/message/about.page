@@ -1,0 +1,25 @@
+---
+title: Message
+description: Send message throughout the page.
+author: Taufik Nurrohman
+type: Markdown
+version: 1.0.0
+...
+
+**Example:**
+
+~~~ .php
+Message::error('This is an error message.');
+Message::info('This is an info message.');
+Message::success('This is a success message.');
+
+echo Message::get();
+~~~
+
+**Result:**
+
+~~~ .xml
+<message type="error">This is an error message.</message>
+<message type="info">This is an info message.</message>
+<message type="success">This is a success message.</message>
+~~~
