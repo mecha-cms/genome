@@ -56,7 +56,7 @@ final class Cookie extends Genome {
         if (!is_array($expires)) {
             $expires = ['expires' => $expires];
         }
-        $c = array_values(extend(self::$config, $expires));
+        $c = array_values(array_replace(self::$config, $expires));
         if (is_string($c[0])) {
             $c[0] = (int) (strtotime($c[0], $t = time()) - $t);
         }

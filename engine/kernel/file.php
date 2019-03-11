@@ -55,12 +55,12 @@ class File extends Genome {
         return $this->exist ? $this->path : "";
     }
 
-    public function _consent(): int {
-        return $this->exist ? fileperms($this->path) : -1;
+    public function _consent() {
+        return $this->exist ? fileperms($this->path) : null;
     }
 
-    public function _size(): int {
-        return $this->exist ? filesize($this->path) : -1;
+    public function _size() {
+        return $this->exist ? filesize($this->path) : null;
     }
 
     // Set file permission

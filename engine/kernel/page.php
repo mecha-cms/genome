@@ -76,7 +76,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         $this->path = $f ? $path : null;
         $this->prefix = $prefix;
         // Set pre-defined page property
-        $this->lot = extend([
+        $this->lot = array_replace_recursive([
             'id' => $f ? sprintf('%u', (string) $file->time) : null,
             'name' => $n = $file->name,
             'path' => $path,
@@ -161,7 +161,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             }
             // Read the file content once!
             $this->read = true;
-            $this->lot = extend($this->lot, self::apart(file_get_contents($this->path), null, true));
+            $this->lot = array_replace_recursive($this->lot, self::apart(file_get_contents($this->path), null, true));
         }
         return $this->lot[$i] ?? null;
     }
@@ -206,6 +206,10 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public static function apart(string $in, $key = null, $eval = false) {
+        if (strpos($in = n($in), "---\n") !== 0) {
+            // Add empty header
+            $in = "---\n...\n\n" . $in;
+        }
         $v = From::YAML($in, '  ', true, $eval);
         $v = $v[0] + ['content' => $v["\t"] ?? ""];
         return isset($key) ? (array_key_exists($key, $v) ? $v[$key] : null) : $v;

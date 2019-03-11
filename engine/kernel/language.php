@@ -42,8 +42,8 @@ final class Language extends Config {
             $content = Page::apart($f, 'content');
             return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
         }) ?? [];
-        self::$a[$c] = extend(self::$a[$c] ?? [], $content);
-        self::$lot[$c] = extend(self::$lot[$c] ?? [], $content);
+        self::$a[$c] = array_replace_recursive(self::$a[$c] ?? [], $content);
+        self::$lot[$c] = array_replace_recursive(self::$lot[$c] ?? [], $content);
     }
 
     public function __get(string $key) {
@@ -67,7 +67,7 @@ final class Language extends Config {
         if (isset($key)) {
             $v = self::$lot[$c] ?? [];
             $v = Anemon::get($v, $key) ?? $key;
-            $vars = extend([""], (array) $vars, false);
+            $vars = array_replace([""], (array) $vars);
             if (is_string($v)) {
                 if (!$preserve_case && strpos($v, '%') !== 0 && !ctype_upper($vars[0])) {
                     $vars[0] = l($vars[0] ?? "");

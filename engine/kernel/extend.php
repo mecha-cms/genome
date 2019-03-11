@@ -30,7 +30,7 @@ class Extend extends Genome {
             self::$state[$c][$n] = $state;
         }
         if (is_array($key)) {
-            return extend($key, $state);
+            return array_replace_recursive($key, $state);
         }
         return isset($key) ? ($state[$key] ?? null) : $state;
     }

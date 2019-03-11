@@ -17,7 +17,7 @@ abstract class Genome {
             if (is_callable($a[0])) {
                 // Alter default function argument(s)
                 if (isset($a[1])) {
-                    $lot = extend((array) $a[1], $lot, false);
+                    $lot = array_replace((array) $a[1], $lot);
                 }
                 // Limit function argument(s)
                 if (isset($a[2])) {
@@ -72,7 +72,7 @@ abstract class Genome {
             if (is_callable($a[0])) {
                 // Alter default function argument(s)
                 if (isset($a[1])) {
-                    $lot = extend((array) $a[1], $lot, false);
+                    $lot = array_replace((array) $a[1], $lot);
                 }
                 // Limit function argument(s)
                 if (isset($a[2])) {

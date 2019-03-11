@@ -85,7 +85,7 @@ class Config extends Genome {
     public static function alt(...$lot) {
         $c = static::class;
         self::set(...$lot);
-        self::$lot[$c] = extend(self::$lot[$c], self::$a[$c]);
+        self::$lot[$c] = array_replace_recursive(self::$lot[$c], self::$a[$c]);
     }
 
     public static function get($key = null, $array = false) {
@@ -116,10 +116,12 @@ class Config extends Genome {
 
     public static function reset($key = null) {
         $c = static::class;
-        if (isset($key)) {
-            foreach ((array) $key as $v) {
-                Anemon::reset(self::$lot[$c], $v);
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::reset($v);
             }
+        } else if (isset($key)) {
+            Anemon::reset(self::$lot[$c], $key);
         } else {
             self::$lot[$c] = [];
         }
@@ -134,7 +136,7 @@ class Config extends Genome {
             Anemon::set($in, $key, $value);
         }
         $out = self::$lot[$c] ?? [];
-        self::$lot[$c] = extend($out, $in);
+        self::$lot[$c] = array_replace_recursive($out, $in);
     }
 
 }

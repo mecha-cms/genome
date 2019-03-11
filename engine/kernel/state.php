@@ -17,7 +17,7 @@ class State extends Genome {
 
     public function __construct($in = null, array $lot = []) {
         extract(Lot::get(), EXTR_SKIP);
-        $this->lot = extend((array) (Is::file($in) ? require $in : $in), $lot);
+        $this->lot = array_replace_recursive((array) (Is::file($in) ? require $in : $in), $lot);
         parent::__construct();
     }
 
