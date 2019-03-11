@@ -81,7 +81,15 @@ final class HTTP extends Genome {
                 } else if ($key === false) {
                     header_remove();
                 } else {
-                    header($key);
+                    if (function_exists('apache_response_headers')) {
+                        return apache_response_headers()[$key] ?? null;
+                    }
+                    foreach (headers_list() as $v) {
+                        if (strpos($v, $key . ': ') === 0) {
+                            return explode(': ', $v, 2)[1] ?? null;
+                        }
+                    }
+                    return null;
                 }
             }
         } else {
@@ -96,7 +104,7 @@ final class HTTP extends Genome {
         if (isset($id)) {
             $id = strtoupper($id);
             if (isset($key)) {
-                return Anemon::get($GLOBALS['_' . $id], $key, X) !== X;
+                return Anemon::get($GLOBALS['_' . $id], $key) !== null;
             }
             return $id === $r;
         }
@@ -112,6 +120,10 @@ final class HTTP extends Genome {
         return To::query($query ? extend($_GET, (array) $query) : $_GET, $c);
     }
 
+    public static function refresh(int $i) {
+        header('Refresh: ' . $i);
+    }
+
     public static function status(int $i = null) {
         if (is_int($i)) {
             http_response_code($i);
@@ -120,8 +132,12 @@ final class HTTP extends Genome {
         }
     }
 
-    public static function type(string $mime, string $charset = null) {
-        header('Content-Type: ' . $mime . (isset($charset) ? '; charset=' . $charset : ""));
+    public static function type(string $type, array $alt = []) {
+        $end = "";
+        foreach ($alt as $k => $v) {
+            $end .= '; ' . $k . '=' . $v;
+        }
+        header('Content-Type: ' . $type . $end);
     }
 
 }
