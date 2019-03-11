@@ -1,55 +1,65 @@
 <?php
 
-Hook::set('content', function($content) {
-    if (strpos($content, '<input ') !== false) {
-        $content = preg_replace_callback('#<input(?:\s[^>]*)?>#', function($m) {
-            $e = new HTML($m[0]);
-            if (!$n = $e['name']) {
-                return $m[0];
-            }
-            $t = $e['type'];
-            // Convert `foo[bar][baz]` to `foo.bar.baz`
-            $n = 'form.' . str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $n);
-            $v = Session::get($n);
-            if ($t === 'checkbox' || $t === 'radio') {
-                $e['checked'] = isset($v) && $v === $e['value'];
-            } else {
-                $e['value'] = $v ?? $e['value'];
-            }
-            Session::reset($n);
-            return $e;
-        }, $content);
+namespace fn\form {
+    function flash($content) {
+        // Convert `foo[bar][baz]` to `form.foo.bar.baz`
+        $keys = function(string $in) {
+            return 'form.' . \str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $in);
+        };
+        if (\strpos($content, '<input ') !== false) {
+            $content = \preg_replace_callback('#<input(?:\s[^>]*)?>#', function($m) use($keys) {
+                $input = new \HTML($m[0]);
+                if (!$name = $input['name']) {
+                    return $m[0];
+                }
+                if ('hidden' === ($type = $input['type'])) {
+                    return $m[0];
+                }
+                $name = $keys($name);
+                $value = \Session::get($name);
+                if ($type === 'checkbox' || $type === 'radio') {
+                    $input['checked'] = isset($value) && $value === $input['value'];
+                } else {
+                    $input['value'] = $value ?? $input['value'];
+                }
+                \Session::reset($name);
+                return $input;
+            }, $content);
+        }
+        if (\strpos($content, '<select ') !== false) {
+            $content = \preg_replace_callback('#<select(?:\s[^>]*)?>[\s\S]*?</select>#', function($m) use($keys) {
+                $select = new \HTML($m[0]);
+                if (!$name = $select['name']) {
+                    return $m[0];
+                }
+                $name = $keys($name);
+                $value = \Session::get($name);
+                $select[1] = \preg_replace_callback('#<option(?:\s[^>]*)?>[\s\S]*?</option>#', function($m) use($name, $value) {
+                    $option = new \HTML($m[0]);
+                    $option['selected'] = isset($value) && $value === ($option['value'] ?? $option[1]);
+                    return $option;
+                }, $select[1]);
+                return $select;
+            }, $content);
+        }
+        if (\strpos($content, '<textarea ') !== false) {
+            $content = \preg_replace_callback('#<textarea(?:\s[^>]*)?>[\s\S]*?</textarea>#', function($m) use($keys) {
+                $textarea = new \HTML($m[0]);
+                if (!$name = $textarea['name']) {
+                    return $m[0];
+                }
+                $name = $keys($name);
+                $value = \Session::get($name, false);
+                $textarea[1] = \is_string($value) ? \htmlspecialchars($value) : $textarea[1];
+                \Session::reset($name);
+                return $textarea;
+            }, $content);
+        }
+        return $content;
     }
-    if (strpos($content, '<select ') !== false) {
-        $content = preg_replace_callback('#<select(?:\s[^>]*)?>[\s\S]*?</select>#', function($m) {
-            $e = new HTML($m[0]);
-            if (!$n = $e['name']) {
-                return $m[0];
-            }
-            // Convert `foo[bar][baz]` to `foo.bar.baz`
-            $n = 'form.' . str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $n);
-            $v = Session::get($n);
-            $e[1] = preg_replace_callback('#<option(?:\s[^>]*)?>[\s\S]*?</option>#', function($m) use($n, $v) {
-                $e = new HTML($m[0]);
-                $e['selected'] = isset($v) && $v === ($e['value'] ?? $e[1]);
-                return $e;
-            }, $e[1]);
-            return $e;
-        }, $content);
+    function reset() {
+        \Session::reset('form');
     }
-    if (strpos($content, '<textarea ') !== false) {
-        $content = preg_replace_callback('#<textarea(?:\s[^>]*)?>[\s\S]*?</textarea>#', function($m) {
-            $e = new HTML($m[0]);
-            if (!$n = $e['name']) {
-                return $m[0];
-            }
-            // Convert `foo[bar][baz]` to `foo.bar.baz`
-            $n = 'form.' . str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $n);
-            $v = Session::get($n, false);
-            $e[1] = is_string($v) ? htmlspecialchars($v) : $e[1];
-            Session::reset($n);
-            return $e;
-        }, $content);
-    }
-    return $content;
-}, 0);
+    \Hook::set('content', __NAMESPACE__ . "\\flash", 0);
+    \Hook::set('exit', __NAMESPACE__ . "\\reset", 20);
+}
