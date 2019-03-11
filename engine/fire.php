@@ -68,24 +68,19 @@ if (is_numeric(end($parts))) {
     $i = null;
 }
 $clean = trim($url . '/' . $path, '/');
-$u = Session::get(URL::session) ?? [];
+
 $GLOBALS['URL'] = [
     'scheme' => $scheme,
     'protocol' => $protocol,
     'host' => $host,
     'directory' => $directory,
-    'port' => (int) $_SERVER['SERVER_PORT'],
-    'user' => $u['user'] ?? null,
-    'pass' => $u['pass'] ?? null,
+    'port' => $_SERVER['SERVER_PORT'],
     'path' => $path,
     'i' => $i,
     '$' => $url,
     'clean' => $clean,
     'current' => trim($clean . '/' . $i, '/'),
-    'query' => $query,
-    'previous' => $u['previous'] ?? null,
-    'next' => $u['next'] ?? null,
-    'hash' => null // TODO
+    'query' => $query
 ];
 
 $config = new Config;
@@ -119,7 +114,7 @@ Lot::set($seeds);
 $extends = [];
 foreach (glob(EXTEND . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
     $b = basename($d = dirname($v));
-    $extends[$v] = content($d . DS . $b) ?: $b;
+    $extends[$v] = content($d . DS . $b) ?? $b;
 }
 
 // Sort by name

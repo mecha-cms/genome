@@ -7,7 +7,7 @@ call_user_func(function() {
     $seeds = Lot::get();
     foreach (glob(PLUGIN . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
         $b = basename($d = dirname($v));
-        $plugins[$v] = content($d . DS . $b) ?: $b;
+        $plugins[$v] = content($d . DS . $b) ?? $b;
     }
     // Sort by name
     natsort($plugins);
