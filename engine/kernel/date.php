@@ -1,14 +1,14 @@
 <?php
 
-class Date extends Genome {
+final class Date extends Genome {
 
     protected static $pattern = '%Y%-%M%-%D% %~h%:%m%:%s%';
-    protected static $zone = null;
+    protected static $zone;
 
-    public $lot = [];
-    public $o = [];
-    public $parent = null;
-    public $source = null;
+    public $lot;
+    public $o;
+    public $parent;
+    public $source;
 
     protected function extract() {
         if (!$this->lot) {
