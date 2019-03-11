@@ -26,7 +26,7 @@ function url($url = "", array $lot = []) {
     'parent' => new \Page
 ]);
 
-\Route::set(['%*%/%i%', '%*%', ""], function(string $path = "", $step = null) use($state) {
+\Route::set(['(.+)/(\d+)', '(.+)', ""], function(string $path = "", $step = null) use($state) {
     // Include global variable(s)…
     extract(\Lot::get(), \EXTR_SKIP);
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
@@ -34,7 +34,7 @@ function url($url = "", array $lot = []) {
     $path_canon = \ltrim($path === "" ? $config->path : $path, '/');
     if ($step === 1 && !$url->query && $path === $config->path) {
         \Message::info('kick', '<code>' . $url->current . '</code>');
-        \Guardian::kick(""); // Redirect to home page…
+        \Guard::kick(""); // Redirect to home page…
     }
     $folder = \rtrim(PAGE . DS . \To::path($path_canon), DS);
     $name = \Path::B($folder);
@@ -149,7 +149,7 @@ function url($url = "", array $lot = []) {
         // Redirect to parent page if user tries to access the placeholder page…
         if ($name === '$' && \File::exist($folder . '.' . $page->x)) {
             \Message::info('kick', '<code>' . $url->current . '</code>');
-            \Guardian::kick($parent_path);
+            \Guard::kick($parent_path);
         }
         return \Shield::attach('page/' . $path_canon . '/' . $h);
     }

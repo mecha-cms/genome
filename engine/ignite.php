@@ -154,7 +154,7 @@ namespace {
     }
     // Get file content
     function content(string $f) {
-        return \is_file($f) ? \file_get_contents($f) : false;
+        return \is_file($f) ? \file_get_contents($f) : null;
     }
     // Merge array value(s)
     function concat(array $a, ...$b) {
@@ -206,33 +206,6 @@ namespace {
             $that = null;
         }
         return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
-    }
-    // Replace pattern to regular expression
-    function format(string $s, string $x = "\n", string $d = '#', $r = true) {
-        if (!$s || \strpos($s, '%') === false)
-            return $s;
-        $r = $r ? "" : '?';
-        $s = \str_replace([
-            '%s%', // any string excludes `$x`
-            '%i%', // any string number(s)
-            '%f%', // any string number(s) includes float(s)
-            '%b%', // any string boolean(s)
-            '%\*%' // any string includes `$x`
-        ], [
-            '([^' . $x . ']+)' . $r,
-            '(\-?\d+)' . $r,
-            '(\-?(?:(?:\d+)?\.)?\d+)' . $r,
-            '(\b(?:TRUE|FALSE|true|false)\b)' . $r,
-            '([\s\S]+)' . $r
-        ], x($s, $d));
-        // group: `%[foo,bar,baz]%`
-        if (false !== ($i = \strpos($s, '%\\[')) && \strpos($s, '\\]%') > $i) {
-            $s = \preg_replace_callback('#%\\\\\[([\s\S]+?)\\\\\]%#', function($m) use($r) {
-                $m[1] = \str_replace(['\\\\,', ','], [X, '|'], $m[1]);
-                return '(' . $m[1] . ')' . $r;
-            }, $s);
-        }
-        return \strtr($s, X, ','); // return a regular expression string without the delimiter(s)
     }
     // A greater than or equal to B
     function ge($a, $b) {
