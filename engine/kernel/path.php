@@ -1,6 +1,6 @@
 <?php
 
-class Path extends Genome {
+final class Path extends Genome {
 
     public static function B(string $path, int $step = 1, string $s = DS) {
         if ($s === DS || $s === '/') {

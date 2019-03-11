@@ -1,6 +1,6 @@
 <?php
 
-class Is extends Genome {
+final class Is extends Genome {
 
     // Check for IP address
     public static function IP($x) {

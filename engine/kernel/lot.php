@@ -1,32 +1,30 @@
 <?php
 
-class Lot extends Genome {
+final class Lot extends Genome {
 
     public static function get($key = null) {
-        $data = $GLOBALS['.' . md5(static::class)] ?? [];
+        $out = $GLOBALS['_' . md5(__FILE__)] ?? [];
         if (isset($key)) {
-            return $data[$key] ?? null;
+            return $out[$key] ?? null;
         }
-        return $data;
+        return $out;
     }
 
     public static function reset($key = null) {
-        $scope = '.' . md5(static::class);
-        if (isset($key)) {
-            if (is_array($key)) {
-                foreach ($key as $v) {
-                    self::reset($v);
-                }
-            } else {
-                unset($GLOBALS[$scope][$key]);
+        $scope = '_' . md5(__FILE__);
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::reset($v);
             }
+        } else if (isset($key)) {
+            unset($GLOBALS[$scope][$key]);
         } else {
             $GLOBALS[$scope] = [];
         }
     }
 
     public static function set($key, $value = null) {
-        $scope = '.' . md5(static::class);
+        $scope = '_' . md5(__FILE__);
         if (is_array($key) || is_object($key)) {
             foreach ($key as $k => $v) {
                 $GLOBALS[$scope][$k] = $v;
