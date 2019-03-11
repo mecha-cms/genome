@@ -10,7 +10,7 @@ if ($state = Extend::state('page')) {
     Config::alt($state);
 }
 
-$path = $url->path;
+$path = $url->path . "";
 $p = Config::get('path');
 $i = $url->i;
 $folder = PAGE . DS . $path;

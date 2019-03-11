@@ -94,7 +94,9 @@ foreach([
             }
             // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
             $v = $v !== true ? '=' . urlencode(s($v)) : "";
-            $out[] = $k . $v;
+            if ("" !== ($v = $k . $v)) {
+                $out[] = $v;
+            }
         }
         return $out ? '?' . implode('&', $out) : "";
     },

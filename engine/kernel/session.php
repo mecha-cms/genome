@@ -7,13 +7,17 @@ final class Session extends Genome {
     }
 
     public static function reset($key = null) {
-        if (!isset($key) || $key === true) {
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::reset($v);
+            }
+        } else if (isset($key) && $key !== true) {
+            Anemon::reset($_SESSION, $key);
+        } else {
             $_SESSION = [];
             if ($key === true) {
                 session_destroy();
             }
-        } else {
-            Anemon::reset($_SESSION, $key);
         }
     }
 

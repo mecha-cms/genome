@@ -19,9 +19,9 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
     public static $config = self::config;
 
     public function __construct($in = []) {
-        $this->c = $c = extend(self::config, static::$config);
+        $this->c = $c = array_replace_recursive(self::config, static::$config);
         if (is_array($in)) {
-            $this->lot = extend($this->lot, $in);
+            $this->lot = array_replace_recursive($this->lot, $in);
         } else if (is_string($in)) {
             // Must starts with `<` and ends with `>`
             if (strpos($in, $c[0][0]) === 0 && substr($in, -strlen($c[0][1])) === $c[0][1]) {

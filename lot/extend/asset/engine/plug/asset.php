@@ -66,14 +66,14 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
 }
 
 foreach (['script', 'style', 'template'] as $v) {
-    Asset::_($v, function(string $content, float $stack = null, array $data = []) use($v) {
+    Asset::_($v, function(string $content, float $stack = 10, array $data = []) use($v) {
         $c = static::class;
         $id = $data['id'] ?? $v . ':' . sprintf('%u', crc32($content));
         if (!isset(static::$lot[$c][0][':' . $v][$id])) {
             static::$lot[$c][1][':' . $v][$id] = [
                 'content' => n(trim($content)),
                 'data' => $data,
-                'stack' => (float) ($stack ?? 10)
+                'stack' => (float) $stack
             ];
         }
     });
