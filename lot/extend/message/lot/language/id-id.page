@@ -1,0 +1,40 @@
+---
+type: YAML
+...
+
+message_error_file_exist: Berkas %{0}% sudah ada.
+message_error_file_size:
+  0: Harus lebih besar dari %{0}%.
+  1: Harus lebih kecil dari %{0}%.
+message_error_file_type: Tipe berkas %{0}% tidak diperbolehkan.
+message_error_file_x: Ekstensi %{0}% tidak diperbolehkan.
+
+message_error_folder_exist: Folder %{0}% sudah ada.
+
+message_error_search: Tidak ada temuan untuk %{0}%.
+
+message_info_are: %{0}% Anda adalah %{1}%.
+message_info_file_push:
+  0: Tidak ada kesalahan, berkas berhasil diunggah dengan sukses.
+  1: Berkas yang diunggah melebihi direktif <code>upload_max_filesize</code> dalam <code>php.ini</code>.
+  2: Berkas yang diunggah melebihi direktif <code>MAX_FILE_SIZE</code> yang telah ditentukan dalam <abbr title="Hyper Text Markup Language">HTML</abbr> formulir.
+  3: Berkas yang diunggah hanya terunggah sebagian.
+  4: Tidak ada berkas yang diunggah.
+  5: ?
+  6: Folder sementara tidak ada.
+  7: Gagal menulis berkas ke disk.
+  8: Sebuah pengaya PHP telah menghentikan proses pengunggahan berkas.
+message_info_is: %{0}% Anda adalah %{1}%.
+message_info_search: Hasil penelusuran untuk %{0}%.
+message_info_void: Belum ada %{0}%.
+
+message_success_file_create: Berkas %{0}% dibuat.
+message_success_file_delete: Berkas %{0}% dihapus.
+message_success_file_push: Berkas %{0}% diunggah.
+message_success_file_update: Berkas %{0}% diperbarui.
+
+message_success_folder_create: Folder %{0}% dibuat.
+message_success_folder_delete: Folder %{0}% dihapus.
+message_success_folder_update: Folder %{0}% diperbarui.
+
+_message_info_void: Berisi %{0}%.
