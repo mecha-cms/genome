@@ -3,31 +3,32 @@
 // Store page state to registry…
 if ($state = Extend::state('page')) {
     // Prioritize current shield state
-    if ($alt = File::open(SHIELD . DS . $config->shield . DS . 'state' . DS . 'config.php')->import()) {
-        $state = extend($state, $alt);
+    if (is_file($f = SHIELD . DS . $config->shield . DS . 'state' . DS . 'config.php')) {
+        $state = extend($state, require $f);
     }
     // Prioritize default state
     Config::alt($state);
 }
 
-$path = $url->path . "";
+$path = $url->path ?? "";
 $p = Config::get('path');
-$i = $url->i;
-$folder = PAGE . DS . $path;
+$i = $url->i ?? "";
+$folder = PAGE . $path;
 
-// Set proper `i` value in `$url` if we have some page with numeric file name
-if ($i && File::exist([
+// Set proper `i` value in `$url` if we have some page with numeric file/folder name
+if ($i !== "" && File::exist([
     $folder . DS . $i . '.page',
     $folder . DS . $i . '.archive'
 ])) {
     $path = trim($path . '/' . $i, '/');
     $folder .= DS . $i;
-    $GLOBALS['URL']['path'] = $path;
+    $GLOBALS['URL']['path'] = '/' . $path;
     $GLOBALS['URL']['clean'] .= '/' . $i;
-    $GLOBALS['URL']['i'] = $i = null;
+    $GLOBALS['URL']['i'] = null;
+    $i = "";
 }
 
-$if_0 = ($path === "" || $path === $p) && $i === null;
+$if_0 = ($path === "" || $path === '/' . $p) && $i === "";
 
 $if_1 = File::exist([
     // `.\lot\page\home-slug.{page,archive}`
@@ -38,13 +39,7 @@ $if_1 = File::exist([
 $if_2 = File::exist([
     // `.\lot\page\page-slug\$.{page,archive}`
     $folder . DS . '$.page',
-    $folder . DS . '$.archive',
-    // `.\lot\page\page-slug\1.{page,archive}`
-    $folder . DS . $i . '.page',
-    $folder . DS . $i . '.archive',
-    // `.\lot\page\page-slug\1\$.{page,archive}`
-    $folder . DS . $i . DS . '$.page',
-    $folder . DS . $i . DS . '$.archive'
+    $folder . DS . '$.archive'
 ]);
 
 $if_3 = File::exist([
@@ -66,26 +61,23 @@ $if_6 = File::exist([
     $folder . DS . '$.archive'
 ]);
 
-$pages = $i !== null || $path === "" && $if_4 || $path !== "" && !$if_2 && $if_5;
-
 Config::set('is', [
-    '$' => $if_0 ? $if_1 : false,
     'error' => $path === "" && !$if_1 || $path !== "" && !$if_3 ? 404 : false,
-    'home' => $if_0 ? $if_1 : false, // alias for `$`
-    'page' => $pages ? false : ($path === "" ? $if_1 : $if_3),
-    'pages' => $pages ? ($path === "" ? $if_4 : $if_5) : false,
+    'home' => !!$if_0,
+    'page' => $path === "" && $if_1 || $path !== "" && ($if_2 || $if_3 && !$if_5),
+    'pages' => $i !== "" || $path === "" && $if_4 || $path !== "" && !$if_2 && $if_5,
     'search' => HTTP::is('get', Config::get('q'))
 ]);
 
-$pages = $path === "" ? count($if_4) : count($if_5);
+$count = count($path === "" ? $if_4 : $if_5);
 
 Config::set('has', [
-    'next' => Config::is('pages') && $pages > ($i ?: 1) * Config::page('chunk', 5),
-    'page' => $if_1 || $if_3 ? 1 : 0,
-    'pages' => $pages ? $pages : 0,
-    'parent' => strpos($path, '/') !== false && $if_6 ? $if_6 : false,
-    'previous' => Config::is('pages') && $i > 1,
-    'step' => Config::is('pages') && $i !== null ? $i : false
+    'next' => Config::is('pages') && ($count > (($i ?: 1) * (Config::page('chunk') ?? 5))),
+    'page' => $path === "" && $if_1 || $if_3,
+    'pages' => $count > 0,
+    'parent' => substr_count($path, '/') > 1, // `/foo/bar`
+    'prev' => Config::is('pages') && $i > 1,
+    'step' => Config::is('pages') && $i !== ""
 ]);
 
 Config::set('not', []);
