@@ -340,7 +340,7 @@ class File extends Genome {
     public static function exist($path) {
         if (is_array($path)) {
             foreach ($path as $v) {
-                if ($v = stream_resolve_include_path($v)) {
+                if ($v && $v = stream_resolve_include_path($v)) {
                     return $v;
                 }
             }

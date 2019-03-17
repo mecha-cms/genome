@@ -59,7 +59,7 @@ final class Language extends Config {
     }
 
     public function __toString() {
-        return To::YAML(self::get(null, true));
+        return To::YAML(parent::get(null, true));
     }
 
     public static function get($key = null, $vars = [], $preserve_case = false) {

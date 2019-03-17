@@ -153,14 +153,14 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function offsetGet($i) {
-        if ($this->exist && empty($this->read)) {
+        if ($this->exist && !isset($this->read[$i])) {
             // Prioritize data from a file…
             $f = Path::F($this->path) . DS . $i . '.data';
             if (is_file($f)) {
                 return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
             // Read the file content once!
-            $this->read = true;
+            $this->read[$i] = 1;
             $this->lot = array_replace_recursive($this->lot, self::apart(file_get_contents($this->path), null, true));
         }
         return $this->lot[$i] ?? null;

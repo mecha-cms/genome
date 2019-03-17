@@ -24,7 +24,7 @@ class Config extends Genome {
             $kin .= '.' . array_shift($lot);
             $array = array_shift($lot) ?: false;
         }
-        return self::get($kin, $array);
+        return self::get($kin);
     }
 
     public function __get(string $key) {
@@ -79,7 +79,7 @@ class Config extends Genome {
             $kin .= '.' . array_shift($lot);
             $array = array_shift($lot) ?: false;
         }
-        return self::get($kin, $array);
+        return self::get($kin);
     }
 
     public static function alt(...$lot) {
