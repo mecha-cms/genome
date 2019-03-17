@@ -24,6 +24,51 @@ array_walk_recursive($vars, function(&$v) {
     $v = strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
 });
 
+// Generate static URL data
+call_user_func(function($v) {
+    $port = (int) $v['SERVER_PORT'];
+    $scheme = 'http' . (!empty($v['HTTPS']) && $v['HTTPS'] !== 'off' || $port === 443 ? 's' : "");
+    $host = $v['HTTP_HOST'] ?? $v['SERVER_NAME'] ?? "";
+    $a = explode('&', strtr($v['QUERY_STRING'], DS, '/'), 2);
+    $path = array_shift($a) ?? "";
+    $query = array_shift($a) ?? "";
+    // Prevent XSS attack where possible
+    $path = strtr(trim($path, '/'), [
+        '<' => '%3C',
+        '>' => '%3E',
+        '&' => '%26',
+        '"' => '%22'
+    ]);
+    $a = explode('/', $path);
+    if (is_numeric(end($a))) {
+        $i = (int) array_pop($a);
+        $path = implode('/', $a);
+    } else {
+        $i = null;
+        if ($path !== "") {
+            array_shift($_GET); // Remove path data from native URL query
+        }
+    }
+    $directory = strtr(dirname($v['SCRIPT_NAME']), DS, '/');
+    $directory = $directory !== '.' ? '/' . trim($directory, '/') : null;
+    $path = $path !== "" ? '/' . $path : null;
+    $query = $query !== "" ? '?' . $query : null;
+    $u = $scheme . '://' . $host . $directory;
+    $GLOBALS['URL'] = [
+        'scheme' => $scheme,
+        'host' => $host,
+        'port' => $port,
+        'directory' => $directory,
+        'path' => $path,
+        'i' => $i,
+        'query' => $query,
+        '$' => $u,
+        'clean' => $u . $path,
+        'current' => trim($u . $path . '/' . $i, '/') . $query,
+        'hash' => $_COOKIE['hash'] ?? null
+    ];
+}, $_SERVER);
+
 $f = ENGINE . DS;
 d($f . 'kernel', function($c, $n) use($f) {
     $f .= 'plug' . DS . $n . '.php';
@@ -38,50 +83,6 @@ File::$config['x'] = array_unique(explode(',', $x));
 Session::start();
 
 Config::load(STATE . DS . 'config.php');
-
-// Generate static URL data
-$scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
-$protocol = $scheme . '://';
-$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
-$directory = strtr(dirname($_SERVER['SCRIPT_NAME']), DS, '/');
-$directory = $directory === '.' ? "" : trim($directory, '/');
-$url = trim($protocol . $host . '/' . $directory, '/');
-$parts = explode('&', strtr($_SERVER['QUERY_STRING'], DS, '/'), 2);
-$path = array_shift($parts);
-$query = array_shift($parts);
-// Prevent XSS attack where possible
-$path = strtr(trim($path ?? "", '/'), [
-    '<' => '%3C',
-    '>' => '%3E',
-    '&' => '%26',
-    '"' => '%22'
-]);
-$query = $query ? '?' . $query : "";
-$parts = explode('/', $path);
-if (is_numeric(end($parts))) {
-    $i = (int) array_pop($parts);
-    $path = implode('/', $parts);
-} else {
-    if ($path !== "") {
-        array_shift($_GET); // Remove path data from native URL query
-    }
-    $i = null;
-}
-$clean = trim($url . '/' . $path, '/');
-
-$GLOBALS['URL'] = [
-    'scheme' => $scheme,
-    'protocol' => $protocol,
-    'host' => $host,
-    'directory' => $directory,
-    'port' => $_SERVER['SERVER_PORT'],
-    'path' => $path,
-    'i' => $i,
-    '$' => $url,
-    'clean' => $clean,
-    'current' => trim($clean . '/' . $i, '/'),
-    'query' => $query
-];
 
 $config = new Config;
 $url = new URL;

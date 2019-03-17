@@ -24,10 +24,9 @@ final class URL extends Genome {
 
     // `$url->query('&amp;')`
     protected function _query_(string $separator = '&', array $q = []) {
-        $query = From::query($this->lot['query']);
+        $query = From::query($this->lot['query'] ?? "");
         $query = array_replace_recursive($query, $q);
-        $query = strtr(To::query($query), ['&' => $separator]);
-        return $query === "" ? null : $query;
+        return !empty($query) ? strtr(To::query($query), ['&' => $separator]) : null;
     }
 
     public function __call(string $kin, array $lot = []) {
@@ -46,14 +45,15 @@ final class URL extends Genome {
     public function __construct(string $in = null) {
         if (isset($in)) {
             $out = parse_url($in);
-            $out['path'] = trim($out['path'] ?? "", '/');
-            $a = explode('/', $out['path']);
+            $path = trim($out['path'] ?? "", '/');
+            $a = explode('/', $path);
             if (is_numeric(end($a))) {
                 $out['i'] = (int) array_pop($a);
-                $out['path'] = implode('/', $a);
+                $path = implode('/', $a);
             } else {
                 $out['i'] = null;
             }
+            $out['path'] = $path !== "" ? '/' . $path : null;
             $out['clean'] = rtrim(strtr(preg_split('/[?&#]/', $in)[0], [
                 '<' => '%3C',
                 '>' => '%3E',
@@ -62,9 +62,9 @@ final class URL extends Genome {
             ]), '/');
             $out['$'] = rtrim($out['clean'] . '/' . $out['i'], '/');
             $q = $out['query'] ?? "";
-            $out['query'] = (strpos($q, '?') !== 0 ? '?' : "") . str_replace('&amp;', '&', $q);
             $h = $out['fragment'] ?? "";
-            $out['hash'] = (strpos($h, '#') !== 0 ? '#' : "") . $h;
+            $out['query'] = $q !== "" ? '?' . str_replace('&amp;', '&', $q) : null;
+            $out['hash'] = $h !== "" ? '#' . $h : null;
             unset($out['fragment']);
             $this->lot = $out;
         } else {
@@ -90,41 +90,49 @@ final class URL extends Genome {
         unset($this->lot[$key]);
     }
 
-    public static function long(string $path = "", $root = true) {
-        $url = $GLOBALS['URL'];
+    public static function long(string $path, $root = true) {
+        $u = new static;
         $b = false;
+        // `URL::long('//example.com')`
         if (strpos($path, '//') === 0) {
-            return rtrim($url['scheme'] . ':' . $path, '/');
+            return rtrim($u->scheme . ':' . $path, '/');
+        // `URL::long('/foo/bar/baz/qux')`
         } else if (strpos($path, '/') === 0) {
             $path = ltrim($path, '/');
             $b = true; // Relative to the root domain
         }
+        // `URL::long('&foo=bar&baz=qux')`
+        $a = explode('?', $path, 2);
+        if (count($a) === 1 && strpos($a[0], '&') !== false) {
+            $a = explode('&', strtr($a[0], ['&amp;' => '&']), 2);
+            $path = implode('?', $a);
+        }
         if (
             strpos($path, '://') === false &&
             strpos($path, 'data:') !== 0 &&
+            strpos($path, 'javascript:') !== 0 &&
             strpos($path, '?') !== 0 &&
             strpos($path, '&') !== 0 &&
-            strpos($path, '#') !== 0 &&
-            strpos($path, 'javascript:') !== 0
+            strpos($path, '#') !== 0
         ) {
-            return trim(($root && $b ? $url['protocol'] . $url['host'] : $url['$']) . '/' . str_replace([X . '&', X], ['?', ""], X . ltrim($path, '/')), '/');
+            $r = $root && $b ? $u->scheme . '://' . $u->host : $u;
+            return trim($r . '/' . $path, '/');
         }
-        return str_replace([X . '&', X], ['?', ""], X . $path);
+        return $path;
     }
 
     public static function short(string $path = "", $root = true) {
-        $url = $GLOBALS['URL'];
-        if (strpos($path, '//') === 0 && strpos($path, '//' . $url['host']) !== 0) {
+        $u = new static;
+        if (strpos($path, '//') === 0 && strpos($path, '//' . $u->host) !== 0) {
             return $path; // Ignore external URL
         }
         return $root ? str_replace([
-            X . $url['protocol'] . $url['host'],
-            X . '//' . $url['host'],
+            X . $u->scheme . '://' . $u->host,
+            X . '//' . $u->host,
             X
         ], "", X . $path) : ltrim(str_replace([
-            X . $url['$'],
-            X . '//' . rtrim($url['host'] . '/' . $url['directory'], '/'),
-            X
+            X . $u->scheme . ':',
+            X . '//' . $u->host . $u->directory
         ], "", X . $path), '/');
     }
 

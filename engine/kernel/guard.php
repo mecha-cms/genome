@@ -17,7 +17,7 @@ final class Guard extends Genome {
 
     public static function kick(string $path = null) {
         $path = $path ?? $GLOBALS['URL']['current'];
-        header('Location: ' . str_replace('&amp;', '&', URL::long($path)));
+        header('Location: ' . URL::long($path));
         exit;
     }
 

@@ -35,7 +35,7 @@ final class Route extends Genome {
             }
             return $out;
         }
-        $path = rtrim($GLOBALS['URL']['path'] . '/' . $GLOBALS['URL']['i'], '/');
+        $path = trim($GLOBALS['URL']['path'] . '/' . $GLOBALS['URL']['i'], '/');
         if (strpos($id, '(') === false && strpos($id, "\\") === false) {
             return $path === $id ? [
                 'pattern' => $id,
@@ -111,7 +111,7 @@ final class Route extends Genome {
     }
 
     public static function start() {
-        $id = rtrim($GLOBALS['URL']['path'] . '/' . $GLOBALS['URL']['i'], '/');
+        $id = trim($GLOBALS['URL']['path'] . '/' . $GLOBALS['URL']['i'], '/');
         $any = Anemon::eat(self::$lot[1] ?? [])->sort([1, 'stack'], true);
         foreach ($any as $k => $v) {
             // If matched with the URL path, then …
