@@ -3,7 +3,7 @@ title: Shield
 description: Common automation package used to speed up theme development.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.3.0
+version: 1.3.1
 ...
 
 ### Feature
@@ -21,9 +21,8 @@ These HTML classes will be added to the `<html>` element that has a `class` attr
  - `has-page` → Will be added if there is a page to load.
  - `has-pages` → Will be added if there are pages to load.
  - `has-parent` → Will be added if current page has parent page.
- - `has-previous` → Will be added if it is possible to go to the previous page.
+ - `has-prev` → Will be added if it is possible to go to the previous page.
  - `has-step` → Will be added if page URL contains the page offset.
- - `is-$` → Will be added on home page view.
  - `is-error` → Will be added if there is no page or pages to load.
  - `is-home` → Will be added on home page view.
  - `is-page` → Will be added on item view.

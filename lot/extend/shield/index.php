@@ -56,8 +56,9 @@ if (Extend::exist('asset') && $assets = Asset::get()) {
                 continue;
             }
             // Relative to the `asset` folder of current shield
-            if ($path = File::exist($folder . 'asset' . DS . $kk)) {
-                Asset::reset($kk)->set($path, $vv['stack']);
+            if ($path = Asset::path($folder . 'asset' . DS . $kk)) {
+                Asset::reset($kk);
+                Asset::set($path, $vv['stack']);
             }
         }
     }
