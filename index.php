@@ -4,11 +4,12 @@
  * =========================================
  *  MECHA · CONTENT MANAGEMENT SYSTEM (CMS)
  * =========================================
- * © 2014 – 2018 Taufik Nurrohman
+ * © 2014 – 2019 · Taufik Nurrohman
  * -----------------------------------------
  */
 
 !defined('DS') && define('DS', DIRECTORY_SEPARATOR); // Default directory separator
+!defined('PS') && define('PS', PATH_SEPARATOR); // Default path separator
 !defined('DENT') && define('DENT', '  '); // Default HTML indent
 !defined('N') && define('N', "\n"); // Line break
 !defined('T') && define('T', "\t"); // Tab
@@ -19,7 +20,7 @@
 !defined('ENGINE') && define('ENGINE', ROOT . DS . 'engine');
 !defined('LOT') && define('LOT', ROOT . DS . 'lot');
 
-foreach (glob(ROOT . DS . 'lot' . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
+foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
     $b = strtoupper(strtr(basename($lot), '-.', "_\\"));
     !defined($b) && define($b, $lot);
     $b = "LOT\\" . $b; // Alias
@@ -35,7 +36,10 @@ foreach (glob(ROOT . DS . 'lot' . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot)
 !defined('HTML_WISE') && define('HTML_WISE', HTML_WISE_I . ',' . HTML_WISE_B);
 
 // Common date format
-!defined('DATE_WISE') && define('DATE_WISE', 'Y-m-d H:i:s');
+!defined('DATE_FORMAT') && define('DATE_FORMAT', 'Y-m-d H:i:s');
+!defined('DATE_LOCALE') && define('DATE_LOCALE', locale_get_default());
+!defined('DATE_NOW') && define('DATE_NOW', $_SERVER['REQUEST_TIME'] ?? time());
+!defined('DATE_ZONE') && define('DATE_ZONE', date_default_timezone_get());
 
 // Common file type(s) allowed to be uploaded by the file manager
 !defined('AUDIO_X') && define('AUDIO_X', 'aif,mid,mov,mpa,mp3,m3u,m4a,ogg,wav,wma');
