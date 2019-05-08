@@ -9,7 +9,7 @@ foreach ([
         }
         $href = $path ? $url . '?v=' . (is_file($path) ? filemtime($path) : 0) : $url;
         if (isset($data['href']) && is_callable($data['href'])) {
-            $href = fn($data['href'], [$href, $value, $key], null, Asset::class);
+            $href = fire($data['href'], [$href, $value, $key], null, Asset::class);
             unset($data['href']);
         }
         $link = new HTML;
@@ -29,7 +29,7 @@ foreach ([
         }
         $src = $path ? $url . '?v=' . (is_file($path) ? filemtime($path) : 0) : $url;
         if (isset($data['src']) && is_callable($data['src'])) {
-            $src = fn($data['src'], [$src, $value, $key], null, Asset::class);
+            $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
         $script = new HTML;
@@ -52,7 +52,7 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
         }
         $src = $path ? $url . '?v=' . (is_file($path) ? filemtime($path) : 0) : $url;
         if (isset($data['src']) && is_callable($data['src'])) {
-            $src = fn($data['src'], [$src, $value, $key], null, Asset::class);
+            $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
         $img = new HTML;
