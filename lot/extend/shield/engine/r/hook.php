@@ -1,8 +1,8 @@
-<?php namespace fn\shield;
+<?php namespace _\shield;
 
 // Generate HTML class(es) based on current page conditional statement(s)
-function root($content) {
-    $r = \Shield::$config['root'][0];
+function content($content) {
+    $r = 'html';
     if (\strpos($content, '<' . $r . ' ') !== false) {
         return \preg_replace_callback('#<' . \x($r) . '(?:\s[^>]*)?>#', function($m) use($r) {
             if (
@@ -31,4 +31,4 @@ function root($content) {
     return $content;
 }
 
-\Hook::set('content', __NAMESPACE__ . "\\root", 0);
+\Hook::set('content', __NAMESPACE__ . "\\content", 0);

@@ -1,15 +1,15 @@
 <?php
 
-final class Shield extends Extend {
+class Content extends Genome {
 
-    protected static $lot = [];
-    public static $config = self::config;
+    protected static $lot;
 
     const config = [
-        'x' => ['html', 'php'],
-        'id' => 'document',
-        'root' => ['html', "", ['class' => true]]
+        'root' => ROOT,
+        'x' => ['html', 'php']
     ];
+
+    public static $config = self::config;
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
@@ -29,65 +29,43 @@ final class Shield extends Extend {
         return self::get($kin, ...$lot);
     }
 
-    public static function abort($code = 404) {
-        $i = is_string($code) ? explode('/', strtr($code, DS, '/'))[0] : '404';
-        HTTP::status((int) $i);
-        return self::attach($code);
-    }
-
-    public static function attach($in) {
-        Hook::fire('enter', [null, $in]);
-        if (null === ($out = self::get($in, [], false))) {
-            throw new \InvalidArgumentException('Folder ' . static::$config['id'] . ' does not exist.');
-        }
-        $out = Hook::fire('content', [$out, $in]);
-        Hook::fire('exit', [$out, $in]);
-        return $out;
-    }
-
-    public static function exist(string $id, $active = true) {
-        $exist = is_dir(constant(u(static::class)) . DS . $id);
-        return $active ? ($exist && static::$config['id'] === $id) : $exist;
-    }
-
     public static function get($in, array $lot = [], $print = true) {
-        $out = null;
-        Lot::set('lot', $lot);
         if ($path = self::path($in)) {
-            ob_start();
-            extract(Lot::get(), EXTR_SKIP);
-            require $path;
-            $out = ob_get_clean();
+            extract(array_replace($GLOBALS, $lot), EXTR_SKIP);
+            if ($print) {
+                require $path;
+            } else {
+                ob_start();
+                require $path;
+                return ob_get_clean();
+            }
         }
-        if (!$print) {
-            return $out;
-        }
-        echo $out;
+        return null;
     }
 
     public static function path($in) {
         $out = [];
+        $c = static::class;
+        $folder = static::$config['root'];
+        $extension = static::$config['x'];
         if (is_string($in)) {
             // Full path, be quick!
-            if (strpos($in, ROOT) === 0) {
+            if (strpos($in, $folder) === 0) {
                 return File::exist($in) ?: null;
             }
             $id = strtr($in, DS, '/');
-            // Added by the `Shield::get()`
-            if (isset(self::$lot[1][$id]) && !isset(self::$lot[0][$id])) {
-                return File::exist(self::$lot[1][$id]) ?: null;
+            // Added by the `Content::get()`
+            if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
+                return File::exist(self::$lot[$c][1][$id]) ?: null;
             }
             // Guessing…
-            $out = Anemon::step($id, '/');
+            $out = step($id, '/');
             array_unshift($out, strtr($out[0], '/', '.'));
             $out = array_unique($out);
         } else {
             $out = $in;
         }
-        $o = [];
-        $folder = constant(u(static::class));
-        $id = static::$config['id'];
-        $extension = static::$config['x'];
+        $any = [];
         foreach ((array) $out as $v) {
             $v = strtr($v, '/', DS);
             if (strpos($v, $folder) !== 0) {
@@ -99,26 +77,27 @@ final class Shield extends Extend {
                     } else if ($xx !== $x) {
                         continue;
                     }
-                    $o[] = $folder . DS . $id . DS . $v . $vv;
+                    $any[] = $folder . DS . $v . $vv;
                 }
             } else {
-                $o[] = $v;
+                $any[] = $v;
             }
         }
-        return File::exist($o) ?: null;
+        return File::exist($any) ?: null;
     }
 
-    public static function reset($id = null) {
+    public static function let($id = null) {
         if (is_array($id)) {
             foreach ($id as $v) {
-                self::reset($v);
+                self::let($v);
             }
         } else if (isset($id)) {
             $id = strtr($id, DS, '/');
-            self::$lot[0][$id] = 1;
-            unset(self::$lot[1][$id]);
+            $c = static::class;
+            self::$lot[$c][0][$id] = 1;
+            unset(self::$lot[$c][1][$id]);
         } else {
-            self::$lot = [];
+            self::$lot[$c] = [];
         }
     }
 
@@ -128,9 +107,10 @@ final class Shield extends Extend {
                 self::set($k, $v);
             }
         } else {
-            if (!isset(self::$lot[0][$id])) {
+            $c = static::class;
+            if (!isset(self::$lot[$c][0][$id])) {
                 $id = strtr($id, DS, '/');
-                self::$lot[1][$id] = $path;
+                self::$lot[$c][1][$id] = $path;
             }
         }
     }

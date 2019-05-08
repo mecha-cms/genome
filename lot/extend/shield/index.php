@@ -1,33 +1,19 @@
 <?php
 
-// Alias for `$config`
-Lot::set('site', $site = $config);
 // Prepare current shield state
-Lot::set('state', $state = new State);
+$GLOBALS['state'] = $state = new State;
 
-// Alias for `Config`
-class_alias('Config', 'Site');
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'content.php';
 
-// Include worker(s)…
-require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'config.php';
-require __DIR__ . DS . 'lot' . DS . 'worker' . DS . 'worker' . DS . 'hook.php';
+require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'config.php';
+require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'content.php';
+require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'hook.php';
+require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'language.php';
 
 // Load current shield state if any
-$folder = SHIELD . DS . Shield::$config['id'] . DS;
+$folder = Content::$config['root'] . DS;
 if ($f = File::exist($folder . 'state' . DS . 'config.php')) {
-    Lot::set('state', $state = new State($f));
-}
-
-// Load user language(s) from the current shield folder if any
-$i18n = $folder . 'language' . DS;
-if ($l = File::exist([
-    $i18n . $config->language . '.page',
-    $i18n . 'en-us.page'
-])) {
-    $i18n = new Page($l, [], ['*', 'language']);
-    $fn = 'From::' . $i18n->type;
-    $c = $i18n->content;
-    Language::set(is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
+    $GLOBALS['state'] = $state = new State($f);
 }
 
 // Run shield task if any
@@ -38,7 +24,7 @@ if ($task = File::exist($folder . 'task.php')) {
 // Load user function(s) from the current shield folder if any
 if ($fn = File::exist($folder . 'index.php')) {
     call_user_func(function() use($fn) {
-        extract(Lot::get(), EXTR_SKIP);
+        extract($GLOBALS, EXTR_SKIP);
         require $fn;
     });
 }
@@ -57,7 +43,7 @@ if (Extend::exist('asset') && $assets = Asset::get()) {
             }
             // Relative to the `asset` folder of current shield
             if ($path = Asset::path($folder . 'asset' . DS . $kk)) {
-                Asset::reset($kk);
+                Asset::let($kk);
                 Asset::set($path, $vv['stack']);
             }
         }
