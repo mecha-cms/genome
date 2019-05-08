@@ -2,81 +2,63 @@
 
 final class Language extends Config {
 
-    const config = [
-        'id' => 'en-us'
-    ];
-
-    public static $config = self::config;
-
     public function __call(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        if ($lot) {
-            $test = self::get($kin, ...$lot);
-            // Asynchronous value with function closure
-            if ($test instanceof \Closure) {
-                return fn($test, $lot, $this, static::class);
-            // Rich asynchronous value with class instance
-            } else if ($fn = fn\is\instance($test)) {
-                if (method_exists($fn, '__invoke')) {
-                    return call_user_func([$fn, '__invoke'], ...$lot);
+        $out = self::get($kin = p2f($kin), ...$lot);
+        if (is_array($out)) {
+            if ($lot) {
+                $i = $lot[0] ?? 1;
+                if (is_int($i)) {
+                    return sprintf($out[$i] ?? $out[$i > 1 ? 2 : 1] ?? $kin, $i);
                 }
+                return $out[1] ?? $out[0] ?? $kin;
             }
-            // Else, static value
-            return $test;
+            return $out[1] ?? $out[0] ?? o($out);
         }
-        return self::get($kin, $kin);
-    }
-
-    public function __construct() {
-        parent::__construct();
-        $id = static::$config['id'];
-        $f = constant(u($c = static::class)) . DS . $id . '.page';
-        if (!is_file($f)) {
-            return; // TODO
+        // Asynchronous value with function closure
+        if ($out instanceof \Closure) {
+            return fire($out, $lot, $this, static::class) ?? $kin;
         }
-        $content = Cache::hit($f, function($f): array {
-            $f = file_get_contents($f);
-            $fn = 'From::' . Page::apart($f, 'type');
-            $content = Page::apart($f, 'content');
-            return is_callable($fn) ? (array) call_user_func($fn, $content) : [];
-        }) ?? [];
-        self::$a[$c] = array_replace_recursive(self::$a[$c] ?? [], $content);
-        self::$lot[$c] = array_replace_recursive(self::$lot[$c] ?? [], $content);
+        // Rich asynchronous value with class instance
+        if (is_callable($out) && !is_string($out)) {
+            return call_user_func($out, ...$lot) ?? $kin;
+        }
+        // Else, static value
+        return (string) ($out ?? $kin);
     }
 
     public function __get(string $key) {
-        if (method_exists($this, $key)) {
-            if ((new \ReflectionMethod($this, $key))->isPublic()) {
-                return $this->{$key}();
-            }
-        }
-        if (self::_($key)) {
-            return $this->__call($key);
-        }
-        return self::get($key, $key);
+        return $this->__call($key);
     }
 
-    public function __toString() {
-        return To::YAML(parent::get(null, true));
+    public function __invoke(...$v) {
+        return count($v) === 1 ? self::get(...$v) : self::set(...$v);
+    }
+
+    public function __isset(string $key) {
+        return $this->__call($key) !== p2f($key);
+    }
+
+    public function __unset(string $key) {
+        unset(self::$lot[static::class][p2f($key)]);
     }
 
     public static function get($key = null, $vars = [], $preserve_case = false) {
-        $c = static::class;
+        $v = self::$lot[$c = static::class] ?? [];
         if (isset($key)) {
-            $v = self::$lot[$c] ?? [];
-            $v = Anemon::get($v, $key) ?? $key;
+            $v = get($v, $key);
             $vars = array_replace([""], (array) $vars);
             if (is_string($v)) {
                 if (!$preserve_case && strpos($v, '%') !== 0 && !ctype_upper($vars[0])) {
                     $vars[0] = l($vars[0] ?? "");
                 }
-                return candy($v, $vars);
+                return trim(sprintf($v, ...$vars));
             }
-            return o($v);
+            return o($v) ?? $key;
         }
-        return o(self::$lot[$c] ?? []);
+        return o($v);
     }
 
 }
