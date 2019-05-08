@@ -1,6 +1,6 @@
 <?php
 
-namespace fn\art {
+namespace _\art {
     function css($content) {
         $content = \trim($content);
         if ($content && \strpos($content, '</style>') === false && \strpos($content, '<link ') === false) {
@@ -43,11 +43,13 @@ namespace fn\art {
         \Hook::set('page.js', __NAMESPACE__ . "\\js", 2);
         \Hook::set('start', __NAMESPACE__ . "\\start", 0);
     }
+    \Language::set('art', ['Art', 'Art', 'Arts']);
 }
 
-namespace fn {
+namespace _ {
     function art($content) {
-        if (!$page = \Lot::get('page')) {
+        extract($GLOBALS, \EXTR_SKIP);
+        if (empty($page)) {
             return $content;
         }
         // Append custom CSS before `</head>`…

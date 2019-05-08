@@ -1,6 +1,6 @@
 <?php
 
-namespace fn\markdown {
+namespace _\markdown {
     function b($in, array $lot = [], $mode = 'text') {
         $x = new \ParsedownExtraPlugin;
         foreach (\Plugin::state('markdown') as $k => $v) {
@@ -19,7 +19,7 @@ namespace fn\markdown {
     \Hook::set(['*.description', '*.content'], __NAMESPACE__, 2);
 }
 
-namespace fn {
+namespace _ {
     function markdown($in = "", array $lot = []) {
         if ($this['type'] !== 'Markdown') {
             return $in;
@@ -29,8 +29,9 @@ namespace fn {
 }
 
 namespace {
+    Language::set('o:page-type.Markdown', 'Markdown');
     From::_('markdown', function(string $in = "", $span = false) {
-        return fn\markdown\b($in, $span ? 'span' : 'text');
+        return _\markdown\b($in, $span ? 'span' : 'text');
     });
     To::_('markdown', function(string $in = "") {
         return $in; // TODO

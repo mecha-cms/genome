@@ -1,52 +1,36 @@
 <?php
 
-define('PLUGIN', __DIR__ . DS . 'lot' . DS . 'worker');
+define('PLUGIN', __DIR__ . DS . 'lot');
+
+require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'language.php';
 
 call_user_func(function() {
     $plugins = [];
-    $seeds = Lot::get();
     foreach (glob(PLUGIN . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
         $b = basename($d = dirname($v));
         $plugins[$v] = content($d . DS . $b) ?? $b;
     }
     // Sort by name
     natsort($plugins);
-    extract($seeds, EXTR_SKIP);
-    Config::set('plugin[]', $plugins = array_keys($plugins));
-    $files = [];
+    $GLOBALS['PLUGIN'] = $plugins = array_keys($plugins);
+    // Load class(es)…
     foreach ($plugins as $v) {
-        $f = dirname($v) . DS;
-        $ff = $f . 'lot' . DS . 'language' . DS;
-        if ($ff = File::exist([
-            $ff . $config->language . '.page',
-            $ff . 'en-us.page'
-        ])) {
-            $files[] = $ff;
-        }
-        $f .= 'engine' . DS;
-        d($f . 'kernel', function($c, $n) use($f, $seeds) {
-            $f .= 'plug' . DS . $n . '.php';
+        d(($f = dirname($v) . DS . 'engine' . DS) . 'kernel', function($v, $name) use($f) {
+            $f .= 'plug' . DS . $name . '.php';
             if (is_file($f)) {
-                extract($seeds, EXTR_SKIP);
+                extract($GLOBALS, EXTR_SKIP);
                 require $f;
             }
         });
     }
-    // Load plugin(s)’ language…
-    Language::set(Cache::hit($files, function($files): array {
-        $out = [];
-        foreach ($files as $file) {
-            $file = file_get_contents($file);
-            $fn = 'From::' . Page::apart($file, 'type');
-            $content = Page::apart($file, 'content');
-            $out = extend($out, is_callable($fn) ? (array) call_user_func($fn, $content) : []);
-        }
-        return $out;
-    }) ?? []);
+    // Load plugin(s)…
     foreach ($plugins as $v) {
-        if (is_file($k = dirname($v) . DS . 'task.php')) {
-            require $k;
-        }
-        require $v;
+        call_user_func(function() use($v) {
+            extract($GLOBALS, EXTR_SKIP);
+            if (is_file($k = dirname($v) . DS . 'task.php')) {
+                require $k;
+            }
+            require $v;
+        });
     }
 });
