@@ -199,17 +199,9 @@ form label {
   min-height: calc(var(--z) * 6);
   resize: vertical;
 }
-.block {
+.width {
   display: block;
   width: 100%;
-}
-.span,
-.span-block {
-  display: inline;
-  width: auto;
-}
-.span-block {
-  display: inline-block;
 }
 .align-left {
   float: left;
