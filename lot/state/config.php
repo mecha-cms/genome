@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'zone' => 'Asia/Jakarta',
+    'zone' => null,
+    'locale' => null,
     'direction' => 'ltr',
     'language' => 'en-us',
     'charset' => 'utf-8',

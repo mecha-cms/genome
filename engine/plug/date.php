@@ -1,7 +1,7 @@
 <?php
 
-Date::_('en_us', '%~D%, %~M% %D%, %Y%');
-Date::_('id_id', '%~D%, %D% %~M% %Y%');
+Date::_('en_us', '%A, %B %d, %Y');
+Date::_('id_id', '%A, %d %B %Y');
 
 Hook::set('start', function() {
     $key = strtr(Config::get('language') ?? "", '-', '_');
