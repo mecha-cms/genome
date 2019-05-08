@@ -1,22 +1,21 @@
-<?php namespace fn\route;
+<?php namespace _\route;
 
-function page(string $path = null, $step = null) {
+function page() {
+    $current = $this->url->i;
     // Load default page state(s)…
     $state = \Extend::state('page');
-    // Include global variable(s)…
-    extract(\Lot::get(), \EXTR_SKIP);
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
-    $path = \str_replace('../', "", \urldecode($path));
-    $path_default = \rtrim($path === "" ? $state['path'] : $path, '/');
-    if ($step < 2 && $path === $state['path'] && !$url->query) {
-        \Message::info('kick', '<code>' . $url->current . '</code>');
-        \Guard::kick(""); // Redirect to home page…
+    $path = \str_replace('../', "", \urldecode($this[0]));
+    $default = \rtrim($path === "" ? $state['path'] : $path, '/');
+    if ($current < 2 && $path === $state['path'] && !$this->url->query) {
+        $this->message::info('kick', '<code>' . $this->url->current . '</code>');
+        $this->kick(""); // Redirect to home page…
     }
-    $folder = \rtrim(PAGE . DS . strtr($path_default, '/', DS), DS);
+    $folder = \rtrim(PAGE . DS . strtr($default, '/', DS), DS);
     $name = \Path::B($folder);
-    $i = ($h = $step ?? 1) - 1; // 0-based index…
+    $i = ($h = $current ?? 1) - 1; // 0-based index…
     // Set default site title
-    \Config::set('trace', new \Anemon([$config->title], ' &#x00B7; '));
+    $this->title($this->config->title);
     if ($file = \File::exist([
         // `.\lot\page\page-slug.{page,archive}`
         $folder . '.page',
@@ -34,8 +33,8 @@ function page(string $path = null, $step = null) {
         // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
         $page = new \Page($file);
-        $sort = $page->sort ?? $config->page('sort') ?? [1, 'path'];
-        $chunk = $page->chunk ?? $config->page('chunk') ?? 5;
+        $sort = $page->sort ?? $this->config->page('sort') ?? [1, 'path'];
+        $chunk = $page->chunk ?? $this->config->page('chunk') ?? 5;
         foreach (\explode('/', '/' . $path) as $v) {
             $k .= $v ? DS . $v : "";
             if ($f = \File::exist([
@@ -47,7 +46,10 @@ function page(string $path = null, $step = null) {
                 $chunk = $f->chunk ?? $chunk;
             }
             if (\is_file($fn = $k . DS . 'index.php')) {
-                require $fn;
+                call_user_func(function() use($fn) {
+                    extract($GLOBALS, EXTR_SKIP);
+                    require $fn;
+                });
             }
         }
         // Create pager for single page mode
@@ -65,28 +67,25 @@ function page(string $path = null, $step = null) {
             $sort = $parent_page->sort ?? $sort;
             $chunk = $parent_page->chunk ?? $chunk;
         }
-        // Inherit page’s `sort` and `chunk` property
-        \Config::set('sort', $sort);
-        \Config::set('chunk', $chunk);
-        $pager = new \Pager\Page($parent_slugs ?? [], $page->slug, $url . '/' . $parent_path);
-        \Lot::set([
-            'page' => $page,
-            'pager' => $pager,
-            'parent' => $parent_page ?? new \Page
-        ]);
-        \Config::set('trace', new \Anemon([$page->title, $config->title], ' &#x00B7; '));
-        \Config::set('has', [
+        $pager = new \Pager\Page($parent_slugs ?? [], $page->slug, $this->u . '/' . $parent_path);
+        $GLOBALS['page'] = $page;
+        $GLOBALS['pager'] = $pager;
+        $GLOBALS['parent'] = $parent_page ?? new \Page;
+        $this->config::set('sort', $sort); // Inherit page’s `sort` property
+        $this->config::set('chunk', $chunk); // Inherit page’s `chunk` property
+        $this->title([$page->title, $this->config->title]);
+        $this->config::set('has', [
             'next' => !!$pager->next,
             'parent' => !!$pager->parent,
             'prev' => !!$pager->prev
         ]);
-        if (\Config::get('is.page')) {
+        if ($this->config::get('is.page')) {
             // Page(s) view has been disabled!
         } else {
             $pages = \Get::pages($folder, 'page', $sort, 'path');
-            if ($query = \l(\HTTP::get($config->q) ?? "")) {
-                \Config::set('is.search', true);
-                \Config::set('trace', new \Anemon([$language->search . ': ' . $query, $page->title, $config->title], ' &#x00B7; '));
+            if ($query = \l(\HTTP::get($this->config->q) ?? "")) {
+                $this->title([$this->language->search . ': ' . $query, $page->title, $this->config->title]);
+                $this->config::set('is.search', true);
                 $query = \explode(' ', $query);
                 $pages = $pages->is(function($v) use($query) {
                     $v = \str_replace('-', "", \Path::N($v));
@@ -98,47 +97,43 @@ function page(string $path = null, $step = null) {
                     return false;
                 });
             }
-            $pager = new \Pager\Pages($pages->vomit(), [$chunk, $i], $url . '/' . $path_default);
+            $pager = new \Pager\Pages($pages->vomit(), [$chunk, $i], $this->u . '/' . $default);
             $pages = $pages->chunk($chunk, $i)->map(function($v) {
                 return new \Page($v);
             });
             if ($pages->count() === 0) {
                 // Greater than the maximum step or less than `1`, abort!
-                \Config::set('is.error', 404);
-                \Config::set('has', [
+                $this->config::set('is.error', 404);
+                $this->config::set('has', [
                     'next' => false,
                     'parent' => false,
                     'prev' => false
                 ]);
-                return \Shield::abort('404/' . $path_default . '/' . $h);
+                $this->view('404/' . $default . '/' . $h);
             } else {
-                \Lot::set([
-                    'pager' => $pager,
-                    'pages' => $pages
-                ]);
-                \Config::set('has', [
+                $this->config::set('has', [
                     'next' => !!$pager->next,
                     'parent' => !!$pager->parent,
                     'prev' => !!$pager->prev,
                 ]);
-                return \Shield::attach('pages/' . $path_default);
+                $GLOBALS['pager'] = $pager;
+                $GLOBALS['pages'] = $pages;
+                $this->view('pages/' . $default);
             }
         }
         // Redirect to parent page if user tries to access the placeholder page…
         if ($name === '$' && \is_file($folder . '.' . $page->x)) {
-            \Message::info('kick', '<code>' . $url->current . '</code>');
-            \Guard::kick($parent_path);
+            $this->message::info('kick', '<code>' . $this->url->current . '</code>');
+            $this->kick($parent_path);
         }
-        return \Shield::attach('page/' . $path_default . '/' . $h);
+        $this->view('page/' . $default . '/' . $h);
     }
-    return \Shield::abort('404/' . $path_default . '/' . $h);
+    $this->view('404/' . $default . '/' . $h);
 }
 
-\Lot::set([
-    'page' => new \Page,
-    'pager' => new \Pager\Pages([], [5, 0], $GLOBALS['URL']['$']),
-    'pages' => new \Anemon,
-    'parent' => new \Page
-]);
+$GLOBALS['page'] = new \Page;
+$GLOBALS['pager'] = new \Pager\Pages([], [5, 0], $GLOBALS['URL']['$']);
+$GLOBALS['pages'] = new \Anemon;
+$GLOBALS['parent'] = new \Page;
 
-\Route::set(['(.+)/(\d+)', '(.+)', ""], __NAMESPACE__ . "\\page", 20);
+\Route::set(['*', ""], __NAMESPACE__ . "\\page", 20);

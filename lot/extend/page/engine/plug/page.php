@@ -1,4 +1,4 @@
-<?php namespace fn\page;
+<?php namespace _\page;
 
 function time(...$lot) {
     $n = $this['slug'];
@@ -28,5 +28,3 @@ function update(...$lot) {
 
 \Page::_('time', __NAMESPACE__ . "\\time");
 \Page::_('update', __NAMESPACE__ . "\\update");
-
-\Page::$data = \Config::get('page', true);

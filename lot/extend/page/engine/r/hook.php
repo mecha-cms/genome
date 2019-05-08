@@ -1,4 +1,4 @@
-<?php namespace fn\page;
+<?php namespace _\page;
 
 function url($url = "", array $lot = []) {
     if (!$path = $this->path) {

@@ -1,4 +1,4 @@
-<?php namespace fn\get;
+<?php namespace _\get;
 
 function pages(string $folder = PAGE, string $x = 'page', $sort = [-1, 'time'], string $key = null): \Anemon {
     $k = \is_array($sort) && isset($sort[1]) ? $sort[1] : 'path';

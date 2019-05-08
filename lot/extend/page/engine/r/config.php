@@ -1,13 +1,11 @@
 <?php
 
 // Store page state to registry…
-if ($state = Extend::state('page')) {
-    // Prioritize current shield state
-    if (is_file($f = SHIELD . DS . $config->shield . DS . 'state' . DS . 'config.php')) {
-        $state = extend($state, require $f);
-    }
+$state = Extend::state('page');
+if (!empty($state['page'])) {
     // Prioritize default state
     Config::alt($state);
+    Page::$data = Config::get('page', true);
 }
 
 $path = $url->path ?? "";
@@ -28,7 +26,7 @@ if ($i !== "" && File::exist([
     $i = "";
 }
 
-$if_0 = ($path === "" || $path === '/' . $p) && $i === "";
+$if_0 = $i === "" && ($path === "" || $path === '/' . $p);
 
 $if_1 = File::exist([
     // `.\lot\page\home-slug.{page,archive}`
@@ -63,7 +61,7 @@ $if_6 = File::exist([
 
 Config::set('is', [
     'error' => $path === "" && !$if_1 || $path !== "" && !$if_3 ? 404 : false,
-    'home' => !!$if_0,
+    'home' => $if_0,
     'page' => $path === "" && $if_1 || $path !== "" && ($if_2 || $if_3 && !$if_5),
     'pages' => $i !== "" || $path === "" && $if_4 || $path !== "" && !$if_2 && $if_5,
     'search' => HTTP::is('get', Config::get('q'))
