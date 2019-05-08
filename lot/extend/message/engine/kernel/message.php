@@ -57,7 +57,7 @@ final class Message extends Genome {
         }
         if (is_array($to)) {
             $s = "";
-            if (fn\is\anemon_a($to)) {
+            if (_\is\anemon_a($to)) {
                 // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
                 foreach ($to as $k => $v) {
                     $s .= ', ' . $v . ' <' . $k . '>';
@@ -89,7 +89,7 @@ final class Message extends Genome {
         $_SESSION['message'][$kin][] = $lot;
     }
 
-    public static function reset($kin = null) {
+    public static function let($kin = null) {
         if (is_array($kin)) {
             foreach ($kin as $v) {
                 unset($_SESSION['message'][$v]);

@@ -1,6 +1,6 @@
 <?php
 
-class Config extends Genome {
+class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
 
     protected static $a = [];
     protected static $lot = [];
@@ -9,47 +9,27 @@ class Config extends Genome {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        if ($lot) {
-            $test = self::get($kin);
-            // Asynchronous value with function closure
-            if ($test instanceof \Closure) {
-                return fn($test, $lot, $this, static::class);
-            // Rich asynchronous value with class instance
-            } else if ($fn = fn\is\instance($test)) {
-                if (method_exists($fn, '__invoke')) {
-                    return call_user_func([$fn, '__invoke'], ...$lot);
-                }
-            }
-            // Else, static value
-            $kin .= '.' . array_shift($lot);
-            $array = array_shift($lot) ?: false;
-        }
-        return self::get($kin);
+        return self::__callStatic($kin, $lot);
     }
 
     public function __get(string $key) {
-        if (method_exists($this, $key)) {
-            if ((new \ReflectionMethod($this, $key))->isPublic()) {
-                return $this->{$key}();
-            }
-        }
         if (self::_($key)) {
             return $this->__call($key);
         }
-        return self::get($key);
+        return self::get(p2f($key));
     }
 
-    public function __invoke() {
-        return (array) self::get(null, true);
+    public function __invoke(...$v) {
+        return count($v) === 1 ? self::get(...$v) : self::set(...$v);
     }
 
     // Fix case for `isset($config->key)` or `!empty($config->key)`
     public function __isset(string $key) {
-        return !!self::get($key);
+        return !!$this->__get($key);
     }
 
     public function __set(string $key, $value = null) {
-        return self::set($key, $value);
+        return self::set(p2f($key), $value);
     }
 
     public function __toString() {
@@ -57,27 +37,26 @@ class Config extends Genome {
     }
 
     public function __unset(string $key) {
-        self::reset($key);
+        self::let(p2f($key));
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
+        $kin = p2f($kin); // `fooBar_baz` → `foo-bar_baz`
         if ($lot) {
-            $test = self::get($kin);
+            $out = self::get($kin);
             // Asynchronous value with function closure
-            if ($test instanceof \Closure) {
-                return fn($test, $lot, null, static::class);
+            if ($out instanceof \Closure) {
+                return fire($out, $lot, null, static::class);
+            }
             // Rich asynchronous value with class instance
-            } else if ($fn = fn\is\instance($test)) {
-                if (method_exists($fn, '__invoke')) {
-                    return call_user_func([$fn, '__invoke'], ...$lot);
-                }
+            if (is_callable($out) && !is_string($out)) {
+                return call_user_func($out, ...$lot);
             }
             // Else, static value
-            $kin .= '.' . array_shift($lot);
-            $array = array_shift($lot) ?: false;
+            return self::get($kin . '.' . array_shift($lot), !!array_shift($lot));
         }
         return self::get($kin);
     }
@@ -86,6 +65,10 @@ class Config extends Genome {
         $c = static::class;
         self::set(...$lot);
         self::$lot[$c] = array_replace_recursive(self::$lot[$c], self::$a[$c]);
+    }
+
+    public function count($deep = false) {
+        return count(self::$lot[static::class] ?? [], $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
 
     public static function get($key = null, $array = false) {
@@ -98,11 +81,19 @@ class Config extends Genome {
             return $array ? $out : o($out);
         } else if (isset($key)) {
             $out = self::$lot[$c] ?? [];
-            $out = Anemon::get($out, $key);
+            $out = get($out, $key);
             return $array ? $out : o($out);
         }
         $out = self::$lot[$c] ?? [];
         return $array ? $out : o($out);
+    }
+
+    public function getIterator() {
+        return new \ArrayIterator(self::$lot[static::class] ?? []);
+    }
+
+    public function jsonSerialize() {
+        return self::$lot[static::class] ?? [];
     }
 
     public static function load(...$lot) {
@@ -114,17 +105,42 @@ class Config extends Genome {
         return (self::$lot[$c] = []);
     }
 
-    public static function reset($key = null) {
+    public static function let($key = null) {
         $c = static::class;
         if (is_array($key)) {
             foreach ($key as $v) {
-                self::reset($v);
+                self::let($v);
             }
         } else if (isset($key)) {
-            Anemon::reset(self::$lot[$c], $key);
+            let(self::$lot[$c], $key);
         } else {
             self::$lot[$c] = [];
         }
+    }
+
+    public function offsetExists($i) {
+        return isset(self::$lot[static::class][$i]);
+    }
+
+    public function offsetGet($i) {
+        return self::$lot[static::class][$i] ?? null;
+    }
+
+    public function offsetSet($i, $value) {
+        $c = static::class;
+        if (isset($i)) {
+            self::$lot[$c][$i] = $value;
+        } else {
+            self::$lot[$c][] = $value;
+        }
+    }
+
+    public function offsetUnset($i) {
+        unset(self::$lot[static::class][$i]);
+    }
+
+    public function serialize() {
+        return serialize(self::$lot[static::class] ?? []);
     }
 
     public static function set($key, $value = null) {
@@ -133,10 +149,14 @@ class Config extends Genome {
         if (is_array($key)) {
             $in = $key;
         } else {
-            Anemon::set($in, $key, $value);
+            set($in, $key, $value);
         }
         $out = self::$lot[$c] ?? [];
         self::$lot[$c] = array_replace_recursive($out, $in);
+    }
+
+    public function unserialize($v) {
+        self::$lot[static::class] = unserialize($v);
     }
 
 }

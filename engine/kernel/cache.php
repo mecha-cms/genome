@@ -29,7 +29,7 @@ final class Cache extends Genome {
     }
 
     public static function get(string $id) {
-        return File::open(self::f($id))->import(null);
+        return require exist(self::f($id));
     }
 
     public static function hit($file, callable $fn) {
@@ -51,7 +51,7 @@ final class Cache extends Genome {
         return !is_file($f) || filemtime($file) > filemtime($f) ? self::set($file, $fn, [$file, $f])[0] : self::get($file);
     }
 
-    public static function reset($id = null): array {
+    public static function let($id = null): array {
         $out = [];
         if (is_array($id)) {
             foreach ($id as $v) {
@@ -68,7 +68,7 @@ final class Cache extends Genome {
     }
 
     public static function set(string $id, callable $fn, array $lot = []): array {
-        File::export($r = call_user_func($fn, ...$lot))->saveTo($f = self::f($id), 0600);
+        File::put('<?php return ' . z($r = call_user_func($fn, ...$lot)))->saveTo($f = self::f($id), 0600);
         return [$r, $f, filemtime($f)];
     }
 

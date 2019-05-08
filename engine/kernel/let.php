@@ -1,6 +1,6 @@
 <?php
 
-final class Reset extends Genome {
+final class Let extends Genome {
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
@@ -15,7 +15,7 @@ final class Reset extends Genome {
                 unset($GLOBALS[$id][$v]);
             }
         } else {
-            Anemon::reset($GLOBALS[$id], $key);
+            let($GLOBALS[$id], $key);
         }
     }
 

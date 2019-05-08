@@ -22,7 +22,7 @@ class Hook extends Genome {
             }
             $any = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack']);
             foreach ($any as $v) {
-                if (null !== ($r = fn($v['fn'], $lot, $that, $scope))) {
+                if (null !== ($r = fire($v['fn'], $lot, $that, $scope))) {
                     $lot[0] = $r;
                 }
             }
@@ -43,11 +43,11 @@ class Hook extends Genome {
         return isset($id) ? self::$current[$c] === $id : self::$current[$c];
     }
 
-    public static function reset($id = null, $name = null) {
+    public static function let($id = null, $name = null) {
         $c = static::class;
         if (is_array($id)) {
             foreach ($id as $v) {
-                self::reset($v, $name);
+                self::let($v, $name);
             }
         } else if (isset($id)) {
             if (isset(self::$lot[1][$c][$id])) {

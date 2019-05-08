@@ -60,10 +60,10 @@ final class Asset extends Genome {
         ]) ?: null;
     }
 
-    public static function reset($path = null) {
+    public static function let($path = null) {
         if (is_array($path)) {
             foreach ($path as $v) {
-                self::reset($v);
+                self::let($v);
             }
         } else if (isset($path)) {
             $x = Path::X($path);

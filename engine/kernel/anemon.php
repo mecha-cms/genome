@@ -215,7 +215,7 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
     }
 
     // Move to previous array index
-    public function previous(int $skip = 0) {
+    public function prev(int $skip = 0) {
         $this->i = b($this->i - 1 - $skip, 0, $this->count() - 1);
         return $this;
     }
@@ -253,20 +253,26 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
             if (isset($sort[1])) {
                 $key = $sort[1];
                 $fn = $i === -1 ? function($a, $b) use($key) {
-                    if (!isset($a[$key]) && !isset($b[$key]))
+                    if (!isset($a[$key]) && !isset($b[$key])) {
                         return 0;
-                    if (!isset($b[$key]))
+                    }
+                    if (!isset($b[$key])) {
                         return 1;
-                    if (!isset($a[$key]))
+                    }
+                    if (!isset($a[$key])) {
                         return -1;
+                    }
                     return $b[$key] <=> $a[$key];
                 } : function($a, $b) use($key) {
-                    if (!isset($a[$key]) && !isset($b[$key]))
+                    if (!isset($a[$key]) && !isset($b[$key])) {
                         return 0;
-                    if (!isset($a[$key]))
+                    }
+                    if (!isset($a[$key])) {
                         return 1;
-                    if (!isset($b[$key]))
+                    }
+                    if (!isset($b[$key])) {
                         return -1;
+                    }
                     return $a[$key] <=> $b[$key];
                 };
                 if (array_key_exists(2, $sort)) {
@@ -302,8 +308,8 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return $this;
     }
 
-    public function unserialize($lot) {
-        $this->lot = $this->value = unserialize($lot);
+    public function unserialize($v) {
+        $this->lot = $this->value = unserialize($v);
     }
 
     public function vomit($key = null) {
@@ -315,69 +321,6 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
 
     public static function eat(iterable $array) {
         return new static($array);
-    }
-
-    // Get array value recursively
-    public static function get(array &$array, string $key, string $separator = '.') {
-        $keys = explode($separator, str_replace("\\" . $separator, X, $key));
-        foreach ($keys as $value) {
-            $value = str_replace(X, $separator, $value);
-            if (!is_array($array) || !array_key_exists($value, $array)) {
-                return null;
-            }
-            $array =& $array[$value];
-        }
-        return $array;
-    }
-
-    // Remove array value recursively
-    public static function reset(array &$array, string $key, string $separator = '.') {
-        $keys = explode($separator, str_replace("\\" . $separator, X, $key));
-        while (count($keys) > 1) {
-            $key = str_replace(X, $separator, array_shift($keys));
-            if (array_key_exists($key, $array)) {
-                $array =& $array[$key];
-            }
-        }
-        if (is_array($array) && array_key_exists($value = array_shift($keys), $array)) {
-            unset($array[$value]);
-        }
-        return $array;
-    }
-
-    // Set array value recursively
-    public static function set(array &$array, string $key, $value = null, string $separator = '.') {
-        $keys = explode($separator, str_replace("\\" . $separator, X, $key));
-        while (count($keys) > 1) {
-            $key = str_replace(X, $separator, array_shift($keys));
-            if (!array_key_exists($key, $array)) {
-                $array[$key] = [];
-            }
-            $array =& $array[$key];
-        }
-        return ($array[array_shift($keys)] = $value);
-    }
-
-    // Create list of namespace step(s)
-    public static function step($in, string $separator = '.', int $dir = 1) {
-        if (is_string($in) && strpos($in, $separator) !== false) {
-            $in = explode($separator, trim($in, $separator));
-            $a = $dir === -1 ? array_pop($in) : array_shift($in);
-            $out = [$a];
-            if ($dir === -1) {
-                while ($b = array_pop($in)) {
-                    $a = $b . $separator . $a;
-                    array_unshift($out, $a);
-                }
-            } else {
-                while ($b = array_shift($in)) {
-                    $a .= $separator . $b;
-                    array_unshift($out, $a);
-                }
-            }
-            return $out;
-        }
-        return (array) $in;
     }
 
 }

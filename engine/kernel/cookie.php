@@ -35,10 +35,10 @@ final class Cookie extends Genome {
         return $out;
     }
 
-    public static function reset($key = null) {
+    public static function let($key = null) {
         if (is_array($key)) {
             foreach ($key as $v) {
-                self::reset($v);
+                self::let($v);
             }
         } else if (isset($key)) {
             $key = self::k($key);
