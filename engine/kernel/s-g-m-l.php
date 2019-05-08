@@ -22,6 +22,11 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         $this->c = $c = array_replace_recursive(self::config, static::$config);
         if (is_array($in)) {
             $this->lot = array_replace_recursive($this->lot, $in);
+        } else if (is_object($in) && $in instanceof self) {
+            // TODO
+            $this->lot[0] = $in[0];
+            $this->lot[1] = $in[1];
+            $this->lot[2] = $in[2];
         } else if (is_string($in)) {
             // Must starts with `<` and ends with `>`
             if (strpos($in, $c[0][0]) === 0 && substr($in, -strlen($c[0][1])) === $c[0][1]) {
@@ -134,8 +139,8 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         return serialize($this->lot);
     }
 
-    public function unserialize($lot) {
-        $this->lot = unserialize($lot);
+    public function unserialize($v) {
+        $this->lot = unserialize($v);
     }
 
 }

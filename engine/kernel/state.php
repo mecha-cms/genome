@@ -8,25 +8,25 @@ class State extends Genome {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        $out = $this->lot[$kin] ?? null;
-        if ($lot && is_callable($out)) {
-            return fn($out, $lot, $this, static::class);
+        $out = $this->lot[p2f($kin)] ?? null;
+        if ($lot) {
+            if ($out instanceof \Closure) {
+                return fire($out, $lot, $this, static::class);
+            }
+            if (is_callable($out) && !is_string($out)) {
+                return call_user_func($out, ...$lot);
+            }
         }
         return $out;
     }
 
-    public function __construct($in = null, array $lot = []) {
-        extract(Lot::get(), EXTR_SKIP);
-        $this->lot = array_replace_recursive((array) (Is::file($in) ? require $in : $in), $lot);
+    public function __construct(string $in = null, array $lot = []) {
+        extract($GLOBALS, EXTR_SKIP);
+        $this->lot = array_replace_recursive(is_file($in) ? require $in : [], $lot);
         parent::__construct();
     }
 
     public function __get(string $key) {
-        if (method_exists($this, $key)) {
-            if ((new \ReflectionMethod($this, $key))->isPublic()) {
-                return $this->{$key}();
-            }
-        }
         return $this->__call($key);
     }
 
@@ -35,16 +35,12 @@ class State extends Genome {
         return !!$this->__get($key);
     }
 
-    public function __set(string $key, $value = null) {
-        $this->lot[$key] = $value;
-    }
-
     public function __toString() {
         return json_encode($this->lot);
     }
 
     public function __unset(string $key) {
-        unset($this->lot[$key]);
+        unset($this->lot[p2f($key)]);
     }
 
 }

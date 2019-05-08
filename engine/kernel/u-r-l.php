@@ -4,31 +4,6 @@ final class URL extends Genome {
 
     private $lot;
 
-    // `$url->hash('#!')`
-    protected function _hash_(string $prefix = '#') {
-        $hash = $this->lot['hash'];
-        return $hash ? $prefix . substr($hash, 1) : null;
-    }
-
-    // `$url->path('.')`
-    protected function _path_(string $separator = '/', array $p = []) {
-        $path = $this->lot['path'];
-        if (!empty($p)) {
-            $path = array_replace(explode('/', $path), $p);
-            $path = implode($separator, $path);
-        } else {
-            $path = str_replace('/', $separator, $path);
-        }
-        return $path === "" ? null : $path;
-    }
-
-    // `$url->query('&amp;')`
-    protected function _query_(string $separator = '&', array $q = []) {
-        $query = From::query($this->lot['query'] ?? "");
-        $query = array_replace_recursive($query, $q);
-        return !empty($query) ? strtr(To::query($query), ['&' => $separator]) : null;
-    }
-
     public function __call(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
@@ -88,6 +63,31 @@ final class URL extends Genome {
 
     public function __unset(string $key) {
         unset($this->lot[$key]);
+    }
+
+    // `$url->hash('#!')`
+    protected function _hash_(string $prefix = '#') {
+        $hash = $this->lot['hash'];
+        return $hash ? $prefix . substr($hash, 1) : null;
+    }
+
+    // `$url->path('.')`
+    protected function _path_(string $separator = '/', array $p = []) {
+        $path = $this->lot['path'];
+        if (!empty($p)) {
+            $path = array_replace(explode('/', $path), $p);
+            $path = implode($separator, $path);
+        } else {
+            $path = str_replace('/', $separator, $path);
+        }
+        return $path === "" ? null : $path;
+    }
+
+    // `$url->query('&amp;')`
+    protected function _query_(string $separator = '&', array $q = []) {
+        $query = From::query($this->lot['query'] ?? "");
+        $query = array_replace_recursive($query, $q);
+        return !empty($query) ? strtr(To::query($query), ['&' => $separator]) : null;
     }
 
     public static function long(string $path, $root = true) {

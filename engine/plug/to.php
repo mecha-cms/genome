@@ -219,7 +219,7 @@ foreach([
             };
             foreach ($data as $k => $v) {
                 if (is_array($v)) {
-                    if (fn\is\anemon_0($v)) {
+                    if (_\is\anemon_0($v)) {
                         $out[] = $yaml_set($k, ":\n", $yaml_list($v));
                     } else {
                         $out[] = $yaml_set($k, ":\n", $dent . str_replace("\n", "\n" . $dent, $yaml($v, $dent)));

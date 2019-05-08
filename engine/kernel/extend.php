@@ -24,7 +24,7 @@ class Extend extends Genome {
         if (!empty(self::$state[$c][$n])) {
             $state = self::$state[$c][$n];
         } else {
-            extract(Lot::get(), EXTR_SKIP);
+            extract($GLOBALS, EXTR_SKIP);
             $state = is_file($state) ? include $state : [];
             $state = Hook::fire(c2f($c, '_', '/') . '.state.' . $n, [$state], null, $c);
             self::$state[$c][$n] = $state;

@@ -21,6 +21,10 @@ final class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
     }
 
+    public static function mail($x) {
+        exit('Is::mail()');
+    }
+
     // Check for valid file name
     public static function file($x) {
         return is_string($x) && strlen($x) <= 260 && realpath($x) && is_file($x);
@@ -33,7 +37,9 @@ final class Is extends Genome {
 
     // Check for valid local path address (whether it is exists or not)
     public static function path($x, $exist = false) {
-        if (!is_string($x)) return false;
+        if (!is_string($x)) {
+            return false;
+        }
         return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$exist || stream_resolve_include_path($x));
     }
 
@@ -44,6 +50,9 @@ final class Is extends Genome {
 
     // Check for empty string, array or object
     public static function void($x) {
+        if ($x instanceof \Traversable) {
+            return \iterator_count($x) === 0;
+        }
         return (
             $x === "" ||
             is_string($x) && trim($x) === "" ||

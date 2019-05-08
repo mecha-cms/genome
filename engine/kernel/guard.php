@@ -2,13 +2,21 @@
 
 final class Guard extends Genome {
 
-    public static function abort(string $message) {
-        throw new \Exception($message);
+    public static function abort(string $message, $exit = true) {
+        ob_start();
+        debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $trace = explode("\n", n(ob_get_clean()), 2);
+        array_shift($trace);
+        echo '<details style="margin:0;padding:0;background:#f00;font:normal normal 12px/1.5 sans-serif;color:#fff;">';
+        echo '<summary style="margin:0;padding:.5em 1em;display:block;cursor:help;">' . $message . '</summary>';
+        echo '<pre style="margin:0;padding:0;background:#000;font:normal normal 100%/1.25 monospace;white-space:pre;overflow:auto;"><code style="margin:0;padding:.5em 1em;display:block;font:inherit;">' . implode("\n", $trace) . '</code></pre>';
+        echo '</details>';
+        $exit && exit;
     }
 
     public static function check(string $token, $id = 0) {
-        $previous = $_SESSION['token'][$id];
-        return $previous && $token && $previous === $token ? $token : false;
+        $prev = $_SESSION['token'][$id];
+        return $prev && $token && $prev === $token ? $token : false;
     }
 
     public static function hash(string $salt = "") {

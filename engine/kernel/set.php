@@ -21,7 +21,7 @@ final class Set extends Genome {
             }
         // `Set::post('foo', 'bar')`
         } else {
-            Anemon::set($GLOBALS[$id], $key, $value);
+            set($GLOBALS[$id], $key, $value);
         }
     }
 

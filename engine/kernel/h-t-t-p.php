@@ -11,7 +11,7 @@ final class HTTP extends Genome {
         $key = array_shift($lot);
         $eval = array_shift($lot) ?? true;
         if (isset($key)) {
-            $o = Anemon::get($data, $key);
+            $o = get($data, $key);
             $o = $eval ? e($o) : $o;
             return $o === 0 || $o === '0' || !empty($o) ? $o : null;
         }
@@ -104,7 +104,7 @@ final class HTTP extends Genome {
         if (isset($id)) {
             $id = strtoupper($id);
             if (isset($key)) {
-                return Anemon::get($GLOBALS['_' . $id], $key) !== null;
+                return get($GLOBALS['_' . $id], $key) !== null;
             }
             return $id === $r;
         }

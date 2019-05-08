@@ -27,11 +27,11 @@ final class Get extends Genome {
         $id = '_' . strtoupper($kin);
         $key = array_shift($lot);
         if (isset($key)) {
-            return Anemon::get($GLOBALS[$id], $key);
+            return get($GLOBALS[$id], $key);
         } else if (is_array($key)) {
             $out = [];
             foreach ($key as $k => $v) {
-                $out[$k] = Anemon::get($GLOBALS[$id], $k) ?? $v;
+                $out[$k] = get($GLOBALS[$id], $k) ?? $v;
             }
             return $out;
         }
