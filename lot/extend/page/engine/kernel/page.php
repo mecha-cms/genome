@@ -40,10 +40,11 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function __call(string $key, array $lot = []) {
-         // @see `function _set_()`
+        // @see `function _set_()`
         if ($key === 'set' || self::_($key)) {
             return parent::__call($key, $lot);
         }
+        $key = p2f($key);
         if (isset(self::$page[$id = $this->id][$key])) {
             $v = self::$page[$id][$key]; // Load from cache…
         } else {
@@ -54,10 +55,8 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             $v = Hook::fire(map($this->prefix, function($v) use($key) {
                 return $v .= '.' . $key;
             }), [$v, $lot], $this);
-            if ($lot && $c = fn\is\instance($v)) {
-                if (is_callable($c)) {
-                    $v = call_user_func($c, ...$lot);
-                }
+            if ($lot && is_callable($v) && !is_string($v)) {
+                $v = call_user_func($v, ...$lot);
             }
             // Set…
             $this->lot[$key] = self::$page[$id][$key] = $v;
@@ -81,9 +80,9 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             'name' => $n = $file->name,
             'path' => $path,
             'slug' => $n,
-            'time' => $file->time(DATE_WISE),
+            'time' => $file->time(DATE_FORMAT),
             'title' => $f ? To::title($n) : null,
-            'update' => $file->update(DATE_WISE),
+            'update' => $file->update(DATE_FORMAT),
             'url' => $file->URL,
             'x' => $file->x
         ], (array) static::$data, $lot);
@@ -98,12 +97,8 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->__call($key);
     }
 
-    public function __set(string $key, $value) {
-        $this->{$key} = $value; // Native!
-    }
-
     public function __toString() {
-        if (is_string($v = $this->__call('$'))) {
+        if (is_string($v = $this->offsetGet('$'))) {
             return $v;
         }
         $path = $this->path;
@@ -122,7 +117,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 if (strpos($k, '.') !== false) {
                     $kk = explode('.', $k, 2);
                     if (is_array($vv = $this->__call($kk[0]))) {
-                        $out[$k] = Anemon::get($vv, $kk[1]) ?? $v;
+                        $out[$k] = get($vv, $kk[1]) ?? $v;
                         continue;
                     }
                 }
@@ -134,7 +129,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         if (strpos($key, '.') !== false) {
             $k = explode('.', $key, 2);
             if (is_array($v = $this->__call($k[0]))) {
-                return Anemon::get($v, $k[1]);
+                return get($v, $k[1]);
             }
         }
         return $this->__call($key);
@@ -153,15 +148,19 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function offsetGet($i) {
-        if ($this->exist && !isset($this->read[$i])) {
+        if ($this->exist && empty($this->read[$i])) {
             // Prioritize data from a file…
-            $f = Path::F($this->path) . DS . $i . '.data';
-            if (is_file($f)) {
+            if (is_file($f = Path::F($this->path) . DS . $i . '.data')) {
+                // Read once!
+                $this->read[$i] = 1;
                 return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
-            // Read the file content once!
-            $this->read[$i] = 1;
-            $this->lot = array_replace_recursive($this->lot, self::apart(file_get_contents($this->path), null, true));
+            $any = self::apart(file_get_contents($this->path), null, true);
+            foreach ($any as $k => $v) {
+                // Read once!
+                $this->read[$k] = 1;
+            }
+            $this->lot = array_replace_recursive($this->lot, $any);
         }
         return $this->lot[$i] ?? null;
     }
@@ -201,8 +200,9 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return serialize([]);
     }
 
-    public function unserialize($lot) {
-        $this->__construct(null, unserialize($lot));
+    public function unserialize($v) {
+        $page = new static;
+        $page->lot = unserialize($v);
     }
 
     public static function apart(string $in, $key = null, $eval = false) {
