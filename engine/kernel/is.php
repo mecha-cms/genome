@@ -21,10 +21,6 @@ final class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
     }
 
-    public static function mail($x) {
-        exit('Is::mail()');
-    }
-
     // Check for valid file name
     public static function file($x) {
         return is_string($x) && strlen($x) <= 260 && realpath($x) && is_file($x);

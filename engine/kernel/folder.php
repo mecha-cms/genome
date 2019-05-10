@@ -114,6 +114,14 @@ class Folder extends Genome {
         return File::sizer(0, $unit, $prec);
     }
 
+    public static function from(string $path) {
+        return new static($path);
+    }
+
+    public static function open(string $path) {
+        return new static($path);
+    }
+
     public static function set($path, $consent = 0775) {
         if (is_string($consent)) {
             $consent = octdec($consent);
@@ -121,7 +129,7 @@ class Folder extends Genome {
         if (is_array($path)) {
             $out = [];
             foreach ($path as $v) {
-                $vv = self::create($v = realpath($v), $consent);
+                $vv = self::set($v = realpath($v), $consent);
                 // Return `0` on success
                 $out[$v] = is_string($vv) ? 0 : $vv;
             }

@@ -13,11 +13,11 @@
       <?php endif; ?>
     </div>
     <footer>
-      <p><strong><?php echo $language->updateed; ?>:</strong> <time datetime="<?php echo $page->update->ISO8601; ?>"><?php echo $page->update->{strtr($site->language, '-', '_')}; ?></time></p>
+      <p><strong><?php echo $language->update; ?>:</strong> <time datetime="<?php echo $page->update->ISO8601; ?>"><?php echo $page->update->{strtr($site->language, '-', '_')}; ?></time></p>
     </footer>
   </article>
 </main>
 <?php if ($site->has('parent')): ?>
-<nav><?php echo $pager; ?></nav>
+<nav><?php echo $page->pager; ?></nav>
 <?php endif; ?>
 <?php static::footer(); ?>

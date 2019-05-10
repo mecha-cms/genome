@@ -111,15 +111,6 @@ final class HTTP extends Genome {
         return strtolower($r);
     }
 
-    public static function query(array $query = null, $c = []) {
-        $c = extend(['?', '&amp;', '=', ""], is_array($c) ? $c : [1 => $c], false);
-        if (!isset($query)) {
-            $query = $GLOBALS['URL']['query'];
-            return str_replace(['?', '&', '='], $c, $query);
-        }
-        return To::query($query ? extend($_GET, (array) $query) : $_GET, $c);
-    }
-
     public static function refresh(int $i) {
         header('Refresh: ' . $i);
     }

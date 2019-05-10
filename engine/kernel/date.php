@@ -22,7 +22,7 @@ final class Date extends Genome {
         return parent::__call($kin, $lot);
     }
 
-    public function __construct(string $date) {
+    public function __construct($date) {
         if (is_numeric($date)) {
             $this->source = date(DATE_FORMAT, $date);
         } else if (strlen($date) >= 19 && substr_count($date, '-') === 5) {
@@ -84,6 +84,10 @@ final class Date extends Genome {
 
     public function year() {
         return $this->format('Y');
+    }
+
+    public static function from($in) {
+        return new static($in);
     }
 
     public static function locale($locale = null) {

@@ -11,3 +11,8 @@ Route::_('view', function(string $path, array $lot = []) {
 function route(...$v) {
     return count($v) > 1 ? Route::set(...$v) : Route::get(...$v);
 }
+
+// Load all route(s)…
+Hook::set('start', function() {
+    !error_get_last() && Route::start();
+}, 100);

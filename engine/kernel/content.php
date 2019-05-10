@@ -5,7 +5,7 @@ class Content extends Genome {
     protected static $lot;
 
     const config = [
-        'root' => ROOT,
+        'folder' => ROOT,
         'x' => ['html', 'php']
     ];
 
@@ -46,12 +46,12 @@ class Content extends Genome {
     public static function path($in) {
         $out = [];
         $c = static::class;
-        $folder = static::$config['root'];
+        $folder = static::$config['folder'];
         $extension = static::$config['x'];
         if (is_string($in)) {
             // Full path, be quick!
-            if (strpos($in, $folder) === 0) {
-                return File::exist($in) ?: null;
+            if (strpos($in, ROOT . DS) === 0 && is_file($in)) {
+                return $in;
             }
             $id = strtr($in, DS, '/');
             // Added by the `Content::get()`

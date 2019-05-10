@@ -241,7 +241,8 @@ namespace {
             }
             $a =& $a[$k];
         }
-        return ($a[\array_shift($kk)] = $v);
+        $a[\array_shift($kk)] = $v;
+        return $a;
     }
     // Shake array
     function shake(array $a, $preserve_key = true) {

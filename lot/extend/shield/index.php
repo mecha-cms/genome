@@ -11,7 +11,7 @@ require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'hook.php';
 require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'language.php';
 
 // Load current shield state if any
-$folder = Content::$config['root'] . DS;
+$folder = Content::$config['folder'] . DS;
 if ($f = File::exist($folder . 'state' . DS . 'config.php')) {
     $GLOBALS['state'] = $state = new State($f);
 }

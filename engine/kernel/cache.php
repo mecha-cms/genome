@@ -55,20 +55,20 @@ final class Cache extends Genome {
         $out = [];
         if (is_array($id)) {
             foreach ($id as $v) {
-                $out[] = File::open(self::f($v))->delete();
+                $out[] = File::open(self::f($v))->let();
             }
             return $out;
         } else if (isset($id)) {
-            return File::open(self::f($id))->delete();
+            return File::open(self::f($id))->let();
         }
         foreach (g(constant(u(static::class))) as $v) {
-            $out = concat($out, File::open($v)->delete());
+            $out = concat($out, File::open($v)->let());
         }
         return $out;
     }
 
     public static function set(string $id, callable $fn, array $lot = []): array {
-        File::put('<?php return ' . z($r = call_user_func($fn, ...$lot)))->saveTo($f = self::f($id), 0600);
+        File::set('<?php return ' . z($r = call_user_func($fn, ...$lot)))->saveTo($f = self::f($id), 0600);
         return [$r, $f, filemtime($f)];
     }
 

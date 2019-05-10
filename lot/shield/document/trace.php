@@ -1,27 +1,26 @@
 <?php
 
-$format = ['<span>%{0}%</span>', '<a href="%{1}%">%{0}%</a>'];
+$f = ['<span>%s</span>', '<a href="%2$s">%1$s</a>'];
 $separator = $lot[0] ?? ' / ';
 
-$a = explode('/', $url->path);
-$b = candy($format[$site->is('home') ? 0 : 1], [$language->home, $url]);
-$c = "";
+$chops = explode('/', trim($url->path, '/'));
+$out = sprintf($f[$site->is('home') ? 0 : 1], $language->home, $url);
+$path = "";
 
-array_pop($a); // remove the last path
+array_pop($chops); // Remove the last path
 
-while ($d = array_shift($a)) {
-    $c .= '/' . $d;
-    $f = PAGE . DS . $c;
-    if (!$f = File::exist([
-        $f . '.page',
-        $f . '.archive'
+while ($chop = array_shift($chops)) {
+    $path .= '/' . $chop;
+    if (!$v = File::exist([
+        PAGE . $path . '.page',
+        PAGE . $path . '.archive'
     ])) {
         continue;
     }
-    $d = Page::open($f)->get('title', To::title($d));
-    $b .= $separator . candy($format[1], [$d, $url . $c]);
+    $title = Page($v)->title ?? To::title($chop);
+    $out .= $separator . sprintf($f[1], $title, $url . $path);
 }
 
-$b .= $separator . candy($format[0], [$page->title ?: $language->error]);
+$out .= $separator . sprintf($f[0], $page->title ?: $language->isError);
 
-echo $b;
+echo $out;

@@ -80,9 +80,9 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             'name' => $n = $file->name,
             'path' => $path,
             'slug' => $n,
-            'time' => $file->time(DATE_FORMAT),
+            'time' => $file->time('%Y-%m-%d %T'),
             'title' => $f ? To::title($n) : null,
-            'update' => $file->update(DATE_FORMAT),
+            'update' => $file->update('%Y-%m-%d %T'),
             'url' => $file->URL,
             'x' => $file->x
         ], (array) static::$data, $lot);
@@ -97,6 +97,10 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->__call($key);
     }
 
+    public function __set(string $key, $value) {
+        $this->offsetSet(p2f($key), $value);
+    }
+
     public function __toString() {
         if (is_string($v = $this->offsetGet('$'))) {
             return $v;
@@ -109,6 +113,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? 1 : 0;
     }
 
+    // TODO: `get` should not validate the `$key` input
     public function get($key) {
         if (is_array($key)) {
             $out = [];
@@ -190,7 +195,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function saveTo(string $path) {
         unset($this->lot['path']);
-        return File::put(self::unite($this->lot))->saveTo($path, 0600);
+        return File::set(self::unite($this->lot))->saveTo($path, 0600);
     }
 
     public function serialize() {

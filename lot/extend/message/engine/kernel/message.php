@@ -6,7 +6,7 @@ final class Message extends Genome {
         $out = "";
         foreach ($lot as $v) {
             $text = array_shift($v);
-            $t = rtrim('message_' . $kin . '_' . $text, '_');
+            $t = rtrim('message-' . $kin . '-' . $text, '-');
             $vars = array_shift($v) ?? [];
             $preserve_case = array_shift($lot);
             $m = Language::get($t, $vars, $preserve_case);
@@ -16,7 +16,7 @@ final class Message extends Genome {
     }
 
     public function __toString() {
-        return self::get();
+        return self::get() . "";
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -33,17 +33,21 @@ final class Message extends Genome {
             foreach ($kin as $v) {
                 if (isset($_SESSION['message'][$v])) {
                     $out .= self::t($_SESSION['message'][$v], $v);
+                    unset($_SESSION['message'][$v]);
                 }
             }
             return $out;
         }
         if (isset($kin) && isset($_SESSION['message'][$kin])) {
-            return self::t($_SESSION['message'][$kin], $kin);
+            $out = self::t($_SESSION['message'][$kin], $kin);
+            unset($_SESSION['message'][$kin]);
+            return $out;
         }
         if (isset($_SESSION['message'])) {
             $out = "";
             foreach ((array) $_SESSION['message'] as $k => $v) {
                 $out .= self::t($v, $k);
+                unset($_SESSION['message'][$k]);
             }
             return $out;
         }
