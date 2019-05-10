@@ -4,7 +4,7 @@ return [
     'zone' => null,
     'locale' => null,
     'direction' => 'ltr',
-    'language' => 'en-us',
+    'language' => 'en',
     'charset' => 'utf-8',
     'title' => 'Site Title',
     'description' => 'Site description.',
