@@ -20,7 +20,7 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function __invoke(...$v) {
-        return count($v) === 1 ? self::get(...$v) : self::set(...$v);
+        return count($v) < 2 ? self::get(...$v) : self::set(...$v);
     }
 
     // Fix case for `isset($config->key)` or `!empty($config->key)`

@@ -50,7 +50,7 @@ class Content extends Genome {
         $extension = static::$config['x'];
         if (is_string($in)) {
             // Full path, be quick!
-            if (strpos($in, ROOT . DS) === 0 && is_file($in)) {
+            if (strpos($in, ROOT) === 0 && is_file($in)) {
                 return $in;
             }
             $id = strtr($in, DS, '/');

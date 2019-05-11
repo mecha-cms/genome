@@ -9,7 +9,7 @@ Route::_('view', function(string $path, array $lot = []) {
 });
 
 function route(...$v) {
-    return count($v) > 1 ? Route::set(...$v) : Route::get(...$v);
+    return count($v) < 2 ? Route::get(...$v) : Route::set(...$v);
 }
 
 // Load all route(s)…

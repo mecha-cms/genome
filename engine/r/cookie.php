@@ -1,5 +1,5 @@
 <?php
 
 function cookie(...$v) {
-    return count($v) > 1 ? Config::set(...$v) : Config::get(...$v);
+    return count($v) < 2 ? Cookie::get(...$v) : Cookie::set(...$v);
 }

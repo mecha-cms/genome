@@ -31,7 +31,6 @@ function page($form) {
         $folder . DS . $h . DS . '$.page',
         $folder . DS . $h . DS . '$.archive'
     ])) {
-        // Load user function(s) from the current page folder if any, stacked from the parent page(s)
         $k = PAGE;
         $page = new \Page($file);
         $sort = $page->sort ?? $config->page('sort') ?? [1, 'path'];
@@ -46,6 +45,8 @@ function page($form) {
                 $sort = $f->sort ?? $sort;
                 $chunk = $f->chunk ?? $chunk;
             }
+            // Load user function(s) from the current page folder if any,
+            // stacked from the parent page(s)
             if (\is_file($fn = $k . DS . 'index.php')) {
                 call_user_func(function() use($fn) {
                     extract($GLOBALS, EXTR_SKIP);
@@ -58,7 +59,7 @@ function page($form) {
         $parent_path = \Path::D($path);
         if ($parent_file = \File::exist([
             $parent_folder . '.page', // `.\lot\page\parent-slug.page`
-            $parent_folder . '.archive', // .\`lot\page\parent-slug.archive`
+            $parent_folder . '.archive', // `.\lot\page\parent-slug.archive`
             $parent_folder . DS . '$.page', // `.\lot\page\parent-slug\$.page`
             $parent_folder . DS . '$.archive' // `.\lot\page\parent-slug\$.archive`
         ])) {

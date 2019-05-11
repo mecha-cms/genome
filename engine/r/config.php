@@ -6,4 +6,4 @@ function config(...$v) {
     return $GLOBALS['config'](...$v);
 }
 
-$GLOBALS['config'] = $GLOBALS['c'] = new Config;
+$GLOBALS['config'] = $config = new Config;

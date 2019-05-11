@@ -34,7 +34,7 @@ final class Language extends Config {
     }
 
     public function __invoke(...$v) {
-        return count($v) === 1 ? self::get(...$v) : self::set(...$v);
+        return count($v) < 2 ? self::get(...$v) : self::set(...$v);
     }
 
     public function __isset(string $key) {

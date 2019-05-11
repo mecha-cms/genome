@@ -23,12 +23,12 @@ final class Is extends Genome {
 
     // Check for valid file name
     public static function file($x) {
-        return is_string($x) && strlen($x) <= 260 && realpath($x) && is_file($x);
+        return is_string($x) && strlen($x) <= 260 && is_file($x);
     }
 
     // Check for valid folder name
     public static function folder($x) {
-        return is_string($x) && strlen($x) <= 260 && realpath($x) && is_dir($x);
+        return is_string($x) && strlen($x) <= 260 && is_dir($x);
     }
 
     // Check for valid local path address (whether it is exists or not)

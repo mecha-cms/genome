@@ -11,7 +11,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         $r = explode('/', $path = trim($path, '/'));
         foreach ($r as &$v) {
             if (strpos($v, ':') === 0) {
-                $v = '(?P<' . f2p(substr($v, 1)) . '>[^/]+)';
+                $v = '(?P<' . substr($v, 1) . '>[^/]+)';
             } else {
                 $v = str_replace("\\*", '(.+)', preg_quote($v));
             }

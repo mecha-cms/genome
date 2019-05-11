@@ -17,6 +17,26 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     // Set pre-defined page property
     public static $data = [];
 
+    private function find(string $kin, array $lot = []) {
+        if (isset(self::$page[$id = $this->id][$kin])) {
+            $v = self::$page[$id][$kin]; // Load from cache…
+        } else {
+            $v = $this->offsetGet($kin);
+            // Set…
+            $this->lot[$kin] = self::$page[$id][$kin] = $v;
+            // Do the hook once!
+            $v = Hook::fire(map($this->prefix, function($v) use($kin) {
+                return $v .= '.' . $kin;
+            }), [$v, $lot], $this);
+            if ($lot && is_callable($v) && !is_string($v)) {
+                $v = call_user_func($v, ...$lot);
+            }
+            // Set…
+            $this->lot[$kin] = self::$page[$id][$kin] = $v;
+        }
+        return $v;
+    }
+
     protected function _set_($key, $value = null) {
         $id = $this->id ?? "";
         if (!$this->exist) {
@@ -39,29 +59,12 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this;
     }
 
-    public function __call(string $key, array $lot = []) {
+    public function __call(string $kin, array $lot = []) {
         // @see `function _set_()`
-        if ($key === 'set' || self::_($key)) {
-            return parent::__call($key, $lot);
+        if ($kin === 'set' || self::_($kin = p2f($kin))) {
+            return parent::__call($kin, $lot);
         }
-        $key = p2f($key);
-        if (isset(self::$page[$id = $this->id][$key])) {
-            $v = self::$page[$id][$key]; // Load from cache…
-        } else {
-            $v = $this->offsetGet($key);
-            // Set…
-            $this->lot[$key] = self::$page[$id][$key] = $v;
-            // Do the hook once!
-            $v = Hook::fire(map($this->prefix, function($v) use($key) {
-                return $v .= '.' . $key;
-            }), [$v, $lot], $this);
-            if ($lot && is_callable($v) && !is_string($v)) {
-                $v = call_user_func($v, ...$lot);
-            }
-            // Set…
-            $this->lot[$key] = self::$page[$id][$key] = $v;
-        }
-        return $v;
+        return $this->find($kin, $lot);
     }
 
     public function __construct(string $path = null, array $lot = [], array $prefix = []) {
@@ -113,7 +116,6 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? 1 : 0;
     }
 
-    // TODO: `get` should not validate the `$key` input
     public function get($key) {
         if (is_array($key)) {
             $out = [];
@@ -121,23 +123,23 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 // `$page->get(['foo.bar' => 0])`
                 if (strpos($k, '.') !== false) {
                     $kk = explode('.', $k, 2);
-                    if (is_array($vv = $this->__call($kk[0]))) {
+                    if (is_array($vv = $this->find($kk[0]))) {
                         $out[$k] = get($vv, $kk[1]) ?? $v;
                         continue;
                     }
                 }
-                $out[$k] = $this->__call($k) ?? $v;
+                $out[$k] = $this->find($k) ?? $v;
             }
             return $out;
         }
         // `$page->get('foo.bar')`
         if (strpos($key, '.') !== false) {
             $k = explode('.', $key, 2);
-            if (is_array($v = $this->__call($k[0]))) {
+            if (is_array($v = $this->find($k[0]))) {
                 return get($v, $k[1]);
             }
         }
-        return $this->__call($key);
+        return $this->find($key);
     }
 
     public function getIterator() {
@@ -220,8 +222,12 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return isset($key) ? (array_key_exists($key, $v) ? $v[$key] : null) : $v;
     }
 
-    public static function open(string $path, array $lot = [], array $prefix = []) {
-        return new static($path, $lot, $prefix);
+    public static function from(...$v) {
+        return new static(...$v);
+    }
+
+    public static function open(...$v) {
+        return new static(...$v);
     }
 
     public static function unite(array $lot) {

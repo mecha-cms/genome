@@ -1,7 +1,7 @@
 <?php
 
-// Set default date time zone
-Date::zone(Config::get('zone'));
-Date::locale(Config::get('locale'));
+// Set default date time zone and locale
+Date::zone($config->zone);
+Date::locale($config->locale);
 
-$GLOBALS['date'] = $GLOBALS['d'] = new Date($_SERVER['REQUEST_TIME'] ?? time());
+$GLOBALS['date'] = $date = new Date($_SERVER['REQUEST_TIME'] ?? time());

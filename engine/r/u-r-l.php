@@ -49,4 +49,4 @@ $GLOBALS['URL'] = [
     'hash' => $hash
 ];
 
-$GLOBALS['url'] = $GLOBALS['u'] = new URL;
+$GLOBALS['url'] = $url = new URL;

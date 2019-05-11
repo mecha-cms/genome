@@ -15,7 +15,7 @@ function open(string $path) {
 }
 
 function put(string $in, string $path, $consent = null) {
-    return File::put($in)->saveTo($path, $consent);
+    return File::set($in)->saveTo($path, $consent);
 }
 
 function take(string $in) {
