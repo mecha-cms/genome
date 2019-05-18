@@ -5,9 +5,9 @@ author: Taufik Nurrohman
 type: Markdown
 version: 1.3.5
 
-dependency:
-  extension:
-  - page
+lot:
+  extend:
+    page: 1
 ...
 
 To enable this feature, add `css.data` and `js.data` files to a folder that has the same name as the page slug and is stored in the same directory level:

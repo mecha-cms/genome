@@ -4,10 +4,6 @@ description: Convert file and folder structure into web pages.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.7.0
-
-dependency:
-  extension:
-  - shield
 ...
 
 This extension activates the basic features of a website by utilizing the structure of the page file placement in the `.\lot\page` folder. This extension also adds some useful properties to the `$site` variable.

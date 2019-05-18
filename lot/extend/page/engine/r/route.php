@@ -9,7 +9,6 @@ function page($form) {
     $path = \str_replace('../', "", \urldecode($this[0]));
     $default = \rtrim($path === "" ? $state['path'] : $path, '/');
     if ($current < 2 && $path === $state['path'] && !$url->query) {
-        \Message::info('kick', '<code>' . $url->current . '</code>');
         $this->kick(""); // Redirect to home page…
     }
     $folder = \rtrim(PAGE . DS . strtr($default, '/', DS), DS);
@@ -128,7 +127,6 @@ function page($form) {
         }
         // Redirect to parent page if user tries to access the placeholder page…
         if ($name === '$' && \is_file($folder . '.' . $page->x)) {
-            \Message::info('kick', '<code>' . $url->current . '</code>');
             $this->kick($parent_path);
         }
         $this->view('page/' . $default . '/' . $h);

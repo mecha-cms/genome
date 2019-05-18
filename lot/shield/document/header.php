@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="<?php echo $site->language; ?>" dir="<?php echo $site->direction; ?>" class>
+<html class dir="<?php echo $site->direction; ?>" lang="<?php echo $site->language; ?>">
   <head>
     <meta charset="<?php echo $site->charset; ?>">
-    <meta name="viewport" content="width=device-width">
-    <?php if ($s = To::text($page->description ?? $site->description ?? "")): ?>
-    <meta name="description" content="<?php echo $s; ?>">
+    <meta content="width=device-width" name="viewport">
+    <?php if ($s = w($page->description ?? $site->description ?? "")): ?>
+    <meta content="<?php echo $s; ?>" name="description">
     <?php endif; ?>
     <?php if ($page->x === 'archive'): ?>
     <!-- Prevent search engines from indexing pages with `archive` state -->
-    <meta name="robots" content="noindex">
+    <meta content="noindex" name="robots">
     <?php endif; ?>
-    <meta name="author" content="<?php echo $page->author; ?>">
-    <title><?php echo To::text($site->trace); ?></title>
+    <meta content="<?php echo $page->author; ?>" name="author">
+    <title><?php echo w($site->trace); ?></title>
     <link href="<?php echo $url; ?>/favicon.ico" rel="shortcut icon">
     <link href="<?php echo $url->clean; ?>" rel="canonical">
   </head>

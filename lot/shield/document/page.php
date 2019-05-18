@@ -1,6 +1,6 @@
 <?php static::header(); ?>
 <main>
-  <?php static::message(); ?>
+  <?php echo $message; ?>
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
@@ -13,7 +13,7 @@
       <?php endif; ?>
     </div>
     <footer>
-      <p><strong><?php echo $language->update; ?>:</strong> <time datetime="<?php echo $page->update->ISO8601; ?>"><?php echo $page->update->{strtr($site->language, '-', '_')}; ?></time></p>
+      <p><strong><?php echo $language->update; ?>:</strong> <time datetime="<?php echo $page->update->ISO8601; ?>"><?php echo $page->update->{r('-', '_', $site->language)}; ?></time></p>
     </footer>
   </article>
 </main>

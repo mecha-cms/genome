@@ -270,7 +270,7 @@ namespace {
     function stream(string $f, int $c = 1024) {
         if (\is_file($f) && $h = \fopen($f, 'r')) {
             while (false !== ($v = \fgets($h, $c))) {
-                yield $v;
+                yield rtrim($v, "\n\r");
             }
             \fclose($h);
         }
@@ -998,7 +998,12 @@ namespace {
         }
         return \count($x);
     }
-    function r() {}
+    function r($a, $b, string $c) {
+        if (\is_string($a) && \is_string($b)) {
+            return \strlen($a) === 1 && \strlen($b) === 1 ? \strtr($c, $a, $b) : \strtr($c, [$a => $b]);
+        }
+        return \strtr($c, $a, $b);
+    }
     function s($x, array $a = []) {
         if (\is_array($x)) {
             foreach ($x as &$v) {

@@ -6,14 +6,14 @@
     <a href="<?php echo $url; ?>"><?php echo $language->home; ?></a>
     <?php endif; ?>
   </li><!--
-  <?php if ($menus = Pages(PAGE, 'page', [1, 'slug'])->vomit()): ?>
+  <?php if ($menus = pages(PAGE, 'page', [1, 'slug'])->vomit()): ?>
     <?php foreach ($menus as $menu): ?>
     <?php if ($menu === $site->path) continue; ?>
     <?php
 
-    $m = Page(PAGE . DS . $menu . '.page')->get([
+    $m = page(PAGE . DS . $menu . '.page')->get([
         'link' => null,
-        'title' => To::title($menu),
+        'title' => null,
         'url' => null
     ]);
 

@@ -17,8 +17,8 @@ while ($chop = array_shift($chops)) {
     ])) {
         continue;
     }
-    $title = Page($v)->title ?? To::title($chop);
-    $out .= $separator . sprintf($f[1], $title, $url . $path);
+    $v = page($v);
+    $out .= $separator . sprintf($f[1], $v->title ?: $language->isError, $v->url);
 }
 
 $out .= $separator . sprintf($f[0], $page->title ?: $language->isError);

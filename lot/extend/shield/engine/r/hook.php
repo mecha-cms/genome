@@ -4,7 +4,7 @@
 function content($content) {
     $r = 'html';
     if (\strpos($content, '<' . $r . ' ') !== false) {
-        return \preg_replace_callback('#<' . \x($r) . '(?:\s[^>]*)?>#', function($m) use($r) {
+        $content = \preg_replace_callback('#<' . \x($r) . '(?:\s[^>]*)?>#', function($m) use($r) {
             if (
                 \strpos($m[0], ' class="') !== false ||
                 \strpos($m[0], ' class ') !== false ||
@@ -26,6 +26,17 @@ function content($content) {
                 return $root;
             }
             return $m[0];
+        }, $content);
+    }
+    if (\strpos($content, '</message>') !== false) {
+        $content = \preg_replace_callback('#(?:\s*<message(?:\s[^>]+)?>[\s\S]*?<\/message>\s*)+#', function($m) {
+            return '<div class="messages p">' . \str_replace([
+                '<message type="',
+                '</message>'
+            ], [
+                '<p class="message message-',
+                '</p>'
+            ], $m[0]) . '</div>';
         }, $content);
     }
     return $content;

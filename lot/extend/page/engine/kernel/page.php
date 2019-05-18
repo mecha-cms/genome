@@ -151,7 +151,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function offsetExists($i) {
-        return isset($this->lot[$i]);
+        return !!$this->offsetGet($i);
     }
 
     public function offsetGet($i) {
