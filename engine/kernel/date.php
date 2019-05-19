@@ -37,7 +37,7 @@ final class Date extends Genome {
     }
 
     public function __toString() {
-        return $this->source . "";
+        return (string) $this->source;
     }
 
     public function date() {

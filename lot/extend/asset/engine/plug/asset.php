@@ -12,14 +12,10 @@ foreach ([
             $href = fire($data['href'], [$href, $value, $key], null, Asset::class);
             unset($data['href']);
         }
-        $link = new HTML;
-        $link[0] = 'link';
-        $link[1] = false;
-        $link[2] = extend($data, [
+        return new HTML(['link', false, alter($data, [
             'href' => $href,
             'rel' => 'stylesheet'
-        ]);
-        return $link;
+        ])]);
     },
     'js' => function($value, $key) {
         extract($value, EXTR_SKIP);
@@ -32,12 +28,9 @@ foreach ([
             $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
-        $script = new HTML;
-        $script[0] = 'script';
-        $script[2] = extend($data, [
+        return new HTML(['script', "", alter($data, [
             'src' => $src
-        ]);
-        return $script;
+        ])]);
     }
 ] as $k => $v) {
     Asset::_('.' . $k, $v);
@@ -55,13 +48,9 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
             $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
-        $img = new HTML;
-        $img[0] = 'img';
-        $img[1] = false;
-        $img[2] = extend($data, [
+        return new HTML(['img', false, alter($data, [
             'src' => $src
-        ]);
-        return $img;
+        ])]);
     });
 }
 

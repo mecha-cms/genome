@@ -1,5 +1,17 @@
 <?php
 
+function extend(string $query) {
+    $a = explode(':', $query, 2);
+    if (is_file($f = EXTEND . DS . $a[0] . DS . 'index.php')) {
+        $out = [];
+        if (is_file($f = dirname($f) . DS . 'lot' . DS . 'state' . DS . ($a[1] ?? 'config') . '.php')) {
+            $out = require $f;
+        }
+        return Hook::fire('extend.state.' . $query, [$out]);
+    }
+    return null;
+}
+
 $extends = [];
 foreach (glob(EXTEND . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
     $n = basename($dir = dirname($v));

@@ -1,7 +1,7 @@
 <?php
 
 // Store page state to registry…
-$state = Extend::state('page');
+$state = extend('page');
 if (!empty($state['page'])) {
     // Prioritize default state
     Config::alt($state);

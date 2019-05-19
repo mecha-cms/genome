@@ -1,5 +1,17 @@
 <?php
 
+function shield(string $query) {
+    $a = explode(':', $query, 2);
+    if (is_file($f = SHIELD . DS . $a[0] . DS . 'index.php')) {
+        $out = [];
+        if (is_file($f = dirname($f) . DS . 'lot' . DS . 'state' . DS . ($a[1] ?? 'config') . '.php')) {
+            $out = require $f;
+        }
+        return Hook::fire('shield.state.' . $query, [$out]);
+    }
+    return null;
+}
+
 // Prepare current shield state
 $GLOBALS['state'] = $state = new State;
 
@@ -17,12 +29,12 @@ if ($f = File::exist($folder . 'state' . DS . 'config.php')) {
 }
 
 // Run shield task if any
-if ($task = File::exist($folder . 'task.php')) {
+if (is_file($task = $folder . 'task.php')) {
     include $task;
 }
 
 // Load user function(s) from the current shield folder if any
-if ($fn = File::exist($folder . 'index.php')) {
+if (is_file($fn = $folder . 'index.php')) {
     call_user_func(function() use($fn) {
         extract($GLOBALS, EXTR_SKIP);
         require $fn;
@@ -30,7 +42,7 @@ if ($fn = File::exist($folder . 'index.php')) {
 }
 
 // Detect relative asset path to the `.\lot\shield\*` folder
-if (Extend::exist('asset') && $assets = Asset::get()) {
+if (extend('asset') !== null && $assets = Asset::get()) {
     foreach ($assets as $k => $v) {
         foreach ($v as $kk => $vv) {
             // Full path, no change!

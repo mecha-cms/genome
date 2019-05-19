@@ -4,7 +4,7 @@ function page($form) {
     global $config, $language, $url;
     $current = $url->i;
     // Load default page state(s)…
-    $state = \Extend::state('page');
+    $state = \extend('page');
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = \str_replace('../', "", \urldecode($this[0]));
     $default = \rtrim($path === "" ? $state['path'] : $path, '/');

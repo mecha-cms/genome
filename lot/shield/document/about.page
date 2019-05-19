@@ -3,7 +3,7 @@ title: Document
 description: A minimal shield with minimal extension and plugin dependencies.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.4.0
+version: 1.5.0
 ...
 
 Some elements have their own classes to match with the shield appearance:

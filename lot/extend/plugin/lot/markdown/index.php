@@ -3,7 +3,7 @@
 namespace _\markdown {
     function b($in, array $lot = [], $mode = 'text') {
         $x = new \ParsedownExtraPlugin;
-        foreach (\Plugin::state('markdown') as $k => $v) {
+        foreach (\plugin('markdown') as $k => $v) {
             $x->{$k} = $v;
         }
         return $x->{$mode}((string) $in);

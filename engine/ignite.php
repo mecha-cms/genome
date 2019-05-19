@@ -67,10 +67,15 @@ namespace _\is {
 }
 
 namespace {
-    // Shortcut for `switch` and `case` statement(s)
-    function alt($k, array $a) {
-        // Return `$a[$k]` value if exist or `null`
-        return \array_key_exists((string) $k, $a) ? $a[$k] : null;
+    // Alter array value(s)
+    function alter(array $a, ...$b) {
+        // `alter([…], […], […], false)`
+        if (\count($b) > 1 && \end($b) === false) {
+            \array_pop($b);
+            return \array_replace($a, ...$b);
+        }
+        // `alter([…], […], […])`
+        return \array_replace_recursive($a, ...$b);
     }
     // Check if array contains …
     function any(array $a, $fn = null) {
@@ -119,16 +124,6 @@ namespace {
             return false;
         }
         return \stream_resolve_include_path($f);
-    }
-    // Extend array value(s)
-    function extend(array $a, ...$b) {
-        // `extend([…], […], […], false)`
-        if (\count($b) > 1 && \end($b) === false) {
-            \array_pop($b);
-            return \array_replace($a, ...$b);
-        }
-        // `extend([…], […], […])`
-        return \array_replace_recursive($a, ...$b);
     }
     // Convert file name to class name
     function f2c(string $s, string $h = '-', string $n = '.') {
@@ -1002,7 +997,7 @@ namespace {
         if (\is_string($a) && \is_string($b)) {
             return \strlen($a) === 1 && \strlen($b) === 1 ? \strtr($c, $a, $b) : \strtr($c, [$a => $b]);
         }
-        return \strtr($c, $a, $b);
+        return \strtr($c, \array_combine($a, $b));
     }
     function s($x, array $a = []) {
         if (\is_array($x)) {
@@ -1098,7 +1093,7 @@ namespace {
     function x(string $x, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
         return \addcslashes($x, $d . $c);
     }
-    function y($a) {
+    function y(iterable $a) {
         if (\is_object($a) && $a instanceof \Traversable) {
             return \iterator_to_array($a);
         }

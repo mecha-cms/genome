@@ -25,7 +25,7 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
     }
 
     public function __toString() {
-        return $this->__invoke($this->separator);
+        return (string) $this->__invoke($this->separator);
     }
 
     // Insert `$value` after current element
@@ -59,18 +59,12 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return $this;
     }
 
-    // Move to the first array
-    public function begin() {
-        $this->i = 0;
-        return $this;
-    }
-
     // Generate chunk(s) of array
-    public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
+    public function chunk(int $chunk = 5, int $i = -1, $preserve_key = false) {
         $clone = $this->mitose();
         $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
-        if ($index !== -1) {
-            $clone->value = $clone->value[$clone->i = $index] ?? [];
+        if ($i !== -1) {
+            $clone->value = $clone->value[$clone->i = $i] ?? [];
         }
         return $clone;
     }
@@ -85,12 +79,6 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return $current[$this->i] ?? null;
     }
 
-    // Move to the last array
-    public function end() {
-        $this->i = $this->count() - 1;
-        return $this;
-    }
-
     // @see `.\engine\ignite.php#fn:find`
     public function find(callable $fn = null) {
         return find($this->value, $fn);
@@ -99,6 +87,10 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
     // Get first array value
     public function first($take = false) {
         return $take ? array_shift($this->value) : reset($this->value);
+    }
+
+    public function get(string $key = null) {
+        return isset($key) ? get($this->value, $key) : $this->value;
     }
 
     public function getIterator() {
@@ -128,14 +120,19 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
     }
 
     // Get array key by position
-    public function key(int $index) {
+    public function key(int $i) {
         $array = array_keys($this->value);
-        return array_key_exists($index, $array) ? $array[$index] : null;
+        return array_key_exists($i, $array) ? $array[$i] : null;
     }
 
     // Get last array value
     public function last($take = false) {
         return $take ? array_pop($this->value) : end($this->value);
+    }
+
+    public function let(string $key) {
+        let($this->value, $key);
+        return $this;
     }
 
     public function lot(array $lot = [], $over = false) {
@@ -237,6 +234,11 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return serialize($this->value);
     }
 
+    public function set(string $key, $value) {
+        set($this->value, $key, $value);
+        return $this;
+    }
+
     // @see `.\engine\ignite.php#fn:shake`
     public function shake($preserve_key = true) {
         $this->value = shake($this->value, $preserve_key);
@@ -302,9 +304,21 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return $this;
     }
 
-    // Move to `$index` array index
-    public function to($index) {
-        $this->i = is_int($index) ? $index : $this->index($index, $index);
+    // Move to `$i` array
+    public function to($i) {
+        $this->i = is_int($i) ? $i : ($this->index($i) ?? $i);
+        return $this;
+    }
+
+    // Move to the first array
+    public function toFirst() {
+        $this->i = 0;
+        return $this;
+    }
+
+    // Move to the last array
+    public function toLast() {
+        $this->i = $this->count() - 1;
         return $this;
     }
 
@@ -312,11 +326,8 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         $this->lot = $this->value = unserialize($v);
     }
 
-    public function vomit($key = null) {
-        if (isset($key)) {
-            return self::get($this->value, $key);
-        }
-        return $this->value;
+    public function vomit(string $key = null) {
+        return $this->get($key);
     }
 
     public static function eat(iterable $array) {

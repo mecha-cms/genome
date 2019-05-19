@@ -16,7 +16,7 @@ final class Message extends Genome {
     }
 
     public function __toString() {
-        return self::get() . "";
+        return (string) self::get();
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
