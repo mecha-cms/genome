@@ -21,7 +21,7 @@ final class Asset extends Genome {
         if ($v = self::_('.' . $x)) {
             $fn = $v[0];
             if (isset(self::$lot[1][$x])) {
-                $assets = Anemon::eat(self::$lot[1][$x])->sort([1, 'stack'], true);
+                $assets = Anemon::from(self::$lot[1][$x])->sort([1, 'stack'], true);
                 $out = [];
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {

@@ -17,8 +17,8 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         parent::__construct();
     }
 
-    public function __invoke(string $separator = ', ', $is = true) {
-        return implode($separator, $is ? $this->is(function($v, $k) {
+    public function __invoke(string $separator = ', ', $filter = true) {
+        return implode($separator, $filter ? $this->is(function($v, $k) {
             // Ignore `null` and `false` value and all item(s) with key prefixed by a `_`
             return isset($v) && $v !== false && strpos($k, '_') !== 0;
         })->value : $this->value);
@@ -98,7 +98,7 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
     }
 
     // @see `.\engine\ignite.php#fn:has`
-    public function has(string $value = "", string $separator = X) {
+    public function has(string $value = "", string $separator = P) {
         return has($this->value, $value, $separator);
     }
 
@@ -113,6 +113,10 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         $clone = $this->mitose();
         $clone->value = is($clone->value, $fn);
         return $clone;
+    }
+
+    public function join(string $separator = ', ') {
+        return implode($separator, $this->value);
     }
 
     public function jsonSerialize() {
@@ -230,6 +234,11 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return $this;
     }
 
+    public function reverse() {
+        $this->value = array_reverse($this->value);
+        return $this;
+    }
+
     public function serialize() {
         return serialize($this->value);
     }
@@ -326,11 +335,7 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         $this->lot = $this->value = unserialize($v);
     }
 
-    public function vomit(string $key = null) {
-        return $this->get($key);
-    }
-
-    public static function eat(iterable $array) {
+    public static function from(iterable $array) {
         return new static($array);
     }
 

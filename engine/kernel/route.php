@@ -34,10 +34,6 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         return $this->lot[$key = p2f($key)] ?? null;
     }
 
-    public function check(...$v) {
-        return Guard::check(...$v);
-    }
-
     public function content(string $v) {
         Hook::fire('set', [], $this);
         echo Hook::fire('content', [$v], $this);
@@ -55,10 +51,6 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
 
     public function header(...$v) {
         HTTP::header(...$v);
-    }
-
-    public function kick(...$v) {
-        Guard::kick(...$v);
     }
 
     public function offsetExists($i) {
@@ -89,25 +81,8 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         HTTP::status(...$v);
     }
 
-    public function trace($trace, string $separator = ' &#x00B7; ') {
-        Config::set('trace', new Anemon((array) $trace, $separator));
-    }
-
     public function type(...$v) {
         HTTP::type(...$v);
-    }
-
-    public static function fire(string $id, array $lot = []) {
-        if (isset(self::$r[1][$id])) {
-            // Loading hook(s)…
-            if (isset(self::$r[2][$id])) {
-                $fn = Anemon::eat(self::$r[2][$id])->sort([1, 'stack']);
-                foreach ($fn as $v) {
-                    fire($v['fn'], $lot, new static($id));
-                }
-            }
-            fire(self::$r[1][$id]['fn'], $lot, new static($id));
-        }
     }
 
     public static function get(string $id = null) {
@@ -129,18 +104,31 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         return $out->match !== false ? $out : false;
     }
 
-    public static function lot($id, callable $fn = null, float $stack = 10) {
+    public static function let($id = null) {
+        if (is_array($id)) {
+            foreach ($id as $v) {
+                self::let($v);
+            }
+        } else if (isset($id)) {
+            self::$r[0][$id] = self::$r[1][$id] ?? 1;
+            unset(self::$r[1][$id]);
+        } else {
+            self::$r[1] = [];
+        }
+    }
+
+    public static function over($id, callable $fn = null, float $stack = 10) {
         if (is_array($id)) {
             if (!isset($fn)) {
                 $out = [];
                 foreach ($id as $v) {
-                    $out[$v] = self::lot($v);
+                    $out[$v] = self::over($v);
                 }
                 return $out;
             }
             $i = 0;
             foreach ($id as $v) {
-                self::lot($v, $fn, $stack + $i);
+                self::over($v, $fn, $stack + $i);
                 $i += .1;
             }
         } else {
@@ -153,19 +141,6 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
                     'stack' => (float) $stack
                 ];
             }
-        }
-    }
-
-    public static function let($id = null) {
-        if (is_array($id)) {
-            foreach ($id as $v) {
-                self::let($v);
-            }
-        } else if (isset($id)) {
-            self::$r[0][$id] = self::$r[1][$id] ?? 1;
-            unset(self::$r[1][$id]);
-        } else {
-            self::$r[1] = [];
         }
     }
 
@@ -200,13 +175,13 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
 
     public static function start() {
         $data = e($GLOBALS['_' . ($m = strtoupper($_SERVER['REQUEST_METHOD']))] ?? []);
-        $routes = Anemon::eat(self::$r[1] ?? [])->sort([1, 'stack'], true);
+        $routes = Anemon::from(self::$r[1] ?? [])->sort([1, 'stack'], true);
         foreach ($routes as $k => $v) {
             // If matched with the URL path, then …
             if (false !== ($route = self::is($k))) {
                 // Loading hook(s)…
                 if (isset(self::$r[2][$k])) {
-                    $fn = Anemon::eat(self::$r[2][$k])->sort([1, 'stack']);
+                    $fn = Anemon::from(self::$r[2][$k])->sort([1, 'stack']);
                     foreach ($fn as $f) {
                         fire($f['fn'], [$data, $m], $route);
                     }

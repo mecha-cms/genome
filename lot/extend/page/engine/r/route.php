@@ -9,13 +9,11 @@ function page($form) {
     $path = \str_replace('../', "", \urldecode($this[0]));
     $default = \rtrim($path === "" ? $state['path'] : $path, '/');
     if ($current < 2 && $path === $state['path'] && !$url->query) {
-        $this->kick(""); // Redirect to home page…
+        \Guard::kick(""); // Redirect to home page…
     }
     $folder = \rtrim(PAGE . DS . strtr($default, '/', DS), DS);
     $name = \Path::B($folder);
     $i = ($h = $current ?? 1) - 1; // 0-based index…
-    // Set default site title
-    $this->trace($config->title);
     if ($file = \File::exist([
         // `.\lot\page\page-slug.{page,archive}`
         $folder . '.page',
@@ -66,12 +64,13 @@ function page($form) {
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $parent_page->sort ?? $sort;
             $chunk = $parent_page->chunk ?? $chunk;
-            $parent_slugs = \Get::pages($parent_folder, 'page', $sort, 'slug')->vomit();
+            $parent_slugs = \Get::pages($parent_folder, 'page', $sort, 'slug')->get();
         }
         $pager = new \Pager\Page($parent_slugs ?? [], $page->slug, $url . '/' . $parent_path);
-        $page->pager = $pager;
         $GLOBALS['page'] = $page;
+        $GLOBALS['pager'] = $pager;
         $GLOBALS['parent'] = $parent_page ?? new \Page;
+        $GLOBALS['t'][] = $page->title;
         \Config::set([
             'chunk' => $chunk, // Inherit page’s `chunk` property
             'has' => [
@@ -81,13 +80,12 @@ function page($form) {
             ],
             'sort' => $sort // Inherit page’s `sort` property
         ]);
-        $this->trace([$page->title, $config->title]);
         if (\Config::get('is.page')) {
             // Page(s) view has been disabled!
         } else {
             $pages = \Get::pages($folder, 'page', $sort, 'path');
             if ($query = \l($form[$config->q] ?? "")) {
-                $this->trace([$language->search . ': ' . $query, $page->title, $config->title]);
+                $GLOBALS['t'][] = $language->doSearch . ': ' . $query;
                 $query = \explode(' ', $query);
                 $pages = $pages->is(function($v) use($query) {
                     $v = \str_replace('-', "", \Path::N($v));
@@ -100,7 +98,7 @@ function page($form) {
                 });
                 \Config::set('is.search', true);
             }
-            $pager = new \Pager\Pages($pages->vomit(), [$chunk, $i], $url . '/' . $default);
+            $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . '/' . $default);
             $pages = $pages->chunk($chunk, $i)->map(function($v) {
                 return new \Page($v);
             });
@@ -112,6 +110,7 @@ function page($form) {
                     'parent' => false,
                     'prev' => false
                 ]);
+                $GLOBALS['t'][] = $language->isError;
                 $this->view('404/' . $default . '/' . $h);
             } else {
                 \Config::set('has', [
@@ -119,23 +118,29 @@ function page($form) {
                     'parent' => !!$pager->parent,
                     'prev' => !!$pager->prev,
                 ]);
-                $page->pager = $pager;
                 $GLOBALS['page'] = $page;
+                $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
+                $this->status(200);
                 $this->view('pages/' . $default);
             }
         }
         // Redirect to parent page if user tries to access the placeholder page…
         if ($name === '$' && \is_file($folder . '.' . $page->x)) {
-            $this->kick($parent_path);
+            Guard::kick($parent_path);
         }
+        $this->status(200);
         $this->view('page/' . $default . '/' . $h);
     }
+    Config::set('is.error', 404);
+    $GLOBALS['t'][] = $language->isError;
     $this->view('404/' . $default . '/' . $h);
 }
 
 $GLOBALS['page'] = new \Page;
+$GLOBALS['pager'] = new \Pager\Pages;
 $GLOBALS['pages'] = new \Anemon;
 $GLOBALS['parent'] = new \Page;
+$GLOBALS['t'] = new \Anemon([$config->title], ' &#x00B7; ');
 
 \Route::set(['*', ""], __NAMESPACE__ . "\\page", 20);

@@ -21,6 +21,3 @@ function put(string $in, string $path, $consent = null) {
 function take(string $in) {
     return File::from($in)->let();
 }
-
-$x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
-File::$config['x'] = array_unique(explode(',', $x));

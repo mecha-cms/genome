@@ -2,19 +2,8 @@
 
 define('PLUGIN', __DIR__ . DS . 'lot');
 
-function plugin(string $query) {
-    $a = explode(':', $query, 2);
-    if (is_file($f = PLUGIN . DS . $a[0] . DS . 'index.php')) {
-        $out = [];
-        if (is_file($f = dirname($f) . DS . 'lot' . DS . 'state' . DS . ($a[1] ?? 'config') . '.php')) {
-            $out = require $f;
-        }
-        return Hook::fire('plugin.state.' . $query, [$out]);
-    }
-    return null;
-}
-
 require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'language.php';
+require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'plugin.php';
 
 call_user_func(function() {
     $plugins = [];
@@ -24,7 +13,7 @@ call_user_func(function() {
     }
     // Sort by name
     natsort($plugins);
-    $GLOBALS['PLUGIN'] = $plugins = array_keys($plugins);
+    $GLOBALS['PLUGIN'][0] = $plugins = array_keys($plugins);
     // Load class(es)…
     foreach ($plugins as $v) {
         d(($f = dirname($v) . DS . 'engine' . DS) . 'kernel', function($v, $name) use($f) {

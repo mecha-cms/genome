@@ -40,9 +40,7 @@ namespace {
     From::_('Markdown', From::_('markdown'));
     To::_('Markdown', To::_('markdown'));
     // Add `markdown` to the allowed file extension(s)
-    File::$config['x'] = concat(File::$config['x'], [
-        'markdown',
-        'md',
-        'mkd'
-    ]);
+    File::$config['x']['markdown'] = 1;
+    File::$config['x']['md'] = 1;
+    File::$config['x']['mkd'] = 1;
 }

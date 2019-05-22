@@ -3,7 +3,7 @@
 function flash($content) {
     // Convert `foo[bar][baz]` to `form.foo.bar.baz`
     $keys = function(string $in) {
-        return 'form.' . \str_replace(['.', '[', ']', X], [X, '.', "", "\\."], $in);
+        return 'form.' . \str_replace(['.', '[', ']', P], [P, '.', "", "\\."], $in);
     };
     if (\strpos($content, '<input ') !== false) {
         $content = \preg_replace_callback('#<input(?:\s[^>]*)?>#', function($m) use($keys) {

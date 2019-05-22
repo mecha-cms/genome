@@ -127,13 +127,13 @@ final class URL extends Genome {
             return $path; // Ignore external URL
         }
         return $root ? str_replace([
-            X . $u->scheme . '://' . $u->host,
-            X . '//' . $u->host,
-            X
-        ], "", X . $path) : ltrim(str_replace([
-            X . $u->scheme . ':',
-            X . '//' . $u->host . $u->directory
-        ], "", X . $path), '/');
+            P . $u->scheme . '://' . $u->host,
+            P . '//' . $u->host,
+            P
+        ], "", P . $path) : ltrim(str_replace([
+            P . $u->scheme . ':',
+            P . '//' . $u->host . $u->directory
+        ], "", P . $path), '/');
     }
 
 }

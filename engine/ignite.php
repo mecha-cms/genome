@@ -148,9 +148,9 @@ namespace {
     }
     // Get array value recursively
     function get(array &$a, string $k, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, X, $k));
+        $kk = \explode($s, \str_replace("\\" . $s, P, $k));
         foreach ($kk as $v) {
-            $v = \str_replace(X, $s, $v);
+            $v = \str_replace(P, $s, $v);
             if (!\is_array($a) || !\array_key_exists($v, $a)) {
                 return null;
             }
@@ -163,7 +163,7 @@ namespace {
         return q($a) > $b;
     }
     // Check if an element exists in array
-    function has(array $a, string $s = "", string $x = X) {
+    function has(array $a, string $s = "", string $x = P) {
         return \strpos($x . \implode($x, $a) . $x, $x . $s . $x) !== false;
     }
     // Filter out element(s) that pass the function test
@@ -181,9 +181,9 @@ namespace {
     }
     // Remove array value
     function let(array &$a, string $k, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, X, $k));
+        $kk = \explode($s, \str_replace("\\" . $s, P, $k));
         while (\count($kk) > 1) {
-            $k = \str_replace(X, $s, \array_shift($kk));
+            $k = \str_replace(P, $s, \array_shift($kk));
             if (\array_key_exists($k, $a)) {
                 $a =& $a[$k];
             }
@@ -228,9 +228,9 @@ namespace {
     }
     // Set array value
     function set(array &$a, string $k, $v = null, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, X, $k));
+        $kk = \explode($s, \str_replace("\\" . $s, P, $k));
         while (\count($kk) > 1) {
-            $k = \str_replace(X, $s, \array_shift($kk));
+            $k = \str_replace(P, $s, \array_shift($kk));
             if (!\array_key_exists($k, $a)) {
                 $a[$k] = [];
             }
@@ -1080,11 +1080,11 @@ namespace {
             '#--#',
             '#-#',
             '#\s+#',
-            '#' . X . '#'
+            '#' . P . '#'
         ], [
             "",
-            ' ' . X . ' ',
-            X,
+            ' ' . P . ' ',
+            P,
             ' ',
             ' ',
             '-'

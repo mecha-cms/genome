@@ -20,7 +20,7 @@ class Hook extends Genome {
                 self::$lot[1][$c][$id] = [];
                 return $lot[0] ?? null;
             }
-            $any = Anemon::eat(self::$lot[1][$c][$id])->sort([1, 'stack']);
+            $any = Anemon::from(self::$lot[1][$c][$id])->sort([1, 'stack']);
             foreach ($any as $v) {
                 if (null !== ($r = fire($v['fn'], $lot, $that, $scope))) {
                     $lot[0] = $r;

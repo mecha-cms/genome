@@ -1,8 +1,8 @@
 <?php namespace _\get;
 
-function pages(string $folder = PAGE, string $x = 'page', $sort = [-1, 'time'], string $key = null): \Anemon {
+function pages(string $folder = PAGE, string $x = 'page', $sort = [1, 'path'], string $out = null): \Anemon {
     $k = \is_array($sort) && isset($sort[1]) ? $sort[1] : 'path';
-    $key = $key ?? $k;
+    $out = $out ?? $k;
     $pages = [];
     foreach (\g($folder, $x) as $v) {
         if (\pathinfo($v, \PATHINFO_FILENAME) === '$') {
@@ -12,10 +12,10 @@ function pages(string $folder = PAGE, string $x = 'page', $sort = [-1, 'time'], 
         $pages[] = [
             'path' => $v,
             $k => $page[$k],
-            $key => $page[$key]
+            $out => $page[$out]
         ];
     }
-    return \Anemon::eat($pages)->sort($sort)->pluck($key);
+    return \Anemon::from($pages)->sort($sort)->pluck($out);
 }
 
 \Get::_('pages', __NAMESPACE__ . "\\pages");

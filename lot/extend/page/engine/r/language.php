@@ -20,8 +20,6 @@ Language::set([
     'page-count' => function(int $i) {
         return $i . ' Page' . ($i === 1 ? "" : 's');
     },
-    'page-error-description' => 'Page not found.',
-    'page-error-title' => '404 Not Found',
     'photo' => ['Photo', 'Photo', 'Photos'],
     'picture' => ['Picture', 'Picture', 'Pictures'],
     'prev' => 'Previous',
