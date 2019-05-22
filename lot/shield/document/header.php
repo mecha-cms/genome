@@ -3,15 +3,15 @@
   <head>
     <meta charset="<?php echo $site->charset; ?>">
     <meta content="width=device-width" name="viewport">
-    <?php if ($s = w($page->description ?? $site->description ?? "")): ?>
-    <meta content="<?php echo $s; ?>" name="description">
+    <?php if ($w = w($page->description ?? $site->description ?? "")): ?>
+    <meta content="<?php echo $w; ?>" name="description">
     <?php endif; ?>
     <?php if ($page->x === 'archive'): ?>
     <!-- Prevent search engines from indexing pages with `archive` state -->
     <meta content="noindex" name="robots">
     <?php endif; ?>
     <meta content="<?php echo $page->author; ?>" name="author">
-    <title><?php echo w($site->trace); ?></title>
+    <title><?php echo w($t->reverse); ?></title>
     <link href="<?php echo $url; ?>/favicon.ico" rel="shortcut icon">
     <link href="<?php echo $url->clean; ?>" rel="canonical">
   </head>

@@ -18,6 +18,6 @@
   </article>
 </main>
 <?php if ($site->has('parent')): ?>
-<nav><?php echo $page->pager; ?></nav>
+<nav><?php echo $pager; ?></nav>
 <?php endif; ?>
 <?php static::footer(); ?>

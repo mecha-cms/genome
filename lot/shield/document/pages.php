@@ -16,5 +16,5 @@
   </article>
   <?php endforeach; ?>
 </main>
-<nav><?php echo $page->pager; ?></nav>
+<nav><?php echo $pager; ?></nav>
 <?php static::footer(); ?>

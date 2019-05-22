@@ -12,8 +12,8 @@
 !defined('PS') && define('PS', PATH_SEPARATOR); // Default path separator
 !defined('DENT') && define('DENT', '  '); // Default HTML indent
 !defined('N') && define('N', "\n"); // Line break
+!defined('P') && define('P', "\x1A"); // Placeholder text
 !defined('T') && define('T', "\t"); // Tab
-!defined('X') && define('X', "\x1A"); // Placeholder text
 
 !defined('GROUND') && define('GROUND', rtrim(strtr($_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
 !defined('ROOT') && define('ROOT', __DIR__);
@@ -28,7 +28,7 @@ foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
 }
 
 !defined('SESSION') && define('SESSION', null); // Change to a folder path to define `session_save_path`
-!defined('DEBUG') && define('DEBUG', false); // Change to `true` to enable debug mode
+!defined('DEBUG') && define('DEBUG', true); // Change to `true` to enable debug mode
 
 // Common HTML tag(s) allowed to be written in the form field
 !defined('HTML_WISE_I') && define('HTML_WISE_I', 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var');
@@ -40,15 +40,6 @@ foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $lot) {
 !defined('DATE_LOCALE') && define('DATE_LOCALE', locale_get_default());
 !defined('DATE_NOW') && define('DATE_NOW', $_SERVER['REQUEST_TIME'] ?? time());
 !defined('DATE_ZONE') && define('DATE_ZONE', date_default_timezone_get());
-
-// Common file type(s) allowed to be uploaded by the file manager
-!defined('AUDIO_X') && define('AUDIO_X', 'aif,mid,mov,mpa,mp3,m3u,m4a,ogg,wav,wma');
-!defined('FONT_X') && define('FONT_X', 'eot,fnt,fon,otf,svg,ttf,woff,woff2');
-!defined('IMAGE_X') && define('IMAGE_X', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');
-!defined('PACKAGE_X') && define('PACKAGE_X', 'cbr,gz,iso,pkg,rar,rpm,tar,zip,zipx,7z');
-!defined('TEXT_X') && define('TEXT_X', 'archive,cache,cfg,css,csv,data,draft,htaccess,html,js,json,log,page,php,srt,stack,tex,trash,txt,xml,yaml,yml');
-!defined('VIDEO_X') && define('VIDEO_X', 'avi,flv,mkv,mov,mpg,mp4,m4a,m4v,ogv,rm,swf,vob,webm,wmv,3gp,3g2');
-!defined('BINARY_X') && define('BINARY_X', AUDIO_X . ',' . PACKAGE_X . ',' . VIDEO_X . ',doc,docx,odt,pdf,ppt,pptx,rtf,xlr,xls,xlsx');
 
 require ENGINE . DS . 'ignite.php';
 require ENGINE . DS . 'fire.php';
