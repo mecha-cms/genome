@@ -10,9 +10,9 @@ class File extends Genome {
             'jpg' => 1,
             'json' => 1,
             'jpeg' => 1,
+            'log' => 1,
             'png' => 1,
             'txt' => 1,
-            'webp' => 1,
             'xml' => 1
         ],
         'size' => [0, 2097152] // Range of allowed file size(s)

@@ -9,7 +9,7 @@ namespace _\is {
         if (\is_int($t)) {
             return anemon_0($x);
         }
-        return \is_iterable($x);
+        return \is_array($x) || \is_object($x);
     }
     // `[1,2,3]`
     function anemon_0($x) {
@@ -310,7 +310,7 @@ namespace {
 
 namespace {
     function a($o, $safe = true) {
-        if (\_\is\anemon($o)) {
+        if (\is_object($o)) {
             if ($safe) {
                 $o = \_\is\instance($o) ? $o : (array) $o;
             } else {
@@ -962,7 +962,7 @@ namespace {
         return \str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
     }
     function o($a, $safe = true) {
-        if (\_\is\anemon($a)) {
+        if (\is_array($a)) {
             if ($safe) {
                 $a = \_\is\anemon_a($a) ? (object) $a : $a;
             } else {
