@@ -45,6 +45,14 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         return count($this->lot);
     }
 
+    public function fire(string $id, array $lot = [], array $form = []) {
+        if ($v = self::get($id)) {
+            $route = new static($id);
+            $route->lot = $lot;
+            fire($v['fn'], [$form, strtoupper($_SERVER['REQUEST_METHOD'])], $route);
+        }
+    }
+
     public function getIterator() {
         return new \ArrayIterator($this->lot);
     }
@@ -174,8 +182,8 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     }
 
     public static function start() {
-        $data = e($GLOBALS['_' . ($m = strtoupper($_SERVER['REQUEST_METHOD']))] ?? []);
         $routes = Anemon::from(self::$r[1] ?? [])->sort([1, 'stack'], true);
+        $form = e($GLOBALS['_' . ($m = strtoupper($_SERVER['REQUEST_METHOD']))] ?? []);
         foreach ($routes as $k => $v) {
             // If matched with the URL path, then …
             if (false !== ($route = self::is($k))) {
@@ -183,12 +191,12 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
                 if (isset(self::$r[2][$k])) {
                     $fn = Anemon::from(self::$r[2][$k])->sort([1, 'stack']);
                     foreach ($fn as $f) {
-                        fire($f['fn'], [$data, $m], $route);
+                        fire($f['fn'], [$form, $m], $route);
                     }
                 }
                 // Passed!
                 http_response_code($v['status']);
-                fire($v['fn'], [$data, $m], $route);
+                fire($v['fn'], [$form, $m], $route);
                 break;
             }
         }

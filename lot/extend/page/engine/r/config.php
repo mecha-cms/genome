@@ -4,7 +4,7 @@
 $state = extend('page');
 if (!empty($state['page'])) {
     // Prioritize default state
-    Config::alt($state);
+    Config::over($state);
     Page::$data = Config::get('page', true);
 }
 

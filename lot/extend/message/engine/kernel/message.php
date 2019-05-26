@@ -1,22 +1,51 @@
 <?php
 
-final class Message extends Genome {
+final class Message extends Genome implements \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
 
     private static function t(array $lot, string $kin) {
-        $out = "";
+        $out = [];
         foreach ($lot as $v) {
             $text = array_shift($v);
             $t = rtrim('message-' . $kin . '-' . $text, '-');
             $vars = array_shift($v) ?? [];
             $preserve_case = array_shift($lot);
             $m = Language::get($t, $vars, $preserve_case);
-            $out .= '<message type="' . $kin . '">' . ($m === $t ? $text : $m) . '</message>';
+            $out[] = ['message', $m, ['type' => $kin]];
         }
         return $out;
     }
 
     public function __toString() {
-        return (string) self::get();
+        if ($message = self::get()) {
+            $out = "";
+            foreach ($message as $v) {
+                $out .= new SGML($v);
+            }
+            return $out;
+        }
+        return "";
+    }
+
+    public function count() {
+        return count(self::get());
+    }
+
+    public function getIterator() {
+        return new \ArrayIterator(self::get() ?? []);
+    }
+
+    public function jsonSerialize() {
+        return self::get();
+    }
+
+    public function serialize() {
+        return serialize(self::get());
+    }
+
+    public function unserialize($v) {
+        foreach (unserialize($v) ?? [] as $v) {
+            self::set($v[2]['type'], $v[1]);
+        }
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -29,10 +58,10 @@ final class Message extends Genome {
 
     public static function get($kin = null) {
         if (is_array($kin)) {
-            $out = "";
+            $out = [];
             foreach ($kin as $v) {
                 if (isset($_SESSION['message'][$v])) {
-                    $out .= self::t($_SESSION['message'][$v], $v);
+                    $out = array_merge($out, self::t($_SESSION['message'][$v], $v));
                     unset($_SESSION['message'][$v]);
                 }
             }
@@ -44,9 +73,9 @@ final class Message extends Genome {
             return $out;
         }
         if (isset($_SESSION['message'])) {
-            $out = "";
+            $out = [];
             foreach ((array) $_SESSION['message'] as $k => $v) {
-                $out .= self::t($v, $k);
+                $out = array_merge($out, self::t($v, $k));
                 unset($_SESSION['message'][$k]);
             }
             return $out;
