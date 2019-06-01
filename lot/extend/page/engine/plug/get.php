@@ -5,7 +5,7 @@ function pages(string $folder = PAGE, string $x = 'page', $sort = [1, 'path'], s
     $out = $out ?? $k;
     $pages = [];
     foreach (\g($folder, $x) as $v) {
-        if (\pathinfo($v, \PATHINFO_FILENAME) === '$') {
+        if (\pathinfo($v, \PATHINFO_FILENAME) === "") {
             continue;
         }
         $page = new \Page($v);
