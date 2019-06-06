@@ -27,8 +27,6 @@ class File extends Genome {
     public $exist;
     public $path;
 
-    public static $config = self::config;
-
     public function __construct($path = null) {
         $this->content = "";
         if (is_string($path)) {
@@ -120,17 +118,18 @@ class File extends Genome {
     }
 
     public function moveTo(string $folder, string $name = null) {
-        $out = [];
+        $out = [null];
         if ($this->exist && $path = $this->path) {
+            $out[0] = $path;
             if (!is_dir($folder)) {
                 mkdir($folder, 0775, true);
             }
             if (is_file($v = $folder . DS . ($name ?? basename($path)))) {
                 // Return `false` if file already exists
-                $out[$path] = false;
+                $out[1] = false;
             } else {
                 // Return `$v` on success, `null` on error
-                $out[$path] = rename($path, $v) ? $v : null;
+                $out[1] = rename($path, $v) ? $v : null;
             }
         }
         return $out;
@@ -149,6 +148,27 @@ class File extends Genome {
     public function prepend(string $data) {
         $this->content = $data . $this->content;
         return $this;
+    }
+
+    public function renameTo(string $name) {
+        $out = [null];
+        if ($this->exist && $path = $this->path) {
+            $out[0] = $path;
+            $folder = dirname($path);
+            $a = basename($path);
+            $b = basename($name);
+            if (is_file($v = $folder . DS . $b)) {
+                // Return `false` if file already exists
+                $out[1] = false;
+            } else if ($a === $b) {
+                // New name is the same as old name, do nothing!
+                $out[1] = $v;
+            } else {
+                // Return `$v` on success, `null` on error
+                $out[1] = rename($path, $v) ? $v : null;
+            }
+        }
+        return $out;
     }
 
     public function save($consent = null) {
@@ -213,8 +233,10 @@ class File extends Genome {
             $x = pathinfo($path, PATHINFO_EXTENSION);
             return $x ? strtolower($x) : null;
         }
-        return null;
+        return false; // Return `false` if file does not exist
     }
+
+    public static $config = self::config;
 
     public static function exist($path) {
         if (is_array($path)) {
@@ -250,7 +272,7 @@ class File extends Genome {
         return false; // Return `false` if file does not exist
     }
 
-    public static function push(array $blob, string $path = ROOT) {
+    public static function push(array $blob, string $path) {
         $path = rtrim(strtr($path, '/', DS), DS);
         if (!empty($blob['error'])) {
             return $blob['error']; // Has error, abort!

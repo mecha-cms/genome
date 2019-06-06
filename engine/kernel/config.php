@@ -40,8 +40,8 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         self::let(p2f($key));
     }
 
-    public function count($deep = false) {
-        return count(self::$lot[static::class] ?? [], $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+    public function count() {
+        return count(self::$lot[static::class] ?? []);
     }
 
     public function getIterator() {

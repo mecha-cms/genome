@@ -16,7 +16,7 @@ final class Date extends Genome {
     public function __call(string $kin, array $lot = []) {
         if ($v = self::_($kin)) {
             if (is_string($v = $v[0]) && strpos($v, '%') !== false) {
-                return $this->__invoke($v);
+                return $this->f($v);
             }
         }
         return parent::__call($kin, $lot);
@@ -30,10 +30,11 @@ final class Date extends Genome {
         } else {
             $this->source = date(DATE_FORMAT, strtotime($date));
         }
+        parent::__construct();
     }
 
-    public function __invoke(string $pattern = null) {
-        return strftime($pattern ?? '%Y-%m-%d %H:%I:%S', strtotime($this->source));
+    public function __invoke(string $pattern = '%Y-%m-%d %H:%I:%S') {
+        return $this->f($pattern);
     }
 
     public function __toString() {
@@ -45,7 +46,11 @@ final class Date extends Genome {
     }
 
     public function day($type = null) {
-        return $this->__invoke(is_string($type) ? '%A' : '%u');
+        return $this->f(is_string($type) ? '%A' : '%u');
+    }
+
+    public function f(string $pattern = '%Y-%m-%d %H:%I:%S') {
+        return strftime($pattern, strtotime($this->source));
     }
 
     public function format(string $format = DATE_FORMAT) {
@@ -61,7 +66,7 @@ final class Date extends Genome {
     }
 
     public function month($type = null) {
-        return $this->__invoke(is_string($type) ? '%B' : '%m');
+        return $this->f(is_string($type) ? '%B' : '%m');
     }
 
     public function second() {

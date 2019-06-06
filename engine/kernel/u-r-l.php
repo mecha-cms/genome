@@ -48,6 +48,10 @@ final class URL extends Genome {
         parent::__construct();
     }
 
+    public function __get(string $key) {
+        return $this->__call($key);
+    }
+
     // Fix case for `isset($url->key)` or `!empty($url->key)`
     public function __isset(string $key) {
         return !!$this->__get($key);

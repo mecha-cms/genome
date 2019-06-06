@@ -23,6 +23,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
             $this->lot = e($m);
             $this->match = $path;
         }
+        parent::__construct();
     }
 
     public function __get(string $key) {

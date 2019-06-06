@@ -23,7 +23,6 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         if (is_array($in)) {
             $this->lot = array_replace_recursive($this->lot, $in);
         } else if (is_object($in) && $in instanceof self) {
-            // TODO
             $this->lot[0] = $in[0];
             $this->lot[1] = $in[1];
             $this->lot[2] = $in[2];

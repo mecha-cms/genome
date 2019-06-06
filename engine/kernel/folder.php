@@ -23,54 +23,6 @@ class Folder extends Genome {
         return $this->exist ? To::URL($this->path) : null;
     }
 
-    public function get($x = null, $deep = false): \Generator {
-        if ($this->exist && $folder = $this->path) {
-            $content = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
-            $content = new \RecursiveCallbackFilterIterator($content, function($v, $k, $a) use($deep, $x) {
-                if ($deep > 0 && $a->hasChildren()) {
-                    return true;
-                }
-                // Filter by function
-                if (is_callable($x)) {
-                    return call_user_func($x, $v->getPathname());
-                }
-                // Filter by type (`0` for folder and `1` for file)
-                if ($x === 0 || $x === 1) {
-                    return $v->{'is' . ($x === 0 ? 'Dir' : 'File')}();
-                }
-                // Filter file(s) by extension
-                if (is_string($x)) {
-                    $x = ',' . $x . ',';
-                    return $v->isFile() && strpos($x, ',' . $v->getExtension() . ',') !== false;
-                }
-                // No filter
-                return true;
-            });
-            $content = new \RecursiveIteratorIterator($content, !isset($x) || $x === 0 ? \RecursiveIteratorIterator::SELF_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
-            $content->setMaxDepth($deep === true ? -1 : (is_int($deep) ? $deep : 0));
-            foreach ($content as $k => $v) {
-                yield $k => $v->isDir() ? 0 : 1;
-            }
-        }
-        return yield from [];
-    }
-
-    public function name() {
-        return $this->exist ? basename($this->path) : null;
-    }
-
-    public function directory(int $i = 1) {
-        return $this->exist ? dirname($this->path, $i) : null;
-    }
-
-    public function type() {
-        return null;
-    }
-
-    public function x() {
-        return null;
-    }
-
     public function _consent() {
         return $this->exist ? fileperms($this->path) : null;
     }
@@ -105,13 +57,79 @@ class Folder extends Genome {
 
     public function copyTo() {}
 
+    public function directory(int $i = 1) {
+        return $this->exist ? dirname($this->path, $i) : null;
+    }
+
+    public function get($x = null, $deep = false): \Generator {
+        if ($this->exist && $folder = $this->path) {
+            $content = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
+            $content = new \RecursiveCallbackFilterIterator($content, function($v, $k, $a) use($deep, $x) {
+                if ($deep > 0 && $a->hasChildren()) {
+                    return true;
+                }
+                // Filter by function
+                if (is_callable($x)) {
+                    return call_user_func($x, $v->getPathname());
+                }
+                // Filter by type (`0` for folder and `1` for file)
+                if ($x === 0 || $x === 1) {
+                    return $v->{'is' . ($x === 0 ? 'Dir' : 'File')}();
+                }
+                // Filter file(s) by extension
+                if (is_string($x)) {
+                    $x = ',' . $x . ',';
+                    return $v->isFile() && strpos($x, ',' . $v->getExtension() . ',') !== false;
+                }
+                // No filter
+                return true;
+            });
+            $content = new \RecursiveIteratorIterator($content, !isset($x) || $x === 0 ? \RecursiveIteratorIterator::SELF_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
+            $content->setMaxDepth($deep === true ? -1 : (is_int($deep) ? $deep : 0));
+            foreach ($content as $k => $v) {
+                yield $k => $v->isDir() ? 0 : 1;
+            }
+        }
+        return yield from [];
+    }
+
     public function moveTo() {}
+
+    public function name() {
+        return $this->exist ? basename($this->path) : null;
+    }
+
+    public function renameTo() {}
 
     public function size(string $unit = null, int $prec = 2) {
         if (null !== ($size = $this->_size())) {
             return File::sizer($size, $unit, $prec);
         }
         return File::sizer(0, $unit, $prec);
+    }
+
+    public function time() {}
+
+    public function type() {
+        return null;
+    }
+
+    public function update() {}
+
+    public function x() {
+        return null;
+    }
+
+    public static function exist($path) {
+        if (is_array($path)) {
+            foreach ($path as $v) {
+                if ($v && is_dir($v)) {
+                    return realpath($v);
+                }
+            }
+            return false;
+        }
+        return is_dir($path) ? realpath($path) : false;
     }
 
     public static function from(string $path) {
@@ -170,18 +188,6 @@ class Folder extends Genome {
             }
         }
         return $out;
-    }
-
-    public static function exist($path) {
-        if (is_array($path)) {
-            foreach ($path as $v) {
-                if ($v && is_dir($v)) {
-                    return realpath($v);
-                }
-            }
-            return false;
-        }
-        return is_dir($path) ? realpath($path) : false;
     }
 
 }

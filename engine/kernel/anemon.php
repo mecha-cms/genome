@@ -1,6 +1,6 @@
 <?php
 
-final class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
+class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
 
     public $i = 0;
     public $lot = [];
@@ -69,8 +69,8 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return $clone;
     }
 
-    public function count($deep = false) {
-        return count($this->value, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
+    public function count() {
+        return count($this->value);
     }
 
     // Get current array value
@@ -221,19 +221,6 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
         return $this;
     }
 
-    // Replace current element with `$value`
-    public function replace($value) {
-        $i = 0;
-        foreach ($this->value as $k => $v) {
-            if ($i === $this->i) {
-                $this->value[$k] = $value;
-                break;
-            }
-            ++$i;
-        }
-        return $this;
-    }
-
     public function reverse() {
         $this->value = array_reverse($this->value);
         return $this;
@@ -333,6 +320,19 @@ final class Anemon extends Genome implements \ArrayAccess, \Countable, \Iterator
 
     public function unserialize($v) {
         $this->lot = $this->value = unserialize($v);
+    }
+
+    // Set current element value as `$value`
+    public function value($value) {
+        $i = 0;
+        foreach ($this->value as $k => $v) {
+            if ($i === $this->i) {
+                $this->value[$k] = $value;
+                break;
+            }
+            ++$i;
+        }
+        return $this;
     }
 
     public static function from(iterable $array) {

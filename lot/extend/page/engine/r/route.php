@@ -98,26 +98,16 @@ function page($form) {
             $this->status(200);
             $this->view('pages/' . $p . '/' . ($i + 1));
         }
-        \Config::set('is.error', 404);
-        \Config::set('has', [
-            'next' => false,
-            'parent' => false,
-            'prev' => false
-        ]);
-        $GLOBALS['t'][] = $language->isError;
-        $this->view('404/' . $p . '/' . ($i + 1));
-        /*
-        // Redirect to parent page if user tries to access the placeholder page…
-        if (\basename($folder) === "" && \is_file($folder . '.' . $page['x'])) {
-            \Guard::kick($parent_path);
-        }
-        $this->view('page/' . $p . '/' . ($i + 1));
-        */
-    } else {
-        \Config::set('is.error', 404);
-        $GLOBALS['t'][] = $language->isError;
-        $this->view('404/' . $p . '/' . ($i + 1));
     }
+    \Config::set('is.error', 404);
+    \Config::set('has', [
+        'i' => false,
+        'next' => false,
+        'parent' => false,
+        'prev' => false
+    ]);
+    $GLOBALS['t'][] = $language->isError;
+    $this->view('404/' . $p . '/' . ($i + 1));
 }
 
 \Route::set(['*', ""], __NAMESPACE__ . "\\page", 20);
