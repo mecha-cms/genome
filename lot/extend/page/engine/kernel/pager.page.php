@@ -11,7 +11,6 @@ class Page extends \Pager {
             $this->prev = $i - 1 > -1 ? $parent . '/' . $data[$i - 1] : null;
         }
         $this->parent = $parent !== "" && $parent !== $GLOBALS['URL']['$'] ? $parent : null;
-        parent::__construct();
     }
 
 }

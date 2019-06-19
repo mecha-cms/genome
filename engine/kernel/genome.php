@@ -4,8 +4,6 @@ abstract class Genome {
 
     // Method(s)…
     public static $_ = [];
-    // Instance(s)…
-    public static $__instance__ = [];
 
     // Call the added method with `$genome->foo()`
     public function __call(string $kin, array $lot = []) {
@@ -31,11 +29,6 @@ abstract class Genome {
         } else if (defined('DEBUG') && DEBUG) {
             throw new \BadMethodCallException('Method $' . c2f($c, '_', '/') . '->' . $kin . '() does not exist.');
         }
-    }
-
-    // Count the instance with `count(Genome::$__instance__)`
-    public function __construct() {
-        self::$__instance__[] = $this;
     }
 
     public function __get(string $kin) {

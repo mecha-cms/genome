@@ -68,7 +68,6 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function __construct(string $path = null, array $lot = [], array $prefix = []) {
-        parent::__construct();
         $c = c2f(static::class, '_', '/');
         $prefix = array_replace(['*', $c], $prefix);
         $id = json_encode([$path, $lot, $prefix]);

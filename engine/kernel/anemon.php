@@ -14,7 +14,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         }
         $this->lot = $this->value = $array;
         $this->separator = $separator;
-        parent::__construct();
     }
 
     public function __invoke(string $separator = ', ', $filter = true) {

@@ -60,7 +60,6 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                 throw new \ParseError(static::class . ' parsing error: ' . $in);
             }
         }
-        parent::__construct();
     }
 
     public function __toString() {

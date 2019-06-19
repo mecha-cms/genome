@@ -30,7 +30,6 @@ final class Date extends Genome {
         } else {
             $this->source = date(DATE_FORMAT, strtotime($date));
         }
-        parent::__construct();
     }
 
     public function __invoke(string $pattern = '%Y-%m-%d %H:%I:%S') {

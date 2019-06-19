@@ -2,12 +2,7 @@
 
 final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate {
 
-    private static $r;
-
-    public $lot;
-    public $match;
-
-    public function __construct(string $path) {
+    private function __construct(string $path) {
         $r = explode('/', $path = trim($path, '/'));
         foreach ($r as &$v) {
             if (strpos($v, ':') === 0) {
@@ -23,8 +18,12 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
             $this->lot = e($m);
             $this->match = $path;
         }
-        parent::__construct();
     }
+
+    private static $r;
+
+    public $lot;
+    public $match;
 
     public function __get(string $key) {
         if (method_exists($this, $key)) {

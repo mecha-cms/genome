@@ -45,7 +45,6 @@ final class URL extends Genome {
         } else {
             $this->lot = $GLOBALS['URL'];
         }
-        parent::__construct();
     }
 
     public function __get(string $key) {

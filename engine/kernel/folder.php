@@ -12,7 +12,6 @@ class Folder extends Genome {
         } else {
             $this->path = $path;
         }
-        parent::__construct();
     }
 
     public function __toString() {
