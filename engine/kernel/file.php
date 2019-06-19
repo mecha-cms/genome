@@ -35,7 +35,6 @@ class File extends Genome {
         } else {
             $this->path = $path;
         }
-        parent::__construct();
     }
 
     public function __toString() {
@@ -256,36 +255,6 @@ class File extends Genome {
 
     public static function open(string $path) {
         return new static($path);
-    }
-
-    public static function pull(string $path, string $name = null, string $type = null) {
-        if (is_file($path)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: ' . ($type ?? 'application/octet-stream'));
-            header('Content-Disposition: attachment; filename="' . ($name ?? basename($path)) . '"');
-            header('Content-Length: ' . filesize($path));
-            header('Expires: 0');
-            header('Pragma: public');
-            readfile($path);
-            exit;
-        }
-        return false; // Return `false` if file does not exist
-    }
-
-    public static function push(array $blob, string $path) {
-        $path = rtrim(strtr($path, '/', DS), DS);
-        if (!empty($blob['error'])) {
-            return $blob['error']; // Has error, abort!
-        }
-        if (is_file($f = $path . DS . $blob['name'])) {
-            return false; // File already exists
-        }
-        // Destination folder does not exist
-        if (!is_dir($path)) {
-            mkdir($path, 0775, true); // Create one!
-        }
-        move_uploaded_file($blob['tmp_name'], $f);
-        return $f; // There is no error, the file uploaded with success
     }
 
     public static function sizer(float $size, string $unit = null, int $prec = 2) {
