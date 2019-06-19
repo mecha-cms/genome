@@ -35,6 +35,7 @@ d(($f = ENGINE . DS) . 'kernel', function($v, $name) use($f) {
 
 // Boot…
 require __DIR__ . DS . 'r' . DS . 'anemon.php';
+require __DIR__ . DS . 'r' . DS . 'blob.php';
 require __DIR__ . DS . 'r' . DS . 'cache.php';
 require __DIR__ . DS . 'r' . DS . 'config.php';
 require __DIR__ . DS . 'r' . DS . 'cookie.php';

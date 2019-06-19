@@ -7,39 +7,38 @@ final class HTTP extends Genome {
             return parent::__callStatic($kin, $lot);
         }
         $id = '_' . strtoupper($kin);
-        $data = $GLOBALS[$id] ?? [];
+        $value = $GLOBALS[$id] ?? [];
         $key = array_shift($lot);
         $eval = array_shift($lot) ?? true;
         if (isset($key)) {
-            $o = get($data, $key);
-            $o = $eval ? e($o) : $o;
-            return $o === 0 || $o === '0' || !empty($o) ? $o : null;
+            $out = get($value, $key);
+            return $eval ? e($out) : $out;
         }
-        return $eval ? e($data) : $data;
+        return $eval ? e($value) : $value;
     }
 
     // Fetch remote URL
     public static function fetch(string $url, $agent = null) {
-        $header = [];
+        $data = [];
         // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
         $a = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
         // `HTTP::fetch('/', false, ['Content-Type' => 'text/html'])`
         if (is_array($agent)) {
             foreach ($agent as $k => $v) {
-                $header[$k] = $k . ': ' . $v;
+                $data[$k] = $k . ': ' . $v;
             }
         }
-        if (!isset($header['User-Agent'])) {
-            $header['User-Agent'] = 'User-Agent: ' . $a;
+        if (!isset($data['User-Agent'])) {
+            $data['User-Agent'] = 'User-Agent: ' . $a;
         }
-        $header = array_values($header);
+        $data = array_values($data);
         if (extension_loaded('curl')) {
             $curl = curl_init($url);
             curl_setopt_array($curl, [
                 CURLOPT_FAILONERROR => true,
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTPGET => true,
-                CURLOPT_HTTPHEADER => $header,
+                CURLOPT_HTTPHEADER => $data,
                 CURLOPT_MAXREDIRS => 2,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_SSL_VERIFYPEER => false,
@@ -54,7 +53,7 @@ final class HTTP extends Genome {
             $out = file_get_contents($url, false, stream_context_create([
                 'http' => [
                     'method' => 'GET',
-                    'header' => implode("\r\n", $header)
+                    'header' => implode("\r\n", $data)
                 ]
             ]));
         }
@@ -63,6 +62,9 @@ final class HTTP extends Genome {
 
     public static function header($key = null, $value = null) {
         if (!isset($key)) {
+            if (function_exists('apache_response_headers')) {
+                return apache_response_headers() ?: [];
+            }
             $out = [];
             foreach (headers_list() as $v) {
                 $a = explode(':', $v, 2);
@@ -70,31 +72,31 @@ final class HTTP extends Genome {
             }
             return $out;
         }
-        if (!is_array($key)) {
-            if (is_int($key)) {
-                self::status($key);
-            } else {
-                if ($value === false) {
-                    header_remove($key);
-                } else if (isset($value)) {
-                    header($key . ': ' . $value);
-                } else if ($key === false) {
-                    header_remove();
+        if (is_array($key)) {
+            foreach ($key as $k => $v) {
+                if ($v === false) {
+                    header_remove($k);
                 } else {
-                    if (function_exists('apache_response_headers')) {
-                        return apache_response_headers()[$key] ?? null;
-                    }
-                    foreach (headers_list() as $v) {
-                        if (strpos($v, $key . ': ') === 0) {
-                            return explode(': ', $v, 2)[1] ?? null;
-                        }
-                    }
-                    return null;
+                    header($k . ': ' . $v);
                 }
             }
         } else {
-            foreach ($key as $k => $v) {
-                header($k . ': ' . $v);
+            if ($value === false) {
+                header_remove($key);
+            } else if (isset($value)) {
+                header($key . ': ' . $value);
+            } else if ($key === false) {
+                header_remove();
+            } else {
+                if (function_exists('apache_response_headers')) {
+                    return apache_response_headers()[$key] ?? null;
+                }
+                foreach (headers_list() as $v) {
+                    if (strpos($v, $key . ': ') === 0) {
+                        return explode(': ', $v, 2)[1] ?? null;
+                    }
+                }
+                return null;
             }
         }
     }
@@ -116,19 +118,18 @@ final class HTTP extends Genome {
     }
 
     public static function status(int $i = null) {
-        if (is_int($i)) {
+        if (isset($i)) {
             http_response_code($i);
-        } else if (!isset($i)) {
-            return http_response_code();
         }
+        return http_response_code();
     }
 
-    public static function type(string $type, array $alt = []) {
-        $end = "";
-        foreach ($alt as $k => $v) {
-            $end .= '; ' . $k . '=' . $v;
+    public static function type(string $type, array $data = []) {
+        $s = "";
+        foreach ($data as $k => $v) {
+            $s .= '; ' . $k . '=' . $v;
         }
-        header('Content-Type: ' . $type . $end);
+        header('Content-Type: ' . $type . $s);
     }
 
 }
