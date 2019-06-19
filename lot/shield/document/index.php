@@ -16,8 +16,8 @@ Asset::set('js/document.min.js', 20);
 
 // Create site navigation data to be used in template
 $GLOBALS['menus'] = Get::pages()->is(function($v) {
-    $f = PAGE . DS . extend('page')['path'];
-    return $v !== $f . '.page' && $v !== $f . '.archive'; // Remove home page
+    $folder = PAGE . DS . extend('page')['path'];
+    return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
 })->map(function($v) use($url) {
     $v = new Page($v);
     $v->active = strpos($url->path . '/', '/' . $v->slug . '/') === 0; // Active state
