@@ -195,9 +195,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // @see `.\engine\ignite.php#fn:pluck`
-    public function pluck(string $key, $alt = null) {
+    public function pluck(string $key, $or = null) {
         $clone = $this->mitose();
-        $clone->value = pluck($clone->value, $key, $alt);
+        $clone->value = pluck($clone->value, $key, $or);
         return $clone;
     }
 

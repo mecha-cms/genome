@@ -291,14 +291,14 @@ namespace {
 // h: convert text to snake case with `-` (hyphen) as the default separator
 // i:
 // j:
-// k:
+// k: search file in a folder by query
 // l: convert text to lower case
 // m: normalize range margin
 // n: normalize white-space in string
 // o: convert array to object
 // p: convert text to pascal case
 // q: quantity (length of string, number or anemon)
-// r:
+// r: replace string
 // s: convert data type to their string format
 // t: trim string from specific prefix and suffix
 // u: convert text to upper case
