@@ -1,21 +1,14 @@
 <?php namespace _\get;
 
-function pages(string $folder = PAGE, string $x = 'page', $sort = [1, 'path'], string $out = null): \Anemon {
-    $k = \is_array($sort) && isset($sort[1]) ? $sort[1] : 'path';
-    $out = $out ?? $k;
+function pages(string $folder = PAGE, string $x = 'page', string $hook = "\\Pages") {
     $pages = [];
     foreach (\g($folder, $x) as $v) {
         if (\pathinfo($v, \PATHINFO_FILENAME) === "") {
             continue;
         }
-        $page = new \Page($v);
-        $pages[] = [
-            'path' => $v,
-            $k => $page[$k],
-            $out => $page[$out]
-        ];
+        $pages[] = $v;
     }
-    return \Anemon::from($pages)->sort($sort)->pluck($out);
+    return new $hook($pages);
 }
 
 \Get::_('pages', __NAMESPACE__ . "\\pages");

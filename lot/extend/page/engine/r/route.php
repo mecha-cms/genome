@@ -2,7 +2,7 @@
 
 $GLOBALS['page'] = new \Page;
 $GLOBALS['pager'] = new \Pager\Pages;
-$GLOBALS['pages'] = new \Anemon;
+$GLOBALS['pages'] = new \Pages;
 $GLOBALS['parent'] = new \Page;
 $GLOBALS['t'] = new \Anemon([$config->title], ' &#x00B7; ');
 
@@ -59,7 +59,7 @@ function page($form) {
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $parent_page['sort'] ?? $sort;
             $chunk = $parent_page['chunk'] ?? $chunk;
-            $parent_pages = \Get::pages($parent_folder, 'page', $sort, 'slug')->get();
+            $parent_pages = \Get::pages($parent_folder, 'page')->sort($sort)->take('slug');
         }
         $pager = new \Pager\Page($parent_pages ?? [], $page['slug'], $url . '/' . $parent_path);
         $GLOBALS['page'] = $page;
@@ -75,7 +75,7 @@ function page($form) {
             ],
             'sort' => $sort // Inherit page’s `sort` property
         ]);
-        $pages = \Get::pages($folder, 'page', $sort, 'path');
+        $pages = \Get::pages($folder, 'page')->sort($sort);
         // No page(s) means “page” mode
         if ($pages->count() === 0 || \is_file($folder . DS . '.' . $page['x'])) {
             $this->status(200);
@@ -83,9 +83,7 @@ function page($form) {
         }
         // Create pager for “pages” mode
         $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . '/' . $p);
-        $pages = $pages->chunk($chunk, $i)->map(function($v) {
-            return new \Page($v);
-        });
+        $pages = $pages->chunk($chunk, $i);
         if ($pages->count() > 0) {
             \Config::set('has', [
                 'next' => !!$pager->next,
