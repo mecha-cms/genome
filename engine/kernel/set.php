@@ -16,7 +16,7 @@ final class Set extends Genome {
                 $GLOBALS[$id] = $key;
             // `Set::post(['foo' => 'bar'])`
             } else {
-                // Extend
+                // Extent
                 $GLOBALS[$id] = array_replace_recursive($GLOBALS[$id], $key);
             }
         // `Set::post('foo', 'bar')`

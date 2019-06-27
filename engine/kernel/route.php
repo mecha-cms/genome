@@ -5,10 +5,9 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     private function __construct(string $path) {
         $r = explode('/', $path = trim($path, '/'));
         foreach ($r as &$v) {
-            if (strpos($v, ':') === 0) {
-                $v = '(?P<' . substr($v, 1) . '>[^/]+)';
-            } else {
-                $v = str_replace("\\*", '(.+)', preg_quote($v));
+            if (strpos($v, '<') === 0 && substr($v, -1) === '>') {
+                $v = trim($v, '<>');
+                $v = $v === "" ? '(.+)' : '(?P<' . $v . '>[^/]+)';
             }
         }
         $r = '#^' . implode('/', $r) . '$#';

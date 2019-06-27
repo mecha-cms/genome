@@ -10,6 +10,14 @@ class Pages extends Anemon {
         return new \ArrayIterator($pages);
     }
 
+    public function pluck(string $key, $or = null) {
+        $value = [];
+        foreach ($this->value as $v) {
+            $value[] = (new Page($v))[$key] ?? $or;
+        }
+        return $value;
+    }
+
     public function sort($sort = 1, $preserve_key = false) {
         if (is_array($sort)) {
             $value = [];
@@ -28,14 +36,6 @@ class Pages extends Anemon {
             $this->value = $value;
         }
         return $this;
-    }
-
-    public function take(string $key, $or = null) {
-        $value = [];
-        foreach ($this->value as $v) {
-            $value[] = (new Page($v))[$key] ?? $or;
-        }
-        return $value;
     }
 
 }

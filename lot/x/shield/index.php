@@ -29,7 +29,7 @@ if (is_file($fn = $folder . 'index.php')) {
 }
 
 // Detect relative asset path to the `.\lot\shield\*` folder
-if (extend('asset') !== null && $assets = Asset::get()) {
+if (extension('asset') !== null && $assets = Asset::get()) {
     foreach ($assets as $k => $v) {
         foreach ($v as $kk => $vv) {
             // Full path, no change!

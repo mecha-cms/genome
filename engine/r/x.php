@@ -1,31 +1,31 @@
 <?php
 
-function extend(string $query) {
+function extension(string $query) {
     $a = explode(':', $query, 2);
-    if (isset($GLOBALS['EXTEND'][1][$query])) {
-        return $GLOBALS['EXTEND'][1][$query];
+    if (isset($GLOBALS['X'][1][$query])) {
+        return $GLOBALS['X'][1][$query];
     }
-    if (is_file($f = EXTEND . DS . $a[0] . DS . 'index.php')) {
+    if (is_file($f = X . DS . $a[0] . DS . 'index.php')) {
         $out = [];
         if (is_file($f = dirname($f) . DS . 'lot' . DS . 'state' . DS . ($a[1] ?? 'config') . '.php')) {
             extract($GLOBALS, EXTR_SKIP);
             $out = require $f;
         }
-        $out = Hook::fire('extend.state.' . strtr($query, '.', '/'), [$out]);
-        return ($GLOBALS['EXTEND'][1][$query] = $out);
+        $out = Hook::fire('x.state.' . strtr($query, '.', '/'), [$out]);
+        return ($GLOBALS['X'][1][$query] = $out);
     }
     return null;
 }
 
 $extends = [];
-foreach (glob(EXTEND . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
+foreach (glob(X . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
     $n = basename($dir = dirname($v));
     $extends[$v] = content($dir . DS . $n) ?? $n;
 }
 
 // Sort by name
 natsort($extends);
-$GLOBALS['EXTEND'][0] = $extends = array_keys($extends);
+$GLOBALS['X'][0] = $extends = array_keys($extends);
 
 // Load class(es)…
 foreach ($extends as $v) {

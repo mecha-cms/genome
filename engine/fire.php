@@ -51,7 +51,7 @@ require __DIR__ . DS . 'r' . DS . 'session.php';
 require __DIR__ . DS . 'r' . DS . 'u-r-l.php';
 
 // Load extension(s)…
-require __DIR__ . DS . 'r' . DS . 'extend.php';
+require __DIR__ . DS . 'r' . DS . 'x.php';
 
 // Run main task if any…
 if (is_file($f = ROOT . DS . 'task.php')) {

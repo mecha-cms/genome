@@ -2,6 +2,6 @@
 
 return [
     'page' => [
-        'sort' => [1, 'slug']
+        'sort' => [1, 'path']
     ]
 ];

@@ -10,7 +10,7 @@ function page($form) {
     global $config, $language, $url;
     $i = ($url->i ?? 1) - 1;
     // Load default page state(s)…
-    $state = \extend('page');
+    $state = \extension('page');
     // Prevent directory traversal attack
     // <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = \str_replace('../', "", \urldecode($this[0]));
@@ -47,8 +47,8 @@ function page($form) {
                 });
             }
         }
-        $parent_path = \dirname($path);
-        $parent_folder = \dirname($folder);
+        $parent_path = \Path::D($path);
+        $parent_folder = \Path::D($folder);
         if ($parent_file = \File::exist([
             $parent_folder . '.page', // `.\lot\page\parent-slug.page`
             $parent_folder . '.archive', // `.\lot\page\parent-slug.archive`
@@ -59,7 +59,7 @@ function page($form) {
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $parent_page['sort'] ?? $sort;
             $chunk = $parent_page['chunk'] ?? $chunk;
-            $parent_pages = \Get::pages($parent_folder, 'page')->sort($sort)->take('slug');
+            $parent_pages = \Get::pages($parent_folder, 'page')->sort($sort)->pluck('slug');
         }
         $pager = new \Pager\Page($parent_pages ?? [], $page['slug'], $url . '/' . $parent_path);
         $GLOBALS['page'] = $page;
@@ -108,4 +108,4 @@ function page($form) {
     $this->view('404/' . $p . '/' . ($i + 1));
 }
 
-\Route::set(['*', ""], __NAMESPACE__ . "\\page", 20);
+\Route::set(['<>', ""], __NAMESPACE__ . "\\page", 20);

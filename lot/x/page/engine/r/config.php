@@ -1,7 +1,7 @@
 <?php
 
 // Store page state to registry…
-$state = extend('page');
+$state = extension('page');
 if (!empty($state['page'])) {
     // Prioritize default state
     Config::over($state);
