@@ -67,16 +67,6 @@ namespace _\is {
 }
 
 namespace {
-    // Alter array value(s)
-    function alter(array $a, ...$b) {
-        // `alter([…], […], […], false)`
-        if (\count($b) > 1 && \end($b) === false) {
-            \array_pop($b);
-            return \array_replace($a, ...$b);
-        }
-        // `alter([…], […], […])`
-        return \array_replace_recursive($a, ...$b);
-    }
     // Check if array contains …
     function any(array $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
@@ -124,6 +114,16 @@ namespace {
             return false;
         }
         return \stream_resolve_include_path($f);
+    }
+    // Extend array value(s)
+    function extend(array $a, ...$b) {
+        // `extend([…], […], […], false)`
+        if (\count($b) > 1 && \end($b) === false) {
+            \array_pop($b);
+            return \array_replace($a, ...$b);
+        }
+        // `extend([…], […], […])`
+        return \array_replace_recursive($a, ...$b);
     }
     // Convert file name to class name
     function f2c(string $s, string $h = '-', string $n = '.') {

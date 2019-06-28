@@ -12,7 +12,7 @@ foreach ([
             $href = fire($data['href'], [$href, $value, $key], null, Asset::class);
             unset($data['href']);
         }
-        return new HTML(['link', false, alter($data, [
+        return new HTML(['link', false, extend($data, [
             'href' => $href,
             'rel' => 'stylesheet'
         ])]);
@@ -28,7 +28,7 @@ foreach ([
             $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
-        return new HTML(['script', "", alter($data, [
+        return new HTML(['script', "", extend($data, [
             'src' => $src
         ])]);
     }
@@ -48,7 +48,7 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
             $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
-        return new HTML(['img', false, alter($data, [
+        return new HTML(['img', false, extend($data, [
             'src' => $src
         ])]);
     });
