@@ -1,0 +1,46 @@
+---
+title: File Uploads
+description: Process file uploads easily through the standard `POST` request.
+author: Taufik Nurrohman
+type: Markdown
+version: 1.0.0
+...
+
+~~~ .html
+<form action="/push" method="post" enctype="multipart/form-data">
+  <p><input name="title" type="text"></p>
+  <p><textarea name="description"></textarea></p>
+  <p><input name="blob" type="file"></p>
+  <p><button type="submit">Upload</button></p>
+</form>
+~~~
+
+### The Uploader
+
+~~~ .php
+Route::set('push', function($form, $type) {
+    if ($type !== 'post') {
+        Guard::abort('Method not allowed.');
+    }
+    extract($form);
+    if (!empty($blob)) {
+        if ($e = $blob->error) {
+            // Print error message
+            $this->content('Error: ' . $e);
+        } else if (strpos($blob->type, 'image/') !== 0) {
+            // Print error message
+            $this->content('Error: Images only!');
+        } else {
+            $blob->saveTo('.\path\to\image.jpg');
+            File::set(To::JSON([
+                'title' => $title ?? null,
+                'description' => $description ?? null
+            ]))->saveTo('.\path\to\image-data.json', 0600);
+            // Print success message
+            $this->content('Uploaded!');
+        }
+    }
+    // Print error message
+    $this->content('Error.');
+});
+~~~

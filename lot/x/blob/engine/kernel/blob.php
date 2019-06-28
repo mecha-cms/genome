@@ -2,7 +2,7 @@
 
 class Blob extends File {
 
-    private $lot;
+    protected $blob;
 
     public $exist;
     public $path;
@@ -11,12 +11,12 @@ class Blob extends File {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        return $this->lot[$kin] ?? null;
+        return $this->blob[$kin] ?? null;
     }
 
     public function __construct(array $file) {
         $this->exist = false;
-        $this->lot = $file;
+        $this->blob = $file;
         $this->path = $file['tmp_name'] ?: null;
     }
 
@@ -33,7 +33,7 @@ class Blob extends File {
     }
 
     public function _size() {
-        return $this->lot['size'] ?? null;
+        return $this->blob['size'] ?? null;
     }
 
     public function _x() {
@@ -49,63 +49,50 @@ class Blob extends File {
     }
 
     public function error() {
-        return $this->lot['error'] ?? null;
+        return $this->blob['error'] ?? null;
     }
 
     public function name($x = false) {
-        $name = $this->lot['name'];
+        $name = $this->blob['name'];
         return $x === true ? $name : pathinfo($name, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
     }
 
-    public function save() {}
-    public function saveAs() {}
-    public function saveTo() {}
-
-    /*
-    public static function pull(string $path, string $name = null, string $type = null) {
-        if (is_file($path)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: ' . ($type ?? 'application/octet-stream'));
-            header('Content-Disposition: attachment; filename="' . ($name ?? basename($path)) . '"');
-            header('Content-Length: ' . filesize($path));
-            header('Expires: 0');
-            header('Pragma: public');
-            readfile($path);
-            exit;
-        }
-        return false; // Return `false` if file does not exist
+    public function saveAs(string $name, $consent = null) {
+        // Save to the ground
+        return $this->saveTo(GROUND . DS . basename($name), $consent);
     }
-    public static function push(array $blob, string $path) {
-        $path = rtrim(strtr($path, '/', DS), DS);
-        if (!empty($blob['error'])) {
-            return $blob['error']; // Has error, abort!
+
+    public function saveTo(string $path, $consent = null) {
+        $path = strtr($path, '/', DS);
+        if (!is_dir($d = dirname($path))) {
+            mkdir($d, 0775, true);
         }
-        if (is_file($f = $path . DS . $blob['name'])) {
+        if (is_file($path)) {
             return false; // File already exists
         }
-        // Destination folder does not exist
-        if (!is_dir($path)) {
-            mkdir($path, 0775, true); // Create one!
+        if (move_uploaded_file($this->path, $path) !== false) {
+            if (isset($consent)) {
+                chmod($path, $consent);
+            }
+            return $path; // Return `$path` on success
         }
-        move_uploaded_file($blob['tmp_name'], $f);
-        return $f; // There is no error, the file uploaded with success
+        return null; // Return `null` on error
     }
-    */
 
     public function size(string $unit = null, $prec = 2) {
         if (!$this->error()) {
-            return parent::sizer($this->lot['size'], $unit, $prec);
+            return parent::sizer($this->blob['size'], $unit, $prec);
         }
         return null;
     }
 
     public function type() {
-        return $this->lot['type'] ?? null;
+        return $this->blob['type'] ?? null;
     }
 
     public function x() {
         if (!$this->error()) {
-            $name = $this->lot['name'];
+            $name = $this->blob['name'];
             if (strpos($name, '.') === false) {
                 return null;
             }
