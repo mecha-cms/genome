@@ -6,14 +6,17 @@ class File extends Genome {
         // List of allowed file extension(s)
         'x' => [
             'gif' => 1,
+            'htm' => 1,
             'html' => 1,
             'jpg' => 1,
-            'json' => 1,
             'jpeg' => 1,
+            'json' => 1,
             'log' => 1,
             'png' => 1,
             'txt' => 1,
-            'xml' => 1
+            'xml' => 1,
+            'yaml' => 1,
+            'yml' => 1
         ],
         'size' => [0, 2097152] // Range of allowed file size(s)
     ];
