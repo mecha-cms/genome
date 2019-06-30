@@ -59,7 +59,9 @@ function page($form) {
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $parent_page['sort'] ?? $sort;
             $chunk = $parent_page['chunk'] ?? $chunk;
-            $parent_pages = \Get::pages($parent_folder, 'page')->sort($sort)->pluck('slug');
+            $parent_pages = \map(\Get::pages($parent_folder, 'page')->sort($sort), function($v) {
+                return $v['slug'];
+            });
         }
         $pager = new \Pager\Page($parent_pages ?? [], $page['slug'], $url . '/' . $parent_path);
         $GLOBALS['page'] = $page;

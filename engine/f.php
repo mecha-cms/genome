@@ -68,7 +68,7 @@ namespace _\is {
 
 namespace {
     // Check if array contains …
-    function any(array $a, $fn = null) {
+    function any(iterable $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
@@ -134,7 +134,7 @@ namespace {
         return c(\str_replace([$n, '_'], [$h . '__', $h . '_'], $s), false, $n . '_');
     }
     // Return the first element found in array that passed the function test
-    function find(array $a, callable $fn) {
+    function find(iterable $a, callable $fn) {
         foreach ($a as $k => $v) {
             if (\call_user_func($fn, $v, $k)) {
                 return $v;
@@ -167,7 +167,7 @@ namespace {
         return \strpos($x . \implode($x, $a) . $x, $x . $s . $x) !== false;
     }
     // Filter out element(s) that pass the function test
-    function is(array $a, $fn = null) {
+    function is(iterable $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
@@ -198,15 +198,19 @@ namespace {
         return q($a) < $b;
     }
     // Manipulate array value(s)
-    function map(array $a, callable $fn) {
-        return \array_map($fn, $a, \array_keys($a));
+    function map(iterable $a, callable $fn) {
+        $out = [];
+        foreach ($a as $k => $v) {
+            $out[$k] = \call_user_func($fn, $v, $k);
+        }
+        return $out;
     }
     // A not equal to B
     function ne($a, $b) {
         return q($a) !== $b;
     }
     // Filter out element(s) that does not pass the function test
-    function not(array $a, $fn = null) {
+    function not(iterable $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
@@ -217,7 +221,7 @@ namespace {
         }, \ARRAY_FILTER_USE_BOTH);
     }
     // Generate new array contains value from the key
-    function pluck(array $a, string $k, $alt = null) {
+    function pluck(iterable $a, string $k, $alt = null) {
         return \array_filter(\array_map(function($v) use($alt, $k) {
             return $v[$k] ?? $alt;
         }, $a));
@@ -929,6 +933,7 @@ namespace {
                 if ($b !== '.' && $b !== '..') {
                     $n = \pathinfo($b, \PATHINFO_FILENAME);
                     foreach ($q as $v) {
+                        $r = $f . DS . $b;
                         // Find by query in file name…
                         if (\strpos($n, $v) !== false) {
                             yield $r;

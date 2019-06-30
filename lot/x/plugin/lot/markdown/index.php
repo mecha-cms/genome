@@ -1,44 +1,35 @@
 <?php
 
-namespace _\markdown {
-    function b($in, array $lot = [], $mode = 'text') {
-        $x = new \ParsedownExtraPlugin;
+namespace _\type\markdown {
+    function b($in, $mode = 'text') {
+        $parser = new \ParsedownExtraPlugin;
         foreach (\plugin('markdown') as $k => $v) {
-            $x->{$k} = $v;
+            $parser->{$k} = $v;
         }
-        return $x->{$mode}((string) $in);
+        return $parser->{$mode}((string) $in);
     }
-    function i($in, array $lot = []) {
+    function i($in) {
         if ($this['type'] !== 'Markdown') {
             return $in;
         }
-        return \w(b($in, $lot), HTML_WISE_I);
+        return \w(b($in), HTML_WISE_I);
         // return b($in, $lot, 'line'); // TODO
     }
     \Hook::set('*.title', __NAMESPACE__ . "\\i", 2);
     \Hook::set(['*.description', '*.content'], __NAMESPACE__, 2);
 }
 
-namespace _ {
-    function markdown($in = "", array $lot = []) {
+namespace _\type {
+    function markdown($in = "") {
         if ($this['type'] !== 'Markdown') {
             return $in;
         }
-        return markdown\b($in, $lot);
+        return markdown\b($in);
     }
 }
 
 namespace {
     Language::set('o:page-type.Markdown', 'Markdown');
-    From::_('markdown', function(string $in = "", $span = false) {
-        return _\markdown\b($in, $span ? 'span' : 'text');
-    });
-    To::_('markdown', function(string $in = "") {
-        return $in; // TODO
-    });
-    // Alias(es)
-    From::_('Markdown', From::_('markdown'));
-    To::_('Markdown', To::_('markdown'));
     // Add `markdown` to the allowed file extension(s)
     File::$config['x']['markdown'] = 1;
     File::$config['x']['md'] = 1;
