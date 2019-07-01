@@ -26,10 +26,10 @@ Route::set('push', function($form, $type) {
     if (!empty($blob)) {
         if ($e = $blob->error) {
             // Print error message
-            $this->content('Error: ' . $e);
+            $this->put('Error: ' . $e);
         } else if (strpos($blob->type, 'image/') !== 0) {
             // Print error message
-            $this->content('Error: Images only!');
+            $this->put('Error: Images only!');
         } else {
             $blob->saveTo('.\path\to\image.jpg');
             File::set(To::JSON([
@@ -37,10 +37,10 @@ Route::set('push', function($form, $type) {
                 'description' => $description ?? null
             ]))->saveTo('.\path\to\image-data.json', 0600);
             // Print success message
-            $this->content('Uploaded!');
+            $this->put('Uploaded!');
         }
     }
     // Print error message
-    $this->content('Error.');
+    $this->put('Error.');
 });
 ~~~

@@ -20,6 +20,22 @@ final class URL extends Genome {
     public function __construct(string $in = null) {
         if (isset($in)) {
             $out = parse_url($in);
+            if (strpos($in, '://') === false) {
+                $out = array_replace($GLOBALS['URL'], $out);
+                $out['$'] = $out['protocol'] . $out['host'] . $out['directory'];
+                $out['clean'] = rtrim($out['$'] . '/' . $out['path'], '/');
+                if (strpos($in, '/') === 0 && $d = $out['directory']) {
+                    $out['directory'] = null;
+                    $out['$'] = substr($out['$'], 0, -strlen($d));
+                    $out['clean'] = rtrim($out['$'] . $out['path'], '/');
+                }
+            } else if (strpos($in, $GLOBALS['URL']['$']) === 0) {
+                // TODO
+                // $out = array_replace($out, $GLOBALS['URL']);
+            } else {
+                $out['protocol'] = $out['scheme'] . '://';
+                $out['clean'] = preg_split('/[?&#]/', $in)[0];
+            }
             $path = trim($out['path'] ?? "", '/');
             $a = explode('/', $path);
             if (is_numeric(end($a))) {
@@ -29,13 +45,12 @@ final class URL extends Genome {
                 $out['i'] = null;
             }
             $out['path'] = $path !== "" ? '/' . $path : null;
-            $out['clean'] = rtrim(strtr(preg_split('/[?&#]/', $in)[0], [
+            $out['clean'] = strtr($out['clean'], [
                 '<' => '%3C',
                 '>' => '%3E',
                 '&' => '%26',
                 '"' => '%22'
-            ]), '/');
-            $out['$'] = rtrim($out['clean'] . '/' . $out['i'], '/');
+            ]);
             $q = $out['query'] ?? "";
             $h = $out['fragment'] ?? "";
             $out['query'] = $q !== "" ? '?' . str_replace('&amp;', '&', $q) : null;

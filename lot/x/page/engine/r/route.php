@@ -81,7 +81,7 @@ function page($form) {
         // No page(s) means “page” mode
         if ($pages->count() === 0 || \is_file($folder . DS . '.' . $page['x'])) {
             $this->status(200);
-            $this->view('page/' . $p . '/' . ($i + 1));
+            $this->content('page/' . $p . '/' . ($i + 1));
         }
         // Create pager for “pages” mode
         $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . '/' . $p);
@@ -96,7 +96,7 @@ function page($form) {
             $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
             $this->status(200);
-            $this->view('pages/' . $p . '/' . ($i + 1));
+            $this->content('pages/' . $p . '/' . ($i + 1));
         }
     }
     \Config::set('is.error', 404);
@@ -107,7 +107,7 @@ function page($form) {
         'prev' => false
     ]);
     $GLOBALS['t'][] = $language->isError;
-    $this->view('404/' . $p . '/' . ($i + 1));
+    $this->content('404/' . $p . '/' . ($i + 1));
 }
 
 \Route::set(['<>', ""], __NAMESPACE__ . "\\page", 20);

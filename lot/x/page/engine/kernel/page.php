@@ -207,8 +207,12 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function unserialize($v) {
-        $page = new static;
-        $page->lot = unserialize($v);
+        $data = unserialize($v);
+        foreach ($data as $k => $v) {
+            $this->read[$k] = 1;
+            $this->lot[$k] = $v;
+        }
+        return $this;
     }
 
     public static function apart(string $in, $key = null, $eval = false) {

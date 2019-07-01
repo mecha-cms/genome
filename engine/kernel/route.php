@@ -33,13 +33,6 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         return $this->lot[$key = p2f($key)] ?? null;
     }
 
-    public function content(string $v) {
-        Hook::fire('set', [], $this);
-        echo Hook::fire('content', [$v], $this);
-        Hook::fire('get', [], $this);
-        exit;
-    }
-
     public function count() {
         return count($this->lot);
     }
@@ -78,6 +71,13 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
 
     public function offsetUnset($i) {
         unset($this->lot[$i]);
+    }
+
+    public function put(string $v) {
+        Hook::fire('set', [], $this);
+        echo Hook::fire('content', [$v], $this);
+        Hook::fire('get', [], $this);
+        exit;
     }
 
     public function refresh(...$v) {
