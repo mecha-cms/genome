@@ -8,8 +8,8 @@ version: 1.5.1
 
 ### Feature
 
- - Detect asset path relative to the `.\lot\asset` and `.\lot\shield\<id>\asset` folder [^1]
- - Detect shield path relative to the `.\lot\shield\<id>` folder [^1]
+ - Detect asset path relative to the `.\lot\asset` and `.\lot\shield\:name\asset` folder [^1]
+ - Detect shield path relative to the `.\lot\shield\:name` folder [^1]
  - Add HTML classes automatically to the `<html>` element based on the current page conditional statements.
 
 ### Class

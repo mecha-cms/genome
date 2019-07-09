@@ -110,4 +110,4 @@ function page($form) {
     $this->content('404/' . $p . '/' . ($i + 1));
 }
 
-\Route::set(['<>', ""], __NAMESPACE__ . "\\page", 20);
+\Route::set(['*', ""], __NAMESPACE__ . "\\page", 20);
