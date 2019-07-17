@@ -5,9 +5,8 @@ author: Taufik Nurrohman
 type: Markdown
 version: 1.3.5
 
-lot:
-  x:
-    page: 1
+use:
+  '.\lot\x\page': 1
 ...
 
 To enable this feature, add `css.data` and `js.data` files to a folder that has the same name as the page slug and is stored in the same directory level:
@@ -15,10 +14,10 @@ To enable this feature, add `css.data` and `js.data` files to a folder that has 
 ~~~ .txt
 lot\
 └── page\
-    ├── blog-page\
+    ├── lorem-ipsum\
     │   ├── css.data
     │   └── js.data
-    └── blog-page.page
+    └── lorem-ipsum.page
 ~~~
 
 Write custom CSS code in `css.data` file, and custom JavaScript code in `js.data` file.
@@ -40,7 +39,5 @@ These HTML classes will be added automatically if your `<html>` element has `cla
 
  - `has-css` → Will be added if custom CSS data of current page isn’t empty.
  - `has-js` → Will be added if custom JS data of current page isn’t empty.
- - `is-art` → Will be added if custom CSS or JS data of current page aren’t empty.
+ - `is-art` → Will be added if custom CSS or JS data of current page isn’t empty.
  - `not-art` → Will be added if custom CSS and JS data of current page are empty.
-
-<!-- block:donate -->

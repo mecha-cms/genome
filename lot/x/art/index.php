@@ -1,6 +1,6 @@
 <?php
 
-namespace _\art {
+namespace _\lot\x\art {
     function css($content) {
         $content = \trim($content);
         if ($content && \strpos($content, '</style>') === false && \strpos($content, '<link ') === false) {
@@ -46,7 +46,7 @@ namespace _\art {
     \Language::set('art', ['Art', 'Art', 'Arts']);
 }
 
-namespace _ {
+namespace _\lot\x {
     function art($content) {
         extract($GLOBALS, \EXTR_SKIP);
         if (empty($page)) {
