@@ -1,9 +1,9 @@
 <?php
 
-namespace _\type\markdown {
+namespace _\lot\x\markdown {
     function b($in, $mode = 'text') {
         $parser = new \ParsedownExtraPlugin;
-        foreach (\plugin('markdown') as $k => $v) {
+        foreach (\state('markdown') as $k => $v) {
             $parser->{$k} = $v;
         }
         return $parser->{$mode}((string) $in);
@@ -15,11 +15,11 @@ namespace _\type\markdown {
         return \w(b($in), HTML_WISE_I);
         // return b($in, $lot, 'line'); // TODO
     }
-    \Hook::set('*.title', __NAMESPACE__ . "\\i", 2);
-    \Hook::set(['*.description', '*.content'], __NAMESPACE__, 2);
+    \Hook::set('page.title', __NAMESPACE__ . "\\i", 2);
+    \Hook::set(['page.description', 'page.content'], __NAMESPACE__, 2);
 }
 
-namespace _\type {
+namespace _\lot\x {
     function markdown($in = "") {
         if ($this['type'] !== 'Markdown') {
             return $in;
