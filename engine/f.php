@@ -1,6 +1,6 @@
 <?php
 
-namespace _\is {
+namespace _ {
     // Check for valid data collection (array or object)
     function anemon($x, $t = null) {
         if (\is_string($t)) {
@@ -316,7 +316,7 @@ namespace {
     function a($o, $safe = true) {
         if (\is_object($o)) {
             if ($safe) {
-                $o = \_\is\instance($o) ? $o : (array) $o;
+                $o = \_\instance($o) ? $o : (array) $o;
             } else {
                 $o = (array) $o;
             }
@@ -372,7 +372,7 @@ namespace {
             if (\is_numeric($x)) {
                 return \strpos($x, '.') !== false ? (float) $x : (int) $x;
             }
-            if (false !== ($v = \_\is\json($x, true))) {
+            if (false !== ($v = \_\json($x, true))) {
                 return $v;
             }
             // `"abcdef"` or `'abcdef'`
@@ -384,7 +384,7 @@ namespace {
                 if (
                     $a !== false &&
                     $a === $b + 1 &&
-                    \preg_match('#^' . $x[0] . '(?:[^' . $x[0] . '\\\]|\\\.)*' . $x[0] . '$#', $x)
+                    \preg_match('/^' . $x[0] . '(?:[^' . $x[0] . '\\\]|\\\.)*' . $x[0] . '$/', $x)
                 ) {
                     return \str_replace("\\" . $x[0], $x[0], $v);
                 }
@@ -933,6 +933,9 @@ namespace {
                 if ($b !== '.' && $b !== '..') {
                     $n = \pathinfo($b, \PATHINFO_FILENAME);
                     foreach ($q as $v) {
+                        if (empty($v) && $v !== '0') {
+                            continue;
+                        }
                         $r = $f . DS . $b;
                         // Find by query in file name…
                         if (\strpos($n, $v) !== false) {
@@ -940,10 +943,8 @@ namespace {
                         // Find by query in file content…
                         } else if ($c && \is_file($r)) {
                             foreach (stream($r) as $s) {
-                                foreach ($q as $v) {
-                                    if (\strpos($s, $v) !== false) {
-                                        yield $r;
-                                    }
+                                if (\strpos($s, $v) !== false) {
+                                    yield $r;
                                 }
                             }
                         }
@@ -969,7 +970,7 @@ namespace {
     function o($a, $safe = true) {
         if (\is_array($a)) {
             if ($safe) {
-                $a = \_\is\anemon_a($a) ? (object) $a : $a;
+                $a = \_\anemon_a($a) ? (object) $a : $a;
             } else {
                 $a = (object) $a;
             }

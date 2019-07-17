@@ -2,14 +2,14 @@
 
 final class Guard extends Genome {
 
-    public static function abort(string $message, $exit = true) {
+    public static function abort(string $alert, $exit = true) {
         ob_start();
         debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $trace = explode("\n", n(ob_get_clean()), 2);
         array_shift($trace);
         $trace = str_replace(ROOT, '.', implode("\n", $trace));
         echo '<details style="margin:0;padding:0;background:#f00;font:normal normal 13px/1.5 sans-serif;color:#fff;selection:none;">';
-        echo '<summary style="margin:0;padding:.5em 1em;display:block;cursor:help;">' . $message . '</summary>';
+        echo '<summary style="margin:0;padding:.5em 1em;display:block;cursor:help;">' . $alert . '</summary>';
         echo '<pre style="margin:0;padding:0;background:#000;font:normal normal 100%/1.25 monospace;white-space:pre;overflow:auto;"><code style="margin:0;padding:.5em 1em;display:block;font:inherit;">' . $trace . '</code></pre>';
         echo '</details>';
         $exit && exit;

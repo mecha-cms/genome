@@ -12,6 +12,11 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return self::__callStatic($kin, $lot);
     }
 
+    public function __construct(array $lot = []) {
+        $c = static::class;
+        self::$lot[$c] = self::$a[$c] = $lot;
+    }
+
     public function __get(string $key) {
         if (self::_($key)) {
             return $this->__call($key);
@@ -117,15 +122,6 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         }
         $out = self::$lot[$c] ?? [];
         return $array ? $out : o($out);
-    }
-
-    public static function load(...$lot) {
-        $c = static::class;
-        if (isset($lot[0])) {
-            $a = Is::file($lot[0]) ? require $lot[0] : $lot[0];
-            return (self::$lot[$c] = self::$a[$c] = a($a));
-        }
-        return (self::$lot[$c] = []);
     }
 
     public static function let($key = null) {

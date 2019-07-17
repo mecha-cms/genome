@@ -7,4 +7,4 @@ function route(...$v) {
 // Load all route(s)…
 Hook::set('start', function() {
     !error_get_last() && Route::start();
-}, 100);
+}, 1000);

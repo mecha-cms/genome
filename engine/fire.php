@@ -25,8 +25,8 @@ array_walk_recursive($vars, function(&$v) {
 });
 
 // Load class(es)…
-d(($f = ENGINE . DS) . 'kernel', function($v, $name) use($f) {
-    $f .= 'plug' . DS . $name . '.php';
+d(($f = ENGINE . DS) . 'kernel', function($v, $n) use($f) {
+    $f .= 'plug' . DS . $n . '.php';
     if (is_file($f)) {
         extract($GLOBALS, EXTR_SKIP);
         require $f;
@@ -48,14 +48,3 @@ require __DIR__ . DS . 'r' . DS . 'mecha.php';
 require __DIR__ . DS . 'r' . DS . 'route.php';
 require __DIR__ . DS . 'r' . DS . 'session.php';
 require __DIR__ . DS . 'r' . DS . 'u-r-l.php';
-
-// Load extension(s)…
-require __DIR__ . DS . 'r' . DS . 'x.php';
-
-// Run main task if any…
-if (is_file($f = ROOT . DS . 'task.php')) {
-    require $f;
-}
-
-// Fire!
-Hook::fire('start');
