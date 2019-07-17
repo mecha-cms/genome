@@ -1,22 +1,22 @@
 ---
-title: Shield
-description: Common automation package used to speed up theme development.
+title: Content
+description: Common automation package used to speed up skin development.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.5.1
+version: 1.6.1
 ...
 
 ### Feature
 
- - Detect asset path relative to the `.\lot\asset` and `.\lot\shield\:name\asset` folder [^1]
- - Detect shield path relative to the `.\lot\shield\:name` folder [^1]
+ - Detect asset path relative to the `.\lot\asset` and `.\lot\content\:skin\asset` folder [^1]
+ - Detect skin path relative to the `.\lot\content\:skin` folder [^1]
  - Add HTML classes automatically to the `<html>` element based on the current page conditional statements.
 
 ### Class
 
 These HTML classes will be added to the `<html>` element that has a `class` attribute:
 
- - `error-404` → Will be added if there is no page or pages to load.
+ - `error:404` → Will be added if there is no page or pages to load.
  - `has-next` → Will be added if it is possible to go to the next page.
  - `has-page` → Will be added if there is a page to load.
  - `has-pages` → Will be added if there are pages to load.
@@ -29,6 +29,4 @@ These HTML classes will be added to the `<html>` element that has a `class` attr
  - `is-pages` → Will be added on items view.
  - `is-search` → Will be added on search results view.
 
-[^1]: Where `<id>` is the active shield folder.
-
-<!-- block:donate -->
+[^1]: Where `:skin` is the active skin folder.
