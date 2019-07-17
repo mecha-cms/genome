@@ -1,12 +1,12 @@
 ---
 title: Document
-description: A minimal shield with minimal extension and plugin dependencies.
+description: A minimal skin with almost zero dependencies.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.5.4
+version: 1.5.6
 ...
 
-Some elements have their own classes to match with the shield appearance:
+Some elements have their own classes to match with the content appearance:
 
 ~~~ .html
 <button class="button"></button>

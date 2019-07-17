@@ -1,4 +1,4 @@
-<?php static::header(); ?>
+<?php static::before(); ?>
 <main>
   <article id="page-0">
     <div>
@@ -6,4 +6,4 @@
     </div>
   </article>
 </main>
-<?php static::footer(); ?>
+<?php static::after(); ?>

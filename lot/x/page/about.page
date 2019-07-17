@@ -3,7 +3,11 @@ title: Page
 description: Convert file and folder structure into web pages.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.8.4
+version: 1.8.5
+
+use:
+  '.\lot\x\content': 1
+  '.\lot\x\y-a-m-l': 1
 ...
 
 This extension activates the basic features of a website by utilizing the structure of the page file placement in the `.\lot\page` folder. This extension also adds some useful properties to the `$site` variable.
@@ -22,5 +26,3 @@ These page conditional statements are available to quickly determine the type of
  - `$site->is('home')` → Return `true` on home page.
  - `$site->is('page')` → Return `true` on item view.
  - `$site->is('pages')` → Return `true` on items view.
-
-<!-- block:donate -->

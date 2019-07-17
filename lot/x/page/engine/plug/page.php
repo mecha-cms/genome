@@ -1,4 +1,4 @@
-<?php namespace _\page;
+<?php namespace _\lot\x\page;
 
 function time(...$lot) {
     $n = $this['slug'];
@@ -11,7 +11,7 @@ function time(...$lot) {
             \substr_count($n, '-') === 5
         ) &&
         \is_numeric(\str_replace('-', "", $n)) &&
-        \preg_match('#^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$#', $n)
+        \preg_match('/^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$/', $n)
     ) {
         $date = new \Date($n);
     // Else…

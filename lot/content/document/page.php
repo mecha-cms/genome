@@ -1,10 +1,11 @@
-<?php static::header(); ?>
+<?php static::before(); ?>
 <main>
-  <?php echo $message; ?>
   <article id="page-<?php echo $page->id; ?>">
     <header>
       <h2><span><?php echo $page->title; ?></span></h2>
+      <?php if ($page->author): ?>
       <p><strong><?php echo $language->author; ?>:</strong> <?php echo $page->author; ?></p>
+      <?php endif; ?>
     </header>
     <div>
       <?php echo $page->content; ?>
@@ -20,4 +21,4 @@
 <?php if ($site->has('parent')): ?>
 <nav><?php echo $pager; ?></nav>
 <?php endif; ?>
-<?php static::footer(); ?>
+<?php static::after(); ?>

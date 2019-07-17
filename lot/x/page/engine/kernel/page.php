@@ -69,7 +69,8 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function __construct(string $path = null, array $lot = [], array $prefix = []) {
         $c = c2f(static::class, '_', '/');
-        $prefix = array_replace(['*', $c], $prefix);
+        $prefix = array_replace([c2f(self::class, '_', '/'), $c], $prefix);
+        $prefix = array_unique($prefix);
         $id = json_encode([$path, $lot, $prefix]);
         $this->exist = $f = is_file($path);
         $this->f = $file = new File($path);
@@ -104,9 +105,6 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function __toString() {
-        if (is_string($v = $this->offsetGet('$'))) {
-            return $v;
-        }
         $path = $this->path;
         return $path ? file_get_contents($path) : "";
     }
@@ -161,7 +159,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 $this->read[$i] = 1;
                 return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
-            $any = self::apart(file_get_contents($this->path), null, true);
+            $any = From::page(file_get_contents($this->path), null, true);
             foreach ($any as $k => $v) {
                 // Read once!
                 $this->read[$k] = 1;
@@ -196,12 +194,12 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function saveTo(string $path) {
         unset($this->lot['path']);
-        return File::set(self::unite($this->lot))->saveTo($path, 0600);
+        return File::set(To::page($this->lot))->saveTo($path, 0600);
     }
 
     public function serialize() {
         if ($this->exist) {
-            return serialize(self::apart(file_get_contents($this->path)));
+            return serialize(From::page(file_get_contents($this->path)));
         }
         return serialize([]);
     }
@@ -215,32 +213,12 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this;
     }
 
-    public static function apart(string $in, $key = null, $eval = false) {
-        if (strpos($in = n($in), "---\n") !== 0) {
-            // Add empty header
-            $in = "---\n...\n\n" . $in;
-        }
-        $v = From::YAML($in, '  ', true, $eval);
-        $v = $v[0] + ['content' => $v["\t"] ?? ""];
-        return isset($key) ? (array_key_exists($key, $v) ? $v[$key] : null) : $v;
-    }
-
     public static function from(...$v) {
         return new static(...$v);
     }
 
     public static function open(...$v) {
         return new static(...$v);
-    }
-
-    public static function unite(array $lot) {
-        $content = $lot['content'] ?? "";
-        unset($lot['content']);
-        $lot = [
-            0 => $lot,
-            "\t" => $content
-        ];
-        return To::YAML($lot, '  ', true);
     }
 
 }

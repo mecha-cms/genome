@@ -2,10 +2,11 @@
   --font-family: serif;
   --font-family-code: monospace;
   --font-size: 18px;
+  --gap: 5%; /* white-space */
   --line-height: 1.5rem;
-  --margin-large: 5%; /* white-space */
-  --margin-x: 1rem; /* v-space */
-  --margin-y: 1rem; /* h-space */
+  --margin: 1rem;
+  --margin-x: var(--margin); /* v-space */
+  --margin-y: var(--margin); /* h-space */
   --width: 40rem; /* page width */
 }
 
@@ -41,7 +42,7 @@ abbr[title]:hover {
   border-bottom-color: inherit;
 }
 b, dt, h1, h2, h3, h4, h5, h6, strong, th {
-  font-weight: bold;
+  font-weight: bolder;
 }
 caption, em, figcaption, i, var {
   font-style: italic;
@@ -183,26 +184,60 @@ form label {
 .text-justify {
   text-align: justify;
 }
-.notes {
-  margin-left: 2.5%;
-  margin-top: var(--margin-large);
+.m-0 {
+  margin: 0;
 }
-.notes hr {
-  display: none;
+.mx-0 {
+  margin-right: 0;
+  margin-left: 0;
 }
-.notes ol {
-  font-size: 80%;
+.my-0 {
+  margin-top: 0;
+  margin-bottom: 0;
 }
-.notes ol p {
-  margin-top: calc(var(--margin-y) / 4);
+.mt-0 {
+  margin-top: 0;
+}
+.mr-0 {
+  margin-right: 0;
+}
+.mb-0 {
+  margin-bottom: 0;
+}
+.ml-0 {
+  margin-left: 0;
+}
+.m-1 {
+  margin: var(--margin);
+}
+.mx-1 {
+  margin-right: var(--margin-x);
+  margin-left: var(--margin-x);
+}
+.my-1 {
+  margin-top: var(--margin-y);
+  margin-bottom: var(--margin-y);
+}
+.mt-1 {
+  margin-top: var(--margin-y);
+}
+.mr-1 {
+  margin-right: var(--margin-x);
+}
+.mb-1 {
+  margin-bottom: var(--margin-y);
+}
+.ml-1 {
+  margin-left: var(--margin-x);
 }
 html {
   background: #fff;
+  border-top: 5px solid;
   font: normal normal var(--font-size)/var(--line-height) var(--font-family);
   color: #000;
 }
 body {
-  margin: var(--margin-large);
+  margin: var(--gap);
 }
 h1 {
   font-size: 240%;
@@ -240,7 +275,7 @@ hr {
   height: auto;
   border: 0;
   text-align: center;
-  margin: var(--margin-large) 0;
+  margin: var(--gap) 0;
 }
 hr::before {
   content: '\2022\2002\2022\2002\2022';
@@ -288,19 +323,15 @@ pre code {
   padding: calc(var(--font-size) / 4) calc(var(--font-size) / 2);
 }
 
+body > div {
+  margin: 0 auto;
+  max-width: var(--width);
+}
 header {
-  margin-bottom: var(--margin-large);
+  margin-bottom: var(--gap);
 }
 footer, nav {
-  margin-top: var(--margin-large);
-}
-header + nav {
-  margin-top: 0;
-}
-body > footer, body > header, body > main, body > nav {
-  max-width: var(--width);
-  margin-right: auto;
-  margin-left: auto;
+  margin-top: var(--gap);
 }
 nav li, nav ul {
   margin: 0;
@@ -318,29 +349,6 @@ nav li {
 main + nav {
   text-align: center;
 }
-.is-pages article > footer, .is-pages article > header {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-.is-pages article > div {
-  margin: var(--margin-y) 0;
-}
-.message {
-  background: #fea;
-  padding: calc(var(--margin-y) / 2) var(--margin-x);
-}
-.message-error {
-  background: #faa;
-}
-.message-info {
-  background: #aee;
-}
-.message-success {
-  background: #afa;
-}
-.messages + article {
-  margin-top: var(--margin-y);
-}
 
 @media (max-width: 800px) {
   .align-left, .align-right {
@@ -354,16 +362,58 @@ main + nav {
 }
 
 @media (min-width: 501px) {
-  body > footer::after {
+  body > div > footer::after {
     content: "";
     display: table;
     clear: both;
   }
-  body > footer p {
+  body > div > footer p {
     margin-top: 0;
     float: right;
   }
-  body > footer p + p {
+  body > div > footer p + p {
     float: left;
   }
+}
+
+/* .\lot\x\alert */
+body > .alerts {
+  margin-bottom: var(--gap);
+}
+.alert {
+  background: #fea;
+  padding: calc(var(--margin-y) / 2) var(--margin-x);
+}
+.alert-error {
+  background: #faa;
+}
+.alert-info {
+  background: #aee;
+}
+.alert-success {
+  background: #afa;
+}
+
+/* .\lot\x\content */
+.is-pages article > footer, .is-pages article > header {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.is-pages article > div {
+  margin: var(--margin-y) 0;
+}
+
+/* .\lot\x\markdown */
+.notes {
+  margin-left: 2.5%;
+  margin-top: var(--gap);
+}
+.notes hr {
+  display: none;
+}
+.notes ol {
+  font-size: 80%;
+}
+.notes ol p {
+  margin-top: calc(var(--margin-y) / 4);
 }

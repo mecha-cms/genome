@@ -10,6 +10,7 @@
 
 define('DS', DIRECTORY_SEPARATOR); // Default directory separator
 define('PS', PATH_SEPARATOR); // Default path separator
+
 define('DENT', '  '); // Default HTML indent
 define('N', PHP_EOL); // Line break
 define('P', "\x1A"); // Placeholder text

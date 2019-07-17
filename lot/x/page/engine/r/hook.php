@@ -1,6 +1,6 @@
-<?php namespace _\page;
+<?php namespace _\lot\x\page;
 
-function url($url = "", array $lot = []) {
+function u_r_l($url = "", array $lot = []) {
     if (!$path = $this->path) {
         return $url;
     }
@@ -8,4 +8,4 @@ function url($url = "", array $lot = []) {
     return \trim($GLOBALS['URL']['$'] . '/' . $path, '/');
 }
 
-\Hook::set('page.url', __NAMESPACE__ . "\\url", 2);
+\Hook::set('page.url', __NAMESPACE__ . "\\u_r_l", 2);

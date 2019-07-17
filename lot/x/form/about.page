@@ -4,6 +4,9 @@ description: Persistent form data after submission.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.0.0
+
+use:
+  '.\lot\x\content': 1
 ...
 
 This is useful when you want to validate the form after it has been submitted. It makes it more user friendly in the sense that the user does not have to re-populate certain pieces of information if they do something incorrectly. To maintain form data after the submission action, save the form data to the session named `form`:

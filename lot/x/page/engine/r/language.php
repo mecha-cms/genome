@@ -14,7 +14,6 @@ Language::set([
     'is-success' => 'Success',
     'last' => 'Last',
     'link' => ['Link', 'Link', 'Links'],
-    'message-info-kick' => 'You have just been redirected from %s',
     'next' => 'Next',
     'page' => ['Page', 'Page', 'Pages'],
     'page-count' => function(int $i) {

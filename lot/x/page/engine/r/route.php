@@ -1,24 +1,23 @@
-<?php namespace _\route;
+<?php namespace _\lot\x\page;
 
 $GLOBALS['page'] = new \Page;
 $GLOBALS['pager'] = new \Pager\Pages;
 $GLOBALS['pages'] = new \Pages;
 $GLOBALS['parent'] = new \Page;
-$GLOBALS['t'] = new \Anemon([$config->title], ' &#x00B7; ');
 
-function page($form) {
+function route() {
     global $config, $language, $url;
     $i = ($url->i ?? 1) - 1;
     // Load default page state(s)…
-    $state = \extension('page');
+    $state = \state('page');
     // Prevent directory traversal attack
     // <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = \str_replace('../', "", \urldecode($this[0]));
-    // Default home path
-    $p = \trim($path === "" ? $state['path'] : $path, '/');
-    if ($i < 1 && $path === $state['path'] && !$url->query) {
+    if ($i < 1 && $path === $state['/'] && !$url->query) {
         \Guard::kick(""); // Redirect to home page
     }
+    // Default home page path
+    $p = \trim($path === "" ? $state['/'] : $path, '/');
     $folder = \rtrim(PAGE . DS . \strtr($p, '/', DS), DS);
     if ($file = \File::exist([
         $folder . '.page',
@@ -42,7 +41,7 @@ function page($form) {
             // stacked from the parent page(s)
             if (\is_file($fn = $k . DS . 'index.php')) {
                 \call_user_func(function() use($fn) {
-                    extract($GLOBALS, EXTR_SKIP);
+                    extract($GLOBALS, \EXTR_SKIP);
                     require $fn;
                 });
             }
@@ -110,4 +109,4 @@ function page($form) {
     $this->content('404/' . $p . '/' . ($i + 1));
 }
 
-\Route::set(['*', ""], __NAMESPACE__ . "\\page", 20);
+\Route::set(['*', ""], __NAMESPACE__ . "\\route", 20);

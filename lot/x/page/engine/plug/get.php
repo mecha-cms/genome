@@ -1,4 +1,4 @@
-<?php namespace _\get;
+<?php namespace _\lot\x\page;
 
 function pages(string $folder = PAGE, string $x = 'page', string $hook = "\\Pages") {
     $pages = [];

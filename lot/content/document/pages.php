@@ -1,6 +1,5 @@
-<?php static::header(); ?>
+<?php static::before(); ?>
 <main>
-  <?php echo $message; ?>
   <?php foreach ($pages as $page): ?>
   <article id="page-<?php echo $page->id; ?>">
     <header>
@@ -17,4 +16,4 @@
   <?php endforeach; ?>
 </main>
 <nav><?php echo $pager; ?></nav>
-<?php static::footer(); ?>
+<?php static::after(); ?>

@@ -1,9 +1,12 @@
 ---
 title: Asset
-description: Add, remove, append, prepend and replace asset files from/to the HTML output without touching the shield files.
+description: Add, remove, append, prepend and replace asset files from/to the HTML output without touching the content files.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.9.0
+
+use:
+  '.\lot\x\content': 1
 ...
 
 This extension works by finding two special places in the HTML document, i.e. right before the `</head>` and `</body>` tag, and then process all assets that have been added to the storage to be rendered as HTML tags in both places.
@@ -40,5 +43,3 @@ Asset::set('path/to/file.js');
 Shortly after being added, this extension will process the file path and then it will be rendered as `<link>` tags for CSS files and `<script>` tags for JavaScript files.
 
 > **Note:** This extension will ignore files that don’t exist.
-
-<!-- block:donate -->

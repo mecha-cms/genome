@@ -9,14 +9,11 @@ Hook::set('page.description', function($description) {
 });
 
 // Add CSS file to the `<head>` section…
-Asset::set('css/document.min.css', 20);
+Asset::set('css/document.css', 20);
 
-// Add JS file to the `<body>` section…
-Asset::set('js/document.min.js', 20);
-
-// Create site navigation data to be used in template
+// Create site navigation data to be used in content
 $GLOBALS['menus'] = map(Get::pages()->is(function($v) {
-    $folder = PAGE . DS . extension('page')['path'];
+    $folder = PAGE . DS . state('page')['/'];
     return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
 })->get(), function($v) use($url) {
     $v = new Page($v);
@@ -24,7 +21,7 @@ $GLOBALS['menus'] = map(Get::pages()->is(function($v) {
     return $v;
 });
 
-// Create site trace data to be used in template
+// Create site trace data to be used in content
 $traces = [];
 $chops = explode('/', trim($url->path, '/'));
 $k = "";

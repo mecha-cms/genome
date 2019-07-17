@@ -1,7 +1,7 @@
 <?php
 
 // Store page state to registry…
-$state = extension('page');
+$state = state('page');
 if (!empty($state['page'])) {
     // Prioritize default state
     Config::over($state);
@@ -10,7 +10,7 @@ if (!empty($state['page'])) {
 
 $path = trim($GLOBALS['URL']['path'] ?? "", '/');
 $i = $GLOBALS['URL']['i'] ?? "";
-$p = $state['path'];
+$p = $state['/'];
 $folder = PAGE . DS . $path;
 
 // Set proper `i` value in `$url` if we have some page with numeric file/folder name
