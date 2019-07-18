@@ -4,9 +4,10 @@ $port = (int) $_SERVER['SERVER_PORT'];
 $scheme = 'http' . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $port === 443 ? 's' : "");
 $protocol = $scheme . '://';
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
-$a = explode('&', strtr($_SERVER['QUERY_STRING'], DS, '/'), 2);
-$path = array_shift($a) ?? "";
-$query = array_shift($a) ?? "";
+$path = $_GET['//'] ?? "";
+$query = explode('&', $_SERVER['QUERY_STRING'], 2)[1] ?? "";
+
+unset($_GET['//']);
 
 // Prevent XSS attack where possible
 $path = strtr(trim($path, '/'), [
@@ -22,13 +23,15 @@ if (is_numeric(end($a))) {
     $path = implode('/', $a);
 } else {
     $i = null;
-    if ($path !== "") {
-        array_shift($_GET); // Remove path data from native URL query
-    }
 }
 
-$directory = strtr(dirname($_SERVER['SCRIPT_NAME']), DS, '/');
-$directory = $directory !== '.' ? '/' . trim($directory, '/') : null;
+// Put this CMS in a sub-folder?
+$directory = strtr(ROOT, [
+    GROUND => "",
+    DS => '/'
+]);
+
+$directory = $directory !== "" ? $directory : null;
 $path = $path !== "" ? '/' . $path : null;
 $query = $query !== "" ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
