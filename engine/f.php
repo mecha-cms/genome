@@ -927,7 +927,7 @@ namespace {
     }
     function i() {}
     function j() {}
-    function k(string $f, array $q = [], $c = false) {
+    function k(string $f, array $q = [], $c = false, $i = false) {
         if (\is_dir($f) && $h = \opendir($f)) {
             while (false !== ($b = \readdir($h))) {
                 if ($b !== '.' && $b !== '..') {
@@ -938,12 +938,12 @@ namespace {
                         }
                         $r = $f . DS . $b;
                         // Find by query in file name…
-                        if (\strpos($n, $v) !== false) {
+                        if (($i && \stripos($n, $v) !== false) || (!$i && \strpos($n, $v) !== false)) {
                             yield $r;
                         // Find by query in file content…
                         } else if ($c && \is_file($r)) {
                             foreach (stream($r) as $s) {
-                                if (\strpos($s, $v) !== false) {
+                                if (($i && \stripos($s, $v) !== false) || (!$i && \strpos($s, $v) !== false)) {
                                     yield $r;
                                 }
                             }
