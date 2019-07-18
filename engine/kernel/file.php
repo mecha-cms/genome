@@ -262,18 +262,18 @@ class File extends Genome {
 
     public static function pull() {}
 
-    public static function push(array $data, string $folder = ROOT) {
-        if (!empty($data['error'])) {
-            return $data['error']; // Return the error code
+    public static function push(array $blob, string $folder = ROOT) {
+        if (!empty($blob['error'])) {
+            return $blob['error']; // Return the error code
         }
         $folder = strtr($folder, '/', DS);
-        if (is_file($path = $folder . DS . $data['name'])) {
-            return false; // Return `false` if file already exist
+        if (is_file($path = $folder . DS . $blob['name'])) {
+            return false; // Return `false` if file already exists
         }
         if (!is_dir($folder)) {
             mkdir($folder, 0775, true);
         }
-        if (move_uploaded_file($data['tmp_name'])) {
+        if (move_uploaded_file($blob['tmp_name'])) {
             return $path; // Return `$path` on success
         }
         return null; // Return `null` on error

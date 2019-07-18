@@ -2,8 +2,8 @@
 
 function state(string $query) {
     $a = explode(':', $query, 2);
-    if (isset($GLOBALS['X'][1][$query])) {
-        return $GLOBALS['X'][1][$query];
+    if (isset($GLOBALS['X'][2][$query])) {
+        return $GLOBALS['X'][2][$query];
     }
     if (is_file($f = X . DS . $a[0] . DS . 'index.php')) {
         $out = [];
@@ -12,20 +12,23 @@ function state(string $query) {
             $out = require $f;
         }
         $out = Hook::fire('x.state.' . strtr($query, '.', '/'), [$out]);
-        return ($GLOBALS['X'][1][$query] = $out);
+        return ($GLOBALS['X'][2][$query] = $out);
     }
     return null;
 }
 
 $uses = [];
+$uses_x = $GLOBALS['X'][0] ?? [];
 foreach (glob(X . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
-    $n = basename($r = dirname($v));
-    $uses[$v] = content($r . DS . $n) ?? $n;
+    if (empty($uses_x[$v])) {
+        $n = basename($r = dirname($v));
+        $uses[$v] = content($r . DS . $n) ?? $n;
+    }
 }
 
 // Sort by name
 natsort($uses);
-$GLOBALS['X'][0] = $uses = array_keys($uses);
+$GLOBALS['X'][1] = $uses = array_keys($uses);
 
 // Load class(es)…
 foreach ($uses as $v) {

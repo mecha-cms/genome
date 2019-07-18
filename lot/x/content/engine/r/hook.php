@@ -15,6 +15,24 @@ namespace _\lot\x\content {
         }
         return $content;
     }
+    function has() {
+        foreach ((array) \Config::get('has', true) as $k => $v) {
+            \Config::set('[content].has-' . $k, $v);
+        }
+    }
+    function is() {
+        foreach ((array) \Config::get('is', true) as $k => $v) {
+            \Config::set('[content].is-' . $k, $v);
+        }
+        if ($x = \Config::get('is.error')) {
+            \Config::set('[content].error:' . $x, true);
+        }
+    }
+    function not() {
+        foreach ((array) \Config::get('not', true) as $k => $v) {
+            \Config::set('[content].not-' . $k, $v);
+        }
+    }
     function start() {
         // Prepare current skin state
         $GLOBALS['state'] = $state = new \Anemon;
@@ -55,8 +73,11 @@ namespace _\lot\x\content {
             }
         }
     }
-    \Hook::set('content', __NAMESPACE__, 0);
+    \Hook::set('content', __NAMESPACE__, 20);
     \Hook::set('content', __NAMESPACE__ . "\\alert", 0);
+    \Hook::set('content', __NAMESPACE__ . "\\has", 0);
+    \Hook::set('content', __NAMESPACE__ . "\\is", 0);
+    \Hook::set('content', __NAMESPACE__ . "\\not", 0);
     \Hook::set('start', __NAMESPACE__ . "\\start", 0);
 }
 
@@ -73,17 +94,7 @@ namespace _\lot\x {
                 ) {
                     $root = new \HTML($m[0]);
                     $c = $root['class'] === true ? [] : \preg_split('/\s+/', $root['class'] ?? "");
-                    $cc = (array) \Config::get('[class]', true); // Put your custom class(es) here
-                    foreach (['has', 'is', 'not'] as $key) {
-                        foreach (\array_filter((array) \Config::get($key, true)) as $k => $v) {
-                            $c[] = $key . '-' . $k;
-                        }
-                    }
-                    if ($x = \Config::get('is.error')) {
-                        $c[] = 'error:' . $x;
-                    }
-                    $c = \array_merge($c, \array_keys(\array_filter($cc)));
-                    $c = \array_unique($c);
+                    $c = \array_unique(\array_merge($c, \array_keys(\array_filter((array) \Config::get('[content]', true)))));
                     \sort($c);
                     $root['class'] = \trim(\implode(' ', $c));
                     return $root;

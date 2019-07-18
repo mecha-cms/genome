@@ -103,10 +103,10 @@ AddDefaultCharset UTF-8
   ExpiresByType image/svg+xml "access plus 1 year"
 </IfModule>
 
-# Map `http://example.com/foo/bar` to `http://example.com/index.php?//=foo/bar` 
+# Rewrite `http://example.com/foo/bar` to `http://example.com/index.php?//=foo/bar` 
 <IfModule mod_rewrite.c>
-    RewriteEngine on
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^\/*(.*)\/*$ index.php?//=$1 [L,QSA]
+  RewriteEngine on
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^\/*(.*)\/*$ index.php?//=$1 [L,QSA]
 </IfModule>

@@ -138,7 +138,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
             if (!isset($fn)) {
                 return self::$r[2][$id] ?? null;
             }
-            if (!isset(self::$r[0][$id])) {
+            if (empty(self::$r[0][$id])) {
                 self::$r[2][$id][] = [
                     'fn' => $fn,
                     'stack' => (float) $stack
@@ -166,7 +166,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
                 $i += .1;
             }
         } else {
-            if (!isset(self::$r[0][$id])) {
+            if (empty(self::$r[0][$id])) {
                 self::$r[1][$id] = [
                     'fn' => $fn,
                     'stack' => (float) $stack,
