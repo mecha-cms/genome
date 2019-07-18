@@ -73,7 +73,7 @@ namespace _\lot\x {
                 ) {
                     $root = new \HTML($m[0]);
                     $c = $root['class'] === true ? [] : \preg_split('/\s+/', $root['class'] ?? "");
-                    $cc = \Config::get('[class]', true); // Put your custom class(es) here
+                    $cc = (array) \Config::get('[class]', true); // Put your custom class(es) here
                     foreach (['has', 'is', 'not'] as $key) {
                         foreach (\array_filter((array) \Config::get($key, true)) as $k => $v) {
                             $c[] = $key . '-' . $k;
@@ -82,7 +82,7 @@ namespace _\lot\x {
                     if ($x = \Config::get('is.error')) {
                         $c[] = 'error:' . $x;
                     }
-                    $c = \array_merge($c, (array) $cc);
+                    $c = \array_merge($c, \array_keys(\array_filter($cc)));
                     $c = \array_unique($c);
                     \sort($c);
                     $root['class'] = \trim(\implode(' ', $c));

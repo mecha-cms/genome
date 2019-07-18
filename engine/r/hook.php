@@ -12,5 +12,5 @@ register_shutdown_function(function() {
         require $f;
     }
     // Fire!
-    Hook::fire('start');
+    !error_get_last() && Hook::fire('start');
 });
