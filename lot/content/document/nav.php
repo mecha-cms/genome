@@ -6,12 +6,12 @@
     <a href="<?php echo $url; ?>"><?php echo $language->home; ?></a>
     <?php endif; ?>
   </li>
-  <?php foreach ($menus as $menu): ?>
+  <?php foreach ($links as $link): ?>
   <li>
-    <?php if ($menu->active): ?>
-    <span><?php echo $menu->title; ?></span>
+    <?php if ($link->active): ?>
+    <span><?php echo $link->title; ?></span>
     <?php else: ?>
-    <a href="<?php echo $menu->link ?: $menu->url; ?>"><?php echo $menu->title; ?></a>
+    <a href="<?php echo $link->link ?: $link->url; ?>"><?php echo $link->title; ?></a>
     <?php endif; ?>
   </li>
   <?php endforeach; ?>
