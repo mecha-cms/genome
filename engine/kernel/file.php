@@ -260,6 +260,25 @@ class File extends Genome {
         return new static($path);
     }
 
+    public static function pull() {}
+
+    public static function push(array $data, string $folder = ROOT) {
+        if (!empty($data['error'])) {
+            return $data['error']; // Return the error code
+        }
+        $folder = strtr($folder, '/', DS);
+        if (is_file($path = $folder . DS . $data['name'])) {
+            return false; // Return `false` if file already exist
+        }
+        if (!is_dir($folder)) {
+            mkdir($folder, 0775, true);
+        }
+        if (move_uploaded_file($data['tmp_name'])) {
+            return $path; // Return `$path` on success
+        }
+        return null; // Return `null` on error
+    }
+
     public static function sizer(float $size, string $unit = null, int $prec = 2) {
         $i = log($size, 1024);
         $x = ['B', 'KB', 'MB', 'GB', 'TB'];
