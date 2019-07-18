@@ -2,9 +2,11 @@
 
 abstract class Pager extends Genome {
 
-    const next = '&#x25B6;';
-    const parent = '&#x25C6;';
-    const prev = '&#x25C0;';
+    // <https://commons.wikimedia.org/wiki/Arrow_symbol>
+    // <https://commons.wikimedia.org/wiki/File:Ski_trail_rating_symbol-black_diamond.svg>
+    const next = '<svg height="16" viewBox="0 0 460.5 531.74" width="16"><path d="M 0.5,0.866 459.5,265.87 0.5,530.874 z" fill="currentColor"></path></svg>';
+    const parent = '<svg height="16" viewBox="0 0 599 599" width="16"><path d="M 300,575 L 575,300 L 300,25 L 25,300 L 300,575 z" fill="currentColor"></path></svg>';
+    const prev = '<svg height="16" viewBox="0 0 460.5 531.74" width="16"><path d="M 460,530.874 1,265.87 460,0.866 z" fill="currentColor"></path></svg>';
 
     public $next;
     public $parent;
