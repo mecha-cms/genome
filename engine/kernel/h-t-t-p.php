@@ -2,6 +2,8 @@
 
 final class HTTP extends Genome {
 
+    private static $header = [];
+
     public static function __callStatic(string $kin, array $lot = []) {
         if (self::_($kin)) {
             return parent::__callStatic($kin, $lot);
@@ -62,41 +64,45 @@ final class HTTP extends Genome {
 
     public static function header($key = null, $value = null) {
         if (!isset($key)) {
-            if (function_exists('apache_response_headers')) {
-                return apache_response_headers() ?: [];
-            }
             $out = [];
+            foreach ($_SERVER as $k => $v) {
+                if (strpos($k, 'HTTP_') === 0) {
+                    $out[preg_replace_callback('/_(\w)/', function($m) {
+                        return '-' . strtoupper($m[1]);
+                    }, ucfirst(strtolower(substr($k, 5))))] = $v;
+                }
+            }
             foreach (headers_list() as $v) {
                 $a = explode(':', $v, 2);
                 $out[$a[0]] = e(trim($a[1]));
             }
-            return $out;
+            if (function_exists('apache_response_headers')) {
+                $out = array_replace(apache_response_headers() ?: [], $out);
+            }
+            return (self::$header = $out);
         }
         if (is_array($key)) {
             foreach ($key as $k => $v) {
                 if ($v === false) {
                     header_remove($k);
+                    unset(self::$header[$k]);
                 } else {
                     header($k . ': ' . $v);
+                    self::$header[$k] = $v;
                 }
             }
         } else {
             if ($value === false) {
                 header_remove($key);
+                unset(self::$header[$key]);
             } else if (isset($value)) {
                 header($key . ': ' . $value);
+                self::$header[$key] = $value;
             } else if ($key === false) {
                 header_remove();
+                self::$header = [];
             } else {
-                if (function_exists('apache_response_headers')) {
-                    return apache_response_headers()[$key] ?? null;
-                }
-                foreach (headers_list() as $v) {
-                    if (strpos($v, $key . ': ') === 0) {
-                        return explode(': ', $v, 2)[1] ?? null;
-                    }
-                }
-                return null;
+                return self::$header[$key] ?? self::header()[$key] ?? null;
             }
         }
     }

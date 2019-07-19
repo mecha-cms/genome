@@ -53,7 +53,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     }
 
     public function header(...$v) {
-        HTTP::header(...$v);
+        return HTTP::header(...$v);
     }
 
     public function offsetExists($i) {
@@ -77,15 +77,15 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     }
 
     public function refresh(...$v) {
-        HTTP::refresh(...$v);
+        return HTTP::refresh(...$v);
     }
 
     public function status(...$v) {
-        HTTP::status(...$v);
+        return HTTP::status(...$v);
     }
 
     public function type(...$v) {
-        HTTP::type(...$v);
+        return HTTP::type(...$v);
     }
 
     public static function get(string $id = null) {
