@@ -115,7 +115,7 @@ foreach([
         return trim(h($in, '_', $a), '_');
     },
     'snippet' => function(string $in, $html = true, $x = 200) {
-        $s = w($in, $html ? HTML_WISE_I : []);
+        $s = w($in, $html ? HTML_FORMAT_INLINE : []);
         $utf8 = extension_loaded('mbstring');
         if (is_int($x)) {
             $x = [$x, '&#x2026;'];
