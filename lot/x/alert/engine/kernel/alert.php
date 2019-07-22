@@ -100,7 +100,7 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
                 // ['foo@bar', 'baz@qux']
                 $to = implode(', ', $to);
             }
-        } else if (!Is::eMail($to)) {
+        } else if (!Is::email($to)) {
             return false;
         }
         $lot = [];

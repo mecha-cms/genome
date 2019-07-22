@@ -3,6 +3,7 @@
 class Page extends \Pager {
 
     public function __construct(array $data = [], string $current = null, string $parent = null) {
+        global $url;
         $data = \array_values($data);
         $count = \count($data);
         $parent = \rtrim($parent, '/');
@@ -10,7 +11,7 @@ class Page extends \Pager {
             $this->next = $i + 1 < $count ? $parent . '/' . $data[$i + 1] : null;
             $this->prev = $i - 1 > -1 ? $parent . '/' . $data[$i - 1] : null;
         }
-        $this->parent = $parent !== "" && $parent !== $GLOBALS['URL']['$'] ? $parent : null;
+        $this->parent = $parent !== "" && $parent !== $url . "" ? $parent : null;
     }
 
 }

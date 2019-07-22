@@ -1,6 +1,6 @@
 <?php
 
-final class URL extends Genome {
+final class URL extends Genome implements \ArrayAccess {
 
     private $lot;
 
@@ -22,14 +22,15 @@ final class URL extends Genome {
             $out = parse_url($in);
             if (strpos($in, '://') === false) {
                 $out = array_replace($GLOBALS['URL'], $out);
-                $out['$'] = $out['protocol'] . $out['host'] . $out['directory'];
-                $out['clean'] = rtrim($out['$'] . '/' . $out['path'], '/');
+                $out['ground'] = $out['protocol'] . $out['host'];
+                $out['root'] = $out['ground'] . $out['directory'];
+                $out['clean'] = rtrim($out['root'] . $out['path'], '/');
                 if (strpos($in, '/') === 0 && $d = $out['directory']) {
                     $out['directory'] = null;
-                    $out['$'] = substr($out['$'], 0, -strlen($d));
-                    $out['clean'] = rtrim($out['$'] . $out['path'], '/');
+                    $out['root'] = $out['ground'];
+                    $out['clean'] = rtrim($out['root'] . $out['path'], '/');
                 }
-            } else if (strpos($in, $GLOBALS['URL']['$']) === 0) {
+            } else if (strpos($in, $GLOBALS['URL']['root']) === 0) {
                 // TODO
                 // $out = array_replace($out, $GLOBALS['URL']);
             } else {
@@ -76,7 +77,7 @@ final class URL extends Genome {
     }
 
     public function __toString() {
-        return (string) ($this->lot['$'] ?? "");
+        return (string) ($this->lot['root'] ?? "");
     }
 
     public function __unset(string $key) {
@@ -84,13 +85,13 @@ final class URL extends Genome {
     }
 
     // `$url->hash('#!')`
-    protected function _hash_(string $prefix = '#') {
+    public function hash(string $prefix = '#') {
         $hash = $this->lot['hash'];
         return $hash ? $prefix . substr($hash, 1) : null;
     }
 
     // `$url->path('.')`
-    protected function _path_(string $separator = '/', array $p = []) {
+    public function path(string $separator = '/', array $p = []) {
         $path = $this->lot['path'];
         if (!empty($p)) {
             $path = array_replace(explode('/', $path), $p);
@@ -102,7 +103,7 @@ final class URL extends Genome {
     }
 
     // `$url->query('&amp;')`
-    protected function _query_(string $separator = '&', array $q = []) {
+    public function query(string $separator = '&', array $q = []) {
         $query = From::query($this->lot['query'] ?? "");
         $query = array_replace_recursive($query, $q);
         return !empty($query) ? strtr(To::query($query), ['&' => $separator]) : null;
@@ -133,10 +134,30 @@ final class URL extends Genome {
             strpos($path, '&') !== 0 &&
             strpos($path, '#') !== 0
         ) {
-            $r = $root && $b ? $u->scheme . '://' . $u->host : $u;
+            $r = $u->{$root && $b ? 'ground' : 'root'};
             return trim($r . '/' . $path, '/');
         }
         return $path;
+    }
+
+    public function offsetExists($i) {
+        return isset($this->lot[$i]);
+    }
+
+    public function offsetGet($i) {
+        return $this->lot[$i] ?? null;
+    }
+
+    public function offsetSet($i, $value) {
+        if (isset($i)) {
+            $this->lot[$i] = $value;
+        } else {
+            $this->lot[] = $value;
+        }
+    }
+
+    public function offsetUnset($i) {
+        unset($this->lot[$i]);
     }
 
     public static function short(string $path = "", $root = true) {
@@ -145,7 +166,7 @@ final class URL extends Genome {
             return $path; // Ignore external URL
         }
         return $root ? str_replace([
-            P . $u->scheme . '://' . $u->host,
+            P . $u->ground,
             P . '//' . $u->host,
             P
         ], "", P . $path) : ltrim(str_replace([

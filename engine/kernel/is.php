@@ -17,7 +17,7 @@ final class Is extends Genome {
     }
 
     // Check for email address
-    public static function eMail($x) {
+    public static function email($x) {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
     }
 

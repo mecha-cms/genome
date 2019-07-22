@@ -46,10 +46,11 @@ $GLOBALS['URL'] = [
     'path' => $path,
     'i' => $i,
     'query' => $query,
-    '$' => $u,
     'clean' => $u . $path,
     'current' => trim($u . $path . '/' . $i, '/') . $query . $hash,
-    'hash' => $hash
+    'hash' => $hash,
+    'root' => $u,
+    'ground' => $protocol . $host
 ];
 
 $GLOBALS['url'] = $url = new URL;

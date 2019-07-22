@@ -15,7 +15,8 @@ abstract class Pager extends Genome {
     }
 
     public function next(string $text = null) {
-        $next = isset($this->next) ? $this->next . strtr($GLOBALS['URL']['query'], ['&' => '&amp;']) . $GLOBALS['URL']['hash'] : null;
+        global $url;
+        $next = isset($this->next) ? $this->next . $url->query('&amp;') . $url->hash : null;
         if (isset($text)) {
             return $next !== null ? '<a href="' . $next . '" rel="next">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
@@ -23,7 +24,8 @@ abstract class Pager extends Genome {
     }
 
     public function parent(string $text = null) {
-        $parent = isset($this->parent) ? $this->parent . strtr($GLOBALS['URL']['query'], ['&' => '&amp;']) . $GLOBALS['URL']['hash'] : null;
+        global $url;
+        $parent = isset($this->parent) ? $this->parent . $url->query('&amp;') . $url->hash : null;
         if (isset($text)) {
             return $parent !== null ? '<a href="' . $parent . '">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
@@ -31,7 +33,8 @@ abstract class Pager extends Genome {
     }
 
     public function prev(string $text = null) {
-        $prev = isset($this->prev) ? $this->prev . strtr($GLOBALS['URL']['query'], ['&' => '&amp;']) . $GLOBALS['URL']['hash'] : null;
+        global $url;
+        $prev = isset($this->prev) ? $this->prev . $url->query('&amp;') . $url->hash : null;
         if (isset($text)) {
             return $prev !== null ? '<a href="' . $prev . '" rel="prev">' . $text . '</a>' : '<span>' . $text . '</span>';
         }

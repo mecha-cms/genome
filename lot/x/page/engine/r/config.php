@@ -5,7 +5,6 @@ $state = state('page');
 if (!empty($state['page'])) {
     // Prioritize default state
     Config::over($state);
-    Page::$data = Config::get('page', true);
 }
 
 $path = trim($GLOBALS['URL']['path'] ?? "", '/');

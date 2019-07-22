@@ -111,6 +111,13 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
                 $out = "";
                 // Validate to JSON
                 foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $v) {
+                    if ($v && (
+                        $v[0] === '"' && substr($v, -1) === '"' ||
+                        $v[0] === "'" && substr($v, -1) === "'"
+                    )) {
+                        // Un-quote
+                        $v = substr($v, 1, -1);
+                    }
                     $out .= strpos('[]{}:,', $v) !== false ? $v : json_encode($v);
                 }
                 $out = json_decode($out, true) ?? $in;

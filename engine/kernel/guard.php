@@ -25,7 +25,8 @@ final class Guard extends Genome {
     }
 
     public static function kick(string $path = null) {
-        $path = $path ?? $GLOBALS['URL']['current'];
+        global $url;
+        $path = $path ?? $url->current;
         header('Location: ' . URL::long($path));
         exit;
     }

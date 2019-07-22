@@ -14,9 +14,6 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public $f;
     public $path;
 
-    // Set pre-defined page property
-    public static $data = [];
-
     private function find(string $kin, array $lot = []) {
         if (isset(self::$page[$id = $this->id][$kin])) {
             $v = self::$page[$id][$kin]; // Load from cache…
@@ -68,8 +65,9 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function __construct(string $path = null, array $lot = [], array $prefix = []) {
-        $c = c2f(static::class, '_', '/');
-        $prefix = array_replace([c2f(self::class, '_', '/'), $c], $prefix);
+        $c = c2f(static::class, '_', '/'); // Any class name that inherits this class
+        $cc = c2f(self::class, '_', '/'); // This very class name
+        $prefix = array_replace([$cc, $c], $prefix);
         $prefix = array_unique($prefix);
         $id = json_encode([$path, $lot, $prefix]);
         $this->exist = $f = is_file($path);
@@ -88,7 +86,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             'update' => $file->update('%Y-%m-%d %T'),
             'url' => $file->URL,
             'x' => $file->x
-        ], (array) static::$data, $lot);
+        ], (array) Config::get($cc, true), (array) Config::get($c, true), $lot);
     }
 
     public function __get(string $key) {

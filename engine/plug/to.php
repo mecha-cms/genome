@@ -67,9 +67,9 @@ foreach([
     'lower' => "\\l",
     'pascal' => "\\p",
     'path' => function(string $in) {
-        $u = $GLOBALS['URL'];
-        $x = strtr($u['$'], '/', DS);
-        $in = str_replace([$u['$'], '/', $x], [ROOT, DS, ROOT], $in);
+        global $url;
+        $x = strtr($url, '/', DS);
+        $in = str_replace([$url, '/', $x], [ROOT, DS, ROOT], $in);
         return realpath($in) ?: $in;
     },
     'query' => function(array $in) {
@@ -189,10 +189,10 @@ foreach([
     },
     'upper' => "\\u",
     'URL' => function(string $in, $raw = false) {
-        $u = $GLOBALS['URL'];
+        global $url;
         $x = strtr(ROOT, DS, '/');
         $in = realpath($in) ?: $in;
-        $in = str_replace([ROOT, DS, $x], [$u['$'], '/', $u['$']], $in);
+        $in = str_replace([ROOT, DS, $x], [$url, '/', $url], $in);
         return $raw ? rawurldecode($in) : urldecode($in);
     }
 ] as $k => $v) {

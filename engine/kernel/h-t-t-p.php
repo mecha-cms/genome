@@ -23,7 +23,7 @@ final class HTTP extends Genome {
     public static function fetch(string $url, $agent = null) {
         $data = [];
         // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
-        $a = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['URL']['$'] . ')';
+        $a = 'Mecha/' . Mecha::version . ' (+' . $GLOBALS['url'] . ')';
         // `HTTP::fetch('/', false, ['Content-Type' => 'text/html'])`
         if (is_array($agent)) {
             foreach ($agent as $k => $v) {

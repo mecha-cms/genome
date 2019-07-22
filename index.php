@@ -32,9 +32,9 @@ define('SESSION', null); // Change to a folder path to define `session_save_path
 define('DEBUG', true); // Change to `true` to enable debug mode
 
 // Common HTML tag(s) allowed to be written in the form field
-define('HTML_WISE_I', 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var');
-define('HTML_WISE_B', 'address,blockquote,caption,dd,div,dl,dt,figcaption,figure,hr,h1,h2,h3,h4,h5,h6,li,ol,p,pre,table,tbody,tfoot,td,th,tr,ul');
-define('HTML_WISE', HTML_WISE_I . ',' . HTML_WISE_B);
+define('HTML_FORMAT_INLINE', 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var');
+define('HTML_FORMAT_BLOCK', 'address,blockquote,caption,dd,div,dl,dt,figcaption,figure,hr,h1,h2,h3,h4,h5,h6,li,ol,p,pre,table,tbody,tfoot,td,th,tr,ul');
+define('HTML_FORMAT', HTML_FORMAT_INLINE . ',' . HTML_FORMAT_BLOCK);
 
 // Common date format
 define('DATE_FORMAT', 'Y-m-d H:i:s');
