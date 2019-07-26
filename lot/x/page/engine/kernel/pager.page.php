@@ -3,7 +3,7 @@
 class Page extends \Pager {
 
     public function __construct(array $data = [], string $current = null, string $parent = null) {
-        global $url;
+        $url = $GLOBALS['url'];
         $data = \array_values($data);
         $count = \count($data);
         $parent = \rtrim($parent, '/');

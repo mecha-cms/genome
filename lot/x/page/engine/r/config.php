@@ -7,8 +7,8 @@ if (!empty($state['page'])) {
     Config::over($state);
 }
 
-$path = trim($GLOBALS['URL']['path'] ?? "", '/');
-$i = $GLOBALS['URL']['i'] ?? "";
+$path = trim($url->path ?? "", '/');
+$i = $url->i ?? "";
 $p = $state['/'];
 $folder = PAGE . DS . $path;
 
@@ -19,9 +19,9 @@ if ($i !== "" && File::exist([
 ])) {
     $path = $path . '/' . $i;
     $folder .= DS . $i;
-    $GLOBALS['URL']['path'] = '/' . $path;
-    $GLOBALS['URL']['clean'] .= '/' . $i;
-    $GLOBALS['URL']['i'] = null;
+    $url->clean .= '/' . $i;
+    $url->i = null;
+    $url->path = '/' . $path;
     $i = "";
 }
 

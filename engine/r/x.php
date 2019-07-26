@@ -11,7 +11,6 @@ function state(string $query) {
             extract($GLOBALS, EXTR_SKIP);
             $out = require $f;
         }
-        $out = Hook::fire('x.state.' . strtr($query, '.', '/'), [$out]);
         return ($GLOBALS['X'][2][$query] = $out);
     }
     return null;

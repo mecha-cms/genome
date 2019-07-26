@@ -12,12 +12,13 @@ use:
 To enable this feature, add `css.data` and `js.data` files to a folder that has the same name as the page slug and is stored in the same directory level:
 
 ~~~ .txt
-lot\
-└── page\
-    ├── lorem-ipsum\
-    │   ├── css.data
-    │   └── js.data
-    └── lorem-ipsum.page
+.\
+└── lot\
+    └── page\
+        ├── lorem-ipsum\
+        │   ├── css.data
+        │   └── js.data
+        └── lorem-ipsum.page
 ~~~
 
 Write custom CSS code in `css.data` file, and custom JavaScript code in `js.data` file.

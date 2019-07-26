@@ -1,6 +1,6 @@
 <?php
 
-final class URL extends Genome implements \ArrayAccess {
+final class URL extends Genome {
 
     private $lot;
 
@@ -8,58 +8,48 @@ final class URL extends Genome implements \ArrayAccess {
         if (self::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        if (method_exists($this, $m = '_' . $kin . '_') && (new \ReflectionMethod($this, $m))->isProtected()) {
-            return $this->{$m}(...$lot);
-        }
-        if (isset($this->lot[$kin])) {
+        if (array_key_exists($kin, $this->lot)) {
             return $this->lot[$kin] === "" ? null : $this->lot[$kin];
         }
         return null;
     }
 
-    public function __construct(string $in = null) {
-        if (isset($in)) {
+    public function __construct($in = null) {
+        $this->lot = [
+            'clean' => null,
+            'current' => null,
+            'directory' => null,
+            'ground' => null,
+            'hash' => null,
+            'host' => null,
+            'i' => null,
+            'path' => null,
+            'port' => null,
+            'protocol' => null,
+            'query' => null,
+            'root' => null,
+            'scheme' => null
+        ];
+        if (is_string($in)) {
             $out = parse_url($in);
-            if (strpos($in, '://') === false) {
-                $out = array_replace($GLOBALS['URL'], $out);
-                $out['ground'] = $out['protocol'] . $out['host'];
-                $out['root'] = $out['ground'] . $out['directory'];
-                $out['clean'] = rtrim($out['root'] . $out['path'], '/');
-                if (strpos($in, '/') === 0 && $d = $out['directory']) {
-                    $out['directory'] = null;
-                    $out['root'] = $out['ground'];
-                    $out['clean'] = rtrim($out['root'] . $out['path'], '/');
-                }
-            } else if (strpos($in, $GLOBALS['URL']['root']) === 0) {
-                // TODO
-                // $out = array_replace($out, $GLOBALS['URL']);
-            } else {
-                $out['protocol'] = $out['scheme'] . '://';
-                $out['clean'] = preg_split('/[?&#]/', $in)[0];
+            $out['protocol'] = $out['scheme'] . '://';
+            if (isset($out['port'])) {
+                $out['port'] = (int) $out['port'];
             }
-            $path = trim($out['path'] ?? "", '/');
-            $a = explode('/', $path);
-            if (is_numeric(end($a))) {
-                $out['i'] = (int) array_pop($a);
-                $path = implode('/', $a);
-            } else {
-                $out['i'] = null;
+            if (isset($out['path'])) {
+                $out['path'] = $out['path'] !== "" ? $out['path'] : null;
             }
-            $out['path'] = $path !== "" ? '/' . $path : null;
-            $out['clean'] = strtr($out['clean'], [
-                '<' => '%3C',
-                '>' => '%3E',
-                '&' => '%26',
-                '"' => '%22'
-            ]);
-            $q = $out['query'] ?? "";
-            $h = $out['fragment'] ?? "";
-            $out['query'] = $q !== "" ? '?' . str_replace('&amp;', '&', $q) : null;
-            $out['hash'] = $h !== "" ? '#' . $h : null;
-            unset($out['fragment']);
-            $this->lot = $out;
-        } else {
-            $this->lot = $GLOBALS['URL'];
+            if (isset($out['query'])) {
+                $out['query'] = $out['query'] !== "" ? '?' . $out['query'] : null;
+            }
+            if (isset($out['fragment'])) {
+                $out['hash'] = $out['fragment'] !== "" ? '#' . $out['fragment'] : null;
+                unset($out['fragment']);
+            }
+            $out['ground'] = $out['root'] = $out['protocol'] . $out['host'];
+            $this->lot = array_replace($this->lot, $out);
+        } else if (is_array($in)) {
+            $this->lot = array_replace($this->lot, $in);
         }
     }
 
@@ -138,26 +128,6 @@ final class URL extends Genome implements \ArrayAccess {
             return trim($r . '/' . $path, '/');
         }
         return $path;
-    }
-
-    public function offsetExists($i) {
-        return isset($this->lot[$i]);
-    }
-
-    public function offsetGet($i) {
-        return $this->lot[$i] ?? null;
-    }
-
-    public function offsetSet($i, $value) {
-        if (isset($i)) {
-            $this->lot[$i] = $value;
-        } else {
-            $this->lot[] = $value;
-        }
-    }
-
-    public function offsetUnset($i) {
-        unset($this->lot[$i]);
     }
 
     public static function short(string $path = "", $root = true) {

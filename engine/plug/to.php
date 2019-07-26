@@ -67,7 +67,7 @@ foreach([
     'lower' => "\\l",
     'pascal' => "\\p",
     'path' => function(string $in) {
-        global $url;
+        $url = $GLOBALS['url'];
         $x = strtr($url, '/', DS);
         $in = str_replace([$url, '/', $x], [ROOT, DS, ROOT], $in);
         return realpath($in) ?: $in;
@@ -115,7 +115,7 @@ foreach([
         return trim(h($in, '_', $a), '_');
     },
     'snippet' => function(string $in, $html = true, $x = 200) {
-        $s = w($in, $html ? HTML_FORMAT_INLINE : []);
+        $s = w($in, $html ? 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var' : []);
         $utf8 = extension_loaded('mbstring');
         if (is_int($x)) {
             $x = [$x, '&#x2026;'];
@@ -189,7 +189,7 @@ foreach([
     },
     'upper' => "\\u",
     'URL' => function(string $in, $raw = false) {
-        global $url;
+        $url = $GLOBALS['url'];
         $x = strtr(ROOT, DS, '/');
         $in = realpath($in) ?: $in;
         $in = str_replace([ROOT, DS, $x], [$url, '/', $url], $in);

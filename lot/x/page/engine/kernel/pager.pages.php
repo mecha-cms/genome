@@ -3,7 +3,7 @@
 class Pages extends \Pager {
 
     public function __construct(array $data = [], $chunk = [5, 0], string $parent = null) {
-        global $url;
+        $url = $GLOBALS['url'];
         $data = \array_chunk($data, $chunk[0]);
         $parent = \rtrim($parent, '/');
         $i = $chunk[1];

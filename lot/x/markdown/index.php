@@ -12,7 +12,7 @@ namespace _\lot\x\markdown {
         if ($this['type'] !== 'Markdown') {
             return $in;
         }
-        return \w(b($in), HTML_FORMAT_INLINE);
+        return \w(b($in), 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var');
         // return b($in, $lot, 'line'); // TODO
     }
     \Hook::set('page.title', __NAMESPACE__ . "\\i", 2);

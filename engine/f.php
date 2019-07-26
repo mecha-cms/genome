@@ -942,8 +942,8 @@ namespace {
                             yield $r;
                         // Find by query in file content…
                         } else if ($c && \is_file($r)) {
-                            foreach (stream($r) as $s) {
-                                if (($i && \stripos($s, $v) !== false) || (!$i && \strpos($s, $v) !== false)) {
+                            foreach (stream($r) as $vv) {
+                                if (($i && \stripos($vv, $v) !== false) || (!$i && \strpos($vv, $v) !== false)) {
                                     yield $r;
                                 }
                             }

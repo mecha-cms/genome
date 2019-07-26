@@ -15,8 +15,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         }
         $r = '#^' . implode('/', $r) . '$#';
         $this->match = false;
-        global $url;
-        if (preg_match($r, trim($url->path, '/'), $m)) {
+        if (preg_match($r, trim($GLOBALS['url']->path, '/'), $m)) {
             array_shift($m); // Remove the first match
             $this->lot = e($m);
             $this->match = $path;

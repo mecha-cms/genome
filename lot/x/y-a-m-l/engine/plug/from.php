@@ -110,7 +110,7 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
             $yaml_span = function(string $in, $e) {
                 $out = "";
                 // Validate to JSON
-                foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $v) {
+                foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
                     if ($v && (
                         $v[0] === '"' && substr($v, -1) === '"' ||
                         $v[0] === "'" && substr($v, -1) === "'"

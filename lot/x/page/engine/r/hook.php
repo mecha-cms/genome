@@ -5,9 +5,8 @@ function u_r_l($u_r_l) {
     if (!$path || \strpos($path, PAGE . DS) !== 0) {
         return $u_r_l;
     }
-    global $url;
     $path = \Path::R(\Path::F($path), PAGE, '/');
-    return \trim($url . '/' . $path, '/');
+    return \trim($GLOBALS['url'] . '/' . $path, '/');
 }
 
 \Hook::set('page.url', __NAMESPACE__ . "\\u_r_l", 2);

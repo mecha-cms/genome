@@ -98,12 +98,14 @@ function route() {
             $this->content('pages/' . $p . '/' . ($i + 1));
         }
     }
-    \Config::set('is.error', 404);
-    \Config::set('has', [
-        'i' => false,
-        'next' => false,
-        'parent' => false,
-        'prev' => false
+    \Config::set([
+        'has' => [
+            'i' => false,
+            'next' => false,
+            'parent' => false,
+            'prev' => false
+        ],
+        'is' => ['error' => 404]
     ]);
     $GLOBALS['t'][] = $language->isError;
     $this->content('404/' . $p . '/' . ($i + 1));

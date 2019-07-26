@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'zone' => DATE_ZONE,
-    'locale' => DATE_LOCALE,
+    'zone' => date_default_timezone_get(),
+    'locale' => locale_get_default(),
     'charset' => 'utf-8',
     'direction' => 'ltr',
     'language' => 'en',
