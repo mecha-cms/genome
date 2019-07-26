@@ -24,11 +24,11 @@ final class Date extends Genome {
 
     public function __construct($date) {
         if (is_numeric($date)) {
-            $this->source = date(DATE_FORMAT, $date);
+            $this->source = date('Y-m-d H:i:s', $date);
         } else if (strlen($date) >= 19 && substr_count($date, '-') === 5) {
-            $this->source = \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format(DATE_FORMAT);
+            $this->source = \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format('Y-m-d H:i:s');
         } else {
-            $this->source = date(DATE_FORMAT, strtotime($date));
+            $this->source = date('Y-m-d H:i:s', strtotime($date));
         }
     }
 
@@ -52,7 +52,7 @@ final class Date extends Genome {
         return strftime($pattern, strtotime($this->source));
     }
 
-    public function format(string $format = DATE_FORMAT) {
+    public function format(string $format = 'Y-m-d H:i:s') {
         return date($format, strtotime($this->source)); // Generic PHP date formatter
     }
 
@@ -80,7 +80,7 @@ final class Date extends Genome {
         $date = new \DateTime($this->source);
         $date->setTimeZone(new \DateTimeZone($zone));
         if (!isset($this->o[$zone])) {
-            $this->o[$zone] = new static($date->format(DATE_FORMAT));
+            $this->o[$zone] = new static($date->format('Y-m-d H:i:s'));
             $this->o[$zone]->parent = $this;
         }
         return $this->o[$zone];
@@ -96,16 +96,16 @@ final class Date extends Genome {
 
     public static function locale($locale = null) {
         if (!isset($locale)) {
-            return self::$locale ?? DATE_LOCALE;
+            return self::$locale ?? locale_get_default();
         }
-        setlocale(LC_TIME, self::$locale = (array) ($locale ?? DATE_LOCALE));
+        setlocale(LC_TIME, self::$locale = (array) ($locale ?? locale_get_default()));
     }
 
     public static function zone(string $zone = null) {
         if (!isset($zone)) {
-            return self::$zone ?? DATE_ZONE;
+            return self::$zone ?? date_default_timezone_get();
         }
-        return date_default_timezone_set(self::$zone = $zone ?? DATE_ZONE);
+        return date_default_timezone_set(self::$zone = $zone ?? date_default_timezone_get());
     }
 
 }
