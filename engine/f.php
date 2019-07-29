@@ -336,7 +336,7 @@ namespace {
         }
         return $x;
     }
-    function c(string $x, $a = false, string $i = "") {
+    function c(string $x = null, $a = false, string $i = "") {
         return \str_replace(' ', "", \preg_replace_callback('#([ ' . $i . '])([\p{L}\p{N}' . $i . '])#u', function($m) {
             return $m[1] . u($m[2]);
         }, f($x, $a, $i)));
@@ -886,7 +886,7 @@ namespace {
     // $x: the string input
     // $a: replace multi-byte string into their accent
     // $i: character(s) white-list
-    function f(string $x, $a = true, string $i = "") {
+    function f(string $x = null, $a = true, string $i = "") {
         // this function does not trim white-space at the start and end of the string
         $x = \preg_replace([
             // remove HTML tag(s) and character(s) reference
@@ -920,7 +920,7 @@ namespace {
             \closedir($h);
         }
     }
-    function h(string $x, string $h = '-', $a = false, $i = "") {
+    function h(string $x = null, string $h = '-', $a = false, $i = "") {
         return \str_replace([' ', $h . $h], $h, \preg_replace_callback('#\p{Lu}#', function($m) use($h) {
             return $h . l($m[0]);
         }, f($x, $a, x($h) . $i)));
@@ -954,14 +954,14 @@ namespace {
             \closedir($h);
         }
     }
-    function l(string $x) {
+    function l(string $x = null) {
         return \extension_loaded('mbstring') ? \mb_strtolower($x) : \strtolower($x);
     }
     function m($x, array $a, array $b) {
         // <https://stackoverflow.com/a/14224813/1163000>
         return ($x - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
     }
-    function n(string $x, string $t = '    ') {
+    function n(string $x = null, string $t = '    ') {
         // <https://stackoverflow.com/a/18870840/1163000>
         $x = \str_replace("\xEF\xBB\xBF", "", $x);
         // Tab to 4 space(s), line-break to `\n`
@@ -981,7 +981,7 @@ namespace {
         }
         return $a;
     }
-    function p(string $x, $a = false, $i = "") {
+    function p(string $x = null, $a = false, $i = "") {
         return \ltrim(c(' ' . $x, $a, $i), ' ');
     }
     function q($x) {
@@ -1050,7 +1050,7 @@ namespace {
         }
         return (array) $a;
     }
-    function t(string $x, string $o = '"', string $c = null) {
+    function t(string $x = null, string $o = '"', string $c = null) {
         if ($x) {
             if ($o !== "" && \strpos($x, $o) === 0) {
                 $x = \substr($x, \strlen($o));
@@ -1062,15 +1062,15 @@ namespace {
         }
         return $x;
     }
-    function u(string $x) {
+    function u(string $x = null) {
         return \extension_loaded('mbstring') ? \mb_strtoupper($x) : \strtoupper($x);
     }
-    function v(string $x) {
+    function v(string $x = null) {
         return \stripslashes($x);
     }
     // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
     // $n: @keep line-break in the output or replace them with a space? (default is !@keep)
-    function w(/*string*/ $x, $c = [], $n = false) {
+    function w(string $x = null, $c = [], $n = false) {
         // Should be a HTML input
         if (\strpos($x, '<') !== false || \strpos($x, ' ') !== false || \strpos($x, "\n") !== false) {
             $c = '<' . \implode('><', \is_string($c) ? \explode(',', $c) : (array) $c) . '>';
@@ -1096,7 +1096,7 @@ namespace {
             '-'
         ], \urldecode($x));
     }
-    function x(string $x, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
+    function x(string $x = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
         return \addcslashes($x, $d . $c);
     }
     function y(iterable $a) {
