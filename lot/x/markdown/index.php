@@ -1,37 +1,29 @@
-<?php
+<?php namespace _\lot\x;
 
-namespace _\lot\x\markdown {
-    function b($in, $mode = 'text') {
-        $parser = new \ParsedownExtraPlugin;
-        foreach (\state('markdown') as $k => $v) {
-            $parser->{$k} = $v;
-        }
-        return $parser->{$mode}((string) $in);
+function markdown($content) {
+    if ($this['type'] !== 'Markdown') {
+        return $content;
     }
-    function i($in) {
-        if ($this['type'] !== 'Markdown') {
-            return $in;
-        }
-        return \w(b($in), 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var');
-        // return b($in, $lot, 'line'); // TODO
+    $parser = new \ParsedownExtraPlugin;
+    foreach (\state('markdown:parsedown') as $k => $v) {
+        $parser->{$k} = $v;
     }
-    \Hook::set('page.title', __NAMESPACE__ . "\\i", 2);
-    \Hook::set(['page.description', 'page.content'], __NAMESPACE__, 2);
+    return $parser->text($content);
 }
 
-namespace _\lot\x {
-    function markdown($in = "") {
-        if ($this['type'] !== 'Markdown') {
-            return $in;
-        }
-        return markdown\b($in);
-    }
-}
+// Add `markdown` to the file extension list
+\File::$config['x']['markdown'] = 1;
+\File::$config['x']['md'] = 1; // Alias
+\File::$config['x']['mkd'] = 1; // Alias
 
-namespace {
-    Language::set('o:page-type.Markdown', 'Markdown');
-    // Add `markdown` to the allowed file extension(s)
-    File::$config['x']['markdown'] = 1;
-    File::$config['x']['md'] = 1;
-    File::$config['x']['mkd'] = 1;
-}
+\Hook::set([
+    'page.content',
+    'page.description',
+    'page.title'
+], __NAMESPACE__ . "\\markdown", 2);
+
+\Hook::set('page.title', function($title) {
+    return \w($title, 'abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,svg,time,u,var');
+}, 2.1);
+
+\Language::set('o:page-type.Markdown', 'Markdown');

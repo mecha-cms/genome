@@ -4,6 +4,8 @@ return [
     'element_suffix' => '>', // HTML5
     'abbreviations' => [
         'API' => 'Application Programming Interface',
+        // Must comes before “AJAX” because it contains “XML” in the value
+        'XML' => 'eXtensible Markup Language',
         'AJAX' => 'Asynchronous JavaScript and XML',
         'ASCII' => 'American Standard Code for Information Interchange',
         'CMS' => 'Content Management System',
@@ -27,7 +29,6 @@ return [
         'UI' => 'User Interface',
         'URL' => 'Uniform Resource Locator',
         'WYSIWYG' => 'What You See is What You Get',
-        'XML' => 'eXtensible Markup Language',
         'YAML' => 'YAML Ain’t Markup Language'
     ],
     'links_external_attr' => [

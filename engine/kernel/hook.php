@@ -9,7 +9,6 @@ class Hook extends Genome {
         $c = static::class;
         if (is_array($id)) {
             foreach ($id as $v) {
-                self::$current[$c] = $v;
                 if (null !== ($r = self::fire($v, $lot, $that, $scope))) {
                     $lot[0] = $r;
                 }
