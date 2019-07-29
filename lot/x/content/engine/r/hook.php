@@ -4,11 +4,11 @@ namespace _\lot\x\content {
     function alert($content) {
         if (\strpos($content, '</alert>') !== false) {
             return \preg_replace_callback('#(?:\s*<alert(?:\s[^>]+)?>[\s\S]*?<\/alert>\s*)+#', function($m) {
-                return '<div class="alerts p">' . \str_replace([
+                return '<div class="alert p">' . \str_replace([
                     '<alert type="',
                     '</alert>'
                 ], [
-                    '<p class="alert alert-',
+                    '<p class="',
                     '</p>'
                 ], $m[0]) . '</div>';
             }, $content);
