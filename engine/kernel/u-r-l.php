@@ -100,14 +100,13 @@ final class URL extends Genome {
     }
 
     public static function long(string $path, $root = true) {
-        $u = new static;
+        global $url;
         // `URL::long('//example.com')`
         if (strpos($path, '//') === 0) {
-            return rtrim($u->scheme . ':' . $path, '/');
+            return rtrim($url->scheme . ':' . $path, '/');
         // `URL::long('/foo/bar/baz/qux')`
         } else if (strpos($path, '/') === 0) {
-            $path = ltrim($path, '/');
-            $root = true; // Relative to the root domain
+            return rtrim($url . $path, '/');
         }
         // `URL::long('&foo=bar&baz=qux')`
         $a = explode('?', $path, 2);
@@ -123,27 +122,27 @@ final class URL extends Genome {
             strpos($path, '&') !== 0 &&
             strpos($path, '#') !== 0
         ) {
-            return trim($u->{$root ? 'ground' : 'root'} . '/' . $path, '/');
+            return rtrim($url->{$root ? 'ground' : 'root'} . '/' . ltrim($path, '/'), '/');
         }
         return $path;
     }
 
     public static function short(string $path, $root = true) {
-        $u = new static;
-        if (strpos($path, '//') === 0 && strpos($path, '//' . $u->host) !== 0) {
+        global $url;
+        if (strpos($path, '//') === 0 && strpos($path, '//' . $url->host) !== 0) {
             return $path; // Ignore external URL
         }
         return $root ? str_replace([
             // `http://127.0.0.1`
-            P . $u->ground,
+            P . $url->ground,
             // `//127.0.0.1`
-            P . '//' . $u->host,
+            P . '//' . $url->host,
             P
         ], "", P . $path) : ltrim(str_replace([
             // `http:`
-            P . $u->scheme . ':',
+            P . $url->scheme . ':',
             // `http://127.0.0.1/foo`
-            P . '//' . $u->host . $u->directory
+            P . '//' . $url->host . $url->directory
         ], "", P . $path), '/');
     }
 

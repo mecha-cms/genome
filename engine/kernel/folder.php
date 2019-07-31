@@ -107,13 +107,25 @@ class Folder extends Genome {
         return File::sizer(0, $unit, $prec);
     }
 
-    public function time() {}
+    public function time(string $format = null) {
+        if ($this->exist) {
+            $t = filectime($this->path);
+            return $format ? strftime($format, $t) : $t;
+        }
+        return null;
+    }
 
     public function type() {
         return null;
     }
 
-    public function update() {}
+    public function update(string $format = null) {
+        if ($this->exist) {
+            $t = filemtime($this->path);
+            return $format ? strftime($format, $t) : $t;
+        }
+        return null;
+    }
 
     public function x() {
         return null;
