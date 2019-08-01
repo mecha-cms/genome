@@ -65,6 +65,9 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
     public function __toString() {
         $c = $this->c;
         $o = $this->lot;
+        if (!isset($o[0]) || $o[0] === false) {
+            return $o[1] ?? "";
+        }
         $out = $c[0][0] . $o[0];
         if (!empty($o[2])) {
             ksort($o[2]);
