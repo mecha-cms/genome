@@ -1,11 +1,12 @@
 <?php namespace _\lot\x;
 
 function markdown($content) {
-    if ($this['type'] !== 'Markdown') {
+    $type = $this['type'];
+    if ($type !== 'Markdown' && $type !== 'text/markdown') {
         return $content;
     }
     $parser = new \ParsedownExtraPlugin;
-    foreach (\state('markdown:parsedown') as $k => $v) {
+    foreach (\state('markdown') as $k => $v) {
         $parser->{$k} = $v;
     }
     return $parser->text($content);
@@ -22,8 +23,9 @@ function markdown($content) {
     'page.title'
 ], __NAMESPACE__ . "\\markdown", 2);
 
+// Remove block-level tag(s) from page title
 \Hook::set('page.title', function($title) {
     return \w($title, 'abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,svg,time,u,var');
 }, 2.1);
 
-\Language::set('o:page-type.Markdown', 'Markdown');
+\Language::set('o:page.type.text/markdown', 'Markdown');

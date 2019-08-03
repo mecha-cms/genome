@@ -206,7 +206,7 @@ class Page extends File {
 
     // Inherit to `File::type()`
     public function type(...$lot) {
-        return $this->__call('type', $lot);
+        return $this->__call('type', $lot) ?? parent::type();
     }
 
     // Inherit to `File::unserialize()`
