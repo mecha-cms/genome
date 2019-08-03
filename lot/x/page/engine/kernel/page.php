@@ -101,7 +101,7 @@ class Page extends File {
     }
 
     public function id(...$lot) {
-        return $this->exist ? sprintf('%u', (string) parent::time()) : null;
+        return $this->__call('id', $lot) ?? (($t = parent::time()) ? sprintf('%u', (string) $t) : null);
     }
 
     // Inherit to `File::jsonSerialize()`
@@ -206,7 +206,7 @@ class Page extends File {
 
     // Inherit to `File::type()`
     public function type(...$lot) {
-        return $this->__call('type', $lot) ?? parent::type();
+        return $this->__call('type', $lot) ?? 'text/html';
     }
 
     // Inherit to `File::unserialize()`
