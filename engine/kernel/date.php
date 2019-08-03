@@ -68,12 +68,13 @@ final class Date extends Genome {
         return $this->f(is_string($type) ? '%B' : '%m');
     }
 
-    public function second() {
-        return $this->format('s');
+    // Convert date to file name
+    public function name($separator = '-') {
+        return strtr($this->source, '- :', str_repeat($separator, 3));
     }
 
-    public function slug($separator = '-') {
-        return strtr($this->source, '- :', str_repeat($separator, 3));
+    public function second() {
+        return $this->format('s');
     }
 
     public function to(string $zone = 'UTC') {

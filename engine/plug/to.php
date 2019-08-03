@@ -57,8 +57,8 @@ foreach([
         }
         return json_encode($in, $i);
     },
-    'kebab' => function(string $in, $a = true) {
-        return trim(h($in, '-', $a), '-');
+    'kebab' => function(string $in, $s = '-', $a = true) {
+        return trim(h($in, $s, $a), $s);
     },
     'key' => function(string $in, $a = true) {
         $out = trim(h($in, '_', $a), '_');
@@ -108,9 +108,6 @@ foreach([
         return ucfirst(strtolower($in)) . $tail;
     },
     'serial' => "\\serialize",
-    'slug' => function(string $in, $s = '-', $a = true) {
-        return trim(h($in, $s, $a), $s);
-    },
     'snake' => function(string $in, $a = true) {
         return trim(h($in, '_', $a), '_');
     },

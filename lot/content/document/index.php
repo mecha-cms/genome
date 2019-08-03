@@ -9,7 +9,7 @@ Hook::set('page.description', function($description) {
 });
 
 // Add CSS file to the `<head>` section…
-Asset::set('css/document.min.css', 20);
+Asset::set('css/document.css', 20);
 
 // Create site navigation data to be used in content
 $GLOBALS['links'] = map(Get::pages()->is(function($v) {
@@ -17,7 +17,7 @@ $GLOBALS['links'] = map(Get::pages()->is(function($v) {
     return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
 })->get(), function($v) use($url) {
     $v = new Page($v);
-    $v->active = strpos($url->path . '/', '/' . $v->slug . '/') === 0; // Active state
+    $v->active = strpos($url->path . '/', '/' . $v->name . '/') === 0; // Active state
     return $v;
 });
 
