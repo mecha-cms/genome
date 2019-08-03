@@ -32,7 +32,7 @@ final class Date extends Genome {
         }
     }
 
-    public function __invoke(string $pattern = '%Y-%m-%d %H:%I:%S') {
+    public function __invoke(string $pattern = '%Y-%m-%d %T') {
         return $this->f($pattern);
     }
 
@@ -48,7 +48,7 @@ final class Date extends Genome {
         return $this->f(is_string($type) ? '%A' : '%u');
     }
 
-    public function f(string $pattern = '%Y-%m-%d %H:%I:%S') {
+    public function f(string $pattern = '%Y-%m-%d %T') {
         return strftime($pattern, strtotime($this->source));
     }
 

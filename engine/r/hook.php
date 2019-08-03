@@ -7,9 +7,7 @@ function hook(...$v) {
 register_shutdown_function(function() {
     // Load extension(s)…
     require __DIR__ . DS . 'x.php';
-    if (error_get_last()) {
-        debug_print_backtrace();
-    } else {
+    if (!error_get_last()) {
         // Run main task if any…
         if (is_file($f = ROOT . DS . 'task.php')) {
             require $f;

@@ -2,6 +2,17 @@
 
 final class Get extends Genome {
 
+    public static function files(string $folder = PAGE, string $x = null) {
+        $files = [];
+        foreach (g($folder, $x) as $v) {
+            if (pathinfo($v, PATHINFO_FILENAME) === "") {
+                continue;
+            }
+            $files[] = $v;
+        }
+        return new Files($files);
+    }
+
     public static function IP() {
         $for = 'HTTP_X_FORWARDED_FOR';
         if (array_key_exists($for, $_SERVER) && !empty($_SERVER[$for])) {

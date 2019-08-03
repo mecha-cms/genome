@@ -1,6 +1,6 @@
 <?php
 
-class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
+class Page extends File {
 
     private $read;
 
@@ -10,11 +10,7 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     protected $lot;
     protected $prefix;
 
-    public $exist;
-    public $f;
-    public $path;
-
-    private function find(string $kin, array $lot = []) {
+    protected function any(string $kin, array $lot = []) {
         if (isset(self::$page[$id = $this->id][$kin])) {
             $v = self::$page[$id][$kin]; // Load from cache…
         } else {
@@ -34,7 +30,137 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $v;
     }
 
-    protected function _set_($key, $value = null) {
+    public $f;
+
+    public function __call(string $kin, array $lot = []) {
+        if (self::_($kin = p2f($kin))) {
+            return parent::__call($kin, $lot);
+        }
+        return $this->any($kin, $lot);
+    }
+
+    public function __construct(string $path = null, array $lot = []) {
+        $c = c2f(static::class, '_', "\\"); // Any class name inherits to this class
+        $cc = c2f(self::class, '_', "\\"); // This very class name
+        $prefix = array_unique([$cc, $c]);
+        $id = json_encode([$path, $lot, $prefix]);
+        $this->f = $file = parent::__construct($path);
+        $this->id = $id;
+        $this->prefix = $prefix;
+        // Set pre-defined page property
+        if (!isset(self::$page[$id])) {
+            self::$page[$id] = array_replace_recursive((array) Config::get($cc, true), (array) Config::get($c, true), $lot);
+        }
+        $this->lot = self::$page[$id] ?? [];
+    }
+
+    // Inherit to `File::__get()`
+    public function __get(string $key) {
+        return parent::__get($key) ?? $this->__call($key);
+    }
+
+    public function __set(string $key, $value) {
+        $this->offsetSet(p2f($key), $value);
+    }
+
+    // Inherit to `File::__toString()`
+    public function __toString() {
+        return To::page($this->lot);
+    }
+
+    // Inherit to `File::get()`
+    public function get($key = null) {
+        if (is_array($key)) {
+            $out = [];
+            foreach ($key as $k => $v) {
+                // `$page->get(['foo.bar' => 0])`
+                if (strpos($k, '.') !== false) {
+                    $kk = explode('.', $k, 2);
+                    if (is_array($vv = $this->any($kk[0]))) {
+                        $out[$k] = get($vv, $kk[1]) ?? $v;
+                        continue;
+                    }
+                }
+                $out[$k] = $this->any($k) ?? $v;
+            }
+            return $out;
+        }
+        // `$page->get('foo.bar')`
+        if (strpos($key, '.') !== false) {
+            $k = explode('.', $key, 2);
+            if (is_array($v = $this->any($k[0]))) {
+                return get($v, $k[1]);
+            }
+        }
+        return $this->any($key);
+    }
+
+    // Inherit to `File::getIterator()`
+    public function getIterator() {
+        return new \ArrayIterator($this->exist ? From::page(file_get_contents($this->path), null, true) : []);
+    }
+
+    public function id(...$lot) {
+        return $this->exist ? sprintf('%u', (string) parent::time()) : null;
+    }
+
+    // Inherit to `File::jsonSerialize()`
+    public function jsonSerialize() {
+        return $this->exist ? From::page(file_get_contents($this->path), null, true) : [];
+    }
+
+    // Inherit to `File::offsetGet()`
+    public function offsetGet($i) {
+        if ($this->exist && empty($this->read[$i])) {
+            // Prioritize data from a file…
+            if (is_file($f = Path::F($this->path) . DS . $i . '.data')) {
+                // Read once!
+                $this->read[$i] = 1;
+                return ($this->lot[$i] = a(e(file_get_contents($f))));
+            }
+            $any = From::page(file_get_contents($this->path), null, true);
+            foreach ($any as $k => $v) {
+                // Read once!
+                $this->read[$k] = 1;
+            }
+            $this->lot = array_replace_recursive($this->lot, $any);
+        }
+        return $this->lot[$i] ?? null;
+    }
+
+    // Inherit to `File::offsetSet()`
+    public function offsetSet($i, $value) {
+        if (isset($i)) {
+            $this->lot[$i] = $value;
+        } else {
+            $this->lot[] = $value;
+        }
+    }
+
+    // Inherit to `File::offsetUnset()`
+    public function offsetUnset($i) {
+        unset($this->lot[$i]);
+    }
+
+    public function save() {
+        $data = $this->lot;
+        $id = $this->id;
+        foreach ($data as $k => $v) {
+            if (isset(self::$page[$id][$k])) {
+                unset($data[$k]);
+            }
+        }
+        $this->content = To::page($data);
+        return parent::save();
+    }
+
+    // Inherit to `File::serialize()`
+    public function serialize() {
+        return serialize($this->exist ? From::page(file_get_contents($this->path), null, true) : []);
+    }
+
+    // Inherit to `File::set()`
+    public function set($key, $value = null) {
         $id = $this->id ?? "";
         if (!$this->exist) {
             $this->lot = self::$page[$id] = [];
@@ -56,152 +182,34 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this;
     }
 
-    public function __call(string $kin, array $lot = []) {
-        // @see `function _set_()`
-        if ($kin === 'set' || self::_($kin = p2f($kin))) {
-            return parent::__call($kin, $lot);
-        }
-        return $this->find($kin, $lot);
-    }
-
-    public function __construct(string $path = null, array $lot = [], array $prefix = []) {
-        $c = c2f(static::class, '_', '/'); // Any class name that inherits this class
-        $cc = c2f(self::class, '_', '/'); // This very class name
-        $prefix = array_replace([$cc, $c], $prefix);
-        $prefix = array_unique($prefix);
-        $id = json_encode([$path, $lot, $prefix]);
-        $this->exist = $f = is_file($path);
-        $this->f = $file = new File($path);
-        $this->id = $id;
-        $this->path = $f ? $path : null;
-        $this->prefix = $prefix;
-        // Set pre-defined page property
-        $this->lot = array_replace_recursive([
-            'id' => $f ? sprintf('%u', (string) $file->time) : null,
-            'name' => $n = $file->name,
-            'path' => $path,
-            'slug' => $n,
-            'time' => $file->time('%Y-%m-%d %T'),
-            'title' => $f ? To::title($n) : null,
-            'update' => $file->update('%Y-%m-%d %T'),
-            'url' => $file->URL,
-            'x' => $file->x
-        ], (array) Config::get($cc, true), (array) Config::get($c, true), $lot);
-    }
-
-    public function __get(string $key) {
-        if (method_exists($this, $key)) {
-            if ((new \ReflectionMethod($this, $key))->isPublic()) {
-                return $this->{$key}();
-            }
-        }
-        return $this->__call($key);
-    }
-
-    public function __set(string $key, $value) {
-        $this->offsetSet(p2f($key), $value);
-    }
-
-    public function __toString() {
-        $path = $this->path;
-        return $path ? file_get_contents($path) : "";
-    }
-
-    public function count() {
-        return $this->exist ? 1 : 0;
-    }
-
-    public function get($key) {
-        if (is_array($key)) {
-            $out = [];
-            foreach ($key as $k => $v) {
-                // `$page->get(['foo.bar' => 0])`
-                if (strpos($k, '.') !== false) {
-                    $kk = explode('.', $k, 2);
-                    if (is_array($vv = $this->find($kk[0]))) {
-                        $out[$k] = get($vv, $kk[1]) ?? $v;
-                        continue;
-                    }
-                }
-                $out[$k] = $this->find($k) ?? $v;
-            }
-            return $out;
-        }
-        // `$page->get('foo.bar')`
-        if (strpos($key, '.') !== false) {
-            $k = explode('.', $key, 2);
-            if (is_array($v = $this->find($k[0]))) {
-                return get($v, $k[1]);
-            }
-        }
-        return $this->find($key);
-    }
-
-    public function getIterator() {
-        return new \ArrayIterator($this->lot);
-    }
-
-    public function jsonSerialize() {
-        return $this->lot;
-    }
-
-    public function offsetExists($i) {
-        return !!$this->offsetGet($i);
-    }
-
-    public function offsetGet($i) {
-        if ($this->exist && empty($this->read[$i])) {
-            // Prioritize data from a file…
-            if (is_file($f = Path::F($this->path) . DS . $i . '.data')) {
-                // Read once!
-                $this->read[$i] = 1;
-                return ($this->lot[$i] = a(e(file_get_contents($f))));
-            }
-            $any = From::page(file_get_contents($this->path), null, true);
-            foreach ($any as $k => $v) {
-                // Read once!
-                $this->read[$k] = 1;
-            }
-            $this->lot = array_replace_recursive($this->lot, $any);
-        }
-        return $this->lot[$i] ?? null;
-    }
-
-    public function offsetSet($i, $value) {
-        if (isset($i)) {
-            $this->lot[$i] = $value;
+    // Inherit to `File::time()`
+    public function time(string $format = null) {
+        $n = parent::name();
+        // Set `time` value from the page’s file name
+        if (
+            is_string($n) && (
+                // `2017-04-21.page`
+                substr_count($n, '-') === 2 ||
+                // `2017-04-21-14-25-00.page`
+                substr_count($n, '-') === 5
+            ) &&
+            is_numeric(str_replace('-', "", $n)) &&
+            preg_match('/^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$/', $n)
+        ) {
+            $date = new Date($n);
+        // Else…
         } else {
-            $this->lot[] = $value;
+            $date = new Date(parent::time());
         }
+        return $format ? $date($format) : $date;
     }
 
-    public function offsetUnset($i) {
-        unset($this->lot[$i]);
+    // Inherit to `File::type()`
+    public function type(...$lot) {
+        return $this->__call('type', $lot);
     }
 
-    public function save() {
-        return $this->saveTo($this->path, 0600);
-    }
-
-    public function saveAs(string $name) {
-        if ($this->exist) {
-            return $this->saveTo(dirname($this->path) . DS . basename($name), 0600);
-        }
-        return false;
-    }
-
-    public function saveTo(string $path) {
-        unset($this->lot['path']);
-        return File::set(To::page($this->lot))->saveTo($path, 0600);
-    }
-
-    public function serialize() {
-        if ($this->exist) {
-            return serialize(From::page(file_get_contents($this->path)));
-        }
-        return serialize([]);
-    }
-
+    // Inherit to `File::unserialize()`
     public function unserialize($v) {
         $data = unserialize($v);
         foreach ($data as $k => $v) {
@@ -211,12 +219,25 @@ class Page extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this;
     }
 
-    public static function from(...$v) {
-        return new static(...$v);
+    // Inherit to `File::update()`
+    public function update(string $format = null) {
+        $date = new Date(parent::update());
+        return $format ? $date($format) : $date;
     }
 
-    public static function open(...$v) {
-        return new static(...$v);
+    // Inherit to `File::URL()`
+    public function URL(...$lot) {
+        return $this->__call('URL', $lot) ?? $this->__call('url', $lot);
+    }
+
+    // Inherit to `File::from()`
+    public static function from(string $path = null, array $lot = []) {
+        return new static($path, $lot);
+    }
+
+    // Inherit to `File::open()`
+    public static function open(string $path = null, array $lot = []) {
+        return new static($path, $lot);
     }
 
 }

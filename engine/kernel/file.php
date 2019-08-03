@@ -1,6 +1,6 @@
 <?php
 
-class File extends Genome {
+class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
 
     const config = [
         // List of allowed file extension(s)
@@ -21,23 +21,29 @@ class File extends Genome {
         'size' => [0, 2097152] // Range of allowed file size(s)
     ];
 
-    protected function _set_(string $data) {
-        $this->content = $data;
-        return $this;
-    }
+    protected $content;
 
-    public $content;
     public $exist;
     public $path;
 
     public function __construct($path = null) {
         $this->content = "";
-        if (is_string($path)) {
+        if ($this->exist = $path && is_string($path) && strpos($path, ROOT) === 0) {
+            if (!stream_resolve_include_path($path)) {
+                if (!is_dir($d = dirname($path))) {
+                    mkdir($d, 0775, true);
+                }
+                touch($path); // Create an empty file
+            }
             $this->path = realpath($path) ?: null;
-            $this->exist = $path && is_file($path);
-        } else {
-            $this->path = $path;
         }
+    }
+
+    public function __get(string $key) {
+        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+            return $this->{$key}();
+        }
+        return null;
     }
 
     public function __toString() {
@@ -56,13 +62,8 @@ class File extends Genome {
         return $this->exist ? To::URL($this->path) : null;
     }
 
-    public function append(string $data) {
-        $this->content .= $data;
-        return $this;
-    }
-
     public function consent($i = null) {
-        if (isset($consent) && $this->exist) {
+        if (isset($i) && $this->exist) {
             chmod($this->path, is_string($i) ? octdec($i) : $i);
             return $this;
         }
@@ -90,11 +91,15 @@ class File extends Genome {
         return $out;
     }
 
+    public function count() {
+        return $this->exist ? 1 : 0;
+    }
+
     public function directory(int $i = 1) {
         return $this->exist ? dirname($this->path, $i) : null;
     }
 
-    public function get(int $i = null) {
+    public function get($i = null) {
         if ($this->exist) {
             if (isset($i)) {
                 foreach ($this->stream() as $k => $v) {
@@ -107,6 +112,14 @@ class File extends Genome {
             return content($this->path);
         }
         return null;
+    }
+
+    public function getIterator() {
+        return $this->stream();
+    }
+
+    public function jsonSerialize() {
+        return $this->path;
     }
 
     public function let() {
@@ -147,52 +160,48 @@ class File extends Genome {
         return null;
     }
 
-    public function prepend(string $data) {
-        $this->content = $data . $this->content;
+    public function offsetExists($i) {
+        return !!$this->offsetGet($i);
+    }
+
+    public function offsetGet($i) {
+        return $this->__get($i);
+    }
+
+    public function offsetSet($i, $value) {}
+    public function offsetUnset($i) {}
+
+    public function serialize() {
+        return serialize($this->path);
+    }
+
+    public function save() {
+        if ($path = $this->path) {
+            // Return `$path` on success, `null` on error
+            return file_put_contents($path, $this->content) ? $path : null; 
+        }
+        // TODO
+        if (defined('DEBUG') && DEBUG) {
+            $c = static::class;
+            throw new \Exception('Please provide a file path even if it does not exist. Example: `new ' . $c . '(\'' . ROOT . DS . c2f($c) . '.txt\')`');
+        }
+        return false; // Return `false` if `$this` is just a placeholder
+    }
+
+    public function saveAs(string $name) {
+        $path = $this->save();
+        return $this->moveTo(dirname($path) . DS . $name)[1];
+    }
+
+    public function saveTo(string $path) {
+        $this->save();
+        return $this->moveTo($path)[1];
+    }
+
+    public function set($content) {
+        $this->content = $content;
+        $this->save();
         return $this;
-    }
-
-    public function renameTo(string $name) {
-        $out = [null];
-        if ($this->exist && $path = $this->path) {
-            $out[0] = $path;
-            $folder = dirname($path);
-            $a = basename($path);
-            $b = basename($name);
-            if (is_file($v = $folder . DS . $b)) {
-                // Return `false` if file already exists
-                $out[1] = false;
-            } else if ($a === $b) {
-                // New name is the same as old name, do nothing!
-                $out[1] = $v;
-            } else {
-                // Return `$v` on success, `null` on error
-                $out[1] = rename($path, $v) ? $v : null;
-            }
-        }
-        return $out;
-    }
-
-    public function save($consent = null) {
-        return $this->saveTo($this->path, $consent);
-    }
-
-    public function saveAs(string $name, $consent = null) {
-        return $this->exist ? $this->saveTo(dirname($this->path) . DS . basename($name), $consent) : false;
-    }
-
-    public function saveTo(string $path, $consent = null) {
-        $this->path = $path = strtr($path, '/', DS);
-        if (!is_dir($d = dirname($path))) {
-            mkdir($d, 0775, true);
-        }
-        if (file_put_contents($path, $this->content) !== false) {
-            if (isset($consent)) {
-                chmod($path, $consent);
-            }
-            return $path; // Return `$path` on success
-        }
-        return null; // Return `null` on error
     }
 
     public function size(string $unit = null, $prec = 2) {
@@ -203,13 +212,13 @@ class File extends Genome {
     }
 
     public function stream() {
-        return stream($this->path);
+        return $this->exist ? stream($this->path) : yield from [];
     }
 
     public function time(string $format = null) {
         if ($this->exist) {
             $t = filectime($this->path);
-            return $format ? strftime($format, $t) : $t;
+            return $format ? (new Date($t))($format) : $t;
         }
         return null;
     }
@@ -218,10 +227,14 @@ class File extends Genome {
         return $this->exist ? mime_content_type($this->path) : null;
     }
 
+    public function unserialize($v) {
+        return $this->__construct(unserialize($v));
+    }
+
     public function update(string $format = null) {
         if ($this->exist) {
             $t = filemtime($this->path);
-            return $format ? strftime($format, $t) : $t;
+            return $format ? (new Date($t))($format) : $t;
         }
         return null;
     }

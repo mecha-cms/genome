@@ -28,10 +28,8 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     public $match;
 
     public function __get(string $key) {
-        if (method_exists($this, $key)) {
-            if ((new \ReflectionMethod($this, $key))->isPublic()) {
-                return $this->{$key}();
-            }
+        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+            return $this->{$key}();
         }
         return $this->lot[$key = p2f($key)] ?? null;
     }

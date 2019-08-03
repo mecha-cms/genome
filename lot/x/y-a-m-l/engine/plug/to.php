@@ -47,15 +47,16 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
         return implode("\n", $out);
     };
     $yaml_docs = function(array $data, string $dent = '  ', $content = "\t") use(&$yaml) {
-        $out = $s = "";
+        $out = $c = "";
         if (isset($data[$content])) {
-            $s = $data[$content];
+            $c = $data[$content];
             unset($data[$content]);
         }
         for ($i = 0, $count = count($data); $i < $count; ++$i) {
-            $out .= "---\n" . $yaml($data[$i], $dent) . "\n";
+            $v = $yaml($data[$i], $dent);
+            $out .= "---\n" . ($v !== "" ? $v . "\n" : "");
         }
-        return $out . "...\n\n" . trim($s, "\n");
+        return $out . "...\n\n" . trim($c, "\n");
     };
     return $docs ? $yaml_docs($in, $dent, $docs === true ? "\t" : $docs) : $yaml($in, $dent);
 });
