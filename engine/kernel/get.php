@@ -2,13 +2,13 @@
 
 final class Get extends Genome {
 
-    public static function files(string $folder = PAGE, string $x = null) {
+    public static function files(string $folder = PAGE, string $x = null, $deep = 0) {
         $files = [];
-        foreach (g($folder, $x) as $v) {
-            if (pathinfo($v, PATHINFO_FILENAME) === "") {
+        foreach (g($folder, $x, $deep) as $k => $v) {
+            if (pathinfo($k, PATHINFO_FILENAME) === "") {
                 continue;
             }
-            $files[] = $v;
+            $files[] = $k;
         }
         return new Files($files);
     }

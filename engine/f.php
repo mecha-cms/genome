@@ -1,35 +1,6 @@
 <?php
 
 namespace _ {
-    // Check for valid data collection (array or object)
-    function anemon($x, $t = null) {
-        if (\is_string($t)) {
-            return anemon_a($x);
-        }
-        if (\is_int($t)) {
-            return anemon_0($x);
-        }
-        return \is_array($x) || \is_object($x);
-    }
-    // `[1,2,3]`
-    function anemon_0($x) {
-        $a = (array) $x;
-        $count = \count($a);
-        return $count && \array_keys($a) === \range(0, $count - 1);
-    }
-    // `{"a":1,"b":2,"c":3}`
-    function anemon_a($x) {
-        $a = (array) $x;
-        $count = \count($a);
-        return $count && \array_keys($a) !== \range(0, $count - 1);
-    }
-    // Check for any valid class instance
-    function instance($x) {
-        if (!\is_object($x)) {
-            return false;
-        }
-        return ($s = \get_class($x)) && $s !== 'stdClass' ? $x : false;
-    }
     // Check for valid JSON string format
     function json($x, $r = false) {
         if (!\is_string($x) || \trim($x) === "") {
@@ -316,7 +287,7 @@ namespace {
     function a($o, $safe = true) {
         if (\is_object($o)) {
             if ($safe) {
-                $o = \_\instance($o) ? $o : (array) $o;
+                return ($v = \get_class($o)) && $v !== 'stdClass' ? $o : (array) $o;
             } else {
                 $o = (array) $o;
             }
@@ -885,7 +856,7 @@ namespace {
     ];
     // $x: the string input
     // $a: replace multi-byte string into their accent
-    // $i: character(s) white-list
+    // $i: character(s) to keep
     function f(string $x = null, $a = true, string $i = "") {
         // this function does not trim white-space at the start and end of the string
         $x = \preg_replace([
@@ -908,17 +879,37 @@ namespace {
         }
         return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
     }
-    function g(string $f, string $x = null) {
-        if (\is_dir($f) && $h = \opendir($f)) {
-            while (false !== ($b = \readdir($h))) {
-                if ($b !== '.' && $b !== '..') {
-                    if (!isset($x) || ($y = \pathinfo($b, \PATHINFO_EXTENSION)) && \strpos(',' . $x . ',', ',' . $y . ',') !== false) {
-                        yield $f . DS . $b;
-                    }
+    // Advance glob function
+    function g(string $f, $x = null, $r = 0) {
+        if (\is_dir($f)) {
+            $g = new \RecursiveDirectoryIterator($f, \FilesystemIterator::SKIP_DOTS);
+            $g = new \RecursiveCallbackFilterIterator($g, function($v, $k, $a) use($r, $x) {
+                if ($r > 0 && $a->hasChildren()) {
+                    return true;
                 }
+                // Filter by type (`0` for folder and `1` for file)
+                if ($x === 0 || $x === 1) {
+                    return $v->{'is' . ($x === 0 ? 'Dir' : 'File')}();
+                }
+                // Filter file(s) by extension
+                if (\is_string($x)) {
+                    $x = ',' . $x . ',';
+                    return $v->isFile() && strpos($x, ',' . $v->getExtension() . ',') !== false;
+                }
+                // Filter by function
+                if (\is_callable($x)) {
+                    return fire($x, [], $v);
+                }
+                // No filter
+                return true;
+            });
+            $g = new \RecursiveIteratorIterator($g, !isset($x) || $x === 0 ? \RecursiveIteratorIterator::CHILD_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
+            $g->setMaxDepth($r === true ? -1 : (\is_int($r) ? $r : 0));
+            foreach ($g as $k => $v) {
+                yield $k => $v->isDir() ? 0 : 1;
             }
-            \closedir($h);
         }
+        return yield from [];
     }
     function h(string $x = null, string $h = '-', $a = false, $i = "") {
         return \str_replace([' ', $h . $h], $h, \preg_replace_callback('#\p{Lu}#', function($m) use($h) {
@@ -927,7 +918,7 @@ namespace {
     }
     function i() {}
     function j() {}
-    function k(string $f, array $q = [], $c = false, $i = false) {
+    function k(string $f, array $q = [], $c = false) {
         if (\is_dir($f) && $h = \opendir($f)) {
             while (false !== ($b = \readdir($h))) {
                 if ($b !== '.' && $b !== '..') {
@@ -938,12 +929,12 @@ namespace {
                         }
                         $r = $f . DS . $b;
                         // Find by query in file name…
-                        if (($i && \stripos($n, $v) !== false) || (!$i && \strpos($n, $v) !== false)) {
+                        if (\stripos($n, $v) !== false) {
                             yield $r;
                         // Find by query in file content…
                         } else if ($c && \is_file($r)) {
                             foreach (stream($r) as $vv) {
-                                if (($i && \stripos($vv, $v) !== false) || (!$i && \strpos($vv, $v) !== false)) {
+                                if (stripos($vv, $v) !== false) {
                                     yield $r;
                                 }
                             }
@@ -970,7 +961,7 @@ namespace {
     function o($a, $safe = true) {
         if (\is_array($a)) {
             if ($safe) {
-                $a = \_\anemon_a($a) ? (object) $a : $a;
+                $a = array_keys($a) !== range(0, count($a) - 1) ? (object) $a : $a;
             } else {
                 $a = (object) $a;
             }

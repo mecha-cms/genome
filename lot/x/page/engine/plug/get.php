@@ -1,12 +1,12 @@
 <?php namespace _\lot\x\page;
 
-function pages(string $folder = PAGE, string $x = 'page', string $hook = "\\Pages") {
+function pages(string $folder = PAGE, string $x = 'page', $deep = 0, string $hook = "\\Pages") {
     $pages = [];
-    foreach (\g($folder, $x) as $v) {
-        if (\pathinfo($v, \PATHINFO_FILENAME) === "") {
+    foreach (\g($folder, $x, $deep) as $k => $v) {
+        if (\pathinfo($k, \PATHINFO_FILENAME) === "") {
             continue;
         }
-        $pages[] = $v;
+        $pages[] = $k;
     }
     return new $hook($pages);
 }
