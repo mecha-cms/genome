@@ -61,14 +61,16 @@ final class Cache extends Genome {
         } else if (isset($id)) {
             return File::open(self::f($id))->let();
         }
-        foreach (g(constant(u(static::class))) as $v) {
-            $out = concat($out, File::open($v)->let());
+        foreach (g(constant(u(static::class)), null, true) as $k => $v) {
+            $out = concat($out, unlink($k) ? $k : null);
         }
         return $out;
     }
 
     public static function set(string $id, callable $fn, array $lot = []): array {
-        File::set('<?php return ' . z($r = call_user_func($fn, ...$lot)))->saveTo($f = self::f($id), 0600);
+        $file = new File($f = self::f($id));
+        $file->set('<?php return ' . z($r = call_user_func($fn, ...$lot)));
+        $file->save(0600);
         return [$r, $f, filemtime($f)];
     }
 

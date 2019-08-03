@@ -83,40 +83,6 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
         return null;
     }
 
-    public static function send(array $data, array $header = []) {
-        extract($data, EXTR_SKIP);
-        if (!isset($to)) {
-            return false;
-        }
-        if (is_array($to)) {
-            $s = "";
-            if (_\anemon_a($to)) {
-                // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
-                foreach ($to as $k => $v) {
-                    $s .= ', ' . $v . ' <' . $k . '>';
-                }
-                $to = substr($s, 2);
-            } else {
-                // ['foo@bar', 'baz@qux']
-                $to = implode(', ', $to);
-            }
-        } else if (!Is::email($to)) {
-            return false;
-        }
-        $lot = [];
-        foreach (array_replace_recursive([
-            'MIME-Version' => '1.0',
-            'Content-Type' => 'text/html; charset=ISO-8859-1',
-            'From' => $from,
-            'Reply-To' => $from,
-            'Return-Path' => $from,
-            'X-Mailer' => 'PHP/' . phpversion()
-        ], $header) as $k => $v) {
-            $lot[] = $k . ': ' . $v;
-        }
-        return mail($to, $title ?? "", $content ?? "", implode("\r\n", $lot));
-    }
-
     public static function set(...$lot) {
         $kin = array_shift($lot);
         $_SESSION['alert'][$kin][] = $lot;

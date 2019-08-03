@@ -106,7 +106,7 @@ final class URL extends Genome {
             return rtrim($url->scheme . ':' . $path, '/');
         // `URL::long('/foo/bar/baz/qux')`
         } else if (strpos($path, '/') === 0) {
-            return rtrim($url . $path, '/');
+            return rtrim($url->ground . $path, '/');
         }
         // `URL::long('&foo=bar&baz=qux')`
         $a = explode('?', $path, 2);

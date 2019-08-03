@@ -24,7 +24,8 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
         };
         foreach ($data as $k => $v) {
             if (is_array($v)) {
-                if (_\anemon_0($v)) {
+                // Sequence array?
+                if (array_keys($v) === range(0, count($v) - 1)) {
                     $out[] = $yaml_set($k, ":\n", $yaml_list($v));
                 } else {
                     $out[] = $yaml_set($k, ":\n", $dent . str_replace("\n", "\n" . $dent, $yaml($v, $dent)));
