@@ -101,7 +101,7 @@ class Page extends File {
     }
 
     public function id(...$lot) {
-        return $this->__call('id', $lot) ?? (($t = parent::time()) ? sprintf('%u', (string) $t) : null);
+        return $this->any('id', $lot) ?? (($t = parent::time()) ? sprintf('%u', (string) $t) : null);
     }
 
     // Inherit to `File::jsonSerialize()`
@@ -142,7 +142,7 @@ class Page extends File {
         unset($this->lot[$i]);
     }
 
-    public function save() {
+    public function save($seal = null) {
         $data = $this->lot;
         $id = $this->id;
         foreach ($data as $k => $v) {
@@ -151,7 +151,7 @@ class Page extends File {
             }
         }
         $this->content = To::page($data);
-        return parent::save();
+        return parent::save($seal);
     }
 
     // Inherit to `File::serialize()`
@@ -206,7 +206,7 @@ class Page extends File {
 
     // Inherit to `File::type()`
     public function type(...$lot) {
-        return $this->__call('type', $lot) ?? 'text/html';
+        return $this->any('type', $lot) ?? 'text/html';
     }
 
     // Inherit to `File::unserialize()`
@@ -227,7 +227,7 @@ class Page extends File {
 
     // Inherit to `File::URL()`
     public function URL(...$lot) {
-        return $this->__call('URL', $lot) ?? $this->__call('url', $lot);
+        return $this->any('URL', $lot) ?? $this->any('url', $lot) ?? parent::URL();
     }
 
     // Inherit to `File::from()`

@@ -49,20 +49,20 @@ function route() {
         $parent_path = \Path::D($path);
         $parent_folder = \Path::D($folder);
         if ($parent_file = \File::exist([
-            $parent_folder . '.page', // `.\lot\page\parent-slug.page`
-            $parent_folder . '.archive', // `.\lot\page\parent-slug.archive`
-            $parent_folder . DS . '.page', // `.\lot\page\parent-slug\.page`
-            $parent_folder . DS . '.archive' // `.\lot\page\parent-slug\.archive`
+            $parent_folder . '.page', // `.\lot\page\parent-name.page`
+            $parent_folder . '.archive', // `.\lot\page\parent-name.archive`
+            $parent_folder . DS . '.page', // `.\lot\page\parent-name\.page`
+            $parent_folder . DS . '.archive' // `.\lot\page\parent-name\.archive`
         ])) {
             $parent_page = new \Page($parent_file);
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $parent_page['sort'] ?? $sort;
             $chunk = $parent_page['chunk'] ?? $chunk;
             $parent_pages = \map(\Get::pages($parent_folder, 'page')->sort($sort), function($v) {
-                return $v['slug'];
+                return $v['name'];
             });
         }
-        $pager = new \Pager\Page($parent_pages ?? [], $page['slug'], $url . '/' . $parent_path);
+        $pager = new \Pager\Page($parent_pages ?? [], $page['name'], $url . '/' . $parent_path);
         $GLOBALS['page'] = $page;
         $GLOBALS['pager'] = $pager;
         $GLOBALS['parent'] = $parent_page ?? new \Page;

@@ -28,19 +28,19 @@ if ($i !== "" && File::exist([
 $if_0 = $i === "" && ($path === "" || $path === $p);
 
 $if_1 = File::exist([
-    // `.\lot\page\home-slug.{page,archive}`
+    // `.\lot\page\home-name.{page,archive}`
     PAGE . DS . $p . '.page',
     PAGE . DS . $p . '.archive'
 ]);
 
 $if_2 = File::exist([
-    // `.\lot\page\page-slug\.{page,archive}`
+    // `.\lot\page\page-name\.{page,archive}`
     $folder . DS . '.page',
     $folder . DS . '.archive'
 ]);
 
 $if_3 = File::exist([
-    // `.\lot\page\page-slug.{page,archive}`
+    // `.\lot\page\page-name.{page,archive}`
     $folder . '.page',
     $folder . '.archive'
 ]);
@@ -50,7 +50,7 @@ $if_5 = glob($folder . DS . '*.page', GLOB_NOSORT);
 
 $folder = dirname($folder);
 $if_6 = File::exist([
-    // `.\lot\page\parent-slug.{page,archive}`
+    // `.\lot\page\parent-name.{page,archive}`
     $folder . '.page',
     $folder . '.archive',
     $folder . DS . '.page',

@@ -1,23 +1,32 @@
 <?php
 
-function move(string $from, string $to) {
-    return open($from)->moveTo($to);
+function move(string $path, string $to) {
+    return open($path)->moveTo($to);
 }
 
 function open(string $path) {
     if (is_file($path)) {
-        return File::from($path);
+        return new File($path);
     }
     if (is_dir($path)) {
-        return Folder::from($path);
+        return new Folder($path);
     }
     return false;
 }
 
-function put(string $in, string $path, $consent = null) {
-    return File::set($in)->saveTo($path, $consent);
+function put($in, string $path, $seal = null) {
+    $file = new File($path);
+    $file->set($in);
+    $file->save($seal);
+    return $file;
 }
 
-function take(string $in) {
-    return File::from($in)->let();
+function take(string $path) {
+    if (is_file($path)) {
+        $open = new File($path);
+    }
+    if (is_dir($path)) {
+        $open = new Folder($path);
+    }
+    return $open->let();
 }

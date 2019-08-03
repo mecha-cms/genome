@@ -50,7 +50,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? $this->path : "";
     }
 
-    public function _consent() {
+    public function _seal() {
         return $this->exist ? fileperms($this->path) : null;
     }
 
@@ -60,17 +60,6 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function URL() {
         return $this->exist ? To::URL($this->path) : null;
-    }
-
-    public function consent($i = null) {
-        if (isset($i) && $this->exist) {
-            chmod($this->path, is_string($i) ? octdec($i) : $i);
-            return $this;
-        }
-        if (null !== ($i = $this->_consent())) {
-            return substr(sprintf('%o', $i), -4);
-        }
-        return null;
     }
 
     public function copyTo(string $folder) {
@@ -175,8 +164,11 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return serialize($this->path);
     }
 
-    public function save() {
+    public function save($seal = null) {
         if ($path = $this->path) {
+            if (isset($seal)) {
+                $this->seal($seal);
+            }
             // Return `$path` on success, `null` on error
             return file_put_contents($path, $this->content) ? $path : null; 
         }
@@ -188,19 +180,31 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return false; // Return `false` if `$this` is just a placeholder
     }
 
-    public function saveAs(string $name) {
-        $path = $this->save();
+    public function saveAs(string $name, $seal = null) {
+        $path = $this->save($seal);
         return $this->moveTo(dirname($path) . DS . $name)[1];
     }
 
-    public function saveTo(string $path) {
-        $this->save();
+    public function saveTo(string $path, $seal = null) {
+        $this->save($seal);
         return $this->moveTo($path)[1];
+    }
+
+    public function seal($i = null) {
+        if (isset($i) && $this->exist) {
+            $i = is_string($i) ? octdec($i) : $i;
+            // Return `$i` on success, `null` on error
+            return chmod($this->path, $i) ? $i : null;
+        }
+        if (null !== ($i = $this->_seal())) {
+            return substr(sprintf('%o', $i), -4);
+        }
+        // Return `false` if file does not exist
+        return false;
     }
 
     public function set($content) {
         $this->content = $content;
-        $this->save();
         return $this;
     }
 
