@@ -334,8 +334,8 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    public static function from(iterable $array) {
-        return new static($array);
+    public static function from(...$lot) {
+        return new static(...$lot);
     }
 
 }
