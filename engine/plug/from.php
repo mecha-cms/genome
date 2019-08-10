@@ -1,19 +1,16 @@
 <?php
 
 foreach ([
-    'anemon' => function($in) {
-        if ($in instanceof \Traversable) {
-            return iterator_to_array($in);
-        }
-        return (array) $in;
-    },
-    'base64' => "\\base64_decode",
-    'dec' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
-    'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'HTML' => ["\\htmlspecialchars", [null, ENT_QUOTES | ENT_HTML5]],
     'JSON' => function(string $in) {
         return json_decode($in);
     },
+    'URL' => function($in, $raw = false) {
+        return $raw ? rawurlencode($in) : urlencode($in);
+    },
+    'base64' => "\\base64_decode",
+    'dec' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
+    'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'query' => function(string $in) {
         $out = [];
         $q = function(array &$out, $k, $v) {
@@ -36,10 +33,7 @@ foreach ([
         }
         return $out;
     },
-    'serial' => "\\unserialize",
-    'URL' => function($in, $raw = false) {
-        return $raw ? rawurlencode($in) : urlencode($in);
-    }
+    'serial' => "\\unserialize"
 ] as $k => $v) {
     From::_($k, $v);
 }

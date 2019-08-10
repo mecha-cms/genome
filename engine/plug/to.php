@@ -1,8 +1,21 @@
 <?php
 
 foreach([
-    'anemon' => function($in) {
-        return (array) (is_array($in) || is_object($in) ? a($in) : json_decode($in, true));
+    'HTML' => ["\\htmlspecialchars_decode", [null, ENT_QUOTES | ENT_HTML5]],
+    'JSON' => function($in, $tidy = false) {
+        if ($tidy) {
+            $i = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
+        } else {
+            $i = JSON_UNESCAPED_UNICODE;
+        }
+        return json_encode($in, $i);
+    },
+    'URL' => function(string $in, $raw = false) {
+        $url = $GLOBALS['url'];
+        $x = strtr(ROOT, DS, '/');
+        $in = realpath($in) ?: $in;
+        $in = str_replace([ROOT, DS, $x], [$url, '/', $url], $in);
+        return $raw ? rawurldecode($in) : urldecode($in);
     },
     'base64' => "\\base64_encode",
     'camel' => "\\c",
@@ -17,101 +30,7 @@ foreach([
         }
         return $out;
     },
-    'file' => function(string $in) {
-        $in = preg_split('#\s*[\\\/]\s*#', $in, null, PREG_SPLIT_NO_EMPTY);
-        $n = preg_split('#\s*[.]\s*#', array_pop($in), null, PREG_SPLIT_NO_EMPTY);
-        $x = array_pop($n);
-        $out = "";
-        foreach ($in as $v) {
-            $out .= h($v, '-', true, '_') . DS;
-        }
-        $out .= h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
-        return $out === '.' ? "" : $out;
-    },
-    'folder' => function(string $in) {
-        $in = preg_split('#\s*[\\\/]\s*#', $in, null, PREG_SPLIT_NO_EMPTY);
-        $n = array_pop($in);
-        $out = "";
-        foreach ($in as $v) {
-            $out .= h($v, '-', true, '_') . DS;
-        }
-        return $out . h($n, '-', true, '_');
-    },
-    'hex' => function(string $in, $z = false, $f = ['&#x', ';']) {
-        $out = "";
-        for($i = 0, $count = strlen($in); $i < $count; ++$i) {
-            $s = dechex(ord($in[$i]));
-            if (!$z) {
-                $s = str_pad($s, 4, '0', STR_PAD_LEFT);
-            }
-            $out .= $f[0] . $s . $f[1];
-        }
-        return $out;
-    },
-    'HTML' => ["\\htmlspecialchars_decode", [null, ENT_QUOTES | ENT_HTML5]],
-    'JSON' => function($in, $tidy = false) {
-        if ($tidy) {
-            $i = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
-        } else {
-            $i = JSON_UNESCAPED_UNICODE;
-        }
-        return json_encode($in, $i);
-    },
-    'kebab' => function(string $in, $s = '-', $a = true) {
-        return trim(h($in, $s, $a), $s);
-    },
-    'key' => function(string $in, $a = true) {
-        $out = trim(h($in, '_', $a), '_');
-        return $out && is_numeric($out[0]) ? '_' . $out : $out;
-    },
-    'lower' => "\\l",
-    'pascal' => "\\p",
-    'path' => function(string $in) {
-        $url = $GLOBALS['url'];
-        $x = strtr($url, '/', DS);
-        $in = str_replace([$url, '/', $x], [ROOT, DS, ROOT], $in);
-        return realpath($in) ?: $in;
-    },
-    'query' => function(array $in) {
-        $out = [];
-        $q = function(array $in, $enter) use(&$q) {
-            $a = [];
-            $exit = $enter ? ']' : "";
-            foreach ($in as $k => $v) {
-                $k = urlencode($k);
-                if (is_array($v)) {
-                    $a = array_merge($a, $q($v, $enter . $k . $exit . '['));
-                } else {
-                    $a[$enter . $k . $exit] = $v;
-                }
-            }
-            return $a;
-        };
-        foreach ($q($in, "") as $k => $v) {
-            // `['a' => false, 'b' => 'false', 'c' => null, 'd' => 'null']` → `b=false&d=null`
-            if (!isset($v) || $v === false) {
-                continue;
-            }
-            // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
-            $v = $v !== true ? '=' . urlencode(s($v)) : "";
-            if ("" !== ($v = $k . $v)) {
-                $out[] = $v;
-            }
-        }
-        return $out ? '?' . implode('&', $out) : "";
-    },
-    'sentence' => function(string $in, $tail = '.') {
-        $in = trim($in);
-        if (extension_loaded('mbstring')) {
-            return mb_strtoupper(mb_substr($in, 0, 1)) . mb_strtolower(mb_substr($in, 1)) . $tail;
-        }
-        return ucfirst(strtolower($in)) . $tail;
-    },
-    'serial' => "\\serialize",
-    'snake' => function(string $in, $a = true) {
-        return trim(h($in, '_', $a), '_');
-    },
-    'snippet' => function(string $in, $html = true, $x = 200) {
+    'excerpt' => function(string $in, $html = true, $x = 200) {
         $s = w($in, $html ? 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var' : []);
         $utf8 = extension_loaded('mbstring');
         if (is_int($x)) {
@@ -177,6 +96,91 @@ foreach([
         $t = $utf8 ? mb_strlen($s) : strlen($s);
         return trim($out) . ($t > $x[0] ? $x[1] : "");
     },
+    'file' => function(string $in) {
+        $in = preg_split('#\s*[\\\/]\s*#', $in, null, PREG_SPLIT_NO_EMPTY);
+        $n = preg_split('#\s*[.]\s*#', array_pop($in), null, PREG_SPLIT_NO_EMPTY);
+        $x = array_pop($n);
+        $out = "";
+        foreach ($in as $v) {
+            $out .= h($v, '-', true, '_') . DS;
+        }
+        $out .= h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
+        return $out === '.' ? "" : $out;
+    },
+    'folder' => function(string $in) {
+        $in = preg_split('#\s*[\\\/]\s*#', $in, null, PREG_SPLIT_NO_EMPTY);
+        $n = array_pop($in);
+        $out = "";
+        foreach ($in as $v) {
+            $out .= h($v, '-', true, '_') . DS;
+        }
+        return $out . h($n, '-', true, '_');
+    },
+    'hex' => function(string $in, $z = false, $f = ['&#x', ';']) {
+        $out = "";
+        for($i = 0, $count = strlen($in); $i < $count; ++$i) {
+            $s = dechex(ord($in[$i]));
+            if (!$z) {
+                $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+            }
+            $out .= $f[0] . $s . $f[1];
+        }
+        return $out;
+    },
+    'kebab' => function(string $in, $s = '-', $a = true) {
+        return trim(h($in, $s, $a), $s);
+    },
+    'key' => function(string $in, $a = true) {
+        $out = trim(h($in, '_', $a), '_');
+        return $out && is_numeric($out[0]) ? '_' . $out : $out;
+    },
+    'lower' => "\\l",
+    'pascal' => "\\p",
+    'path' => function(string $in) {
+        $url = $GLOBALS['url'];
+        $x = strtr($url, '/', DS);
+        $in = str_replace([$url, '/', $x], [ROOT, DS, ROOT], $in);
+        return realpath($in) ?: $in;
+    },
+    'query' => function(array $in) {
+        $out = [];
+        $q = function(array $in, $enter) use(&$q) {
+            $a = [];
+            $exit = $enter ? ']' : "";
+            foreach ($in as $k => $v) {
+                $k = urlencode($k);
+                if (is_array($v)) {
+                    $a = array_merge($a, $q($v, $enter . $k . $exit . '['));
+                } else {
+                    $a[$enter . $k . $exit] = $v;
+                }
+            }
+            return $a;
+        };
+        foreach ($q($in, "") as $k => $v) {
+            // `['a' => false, 'b' => 'false', 'c' => null, 'd' => 'null']` → `b=false&d=null`
+            if (!isset($v) || $v === false) {
+                continue;
+            }
+            // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
+            $v = $v !== true ? '=' . urlencode(s($v)) : "";
+            if ("" !== ($v = $k . $v)) {
+                $out[] = $v;
+            }
+        }
+        return $out ? '?' . implode('&', $out) : "";
+    },
+    'sentence' => function(string $in, $tail = '.') {
+        $in = trim($in);
+        if (extension_loaded('mbstring')) {
+            return mb_strtoupper(mb_substr($in, 0, 1)) . mb_strtolower(mb_substr($in, 1)) . $tail;
+        }
+        return ucfirst(strtolower($in)) . $tail;
+    },
+    'serial' => "\\serialize",
+    'snake' => function(string $in, $a = true) {
+        return trim(h($in, '_', $a), '_');
+    },
     'text' => "\\w",
     'title' => function(string $in) {
         $in = w($in);
@@ -184,14 +188,7 @@ foreach([
         // Convert to abbreviation if all case(s) are in upper
         return u($out) === $out ? str_replace(' ', "", $out) : $out;
     },
-    'upper' => "\\u",
-    'URL' => function(string $in, $raw = false) {
-        $url = $GLOBALS['url'];
-        $x = strtr(ROOT, DS, '/');
-        $in = realpath($in) ?: $in;
-        $in = str_replace([ROOT, DS, $x], [$url, '/', $url], $in);
-        return $raw ? rawurldecode($in) : urldecode($in);
-    }
+    'upper' => "\\u"
 ] as $k => $v) {
     To::_($k, $v);
 }

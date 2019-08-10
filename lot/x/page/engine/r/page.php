@@ -5,5 +5,5 @@ function page(...$v) {
 }
 
 function pages(...$v) {
-    return _\get\pages(...$v);
+    return Pages::from(...$v);
 }

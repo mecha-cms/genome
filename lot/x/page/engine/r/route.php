@@ -58,7 +58,7 @@ function route() {
             // Inherit parent’s `sort` and `chunk` property where possible
             $sort = $parent_page['sort'] ?? $sort;
             $chunk = $parent_page['chunk'] ?? $chunk;
-            $parent_pages = \map(\Get::pages($parent_folder, 'page')->sort($sort), function($v) {
+            $parent_pages = \map(\Pages::from($parent_folder, 'page')->sort($sort), function($v) {
                 return $v['name'];
             });
         }
@@ -76,10 +76,9 @@ function route() {
             ],
             'sort' => $sort // Inherit page’s `sort` property
         ]);
-        $pages = \Get::pages($folder, 'page')->sort($sort);
+        $pages = \Pages::from($folder, 'page')->sort($sort);
         // No page(s) means “page” mode
         if ($pages->count() === 0 || \is_file($folder . DS . '.' . $page['x'])) {
-            $this->status(200);
             $this->content('page/' . $p . '/' . ($i + 1));
         }
         // Create pager for “pages” mode
@@ -94,7 +93,6 @@ function route() {
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
-            $this->status(200);
             $this->content('pages/' . $p . '/' . ($i + 1));
         }
     }
@@ -108,6 +106,7 @@ function route() {
         'is' => ['error' => 404]
     ]);
     $GLOBALS['t'][] = $language->isError;
+    $this->status(404);
     $this->content('404/' . $p . '/' . ($i + 1));
 }
 

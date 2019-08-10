@@ -28,10 +28,19 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     public $match;
 
     public function __get(string $key) {
-        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
-            return $this->{$key}();
-        }
-        return $this->lot[$key = p2f($key)] ?? null;
+        return $this->lot[p2f($key)] ?? null;
+    }
+
+    public function __isset(string $key) {
+        return !!$this->__get($key);
+    }
+
+    public function __set(string $key, $value) {
+        $this->lot[p2f($key)] = $value;
+    }
+
+    public function __unset(string $key) {
+        unset($this->lot[p2f($key)]);
     }
 
     public function count() {
@@ -41,9 +50,15 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     public function fire(string $id, array $data = [], array $form = []) {
         if ($v = self::get($id)) {
             $route = new static($id);
-            $route->lot = $data;
+            foreach ($data as $k => $v) {
+                $route->lot[p2f($k)] = $v;
+            }
             fire($v['fn'], [$form, strtolower($_SERVER['REQUEST_METHOD'])], $route);
         }
+    }
+
+    public function fresh(...$v) {
+        return _fresh(...$v);
     }
 
     public function getIterator() {
@@ -51,7 +66,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     }
 
     public function header(...$v) {
-        return HTTP::header(...$v);
+        return _header(...$v);
     }
 
     public function offsetExists($i) {
@@ -74,16 +89,12 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         unset($this->lot[$i]);
     }
 
-    public function refresh(...$v) {
-        return HTTP::refresh(...$v);
-    }
-
     public function status(...$v) {
-        return HTTP::status(...$v);
+        return _status(...$v);
     }
 
     public function type(...$v) {
-        return HTTP::type(...$v);
+        return _type(...$v);
     }
 
     public static function get(string $id = null) {
@@ -148,14 +159,14 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     public static function set(...$lot) {
         // `Route::set('foo/bar', 404, function() {}, 10)`
         $id = array_shift($lot);
-        $status = array_shift($lot) ?? 404;
+        $status = array_shift($lot) ?? 200;
         $fn = array_shift($lot);
         $stack = array_shift($lot) ?? 10;
         // `Route::set('foo/bar', function() {}, 10)`
         if (is_callable($status)) {
             $stack = $fn ?? 10;
             $fn = $status;
-            $status = 404;
+            $status = 200;
         }
         if (is_array($id)) {
             $i = 0;
@@ -176,7 +187,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
 
     public static function start() {
         $routes = Anemon::from(self::$r[1] ?? [])->sort([1, 'stack'], true);
-        $form = e($GLOBALS['_' . ($t = $_SERVER['REQUEST_METHOD'])] ?? []);
+        $form = $GLOBALS['_' . ($t = $_SERVER['REQUEST_METHOD'])] ?? [];
         $t = strtolower($t); // Request type
         foreach ($routes as $k => $v) {
             // If matched with the URL path, then …

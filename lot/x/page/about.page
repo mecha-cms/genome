@@ -3,7 +3,7 @@ title: Page
 description: Convert file and folder structure into web pages.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.9.3
+version: 1.9.4
 
 use:
   '.\lot\x\content': 1

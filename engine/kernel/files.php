@@ -10,7 +10,7 @@ class Files extends Anemon {
         return new \ArrayIterator($files);
     }
 
-    public function file(string $path) {
+    public function file(string $path): \ArrayAccess {
         return new File($path);
     }
 
@@ -32,6 +32,20 @@ class Files extends Anemon {
             $this->value = $value;
         }
         return $this;
+    }
+
+    public static function from(...$lot) {
+        $folder = array_shift($lot);
+        $x = array_shift($lot);
+        $deep = array_shift($lot) ?? 0;
+        $files = [];
+        foreach (g($folder, $x, $deep) as $k => $v) {
+            if (pathinfo($k, PATHINFO_FILENAME) === "") {
+                continue;
+            }
+            $files[] = $k;
+        }
+        return new static($files);
     }
 
 }

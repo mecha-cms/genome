@@ -55,11 +55,11 @@ final class Cache extends Genome {
         $out = [];
         if (is_array($id)) {
             foreach ($id as $v) {
-                $out[] = File::open(self::f($v))->let();
+                $out[] = (new File(self::f($v)))->let();
             }
             return $out;
         } else if (isset($id)) {
-            return File::open(self::f($id))->let();
+            return (new File(self::f($id)))->let();
         }
         foreach (g(constant(u(static::class)), null, true) as $k => $v) {
             $out = concat($out, unlink($k) ? $k : null);

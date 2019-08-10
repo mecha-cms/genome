@@ -68,6 +68,15 @@ class Page extends File {
         return To::page($this->lot);
     }
 
+    // Inherit to `File::URL()`
+    public function URL() {
+        if ($this->exist) {
+            $path = Path::R(Path::F($this->path), LOT . DS . 'page', '/');
+            return trim($GLOBALS['url'] . '/' . $path, '/');
+        }
+        return null;
+    }
+
     // Inherit to `File::get()`
     public function get($key = null) {
         if (is_array($key)) {
@@ -223,21 +232,6 @@ class Page extends File {
     public function update(string $format = null) {
         $date = new Date(parent::update());
         return $format ? $date($format) : $date;
-    }
-
-    // Inherit to `File::URL()`
-    public function URL(...$lot) {
-        return $this->any('URL', $lot) ?? $this->any('url', $lot) ?? parent::URL();
-    }
-
-    // Inherit to `File::from()`
-    public static function from(string $path = null, array $lot = []) {
-        return new static($path, $lot);
-    }
-
-    // Inherit to `File::open()`
-    public static function open(string $path = null, array $lot = []) {
-        return new static($path, $lot);
     }
 
 }

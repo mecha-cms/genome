@@ -16,7 +16,7 @@ final class Guard extends Genome {
     }
 
     public static function check(string $token, $id = 0) {
-        $prev = $_SESSION['token'][$id];
+        $prev = $_SESSION['token'][$id] ?? "";
         return $prev && $token && $prev === $token ? $token : false;
     }
 
