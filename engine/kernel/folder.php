@@ -6,11 +6,11 @@ class Folder extends Genome {
     public $path;
 
     public function __construct($path = null) {
-        if (is_string($path)) {
+        if ($this->exist = $path && is_string($path) && strpos($path, ROOT) === 0) {
+            if (!stream_resolve_include_path($path)) {
+                mkdir($path, 0775, true); // Create an empty folder
+            }
             $this->path = realpath($path) ?: null;
-            $this->exist = $path && is_dir($path);
-        } else {
-            $this->path = $path;
         }
     }
 
@@ -22,7 +22,7 @@ class Folder extends Genome {
         return $this->exist ? To::URL($this->path) : null;
     }
 
-    public function _consent() {
+    public function _seal() {
         return $this->exist ? fileperms($this->path) : null;
     }
 
@@ -34,7 +34,7 @@ class Folder extends Genome {
             }
             // Scan all file(s) and count the file size
             $size = 0;
-            foreach ($this->content(1, true) as $k => $v) {
+            foreach ($this->get(1, true) as $k => $v) {
                 $size += filesize($k);
             }
             return $size;
@@ -43,62 +43,72 @@ class Folder extends Genome {
     }
 
     // Set folder permission
-    public function consent($i = null) {
-        if (isset($consent) && is_dir($path = $this->path)) {
-            chmod($path, is_string($i) ? octdec($i) : $i);
-            return $this;
+    public function seal($i = null) {
+        if (isset($i) && $this->exist) {
+            $i = is_string($i) ? octdec($i) : $i;
+            // Return `$i` on success, `null` on error
+            return chmod($this->path, $i) ? $i : null;
         }
-        if (null !== ($i = $this->_consent())) {
+        if (null !== ($i = $this->_seal())) {
             return substr(sprintf('%o', $i), -4);
         }
-        return null;
+        // Return `false` if file does not exist
+        return false;
     }
 
-    public function copyTo() {}
+    public function copy(string $to) {
+        $out = [[]];
+        if ($this->exist && $path = $this->path) {
+            if (!is_dir($to)) {
+                mkdir($to, 0775, true);
+            }
+            $out[1] = [];
+            foreach (g($path, null, true) as $k => $v) {
+                $out[0][] = $k;
+                if (is_file($v = $to . str_replace($path, "", $k))) {
+                    // Return `false` if file already exists
+                    $out[1][] = false;
+                } else {
+                    // Return `$v` on success, `null` on error
+                    $out[1][] = copy($path, $v) ? $v : null;
+                }
+            }
+        }
+        return $out;
+    }
 
     public function directory(int $i = 1) {
         return $this->exist ? dirname($this->path, $i) : null;
     }
 
     public function get($x = null, $deep = false): \Generator {
-        if ($this->exist && $folder = $this->path) {
-            $content = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
-            $content = new \RecursiveCallbackFilterIterator($content, function($v, $k, $a) use($deep, $x) {
-                if ($deep > 0 && $a->hasChildren()) {
-                    return true;
-                }
-                // Filter by function
-                if (is_callable($x)) {
-                    return call_user_func($x, $v->getPathname());
-                }
-                // Filter by type (`0` for folder and `1` for file)
-                if ($x === 0 || $x === 1) {
-                    return $v->{'is' . ($x === 0 ? 'Dir' : 'File')}();
-                }
-                // Filter file(s) by extension
-                if (is_string($x)) {
-                    $x = ',' . $x . ',';
-                    return $v->isFile() && strpos($x, ',' . $v->getExtension() . ',') !== false;
-                }
-                // No filter
-                return true;
-            });
-            $content = new \RecursiveIteratorIterator($content, !isset($x) || $x === 0 ? \RecursiveIteratorIterator::SELF_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
-            $content->setMaxDepth($deep === true ? -1 : (is_int($deep) ? $deep : 0));
-            foreach ($content as $k => $v) {
-                yield $k => $v->isDir() ? 0 : 1;
-            }
-        }
-        return yield from [];
+        return g($this->path, $x, $deep);
     }
 
-    public function moveTo() {}
+    public function move(string $to) {
+        $out = [[]];
+        if ($this->exist && $path = $this->path) {
+            if (!is_dir($to)) {
+                mkdir($to, 0775, true);
+            }
+            $out[1] = [];
+            foreach (g($path, null, true) as $k => $v) {
+                $out[0][] = $k;
+                if (is_file($v = $to . str_replace($path, "", $k))) {
+                    // Return `false` if file already exists
+                    $out[1][] = false;
+                } else {
+                    // Return `$v` on success, `null` on error
+                    $out[1][] = rename($path, $v) ? $v : null;
+                }
+            }
+        }
+        return $out;
+    }
 
     public function name() {
         return $this->exist ? basename($this->path) : null;
     }
-
-    public function renameTo() {}
 
     public function size(string $unit = null, int $prec = 2) {
         if (null !== ($size = $this->_size())) {
@@ -187,8 +197,8 @@ class Folder extends Genome {
                     }
                 }
                 $out[$path] = rmdir($path) ? 0 : null;
-            } else if (is_array($any)) {
-                foreach ($any as $v) {
+            } else  {
+                foreach ((array) $any as $v) {
                     $v = $path . DS . strtr($v, '/', DS);
                     if (is_file($v)) {
                         $out[$v] = unlink($v) ? 1 : null;

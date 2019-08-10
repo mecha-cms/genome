@@ -14,9 +14,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             'log' => 1,
             'png' => 1,
             'txt' => 1,
-            'xml' => 1,
-            'yaml' => 1,
-            'yml' => 1
+            'xml' => 1
         ],
         'size' => [0, 2097152] // Range of allowed file size(s)
     ];
@@ -62,14 +60,14 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? To::URL($this->path) : null;
     }
 
-    public function copyTo(string $folder) {
+    public function copy(string $to) {
         $out = [null];
         if ($this->exist && $path = $this->path) {
             $out[0] = $path;
-            if (!is_dir($folder)) {
-                mkdir($folder, 0775, true);
+            if (!is_dir($to)) {
+                mkdir($to, 0775, true);
             }
-            if (is_file($v = $folder . DS . basename($path))) {
+            if (is_file($v = $to . DS . basename($path))) {
                 // Return `false` if file already exists
                 $out[1] = false;
             } else {
@@ -121,14 +119,14 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return false; // Return `false` if file does not exist
     }
 
-    public function moveTo(string $folder, string $name = null) {
+    public function move(string $to, string $as = null) {
         $out = [null];
         if ($this->exist && $path = $this->path) {
             $out[0] = $path;
-            if (!is_dir($folder)) {
-                mkdir($folder, 0775, true);
+            if (!is_dir($to)) {
+                mkdir($to, 0775, true);
             }
-            if (is_file($v = $folder . DS . ($name ?? basename($path)))) {
+            if (is_file($v = $to . DS . ($as ?? basename($path)))) {
                 // Return `false` if file already exists
                 $out[1] = false;
             } else {
@@ -178,16 +176,6 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             throw new \Exception('Please provide a file path even if it does not exist. Example: `new ' . $c . '(\'' . ROOT . DS . c2f($c) . '.txt\')`');
         }
         return false; // Return `false` if `$this` is just a placeholder
-    }
-
-    public function saveAs(string $name, $seal = null) {
-        $path = $this->save($seal);
-        return $this->moveTo(dirname($path) . DS . $name)[1];
-    }
-
-    public function saveTo(string $path, $seal = null) {
-        $this->save($seal);
-        return $this->moveTo($path)[1];
     }
 
     public function seal($i = null) {
@@ -267,14 +255,6 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             return false;
         }
         return is_file($path) ? realpath($path) : false;
-    }
-
-    public static function from(string $path) {
-        return new static($path);
-    }
-
-    public static function open(string $path) {
-        return new static($path);
     }
 
     public static function pull() {}
