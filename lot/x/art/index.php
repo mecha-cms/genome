@@ -25,7 +25,7 @@ namespace _\lot\x\art {
             $folder . '.page',
             $folder . '.archive'
         ])) {
-            extract(\Page::open($path)->get([
+            extract((new \Page($path))->get([
                 'css' => null,
                 'js' => null
             ]));
@@ -37,7 +37,7 @@ namespace _\lot\x\art {
             \Config::set('not.art', !$css && !$js);
         }
     }
-    if (!\HTTP::is('get', 'art') || \HTTP::get('art')) {
+    if (!empty($_GET['art'])) {
         \Hook::set('content', __NAMESPACE__, 1);
         \Hook::set('page.css', __NAMESPACE__ . "\\css", 2);
         \Hook::set('page.js', __NAMESPACE__ . "\\js", 2);

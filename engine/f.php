@@ -38,6 +38,72 @@ namespace _ {
 }
 
 namespace {
+    function _fresh(int $i) {
+        \header('Refresh: ' . $i);
+    }
+    function _header($k = null, $v = null) {
+        if (!isset($k)) {
+            $out = [];
+            foreach ($_SERVER as $kk => $vv) {
+                if (\strpos($kk, 'HTTP_') === 0) {
+                    $out[\preg_replace_callback('/_(\w)/', function($m) {
+                        return '-' . \strtoupper($m[1]);
+                    }, \ucfirst(\strtolower(\substr($kk, 5))))] = $vv;
+                }
+            }
+            foreach (\headers_list() as $vv) {
+                $a = \explode(':', $vv, 2);
+                $out[$a[0]] = e(\trim($a[1]));
+            }
+            if (\function_exists('apache_response_headers')) {
+                $out = \array_replace(\apache_response_headers() ?: [], $out);
+            }
+            return $out;
+        }
+        if (\is_array($k)) {
+            foreach ($k as $kk => $vv) {
+                if ($vv === false) {
+                    \header_remove($kk);
+                } else {
+                    \header($kk . ': ' . $vv);
+                }
+            }
+        } else {
+            if ($v === false) {
+                \header_remove($k);
+            } else if (isset($v)) {
+                \header($k . ': ' . $v);
+            } else if ($k === false) {
+                \header_remove();
+            } else {
+                return _header()[$k] ?? null;
+            }
+        }
+    }
+    function _is(string $n = null, string $k = null) {
+        $r = \strtoupper($_SERVER['REQUEST_METHOD']);
+        if (isset($n)) {
+            $n = \strtoupper($n);
+            if (isset($key)) {
+                return get($GLOBALS['_' . $n], $k) !== null;
+            }
+            return $n === $r;
+        }
+        return \strtolower($r);
+    }
+    function _status(int $i = null) {
+        if (isset($i)) {
+            \http_response_code($i);
+        }
+        return \http_response_code();
+    }
+    function _type(string $t, array $a = []) {
+        $s = "";
+        foreach ($a as $k => $v) {
+            $s .= '; ' . $k . '=' . $v;
+        }
+        \header('Content-Type: ' . $t . $s);
+    }
     // Check if array contains …
     function any(iterable $a, $fn = null) {
         if (!\is_callable($fn) && $fn !== null) {
@@ -103,6 +169,48 @@ namespace {
     // Convert file name to class property name
     function f2p(string $s, string $h = '-', string $n = '.') {
         return c(\str_replace([$n, '_'], [$h . '__', $h . '_'], $s), false, $n . '_');
+    }
+    // Fetch remote URL
+    function fetch(string $u, $a = null) {
+        $o = [];
+        // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
+        $v = 'Mecha/' . VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $port === 443 ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
+        // `fetch('/', ['Content-Type' => 'text/html'])`
+        if (\is_array($a)) {
+            foreach ($a as $k => $v) {
+                $o[$k] = $k . ': ' . $v;
+            }
+        }
+        if (!isset($o['User-Agent'])) {
+            $o['User-Agent'] = 'User-Agent: ' . $v;
+        }
+        $o = \array_values($o);
+        if (\extension_loaded('curl')) {
+            $curl = \curl_init($u);
+            \curl_setopt_array($curl, [
+                \CURLOPT_FAILONERROR => true,
+                \CURLOPT_FOLLOWLOCATION => true,
+                \CURLOPT_HTTPGET => true,
+                \CURLOPT_HTTPHEADER => $o,
+                \CURLOPT_MAXREDIRS => 2,
+                \CURLOPT_RETURNTRANSFER => true,
+                \CURLOPT_SSL_VERIFYPEER => false,
+                \CURLOPT_TIMEOUT => 15
+            ]);
+            $out = \curl_exec($curl);
+            if (\defined('DEBUG') && DEBUG && $out === false) {
+                throw new \UnexpectedValueException(\curl_error($curl));
+            }
+            \curl_close($curl);
+        } else {
+            $out = \file_get_contents($u, false, \stream_context_create([
+                'http' => [
+                    'method' => 'GET',
+                    'header' => \implode("\r\n", $data)
+                ]
+            ]));
+        }
+        return $out !== false ? $out : null;
     }
     // Return the first element found in array that passed the function test
     function find(iterable $a, callable $fn) {
@@ -1094,7 +1202,7 @@ namespace {
         if (\is_object($a) && $a instanceof \Traversable) {
             return \iterator_to_array($a);
         }
-        return $a;
+        return (array) $a;
     }
     // $b: use `[]` or `array()` syntax?
     function z($a, $b = true) {
