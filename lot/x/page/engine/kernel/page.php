@@ -40,11 +40,11 @@ class Page extends File {
     }
 
     public function __construct(string $path = null, array $lot = []) {
+        parent::__construct($path);
         $c = c2f(static::class, '_', "\\"); // Any class name inherits to this class
         $cc = c2f(self::class, '_', "\\"); // This very class name
         $prefix = array_unique([$cc, $c]);
         $id = json_encode([$path, $lot, $prefix]);
-        $this->f = $file = parent::__construct($path);
         $this->id = $id;
         $this->prefix = $prefix;
         // Set pre-defined page property

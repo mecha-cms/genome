@@ -26,10 +26,9 @@ final class Session extends Genome {
     }
 
     public static function start(...$lot) {
-        $path = array_shift($lot);
-        $path = $path ? $path : constant(u(static::class));
+        $path = $lot[0] ?? constant(u(static::class));
         if (isset($path)) {
-            Folder::create($path, 0600);
+            mkdir($path, 0755, true);
             session_save_path($path);
         }
         return !session_id() ? session_start() : true;

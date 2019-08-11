@@ -158,10 +158,10 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
 
     public static function set(...$lot) {
         // `Route::set('foo/bar', 404, function() {}, 10)`
-        $id = array_shift($lot);
-        $status = array_shift($lot) ?? 200;
-        $fn = array_shift($lot);
-        $stack = array_shift($lot) ?? 10;
+        $id = $lot[0] ?? null;
+        $status = $lot[1] ?? 200;
+        $fn = $lot[2] ?? null;
+        $stack = $lot[3] ?? 10;
         // `Route::set('foo/bar', function() {}, 10)`
         if (is_callable($status)) {
             $stack = $fn ?? 10;

@@ -4,8 +4,10 @@ class Folder extends Genome {
 
     public $exist;
     public $path;
+    public $value;
 
     public function __construct($path = null) {
+        $this->value[0] = null;
         if ($this->exist = $path && is_string($path) && strpos($path, ROOT) === 0) {
             if (!stream_resolve_include_path($path)) {
                 mkdir($path, 0775, true); // Create an empty folder
@@ -74,7 +76,8 @@ class Folder extends Genome {
                 }
             }
         }
-        return $out;
+        $this->value[1] = $out;
+        return $this;
     }
 
     public function directory(int $i = 1) {
@@ -103,7 +106,8 @@ class Folder extends Genome {
                 }
             }
         }
-        return $out;
+        $this->value = $out;
+        return $this;
     }
 
     public function name() {
@@ -151,36 +155,6 @@ class Folder extends Genome {
             return false;
         }
         return is_dir($path) ? realpath($path) : false;
-    }
-
-    public static function from(string $path) {
-        return new static($path);
-    }
-
-    public static function open(string $path) {
-        return new static($path);
-    }
-
-    public static function set($path, $consent = 0775) {
-        if (is_string($consent)) {
-            $consent = octdec($consent);
-        }
-        if (is_array($path)) {
-            $out = [];
-            foreach ($path as $v) {
-                $vv = self::set($v = realpath($v), $consent);
-                // Return `0` on success
-                $out[$v] = is_string($vv) ? 0 : $vv;
-            }
-            return $out;
-        }
-        if (!is_dir($path)) {
-            if (mkdir($path = realpath($path), $consent, true)) {
-                return $path; // Return `$path` on success
-            }
-            return null; // Return `null` on error
-        }
-        return false; // Return `false` if folder already exists
     }
 
     public function let($any = true) {

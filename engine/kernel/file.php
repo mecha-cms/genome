@@ -19,13 +19,12 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         'size' => [0, 2097152] // Range of allowed file size(s)
     ];
 
-    protected $content;
-
     public $exist;
     public $path;
+    public $value;
 
     public function __construct($path = null) {
-        $this->content = "";
+        $this->value[0] = "";
         if ($this->exist = $path && is_string($path) && strpos($path, ROOT) === 0) {
             if (!stream_resolve_include_path($path)) {
                 if (!is_dir($d = dirname($path))) {
@@ -75,7 +74,8 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 $out[1] = copy($path, $v) ? $v : null;
             }
         }
-        return $out;
+        $this->value[1] = $out;
+        return $this;
     }
 
     public function count() {
@@ -134,7 +134,8 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 $out[1] = rename($path, $v) ? $v : null;
             }
         }
-        return $out;
+        $this->value[1] = $out;
+        return $this;
     }
 
     public function name($x = false) {
@@ -168,9 +169,8 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 $this->seal($seal);
             }
             // Return `$path` on success, `null` on error
-            return file_put_contents($path, $this->content) ? $path : null; 
+            return file_put_contents($path, $this->value[0]) ? $path : null; 
         }
-        // TODO
         if (defined('DEBUG') && DEBUG) {
             $c = static::class;
             throw new \Exception('Please provide a file path even if it does not exist. Example: `new ' . $c . '(\'' . ROOT . DS . c2f($c) . '.txt\')`');
@@ -192,7 +192,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function set($content) {
-        $this->content = $content;
+        $this->value[0] = $content;
         return $this;
     }
 

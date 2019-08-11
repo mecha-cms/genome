@@ -69,8 +69,7 @@ final class Cache extends Genome {
 
     public static function set(string $id, callable $fn, array $lot = []): array {
         $file = new File($f = self::f($id));
-        $file->set('<?php return ' . z($r = call_user_func($fn, ...$lot)));
-        $file->save(0600);
+        $file->set('<?php return ' . z($r = call_user_func($fn, ...$lot)))->save(0600);
         return [$r, $f, filemtime($f)];
     }
 

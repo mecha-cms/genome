@@ -35,17 +35,7 @@ class Files extends Anemon {
     }
 
     public static function from(...$lot) {
-        $folder = array_shift($lot);
-        $x = array_shift($lot);
-        $deep = array_shift($lot) ?? 0;
-        $files = [];
-        foreach (g($folder, $x, $deep) as $k => $v) {
-            if (pathinfo($k, PATHINFO_FILENAME) === "") {
-                continue;
-            }
-            $files[] = $k;
-        }
-        return new static($files);
+        return new static(array_keys(y(g($lot[0] ?? ROOT, $lot[1] ?? 1, $lot[2] ?? 0))));
     }
 
 }

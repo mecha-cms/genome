@@ -5,10 +5,10 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     private static function t(array $lot, string $kin) {
         $out = [];
         foreach ($lot as $v) {
-            $text = array_shift($v);
+            $text = $v[0] ?? "";
             $t = rtrim($k = 'alert-' . $kin . '-' . $text, '-');
-            $vars = array_shift($v) ?? [];
-            $preserve_case = array_shift($lot);
+            $vars = $v[1] ?? [];
+            $preserve_case = !empty($v[2]);
             $m = Language::get($t, $vars, $preserve_case);
             $out[] = ['alert', $m !== $k ? $m : $text, ['type' => $kin]];
         }
@@ -43,7 +43,7 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     }
 
     public function unserialize($v) {
-        foreach (unserialize($v) ?? [] as $v) {
+        foreach ((array) (unserialize($v) ?? []) as $v) {
             self::set($v[2]['type'], $v[1]);
         }
     }
@@ -84,8 +84,7 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     }
 
     public static function set(...$lot) {
-        $kin = array_shift($lot);
-        $_SESSION['alert'][$kin][] = $lot;
+        $_SESSION['alert'][array_shift($lot)][] = $lot;
     }
 
     public static function let($kin = null) {

@@ -16,7 +16,7 @@
     <link href="<?php echo $url->clean; ?>" rel="canonical">
   </head>
   <body>
-    <?php echo $site->is('page') ? "" : $alert; ?>
+    <?php echo $alert; ?>
     <div>
       <header>
         <h1>

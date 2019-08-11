@@ -27,8 +27,13 @@ final class Is extends Genome {
     }
 
     // Check for valid folder name
-    public static function folder($x) {
+    public static function files($x) {
         return is_string($x) && strlen($x) <= 260 && is_dir($x);
+    }
+
+    // Alias for `files`
+    public static function folder($x) {
+        return self::files($x);
     }
 
     // Check for valid local path address (whether it is exists or not)

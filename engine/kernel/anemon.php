@@ -17,10 +17,17 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function __invoke(string $separator = ', ', $filter = true) {
-        return implode($separator, $filter ? $this->is(function($v, $k) {
+        $value = $filter ? $this->is(function($v, $k) {
             // Ignore `null` and `false` value and all item(s) with key prefixed by a `_`
             return isset($v) && $v !== false && strpos($k, '_') !== 0;
-        })->value : $this->value);
+        })->value : $this->value;
+        foreach ($value as $k => $v) {
+            // Ignore value(s) that cannot be converted to string
+            if (is_array($v) || (is_object($v) && !method_exists($v, '__toString'))) {
+                unset($value[$k]);
+            }
+        }
+        return implode($separator, $value);
     }
 
     public function __toString() {

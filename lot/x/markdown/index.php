@@ -1,7 +1,7 @@
 <?php namespace _\lot\x;
 
 function markdown($content) {
-    $type = $this['type'];
+    $type = $this->type;
     if ($type !== 'Markdown' && $type !== 'text/markdown') {
         return $content;
     }

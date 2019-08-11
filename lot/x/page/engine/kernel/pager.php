@@ -16,27 +16,27 @@ abstract class Pager extends Genome {
 
     public function next(string $text = null) {
         $url = $GLOBALS['url'];
-        $next = isset($this->next) ? $this->next . $url->query('&amp;') . $url->hash : null;
+        $next = isset($this->next) ? $this->next . $url->query . $url->hash : null;
         if (isset($text)) {
-            return $next !== null ? '<a href="' . $next . '" rel="next">' . $text . '</a>' : '<span>' . $text . '</span>';
+            return $next !== null ? '<a href="' . strtr($next, ['&' => '&amp;']) . '" rel="next">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
         return $next;
     }
 
     public function parent(string $text = null) {
         $url = $GLOBALS['url'];
-        $parent = isset($this->parent) ? $this->parent . $url->query('&amp;') . $url->hash : null;
+        $parent = isset($this->parent) ? $this->parent . $url->query . $url->hash : null;
         if (isset($text)) {
-            return $parent !== null ? '<a href="' . $parent . '">' . $text . '</a>' : '<span>' . $text . '</span>';
+            return $parent !== null ? '<a href="' . strtr($parent, ['&' => '&amp;']) . '">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
         return $parent;
     }
 
     public function prev(string $text = null) {
         $url = $GLOBALS['url'];
-        $prev = isset($this->prev) ? $this->prev . $url->query('&amp;') . $url->hash : null;
+        $prev = isset($this->prev) ? $this->prev . $url->query . $url->hash : null;
         if (isset($text)) {
-            return $prev !== null ? '<a href="' . $prev . '" rel="prev">' . $text . '</a>' : '<span>' . $text . '</span>';
+            return $prev !== null ? '<a href="' . strtr($prev, ['&' => '&amp;']) . '" rel="prev">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
         return $prev;
     }

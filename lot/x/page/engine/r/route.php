@@ -59,10 +59,10 @@ function route() {
             $sort = $parent_page['sort'] ?? $sort;
             $chunk = $parent_page['chunk'] ?? $chunk;
             $parent_pages = \map(\Pages::from($parent_folder, 'page')->sort($sort), function($v) {
-                return $v['name'];
+                return $v->name;
             });
         }
-        $pager = new \Pager\Page($parent_pages ?? [], $page['name'], $url . '/' . $parent_path);
+        $pager = new \Pager\Page($parent_pages ?? [], $page->name, $url . '/' . $parent_path);
         $GLOBALS['page'] = $page;
         $GLOBALS['pager'] = $pager;
         $GLOBALS['parent'] = $parent_page ?? new \Page;
@@ -78,7 +78,7 @@ function route() {
         ]);
         $pages = \Pages::from($folder, 'page')->sort($sort);
         // No page(s) means “page” mode
-        if ($pages->count() === 0 || \is_file($folder . DS . '.' . $page['x'])) {
+        if ($pages->count() === 0 || \is_file($folder . DS . '.' . $page->x)) {
             $this->content('page/' . $p . '/' . ($i + 1));
         }
         // Create pager for “pages” mode

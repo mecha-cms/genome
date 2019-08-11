@@ -102,7 +102,7 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
                 return call_user_func($out, ...$lot);
             }
             // Else, static value
-            return self::get($kin . '.' . array_shift($lot), !!array_shift($lot));
+            return self::get($kin . '.' . $lot[0], !empty($lot[1]));
         }
         return self::get($kin);
     }

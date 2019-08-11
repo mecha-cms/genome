@@ -1,17 +1,16 @@
 <?php
 
-function state(string $query) {
-    $a = explode(':', $query, 2);
-    if (isset($GLOBALS['X'][2][$query])) {
-        return $GLOBALS['X'][2][$query];
+function state(string $name, string $v = 'config') {
+    if (isset($GLOBALS['X'][2][$name][$v])) {
+        return $GLOBALS['X'][2][$name][$v];
     }
-    if (is_file($f = X . DS . $a[0] . DS . 'index.php')) {
+    if (is_file($f = X . DS . $name . DS . 'index.php')) {
         $out = [];
-        if (is_file($f = dirname($f) . DS . 'lot' . DS . 'state' . DS . ($a[1] ?? 'config') . '.php')) {
+        if (is_file($f = dirname($f) . DS . 'lot' . DS . 'state' . DS . $v . '.php')) {
             extract($GLOBALS, EXTR_SKIP);
             $out = require $f;
         }
-        return ($GLOBALS['X'][2][$query] = $out);
+        return ($GLOBALS['X'][2][$name][$v] = $out);
     }
     return null;
 }
