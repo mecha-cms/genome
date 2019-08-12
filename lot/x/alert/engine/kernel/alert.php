@@ -49,7 +49,7 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        if (self::_($kin)) {
+        if (parent::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
         array_unshift($lot, $kin);

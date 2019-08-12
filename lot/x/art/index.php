@@ -17,7 +17,7 @@ namespace _\lot\x\art {
     }
     function start() {
         global $config, $url;
-        $folder = PAGE . DS . ($url->path ?: $config->path);
+        $folder = PAGE . ($url->path ?? \state('page')['/']);
         $i = $url->i ?: 1;
         if ($path = \File::exist([
             $folder . DS . $i . '.page',
@@ -25,10 +25,9 @@ namespace _\lot\x\art {
             $folder . '.page',
             $folder . '.archive'
         ])) {
-            extract((new \Page($path))->get([
-                'css' => null,
-                'js' => null
-            ]));
+            $page = new \Page($path);
+            $css = $page['css'];
+            $js = $page['js'];
             \Config::set('has', [
                 'css' => !!$css,
                 'js' => !!$js
@@ -37,7 +36,7 @@ namespace _\lot\x\art {
             \Config::set('not.art', !$css && !$js);
         }
     }
-    if (!empty($_GET['art'])) {
+    if (!\Request::is('get', 'art') || \Get::get('art')) {
         \Hook::set('content', __NAMESPACE__, 1);
         \Hook::set('page.css', __NAMESPACE__ . "\\css", 2);
         \Hook::set('page.js', __NAMESPACE__ . "\\js", 2);

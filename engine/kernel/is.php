@@ -13,7 +13,7 @@ final class Is extends Genome {
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        return self::_($kin) ? parent::__callStatic($kin, $lot) : null;
+        return parent::_($kin) ? parent::__callStatic($kin, $lot) : null;
     }
 
     // Check for email address

@@ -47,10 +47,10 @@ namespace _\lot\x\content {
         }
         // Load user function(s) from the current skin folder if any
         if (\is_file($fn = $folder . 'index.php')) {
-            \call_user_func(function() use($fn) {
+            (function() use($fn) {
                 extract($GLOBALS, \EXTR_SKIP);
                 require $fn;
-            });
+            })();
         }
         // Detect relative asset path to the `.\lot\content\*` folder
         if (\state('asset') !== null && $assets = \Asset::get()) {

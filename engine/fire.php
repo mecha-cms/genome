@@ -20,8 +20,8 @@ if (defined('DEBUG')) {
 
 $vars = [&$_GET, &$_POST, &$_REQUEST];
 array_walk_recursive($vars, function(&$v) {
-    // Normalize line-break and evaluate
-    $v = e(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
+    // Normalize line-break
+    $v = strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
 });
 
 // Normalize `$_FILES` value to `$_POST`
@@ -48,12 +48,6 @@ d(($f = ENGINE . DS) . 'kernel', function($v, $n) use($f) {
     }
 });
 
-// Set default document status
-_status(403); // “Forbidden”
-
-// Set default `X-Powered-By` value
-_header('X-Powered-By', 'Mecha/' . VERSION);
-
 // Boot…
 require __DIR__ . DS . 'r' . DS . 'anemon.php';
 require __DIR__ . DS . 'r' . DS . 'cache.php';
@@ -62,6 +56,7 @@ require __DIR__ . DS . 'r' . DS . 'cookie.php';
 require __DIR__ . DS . 'r' . DS . 'date.php';
 require __DIR__ . DS . 'r' . DS . 'file.php';
 require __DIR__ . DS . 'r' . DS . 'guard.php';
+require __DIR__ . DS . 'r' . DS . 'header.php';
 require __DIR__ . DS . 'r' . DS . 'hook.php';
 require __DIR__ . DS . 'r' . DS . 'language.php';
 require __DIR__ . DS . 'r' . DS . 'mecha.php';

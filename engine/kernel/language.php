@@ -3,7 +3,7 @@
 final class Language extends Config {
 
     public function __call(string $kin, array $lot = []) {
-        if (self::_($kin)) {
+        if (parent::_($kin)) {
             return parent::__call($kin, $lot);
         }
         $out = self::get($kin = p2f($kin), ...$lot);

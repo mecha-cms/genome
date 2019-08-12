@@ -33,7 +33,7 @@ class Page extends File {
     public $f;
 
     public function __call(string $kin, array $lot = []) {
-        if (self::_($kin = p2f($kin))) {
+        if (parent::_($kin = p2f($kin))) {
             return parent::__call($kin, $lot);
         }
         return $this->any($kin, $lot);
@@ -208,7 +208,7 @@ class Page extends File {
             $date = new Date($n);
         // Else…
         } else {
-            $date = new Date(parent::time());
+            $date = new Date($this->offsetGet('time') ?? parent::time());
         }
         return $format ? $date($format) : $date;
     }
@@ -230,7 +230,7 @@ class Page extends File {
 
     // Inherit to `File::update()`
     public function update(string $format = null) {
-        $date = new Date(parent::update());
+        $date = new Date($this->offsetGet('update') ?? parent::update());
         return $format ? $date($format) : $date;
     }
 

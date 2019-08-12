@@ -41,11 +41,11 @@ foreach ($uses as $v) {
 
 // Load extension(s)…
 foreach ($uses as $v) {
-    call_user_func(function() use($v) {
+    (function() use($v) {
         extract($GLOBALS, EXTR_SKIP);
         if (is_file($k = dirname($v) . DS . 'task.php')) {
             require $k;
         }
         require $v;
-    });
+    })();
 }

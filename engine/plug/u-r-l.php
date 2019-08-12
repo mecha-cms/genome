@@ -40,9 +40,9 @@ URL::_('short', function(string $path, $root = true) {
         P . '//' . $url->host,
         P
     ], "", P . $path) : ltrim(str_replace([
-        // `http:`
-        P . $url->scheme . ':',
         // `http://127.0.0.1/foo`
+        P . $url->root,
+        // `//127.0.0.1/foo`
         P . '//' . $url->host . $url->directory
     ], "", P . $path), '/');
 });

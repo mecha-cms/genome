@@ -12,7 +12,7 @@ class Content extends Genome {
     public static $config = self::config;
 
     public static function __callStatic(string $kin, array $lot = []) {
-        if (self::_($kin)) {
+        if (parent::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
         $kin = strtr($kin, '_', '-');

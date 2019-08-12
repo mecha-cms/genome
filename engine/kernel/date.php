@@ -14,7 +14,7 @@ final class Date extends Genome {
     }
 
     public function __call(string $kin, array $lot = []) {
-        if ($v = self::_($kin)) {
+        if ($v = parent::_($kin)) {
             if (is_string($v = $v[0]) && strpos($v, '%') !== false) {
                 return $this->f($v);
             }

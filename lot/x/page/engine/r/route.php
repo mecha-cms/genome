@@ -40,10 +40,10 @@ function route() {
             // Load user function(s) from the current page folder if any,
             // stacked from the parent page(s)
             if (\is_file($fn = $k . DS . 'index.php')) {
-                \call_user_func(function() use($fn) {
+                (function() use($fn) {
                     extract($GLOBALS, \EXTR_SKIP);
                     require $fn;
-                });
+                })();
             }
         }
         $parent_path = \Path::D($path);

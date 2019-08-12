@@ -6,7 +6,7 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     protected static $lot = [];
 
     public function __call(string $kin, array $lot = []) {
-        if (self::_($kin)) {
+        if (parent::_($kin)) {
             return parent::__call($kin, $lot);
         }
         return self::__callStatic($kin, $lot);
@@ -18,7 +18,7 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function __get(string $key) {
-        if (self::_($key)) {
+        if (parent::_($key)) {
             return $this->__call($key);
         }
         return self::get(p2f($key));
@@ -87,7 +87,7 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        if (self::_($kin)) {
+        if (parent::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
         $kin = p2f($kin); // `fooBar_baz` → `foo-bar_baz`

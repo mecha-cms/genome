@@ -5,7 +5,7 @@ final class URL extends Genome {
     private $lot;
 
     public function __call(string $kin, array $lot = []) {
-        if (self::_($kin)) {
+        if (parent::_($kin)) {
             return parent::__call($kin, $lot);
         }
         if (array_key_exists($kin, $this->lot)) {

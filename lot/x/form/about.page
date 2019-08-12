@@ -12,10 +12,10 @@ use:
 This is useful when you want to validate the form after it has been submitted. It makes it more user friendly in the sense that the user does not have to re-populate certain pieces of information if they do something incorrectly. To maintain form data after the submission action, save the form data to the session named `form`:
 
 ~~~ .php
-if ($blob = HTTP::files('blob')) {
+if ($blob = Post::get('blob')) {
     if (!empty($blob['error'])) {
         // Store all form data to session
-        Session::set('form', HTTP::post());
+        Session::set('form', Post::get());
     } else {
         // Clear all form session on success
         Session::let('form');
