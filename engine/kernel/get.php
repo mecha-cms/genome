@@ -1,3 +1,3 @@
 <?php
 
-final class Get extends Genome {}
+final class Get extends Request {}
