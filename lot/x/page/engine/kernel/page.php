@@ -68,11 +68,14 @@ class Page extends File {
         return To::page($this->lot);
     }
 
+    public function ID(...$lot) {
+        return $this->any('id', $lot) ?? (($t = $this->time()->format('U')) ? sprintf('%u', $t) : null);
+    }
+
     // Inherit to `File::URL()`
-    public function URL() {
+    public function URL(...$lot) {
         if ($this->exist) {
-            $path = Path::R(Path::F($this->path), LOT . DS . 'page', '/');
-            return trim($GLOBALS['url'] . '/' . $path, '/');
+            return $this->any('url', $lot) ?? trim($GLOBALS['url'] . '/' . Path::R(Path::F($this->path), LOT . DS . 'page', '/'), '/');
         }
         return null;
     }
@@ -107,10 +110,6 @@ class Page extends File {
     // Inherit to `File::getIterator()`
     public function getIterator() {
         return new \ArrayIterator($this->exist ? From::page(file_get_contents($this->path), null, true) : []);
-    }
-
-    public function id(...$lot) {
-        return $this->any('id', $lot) ?? (($t = parent::time()) ? sprintf('%u', (string) $t) : null);
     }
 
     // Inherit to `File::jsonSerialize()`
@@ -159,7 +158,7 @@ class Page extends File {
                 unset($data[$k]);
             }
         }
-        $this->content = To::page($data);
+        $this->value[0] = To::page($data);
         return parent::save($seal);
     }
 

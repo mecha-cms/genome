@@ -7,15 +7,15 @@ class Header extends Genome {
             $v = $_SERVER['HTTP_' . strtr(strtoupper($key), '-', '_')] ?? null;
             if ($v === null) {
                 if (function_exists('apache_response_headers')) {
-                    $v = apache_response_headers();
-                    return $v[preg_replace_callback('/(^|-)([a-z])/', function($m) {
-                        return $m[1] . strtoupper($m[2]);
-                    }, strtolower($key))] ?? $v[$key] ?? null;
+                    $v = apache_response_headers()[$key] ?? null;
                 }
-                foreach (headers_list() as $v) {
-                    if (strpos(strtolower($v), $key . ': ') === 0) {
-                        $v = explode(':', $v, 2);
-                        return isset($v[1]) && $v[1] !== "" ? e(trim($v[1])) : null;
+                if ($v === null) {
+                    foreach (headers_list() as $v) {
+                        if (strpos($v, $key . ': ') === 0) {
+                            $v = explode(':', $v, 2);
+                            $v = isset($v[1]) && $v[1] !== "" ? e(trim($v[1])) : null;
+                            break;
+                        }
                     }
                 }
             }
@@ -40,7 +40,6 @@ class Header extends Genome {
                 }
             } else {
                 header_remove($key);
-                header_remove(strtolower($key));
                 unset($_SERVER['HTTP_' . strtr(strtoupper($key), '-', '_')]);
             }
         } else {
