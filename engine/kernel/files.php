@@ -17,8 +17,10 @@ class Files extends Anemon {
     public function sort($sort = 1, $preserve_key = false) {
         if (is_array($sort)) {
             $value = [];
-            foreach ($this->value as $v) {
-                $value[$v] = $this->file($v)[$sort[1]];
+            if (isset($sort[1])) {
+                foreach ($this->value as $v) {
+                    $value[$v] = $this->file($v)[$sort[1]] ?? $this->file($v)->{$sort[1]} ?? $sort[2] ?? null;
+                }
             }
             $sort[0] === -1 ? arsort($value) : asort($value);
             $this->value = array_keys($value);
