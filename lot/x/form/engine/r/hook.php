@@ -17,7 +17,9 @@ function set($content) {
             $name = $keys($name);
             $value = \Session::get($name);
             if ($type === 'checkbox' || $type === 'radio') {
-                $input['checked'] = isset($value) && $value === $input['value'];
+                if (isset($value)) {
+                    $input['checked'] = \s($value) === \s($input['value']);
+                }
             } else {
                 $input['value'] = $value ?? $input['value'];
             }
@@ -35,7 +37,9 @@ function set($content) {
             $value = \Session::get($name);
             $select[1] = \preg_replace_callback('#<option(?:\s[^>]*)?>[\s\S]*?</option>#', function($m) use($name, $value) {
                 $option = new \HTML($m[0]);
-                $option['selected'] = isset($value) && $value === ($option['value'] ?? $option[1]);
+                if (isset($value)) {
+                    $option['selected'] = \s($value) === \s($option['value'] ?? $option[1]);
+                }
                 return $option;
             }, $select[1]);
             return $select;
