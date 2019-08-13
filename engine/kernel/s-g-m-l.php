@@ -1,6 +1,6 @@
 <?php
 
-class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable, \Serializable {
+class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable {
 
     const config = [
         0 => ['<', '>', '/'],
@@ -134,14 +134,6 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         } else {
             unset($this->lot[2][$i]);
         }
-    }
-
-    public function serialize() {
-        return serialize($this->lot);
-    }
-
-    public function unserialize($v) {
-        $this->lot = unserialize($v);
     }
 
 }

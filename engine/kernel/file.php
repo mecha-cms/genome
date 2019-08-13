@@ -1,6 +1,6 @@
 <?php
 
-class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
+class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
     const config = [
         // List of allowed file extension(s)
@@ -159,10 +159,6 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public function offsetSet($i, $value) {}
     public function offsetUnset($i) {}
 
-    public function serialize() {
-        return serialize($this->path);
-    }
-
     public function save($seal = null) {
         if ($path = $this->path) {
             if (isset($seal)) {
@@ -217,10 +213,6 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function type() {
         return $this->exist ? mime_content_type($this->path) : null;
-    }
-
-    public function unserialize($v) {
-        return $this->__construct(unserialize($v));
     }
 
     public function update(string $format = null) {

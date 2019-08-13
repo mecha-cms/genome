@@ -109,7 +109,15 @@ class Page extends File {
 
     // Inherit to `File::getIterator()`
     public function getIterator() {
-        return new \ArrayIterator($this->exist ? From::page(file_get_contents($this->path), null, true) : []);
+        if ($this->exist) {
+            $out = From::page(file_get_contents($path = $this->path), null, true);
+            foreach (g(Path::F($path), 'data') as $k => $v) {
+                $out[basename($k, '.data')] = e(file_get_contents($k));
+            }
+        } else {
+            $out = [];
+        }
+        return new \ArrayIterator($out);
     }
 
     // Inherit to `File::jsonSerialize()`

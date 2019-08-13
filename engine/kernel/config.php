@@ -1,6 +1,6 @@
 <?php
 
-class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
+class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
     protected static $a = [];
     protected static $lot = [];
@@ -76,14 +76,6 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     public function offsetUnset($i) {
         unset(self::$lot[static::class][$i]);
-    }
-
-    public function serialize() {
-        return serialize(self::$lot[static::class] ?? []);
-    }
-
-    public function unserialize($v) {
-        self::$lot[static::class] = unserialize($v);
     }
 
     public static function __callStatic(string $kin, array $lot = []) {

@@ -1,6 +1,6 @@
 <?php
 
-class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Serializable {
+class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
     public $i = 0;
     public $lot = [];
@@ -232,10 +232,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    public function serialize() {
-        return serialize($this->value);
-    }
-
     public function set(string $key, $value) {
         set($this->value, $key, $value);
         return $this;
@@ -322,10 +318,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     public function toLast() {
         $this->i = $this->count() - 1;
         return $this;
-    }
-
-    public function unserialize($v) {
-        $this->lot = $this->value = unserialize($v);
     }
 
     // Set current element value as `$value`

@@ -19,7 +19,8 @@ class Files extends Anemon {
             $value = [];
             if (isset($sort[1])) {
                 foreach ($this->value as $v) {
-                    $value[$v] = $this->file($v)[$sort[1]] ?? $this->file($v)->{$sort[1]} ?? $sort[2] ?? null;
+                    $f = $this->file($v);
+                    $value[$v] = $f[$sort[1]] ?? $f->{$sort[1]} ?? $sort[2] ?? null;
                 }
             }
             $sort[0] === -1 ? arsort($value) : asort($value);
