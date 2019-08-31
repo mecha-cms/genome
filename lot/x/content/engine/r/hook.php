@@ -37,8 +37,8 @@ namespace _\lot\x\content {
         // Prepare current skin state
         $GLOBALS['state'] = $state = new \Anemon;
         // Load current skin state if any
-        $folder = \Content::$config['root'] . DS;
-        if (\is_file($f = $folder . 'state' . DS . 'config.php')) {
+        $folder = \Content::$config['root'] . \DS;
+        if (\is_file($f = $folder . 'state' . \DS . 'config.php')) {
             $GLOBALS['state'] = $state = new \Anemon(require $f);
         }
         // Run skin task if any
@@ -58,14 +58,14 @@ namespace _\lot\x\content {
                 foreach ($v as $kk => $vv) {
                     // Full path, no change!
                     if (
-                        strpos($kk, ROOT) === 0 ||
+                        strpos($kk, \ROOT) === 0 ||
                         strpos($kk, '//') === 0 ||
                         strpos($kk, '://') !== false
                     ) {
                         continue;
                     }
                     // Relative to the `asset` folder of active skin
-                    if ($path = \Asset::path($folder . 'asset' . DS . $kk)) {
+                    if ($path = \Asset::path($folder . 'asset' . \DS . $kk)) {
                         \Asset::let($kk);
                         \Asset::set($path, $vv['stack']);
                     }

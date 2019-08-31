@@ -17,11 +17,11 @@ namespace _\lot\x\art {
     }
     function start() {
         global $config, $url;
-        $folder = PAGE . ($url->path ?? \state('page')['/']);
+        $folder = \PAGE . ($url->path ?? \state('page')['/']);
         $i = $url->i ?: 1;
         if ($path = \File::exist([
-            $folder . DS . $i . '.page',
-            $folder . DS . $i . '.archive',
+            $folder . \DS . $i . '.page',
+            $folder . \DS . $i . '.archive',
             $folder . '.page',
             $folder . '.archive'
         ])) {
@@ -47,10 +47,10 @@ namespace _\lot\x\art {
 
 namespace _\lot\x {
     function art($content) {
-        extract($GLOBALS, \EXTR_SKIP);
-        if (empty($page)) {
+        if (empty($GLOBALS['page'])) {
             return $content;
         }
+        $page = $GLOBALS['page'];
         // Append custom CSS before `</head>`…
         $content = \str_replace('</head>', $page->css . '</head>', $content);
         // Append custom JS before `</body>`…

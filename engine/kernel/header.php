@@ -1,6 +1,6 @@
 <?php
 
-class Header extends Genome {
+final class Header extends Genome {
 
     public static function get($key = null) {
         if (isset($key)) {

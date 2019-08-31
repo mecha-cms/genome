@@ -14,11 +14,13 @@ Language::set([
     'is-success' => 'Success',
     'last' => 'Last',
     'link' => ['Link', 'Link', 'Links'],
+    'name' => ['Name', 'Name', 'Names'],
     'next' => 'Next',
     'page' => ['Page', 'Page', 'Pages'],
     'page-count' => function(int $i) {
         return $i . ' Page' . ($i === 1 ? "" : 's');
     },
+    'path' => 'Path',
     'photo' => ['Photo', 'Photo', 'Photos'],
     'picture' => ['Picture', 'Picture', 'Pictures'],
     'prev' => 'Previous',

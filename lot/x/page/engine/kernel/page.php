@@ -11,26 +11,25 @@ class Page extends File {
     protected $prefix;
 
     protected function any(string $kin, array $lot = []) {
-        if (isset(self::$page[$id = $this->id][$kin])) {
+        if (isset(self::$page[$id = $this->id][$kin]) && !empty($this->read[$kin])) {
             $v = self::$page[$id][$kin]; // Load from cache…
         } else {
             $v = $this->offsetGet($kin);
-            // Set…
+            // Set first, to be used in the hook scope…
             $this->lot[$kin] = self::$page[$id][$kin] = $v;
             // Do the hook once!
             $v = Hook::fire(map($this->prefix, function($v) use($kin) {
                 return $v .= '.' . $kin;
             }), [$v, $lot], $this);
+            $this->read[$kin] = 2; // Done hook
             if ($lot && is_callable($v) && !is_string($v)) {
                 $v = call_user_func($v, ...$lot);
             }
-            // Set…
+            // Set again to be used later…
             $this->lot[$kin] = self::$page[$id][$kin] = $v;
         }
         return $v;
     }
-
-    public $f;
 
     public function __call(string $kin, array $lot = []) {
         if (parent::_($kin = p2f($kin))) {
@@ -127,17 +126,19 @@ class Page extends File {
 
     // Inherit to `File::offsetGet()`
     public function offsetGet($i) {
+        // Read once!
         if ($this->exist && empty($this->read[$i])) {
+            $id = $this->id;
             // Prioritize data from a file…
             if (is_file($f = Path::F($this->path) . DS . $i . '.data')) {
-                // Read once!
-                $this->read[$i] = 1;
+                $this->read[$i] = 1; // Done read
+                unset(self::$page[$id][$i]); // Remove cached value if any
                 return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
             $any = From::page(file_get_contents($this->path), null, true);
             foreach ($any as $k => $v) {
-                // Read once!
-                $this->read[$k] = 1;
+                $this->read[$k] = 1; // Done read
+                unset(self::$page[$id][$k]); // Remove cached value if any
             }
             $this->lot = array_replace_recursive($this->lot, $any);
         }
@@ -146,16 +147,17 @@ class Page extends File {
 
     // Inherit to `File::offsetSet()`
     public function offsetSet($i, $value) {
+        $id = $this->id;
         if (isset($i)) {
-            $this->lot[$i] = $value;
+            self::$page[$id][$i] = $this->lot[$i] = $value;
         } else {
-            $this->lot[] = $value;
+            self::$page[$id][] = $this->lot[] = $value;
         }
     }
 
     // Inherit to `File::offsetUnset()`
     public function offsetUnset($i) {
-        unset($this->lot[$i]);
+        unset(self::$page[$this->id][$i], $this->lot[$i]);
     }
 
     public function save($seal = null) {
@@ -168,11 +170,6 @@ class Page extends File {
         }
         $this->value[0] = To::page($data);
         return parent::save($seal);
-    }
-
-    // Inherit to `File::serialize()`
-    public function serialize() {
-        return serialize($this->exist ? From::page(file_get_contents($this->path), null, true) : []);
     }
 
     // Inherit to `File::set()`
@@ -223,16 +220,6 @@ class Page extends File {
     // Inherit to `File::type()`
     public function type(...$lot) {
         return $this->any('type', $lot) ?? 'text/html';
-    }
-
-    // Inherit to `File::unserialize()`
-    public function unserialize($v) {
-        $data = unserialize($v);
-        foreach ($data as $k => $v) {
-            $this->read[$k] = 1;
-            $this->lot[$k] = $v;
-        }
-        return $this;
     }
 
     // Inherit to `File::update()`

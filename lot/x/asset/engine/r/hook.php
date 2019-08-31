@@ -11,7 +11,7 @@ function asset($content) {
     $style = "";
     $lot = \Asset::get();
     if (!empty($lot[':style'])) {
-        foreach (\Anemon::from($lot[':style'])->sort([1, 'stack'], true) as $k => $v) {
+        foreach ((new \Anemon($lot[':style']))->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v['content'])) {
                 $s = new \HTML;
                 $s[0] = 'style';
@@ -30,7 +30,7 @@ function asset($content) {
     $script = $template = "";
     $lot = \Asset::get();
     if (!empty($lot[':script'])) {
-        foreach (\Anemon::from($lot[':script'])->sort([1, 'stack'], true) as $k => $v) {
+        foreach ((new \Anemon($lot[':script']))->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v['content'])) {
                 $s = new \HTML;
                 $s[0] = 'script';
@@ -41,7 +41,7 @@ function asset($content) {
         }
     }
     if (!empty($lot[':template'])) {
-        foreach (\Anemon::from($lot[':template'])->sort([1, 'stack'], true) as $k => $v) {
+        foreach ((new \Anemon($lot[':template']))->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v['content'])) {
                 $t = new \HTML;
                 $t[0] = 'template';

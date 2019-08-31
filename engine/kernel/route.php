@@ -182,7 +182,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
     }
 
     public static function start() {
-        $routes = Anemon::from(self::$r[1] ?? [])->sort([1, 'stack'], true);
+        $routes = (new Anemon(self::$r[1] ?? []))->sort([1, 'stack'], true);
         $form = e($GLOBALS['_' . ($t = $_SERVER['REQUEST_METHOD'])] ?? []);
         $t = strtolower($t); // Request type
         foreach ($routes as $k => $v) {
@@ -190,7 +190,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
             if (false !== ($route = self::is($k))) {
                 // Loading hook(s)…
                 if (isset(self::$r[2][$k])) {
-                    $fn = Anemon::from(self::$r[2][$k])->sort([1, 'stack']);
+                    $fn = (new Anemon(self::$r[2][$k]))->sort([1, 'stack']);
                     foreach ($fn as $f) {
                         fire($f['fn'], [$form, $t], $route);
                     }

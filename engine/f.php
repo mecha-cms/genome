@@ -19,22 +19,6 @@ namespace _ {
             $x[0] === '{' && \substr($x, -1) === '}'
         ) && (null !== ($x = \json_decode($x))) ? ($r ? $x : true) : false;
     }
-    // Check for valid serialized string format
-    function serial($x, $r = false) {
-        if (!\is_string($x) || \trim($x) === "") {
-            return false;
-        }
-        if ($x === 'N;') {
-            return $r ? \unserialize($x) : true;
-        }
-        if (\strpos($x, ':') === false) {
-            return false;
-        }
-        if ($x === 'b:1;' || $x === 'b:0;' || $x === 'a:0:{}' || $x === 'O:8:"stdClass":0:{}') {
-            return $r ? \unserialize($x) : true;
-        }
-        return \strpos($x, 'a:') === 0 || \strpos($x, 'O:') === 0 || \strpos($x, 'd:') === 0 || \strpos($x, 'i:') === 0 || \strpos($x, 's:') === 0 ? ($r ? \unserialize($x) : true) : false;
-    }
 }
 
 namespace {
@@ -108,7 +92,7 @@ namespace {
     function fetch(string $u, $a = null) {
         $o = [];
         // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
-        $v = 'Mecha/' . VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $port === 443 ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
+        $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $port === 443 ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
         // `fetch('/', ['Content-Type' => 'text/html'])`
         if (\is_array($a)) {
             foreach ($a as $k => $v) {
@@ -132,7 +116,7 @@ namespace {
                 \CURLOPT_TIMEOUT => 15
             ]);
             $out = \curl_exec($curl);
-            if (\defined('DEBUG') && DEBUG && $out === false) {
+            if (\defined("\\DEBUG") && \DEBUG && $out === false) {
                 throw new \UnexpectedValueException(\curl_error($curl));
             }
             \curl_close($curl);
@@ -155,15 +139,25 @@ namespace {
         }
         return null;
     }
+    // Call function with parameter(s) and optional scope
+    function fire(callable $fn, array $a = [], $that = null, string $scope = null) {
+        $fn = $fn instanceof \Closure ? $fn : \Closure::fromCallable($fn);
+        // `fire($fn, [], Foo::class)`
+        if (\is_string($that)) {
+            $scope = $that;
+            $that = null;
+        }
+        return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
+    }
     // A greater than or equal to B
     function ge($a, $b) {
         return q($a) >= $b;
     }
     // Get array value recursively
     function get(array &$a, string $k, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, P, $k));
+        $kk = \explode($s, \str_replace("\\" . $s, \P, $k));
         foreach ($kk as $v) {
-            $v = \str_replace(P, $s, $v);
+            $v = \str_replace(\P, $s, $v);
             if (!\is_array($a) || !\array_key_exists($v, $a)) {
                 return null;
             }
@@ -176,7 +170,7 @@ namespace {
         return q($a) > $b;
     }
     // Check if an element exists in array
-    function has(array $a, string $s = "", string $x = P) {
+    function has(array $a, string $s = "", string $x = \P) {
         return \strpos($x . \implode($x, $a) . $x, $x . $s . $x) !== false;
     }
     // Filter out element(s) that pass the function test
@@ -194,9 +188,9 @@ namespace {
     }
     // Remove array value
     function let(array &$a, string $k, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, P, $k));
+        $kk = \explode($s, \str_replace("\\" . $s, \P, $k));
         while (\count($kk) > 1) {
-            $k = \str_replace(P, $s, \array_shift($kk));
+            $k = \str_replace(\P, $s, \array_shift($kk));
             if (\array_key_exists($k, $a)) {
                 $a =& $a[$k];
             }
@@ -245,9 +239,9 @@ namespace {
     }
     // Set array value
     function set(array &$a, string $k, $v = null, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, P, $k));
+        $kk = \explode($s, \str_replace("\\" . $s, \P, $k));
         while (\count($kk) > 1) {
-            $k = \str_replace(P, $s, \array_shift($kk));
+            $k = \str_replace(\P, $s, \array_shift($kk));
             if (!\array_key_exists($k, $a)) {
                 $a[$k] = [];
             }
@@ -277,6 +271,26 @@ namespace {
             }
         }
         return $a;
+    }
+    function step($a, string $s = '.', int $dir = 1) {
+        if (\is_string($a) && \strpos($a, $s) !== false) {
+            $a = \explode($s, \trim($a, $s));
+            $v = $dir === -1 ? \array_pop($a) : \array_shift($a);
+            $c = [$v];
+            if ($dir === -1) {
+                while ($b = \array_pop($a)) {
+                    $v = $b . $s . $v;
+                    \array_unshift($c, $v);
+                }
+            } else {
+                while ($b = \array_shift($a)) {
+                    $v .= $s . $b;
+                    \array_unshift($c, $v);
+                }
+            }
+            return $c;
+        }
+        return (array) $a;
     }
     // Get file content line by line
     function stream(string $f, int $c = 1024) {
@@ -357,7 +371,7 @@ namespace {
     function d(string $f, $fn = null) {
         \spl_autoload_register(function($c) use($f, $fn) {
             $n = c2f($c);
-            $f .= DS . $n . '.php';
+            $f .= \DS . $n . '.php';
             if (\is_file($f)) {
                 extract($GLOBALS, \EXTR_SKIP);
                 require $f;
@@ -911,16 +925,6 @@ namespace {
         ], ' ', $x);
         return $a && !empty($GLOBALS['F']) ? \strtr($x, $GLOBALS['F']) : $x;
     }
-    // Call function with parameter(s) and optional scope
-    function fire(callable $fn, array $a = [], $that = null, string $scope = null) {
-        $fn = $fn instanceof \Closure ? $fn : \Closure::fromCallable($fn);
-        // `fire($fn, [], Foo::class)`
-        if (\is_string($that)) {
-            $scope = $that;
-            $that = null;
-        }
-        return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
-    }
     // Advance glob function
     function g(string $f, $x = null, $r = 0) {
         if (\is_dir($f)) {
@@ -969,7 +973,7 @@ namespace {
                         if (empty($v) && $v !== '0') {
                             continue;
                         }
-                        $r = $f . DS . $b;
+                        $r = $f . \DS . $b;
                         // Find by query in file name…
                         if (\stripos($n, $v) !== false) {
                             yield $r;
@@ -1063,26 +1067,6 @@ namespace {
         }
         return $x;
     }
-    function step($a, string $s = '.', int $dir = 1) {
-        if (\is_string($a) && \strpos($a, $s) !== false) {
-            $a = \explode($s, \trim($a, $s));
-            $v = $dir === -1 ? \array_pop($a) : \array_shift($a);
-            $c = [$v];
-            if ($dir === -1) {
-                while ($b = \array_pop($a)) {
-                    $v = $b . $s . $v;
-                    \array_unshift($c, $v);
-                }
-            } else {
-                while ($b = \array_shift($a)) {
-                    $v .= $s . $b;
-                    \array_unshift($c, $v);
-                }
-            }
-            return $c;
-        }
-        return (array) $a;
-    }
     function t(string $x = null, string $o = '"', string $c = null) {
         if ($x) {
             if ($o !== "" && \strpos($x, $o) === 0) {
@@ -1119,11 +1103,11 @@ namespace {
             '#--#',
             '#-#',
             '#\s+#',
-            '#' . P . '#'
+            '#' . \P . '#'
         ], [
             "",
-            ' ' . P . ' ',
-            P,
+            ' ' . \P . ' ',
+            \P,
             ' ',
             ' ',
             '-'
