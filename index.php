@@ -14,8 +14,8 @@ define('DS', DIRECTORY_SEPARATOR); // Default directory separator
 define('PS', PATH_SEPARATOR); // Default path separator
 
 define('N', PHP_EOL); // Line break
-define('P', "\x1A"); // Placeholder text
-define('S', "\x200C"); // Invisible space
+define('P', "\u{001A}"); // Placeholder text
+define('S', "\u{200C}"); // Invisible space
 
 define('GROUND', rtrim(strtr($_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
 define('ROOT', __DIR__);

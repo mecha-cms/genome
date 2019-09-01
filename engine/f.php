@@ -303,12 +303,14 @@ namespace {
     }
     // Dump PHP code
     function test(...$a) {
+        echo '<p style="border:2px solid #000;border-bottom-width:1px;">';
         foreach ($a as $b) {
             $s = \var_export($b, true);
-            echo '<pre style="word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:1px solid;padding:.5em;">';
-            echo \str_replace(["\n", "\r"], "", \highlight_string("<?php\n\n" . $s . "\n\n?>", true));
-            echo '</pre>';
+            $s = \str_replace(["\n", "\r"], "", \highlight_string("<?php\n\n" . $s . "\n\n?>", true));
+            $s = \str_replace('<code>', '<code style="display:block;word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:0;border-bottom:1px solid #000;padding:.5em;border-radius:0;box-shadow:none;text-shadow:none;">', $s);
+            echo $s;
         }
+        echo '</p>';
     }
 }
 

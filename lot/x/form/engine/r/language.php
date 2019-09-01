@@ -76,6 +76,7 @@ Language::set([
     'do-submit' => 'Submit',
     'do-transfer' => 'Transfer',
     'do-update' => 'Update',
+    'do-view' => 'View',
     'do-visit' => 'Visit',
     'do-yes' => 'Yes',
     'editor' => ['Editor', 'Editor', 'Editors'],
