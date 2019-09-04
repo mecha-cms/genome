@@ -297,7 +297,6 @@ h3,
 h4 {
   line-height: 1;
 }
-* + .p,
 * + blockquote,
 * + dl,
 * + fieldset,
@@ -316,7 +315,8 @@ h4 {
 * + p,
 * + pre,
 * + table,
-* + ul {
+* + ul,
+* + .p {
   margin-top: var(--margin);
 }
 dd,
@@ -350,6 +350,28 @@ fieldset {
 }
 legend {
   padding: 0 calc(var(--font-size) / 2);
+}
+legend + blockquote,
+legend + dl,
+legend + fieldset,
+legend + figcaption,
+legend + figure,
+legend + form,
+legend + h1,
+legend + h2,
+legend + h3,
+legend + h4,
+legend + h5,
+legend + h6,
+legend + hr,
+legend + nav,
+legend + ol,
+legend + p,
+legend + pre,
+legend + table,
+legend + ul,
+legend + .p {
+  margin-top: 0;
 }
 blockquote {
   font-size: 120%;
