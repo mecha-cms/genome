@@ -9,7 +9,7 @@ Hook::set('page.description', function($description) {
 });
 
 // Add CSS file to the `<head>` section…
-Asset::set('css/document.min.css', 20);
+Asset::set('css/log.min.css', 20);
 
 // Create site navigation data to be used in content
 $GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) {

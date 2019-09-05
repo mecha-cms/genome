@@ -17,12 +17,12 @@ namespace _\lot\x\content {
     }
     function has() {
         foreach ((array) \Config::get('has', true) as $k => $v) {
-            \Config::set('[content].has-' . $k, $v);
+            \Config::set('[content].has:' . $k, $v);
         }
     }
     function is() {
         foreach ((array) \Config::get('is', true) as $k => $v) {
-            \Config::set('[content].is-' . $k, $v);
+            \Config::set('[content].is:' . $k, $v);
         }
         if ($x = \Config::get('is.error')) {
             \Config::set('[content].error:' . $x, true);
@@ -30,7 +30,7 @@ namespace _\lot\x\content {
     }
     function not() {
         foreach ((array) \Config::get('not', true) as $k => $v) {
-            \Config::set('[content].not-' . $k, $v);
+            \Config::set('[content].not:' . $k, $v);
         }
     }
     function start() {

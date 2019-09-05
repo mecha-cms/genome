@@ -8,5 +8,5 @@ return [
     'language' => 'en',
     'title' => 'Default Site Title',
     'description' => 'Default site description.',
-    'skin' => 'document'
+    'skin' => 'log'
 ];
