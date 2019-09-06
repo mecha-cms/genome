@@ -6,7 +6,7 @@ type: Markdown
 version: 1.1.0
 ...
 
-**Example:**
+### Usage
 
 ~~~ .php
 Alert::error('This is an error message.');

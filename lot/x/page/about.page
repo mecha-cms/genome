@@ -12,7 +12,7 @@ use:
 
 This extension activates the basic features of a website by utilizing the structure of the page file placement in the `.\lot\page` folder. This extension also adds some useful properties to the `$site` variable.
 
-### Condition
+### Conditions
 
 These page conditional statements are available to quickly determine the type of page we are currently in:
 

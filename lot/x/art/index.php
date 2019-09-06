@@ -28,12 +28,14 @@ namespace _\lot\x\art {
             $page = new \Page($path);
             $css = $page['css'];
             $js = $page['js'];
-            \Config::set('has', [
-                'css' => !!$css,
-                'js' => !!$js
+            \Config::set([
+                'has' => [
+                    'css' => !!$css,
+                    'js' => !!$js
+                ],
+                'is' => ['art' => $css || $js],
+                'not' => ['art' => !$css && !$js]
             ]);
-            \Config::set('is.art', $css || $js);
-            \Config::set('not.art', !$css && !$js);
         }
     }
     if (!\Request::is('get', 'art') || \Get::get('art')) {

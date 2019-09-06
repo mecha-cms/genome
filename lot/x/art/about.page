@@ -9,6 +9,8 @@ use:
   '.\lot\x\page': 1
 ...
 
+### Usage
+
 To enable this feature, add `css.data` and `js.data` files to a folder that has the same name as the page slug and is stored in the same directory level:
 
 ~~~ .txt
@@ -25,7 +27,7 @@ Write custom CSS code in `css.data` file, and custom JavaScript code in `js.data
 
 ---
 
-### Condition
+### Conditions
 
 These page conditional statements are available:
 
@@ -34,11 +36,11 @@ These page conditional statements are available:
  - `$site->is('art')` → Return `true` if current page has custom CSS or JS.
  - `$site->not('art')` → Return `true` if current page don’t have custom CSS and JS.
 
-### Class
+### Classes
 
 These HTML classes will be added automatically if your `<html>` element has `class` attribute:
 
- - `has-css` → Will be added if custom CSS data of current page isn’t empty.
- - `has-js` → Will be added if custom JS data of current page isn’t empty.
- - `is-art` → Will be added if custom CSS or JS data of current page isn’t empty.
- - `not-art` → Will be added if custom CSS and JS data of current page are empty.
+ - `has:css` → Will be added if custom CSS data of current page isn’t empty.
+ - `has:js` → Will be added if custom JS data of current page isn’t empty.
+ - `is:art` → Will be added if custom CSS or JS data of current page isn’t empty.
+ - `not:art` → Will be added if custom CSS and JS data of current page are empty.

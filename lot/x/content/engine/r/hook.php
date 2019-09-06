@@ -15,6 +15,11 @@ namespace _\lot\x\content {
         }
         return $content;
     }
+    function are() {
+        foreach ((array) \Config::get('are', true) as $k => $v) {
+            \Config::set('[content].are:' . $k, $v);
+        }
+    }
     function has() {
         foreach ((array) \Config::get('has', true) as $k => $v) {
             \Config::set('[content].has:' . $k, $v);
@@ -34,18 +39,18 @@ namespace _\lot\x\content {
         }
     }
     function start() {
-        // Prepare current skin state
+        // Prepare current content state
         $GLOBALS['state'] = $state = new \Anemon;
-        // Load current skin state if any
+        // Load current content state if any
         $folder = \Content::$config['root'] . \DS;
         if (\is_file($f = $folder . 'state' . \DS . 'config.php')) {
             $GLOBALS['state'] = $state = new \Anemon(require $f);
         }
-        // Run skin task if any
+        // Run content task if any
         if (\is_file($task = $folder . 'task.php')) {
             include $task;
         }
-        // Load user function(s) from the current skin folder if any
+        // Load user function(s) from the current content folder if any
         if (\is_file($fn = $folder . 'index.php')) {
             (function() use($fn) {
                 extract($GLOBALS, \EXTR_SKIP);
@@ -64,7 +69,7 @@ namespace _\lot\x\content {
                     ) {
                         continue;
                     }
-                    // Relative to the `asset` folder of active skin
+                    // Relative to the `asset` folder of active content
                     if ($path = \Asset::path($folder . 'asset' . \DS . $kk)) {
                         \Asset::let($kk);
                         \Asset::set($path, $vv['stack']);
@@ -75,6 +80,7 @@ namespace _\lot\x\content {
     }
     \Hook::set('content', __NAMESPACE__, 20);
     \Hook::set('content', __NAMESPACE__ . "\\alert", 0);
+    \Hook::set('content', __NAMESPACE__ . "\\are", 0);
     \Hook::set('content', __NAMESPACE__ . "\\has", 0);
     \Hook::set('content', __NAMESPACE__ . "\\is", 0);
     \Hook::set('content', __NAMESPACE__ . "\\not", 0);

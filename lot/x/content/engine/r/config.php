@@ -3,9 +3,9 @@
 // Set global state as default
 Config::set($state = state('content'));
 
-// Set global skin ID
-if (isset($state['skin'])) {
-    Content::$config['root'] = $f = CONTENT . DS . $state['skin'];
+// Set global content ID
+if (isset($state['name'])) {
+    Content::$config['root'] = $f = CONTENT . DS . $state['name'];
     // Override default state
     if (is_file($f .= DS . 'state' . DS . 'config.php')) {
         Config::set(require $f);

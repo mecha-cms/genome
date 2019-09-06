@@ -75,4 +75,4 @@ Config::set('has', [
     'i' => Config::is('pages') && $i !== ""
 ]);
 
-Config::set('not', []);
+Config::set(['are' => [], 'not' => []]);

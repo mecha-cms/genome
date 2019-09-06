@@ -66,4 +66,4 @@ function let() {
 }
 
 \Hook::set('content', __NAMESPACE__ . "\\set", 0);
-\Hook::set('exit', __NAMESPACE__ . "\\let", 20);
+\Hook::set('let', __NAMESPACE__ . "\\let", 20);
