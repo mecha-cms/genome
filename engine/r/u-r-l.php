@@ -25,14 +25,13 @@ if (is_numeric(end($a))) {
     $i = null;
 }
 
-// Detect if user put this CMS in a sub-folder
-// by checking the `$url->directory` value
-$directory = strtr(ROOT, [
+// Detect if user put this CMS in a sub-folder by checking the `directory` value
+$directory = trim(($_SERVER['CONTEXT_PREFIX'] ?? "") . strtr(ROOT, [
     GROUND => "",
     DS => '/'
-]);
+]), '/');
 
-$directory = $directory !== "" ? $directory : null;
+$directory = $directory !== "" ? '/' . $directory : null;
 $path = $path !== "" ? '/' . $path : null;
 $query = $query !== "" ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;

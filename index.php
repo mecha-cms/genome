@@ -17,7 +17,7 @@ define('N', PHP_EOL); // Line break
 define('P', "\u{001A}"); // Placeholder text
 define('S', "\u{200C}"); // Invisible space
 
-define('GROUND', rtrim(strtr($_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
+define('GROUND', rtrim(strtr($_SERVER['CONTEXT_DOCUMENT_ROOT'] ?? $_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
 define('ROOT', __DIR__);
 define('ENGINE', ROOT . DS . 'engine');
 define('LOT', ROOT . DS . 'lot');

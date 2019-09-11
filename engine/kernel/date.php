@@ -96,10 +96,11 @@ final class Date extends Genome {
     }
 
     public static function locale($locale = null) {
+        $fail = extension_loaded('intl') ? locale_get_default() : null;
         if (!isset($locale)) {
-            return self::$locale ?? locale_get_default();
+            return self::$locale ?? $fail;
         }
-        setlocale(LC_TIME, self::$locale = (array) ($locale ?? locale_get_default()));
+        setlocale(LC_TIME, self::$locale = (array) ($locale ?? $fail));
     }
 
     public static function zone(string $zone = null) {

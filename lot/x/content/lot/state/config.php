@@ -2,7 +2,7 @@
 
 return [
     'zone' => date_default_timezone_get(),
-    'locale' => locale_get_default(),
+    'locale' => extension_loaded('intl') ? locale_get_default() : null,
     'charset' => 'utf-8',
     'direction' => 'ltr',
     'language' => 'en',
