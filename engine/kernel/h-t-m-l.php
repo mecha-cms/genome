@@ -9,7 +9,7 @@ class HTML extends SGML {
         if (!empty($this->lot[2])) {
             foreach ($this->lot[2] as &$v) {
                 if (is_string($v)) {
-                    $v = e(htmlspecialchars_decode($v));
+                    $v = htmlspecialchars_decode($v);
                 }
             }
         }

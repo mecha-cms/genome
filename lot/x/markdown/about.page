@@ -3,7 +3,7 @@ title: Markdown
 description: Convert Markdown syntax to HTML.
 author: Taufik Nurrohman
 type: Markdown
-version: 2.4.0
+version: 2.4.1
 
 use:
   '.\lot\x\page': 1

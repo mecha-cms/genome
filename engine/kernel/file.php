@@ -5,18 +5,33 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     const config = [
         // List of allowed file extension(s)
         'x' => [
+            'css' => 1,
             'gif' => 1,
             'htm' => 1,
             'html' => 1,
             'jpg' => 1,
             'jpeg' => 1,
+            'js' => 1,
             'json' => 1,
             'log' => 1,
             'png' => 1,
             'txt' => 1,
             'xml' => 1
         ],
-        'size' => [0, 2097152] // Range of allowed file size(s)
+        'size' => [0, 2097152], // Range of allowed file size(s)
+        'type' => [
+            'application/javascript' => 1,
+            'application/json' => 1,
+            'application/xml' => 1,
+            'image/gif' => 1,
+            'image/jpeg' => 1,
+            'image/png' => 1,
+            'inode/x-empty' => 1, // Empty file
+            'text/css' => 1,
+            'text/html' => 1,
+            'text/plain' => 1,
+            'text/xml' => 1
+        ]
     ];
 
     public $exist;
@@ -262,7 +277,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         if (!is_dir($folder)) {
             mkdir($folder, 0775, true);
         }
-        if (move_uploaded_file($blob['tmp_name'])) {
+        if (move_uploaded_file($blob['tmp_name'], $path)) {
             return $path; // Return `$path` on success
         }
         return null; // Return `null` on error

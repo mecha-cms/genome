@@ -32,6 +32,8 @@ namespace _\lot\x {
         }
         return $parser->text($content ?? "");
     }
+    // Add `text/markdown` to the file type list
+    \File::$config['type']['text/markdown'] = 1;
     // Add `markdown` to the file extension list
     \File::$config['x']['markdown'] = 1;
     \File::$config['x']['md'] = 1; // Alias
