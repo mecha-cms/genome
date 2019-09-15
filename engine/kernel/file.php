@@ -9,6 +9,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             'gif' => 1,
             'htm' => 1,
             'html' => 1,
+            'jpe' => 1,
             'jpg' => 1,
             'jpeg' => 1,
             'js' => 1,
@@ -29,6 +30,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             'inode/x-empty' => 1, // Empty file
             'text/css' => 1,
             'text/html' => 1,
+            'text/javascript' => 1,
             'text/plain' => 1,
             'text/xml' => 1
         ]
