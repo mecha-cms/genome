@@ -26,6 +26,7 @@ Language::set([
     'prev' => 'Previous',
     'state' => ['State', 'State', 'States'],
     'status' => ['Status', 'Status', 'Statuses'],
+    'time' => ['Time', 'Time', 'Time'],
     'title' => ['Title', 'Title', 'Titles'],
     'type' => ['Type', 'Type', 'Types'],
     'update' => ['Update', 'Update', 'Updates'],

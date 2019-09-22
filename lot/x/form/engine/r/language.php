@@ -8,6 +8,7 @@ Language::set([
     'do-add' => 'Add',
     'do-apply' => 'Apply',
     'do-approve' => 'Approve',
+    'do-archive' => 'Archive',
     'do-attach' => 'Attach',
     'do-block' => 'Block',
     'do-call' => 'Call',

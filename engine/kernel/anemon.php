@@ -253,6 +253,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
             if (isset($sort[1])) {
                 $key = $sort[1];
                 $fn = $i === -1 ? function($a, $b) use($key) {
+                    if (!is_array($a) || !is_array($b)) {
+                        return 0;
+                    }
                     if (!isset($a[$key]) && !isset($b[$key])) {
                         return 0;
                     }
@@ -264,6 +267,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
                     }
                     return $b[$key] <=> $a[$key];
                 } : function($a, $b) use($key) {
+                    if (!is_array($a) || !is_array($b)) {
+                        return 0;
+                    }
                     if (!isset($a[$key]) && !isset($b[$key])) {
                         return 0;
                     }
