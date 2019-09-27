@@ -7,8 +7,8 @@ function language(...$v) {
 $GLOBALS['language'] = $language = new Language;
 
 Language::set([
+    'blob' => ['Blob', 'Blob', 'Blobs'],
     'cache' => ['Cache', 'Cache', 'Caches'],
-    'config' => ['Configuration', 'Configuration', 'Configurations'],
     'extension' => ['Extension', 'Extension', 'Extensions'],
     'file' => ['File', 'File', 'Files'],
     'folder' => ['Folder', 'Folder', 'Folders'],

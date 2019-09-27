@@ -1,15 +1,10 @@
 <?php
 
-// Store page state to registry…
-$state = state('page');
-if (!empty($state['page'])) {
-    // Prioritize default state
-    Config::over($state);
-}
+State::over(require __DIR__ . DS . '..' . DS . '..' . DS . 'state.php');
 
 $path = trim($url->path ?? "", '/');
 $i = $url->i ?? "";
-$p = $state['/'];
+$p = trim($state->path ?? "", '/');
 $folder = PAGE . DS . $path;
 
 // Set proper `i` value in `$url` if we have some page with numeric file/folder name
@@ -17,7 +12,7 @@ if ($i !== "" && File::exist([
     $folder . DS . $i . '.page',
     $folder . DS . $i . '.archive'
 ])) {
-    $path = $path . '/' . $i;
+    $path .= '/' . $i;
     $folder .= DS . $i;
     $url->clean .= '/' . $i;
     $url->i = null;
@@ -57,7 +52,7 @@ $if_6 = File::exist([
     $folder . DS . '.archive'
 ]);
 
-Config::set('is', [
+State::set('is', [
     'error' => $path === "" && !$if_1 || $path !== "" && !$if_3 ? 404 : false,
     'home' => $if_0,
     'page' => $path === "" && $if_1 || $path !== "" && ($if_2 || $if_3 && !$if_5),
@@ -66,13 +61,13 @@ Config::set('is', [
 
 $count = count($path === "" ? $if_4 : $if_5);
 
-Config::set('has', [
-    'next' => Config::is('pages') && ($count > (($i ?: 1) * ($state['chunk'] ?? 5))),
+State::set('has', [
+    'next' => State::is('pages') && ($count > (($i ?: 1) * ($state->chunk ?? 5))),
     'page' => $path === "" && $if_1 || $if_3,
     'pages' => $count > 0,
     'parent' => strpos($path, '/') !== false, // `foo/bar`
-    'prev' => Config::is('pages') && $i > 1,
-    'i' => Config::is('pages') && $i !== ""
+    'prev' => State::is('pages') && $i > 1,
+    'i' => State::is('pages') && $i !== ""
 ]);
 
-Config::set(['are' => [], 'not' => []]);
+State::set(['are' => [], 'not' => []]);

@@ -2,7 +2,7 @@
 
 final class Cookie extends Genome {
 
-    const config = [
+    const state = [
         'expires' => '1 day',
         'path' => '/',
         'domain' => "",
@@ -10,7 +10,7 @@ final class Cookie extends Genome {
         'httponly' => false
     ];
 
-    public static $config = self::config;
+    public static $state = self::state;
 
     private static function k($key) {
         return '_' . dechex(crc32(static::class . ':' . $key));
@@ -56,7 +56,7 @@ final class Cookie extends Genome {
         if (!is_array($expires)) {
             $expires = ['expires' => $expires];
         }
-        $c = array_values(array_replace(self::$config, $expires));
+        $c = array_values(array_replace(self::$state, $expires));
         if (is_string($c[0])) {
             $c[0] = (int) (strtotime($c[0], $t = time()) - $t);
         }

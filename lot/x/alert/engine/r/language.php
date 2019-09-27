@@ -15,7 +15,7 @@ Language::set([
     'alert-error-folder-exist' => 'Folder %s already exists.',
     'alert-error-search' => 'No results for %s.',
     'alert-info-are' => 'Your %1$s are %2$s.',
-    'alert-info-file' => [
+    'alert-info-blob' => [
         0 => 'There is no error, the file uploaded with success.',
         1 => 'The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.',
         2 => 'The uploaded file exceeds the <code>MAX_FILE_SIZE</code> directive that was specified in the <abbr title="Hyper Text Markup Language">HTML</abbr> form.',

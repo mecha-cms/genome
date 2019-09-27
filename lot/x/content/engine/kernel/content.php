@@ -4,12 +4,12 @@ class Content extends Genome {
 
     protected static $lot;
 
-    const config = [
+    const state = [
         'root' => ROOT,
         'x' => ['html', 'php']
     ];
 
-    public static $config = self::config;
+    public static $state = self::state;
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (parent::_($kin)) {
@@ -46,8 +46,8 @@ class Content extends Genome {
     public static function path($in) {
         $out = [];
         $c = static::class;
-        $folder = static::$config['root'];
-        $extension = static::$config['x'];
+        $folder = static::$state['root'];
+        $extension = static::$state['x'];
         if (is_string($in)) {
             // Full path, be quick!
             if (strpos($in, ROOT) === 0 && is_file($in)) {

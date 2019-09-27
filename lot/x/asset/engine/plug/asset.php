@@ -12,7 +12,7 @@ foreach ([
             $href = fire($data['href'], [$href, $value, $key], null, Asset::class);
             unset($data['href']);
         }
-        return new HTML(['link', false, extend($data, [
+        return new HTML(['link', false, array_replace_recursive($data, [
             'href' => $href,
             'rel' => 'stylesheet'
         ])]);
@@ -28,7 +28,7 @@ foreach ([
             $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
-        return new HTML(['script', "", extend($data, [
+        return new HTML(['script', "", array_replace_recursive($data, [
             'src' => $src
         ])]);
     }
@@ -48,7 +48,7 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
             $src = fire($data['src'], [$src, $value, $key], null, Asset::class);
             unset($data['src']);
         }
-        return new HTML(['img', false, extend($data, [
+        return new HTML(['img', false, array_replace_recursive($data, [
             'src' => $src
         ])]);
     });
@@ -56,7 +56,7 @@ foreach (['gif', 'jpg', 'jpeg', 'png'] as $v) {
 
 foreach (['script', 'style', 'template'] as $v) {
     Asset::_($v, function(string $content, float $stack = 10, array $data = []) use($v) {
-        $c = static::class;
+        $c = Asset::class;
         $id = $data['id'] ?? $v . ':' . sprintf('%u', crc32($content));
         if (!isset(static::$lot[$c][0][':' . $v][$id])) {
             static::$lot[$c][1][':' . $v][$id] = [

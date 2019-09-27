@@ -20,11 +20,11 @@ Language::set([
     'page-count' => function(int $i) {
         return $i . ' Page' . ($i === 1 ? "" : 's');
     },
+    'parent' => ['Parent', 'Parent', 'Parents'],
     'path' => 'Path',
     'photo' => ['Photo', 'Photo', 'Photos'],
     'picture' => ['Picture', 'Picture', 'Pictures'],
     'prev' => 'Previous',
-    'state' => ['State', 'State', 'States'],
     'status' => ['Status', 'Status', 'Statuses'],
     'time' => ['Time', 'Time', 'Time'],
     'title' => ['Title', 'Title', 'Titles'],

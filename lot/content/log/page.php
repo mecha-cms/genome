@@ -9,9 +9,9 @@
     <?php if ($page->link): ?>
     <p><a href="<?php echo $page->link; ?>" rel="nofollow" target="_blank"><?php echo $language->link; ?> &#x21E2;</a></p>
     <?php endif; ?>
-  </article>
+  </article><?php static::comments(); ?>
 </main>
-<?php if ($site->has('parent')): ?>
+<?php if ($site->has('page') && $site->has('parent')): ?>
 <nav><?php echo $pager; ?></nav>
 <?php endif; ?>
 <?php static::after(); ?>

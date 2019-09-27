@@ -5,12 +5,22 @@ function hook(...$v) {
 }
 
 register_shutdown_function(function() {
-    // Load extension(s)…
-    require __DIR__ . DS . 'x.php';
     if (!error_get_last()) {
-        // Run main task if any…
+        // Run task(s) if any…
         if (is_file($f = ROOT . DS . 'task.php')) {
-            require $f;
+            (function($f) {
+                extract($GLOBALS, EXTR_SKIP);
+                require $f;
+            })($f);
+        }
+        // Run extra task(s) if any…
+        if (is_dir($f = ROOT . DS . 'task')) {
+            foreach (glob($f . DS . '*.php', GLOB_NOSORT) as $f) {
+                is_file($f) && (function($f) {
+                    extract($GLOBALS, EXTR_SKIP);
+                    require $f;
+                })($f);
+            }
         }
         // Fire!
         Hook::fire('start');

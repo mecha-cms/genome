@@ -1,6 +1,6 @@
 <?php
 
-final class Language extends Config {
+final class Language extends State {
 
     public function __call(string $kin, array $lot = []) {
         if (parent::_($kin)) {

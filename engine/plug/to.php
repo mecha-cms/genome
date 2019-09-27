@@ -97,18 +97,18 @@ foreach([
         return trim($out) . ($t > $x[0] ? $x[1] : "");
     },
     'file' => function(string $in) {
-        $in = preg_split('#\s*[\\\/]\s*#', $in, null, PREG_SPLIT_NO_EMPTY);
-        $n = preg_split('#\s*[.]\s*#', array_pop($in), null, PREG_SPLIT_NO_EMPTY);
+        $in = preg_split('/\s*[\\/]\s*/', $in, null, PREG_SPLIT_NO_EMPTY);
+        $n = preg_split('/\s*[.]\s*/', array_pop($in), null, PREG_SPLIT_NO_EMPTY);
         $x = array_pop($n);
         $out = "";
         foreach ($in as $v) {
             $out .= h($v, '-', true, '_') . DS;
         }
         $out .= h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
-        return $out === '.' ? "" : $out;
+        return $out === '.' ? null : $out;
     },
     'folder' => function(string $in) {
-        $in = preg_split('#\s*[\\\/]\s*#', $in, null, PREG_SPLIT_NO_EMPTY);
+        $in = preg_split('/\s*[\\/]\s*/', $in, null, PREG_SPLIT_NO_EMPTY);
         $n = array_pop($in);
         $out = "";
         foreach ($in as $v) {

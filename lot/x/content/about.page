@@ -3,7 +3,7 @@ title: Content
 description: Common automation package used to speed up skin development.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.6.5
+version: 1.7.1
 ...
 
 ### Usage
@@ -23,10 +23,10 @@ The default skin name is `log` and so we have `log` as the value for the `name` 
 <?php
 
 return [
-    'charset' => 'utf-8',
-    'direction' => 'ltr',
+    'title' => 'Site Title',
+    'description' => 'Site description.',
     'language' => 'en',
-    'name' => 'log' // this
+    'name' => 'log' // ← this
 ];
 ~~~
 

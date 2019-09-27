@@ -6,24 +6,20 @@ $GLOBALS['pages'] = new \Pages;
 $GLOBALS['parent'] = new \Page;
 
 function route() {
-    global $config, $language, $url;
+    global $language, $state, $url;
     $i = ($url->i ?? 1) - 1;
-    // Load default page state(s)…
-    $state = \state('page');
-    // Prevent directory traversal attack
-    // <https://en.wikipedia.org/wiki/Directory_traversal_attack>
-    $path = \str_replace('../', "", \urldecode($this[0]));
-    if ($i < 1 && $path === $state['/'] && !$url->query) {
+    // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
+    $path = '/' . \str_replace('../', "", $this[0]);
+    if ($i < 1 && $path === $state->path && !$url->query) {
         \Guard::kick(""); // Redirect to home page
     }
     // Default home page path
-    $p = \trim($path === "" ? $state['/'] : $path, '/');
-    $folder = \rtrim(\PAGE . \DS . \strtr($p, '/', \DS), \DS);
+    $p = $path === '/' ? $state->path : $path;
+    $folder = \rtrim(\PAGE . \strtr($p, '/', \DS), \DS);
     if ($file = \File::exist([
         $folder . '.page',
         $folder . '.archive'
     ])) {
-        $k = \PAGE;
         $page = new \Page($file);
         $chunk = $page['chunk'] ?? 5;
         $deep = $page['deep'] ?? 0;
@@ -41,12 +37,12 @@ function route() {
                 return \substr(\str_replace($parent_folder . \DS, "", $v->path), 0, -5);
             });
         }
-        $pager = new \Pager\Page($parent_pages ?? [], $page->name, $url . '/' . $parent_path);
+        $pager = new \Pager\Page($parent_pages ?? [], $page->name, $url . $parent_path);
         $GLOBALS['page'] = $page;
         $GLOBALS['pager'] = $pager;
         $GLOBALS['parent'] = $parent_page ?? new \Page;
         $GLOBALS['t'][] = $page->title;
-        \Config::set([
+        \State::set([
             'chunk' => $chunk, // Inherit current page’s `chunk` property
             'deep' => $deep, // Inherit current page’s `deep` property
             'has' => [
@@ -59,13 +55,13 @@ function route() {
         $pages = \Pages::from($folder, 'page', $deep)->sort($sort);
         // No page(s) means “page” mode
         if ($pages->count() === 0 || \is_file($folder . \DS . '.' . $page->x)) {
-            $this->content('page/' . $p . '/' . ($i + 1));
+            $this->content('page' . $p . '/' . ($i + 1));
         }
         // Create pager for “pages” mode
-        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . '/' . $p);
+        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $p);
         $pages = $pages->chunk($chunk, $i);
         if ($pages->count() > 0) {
-            \Config::set('has', [
+            \State::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev,
@@ -73,10 +69,10 @@ function route() {
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
-            $this->content('pages/' . $p . '/' . ($i + 1));
+            $this->content('pages' . $p . '/' . ($i + 1));
         }
     }
-    \Config::set([
+    \State::set([
         'has' => [
             'i' => false,
             'next' => false,
@@ -87,7 +83,7 @@ function route() {
     ]);
     $GLOBALS['t'][] = $language->isError;
     $this->status(404);
-    $this->content('404/' . $p . '/' . ($i + 1));
+    $this->content('404' . $p . '/' . ($i + 1));
 }
 
 \Route::set(['*', ""], __NAMESPACE__ . "\\route", 20);

@@ -16,8 +16,8 @@ namespace _\lot\x\art {
         return $content;
     }
     function start() {
-        global $config, $url;
-        $folder = \PAGE . ($url->path ?? \state('page')['/']);
+        global $state, $url;
+        $folder = \PAGE . ($url->path ?? \State::get('x.page.path'));
         $i = $url->i ?: 1;
         if ($path = \File::exist([
             $folder . \DS . $i . '.page',
@@ -28,7 +28,7 @@ namespace _\lot\x\art {
             $page = new \Page($path);
             $css = $page['css'];
             $js = $page['js'];
-            \Config::set([
+            \State::set([
                 'has' => [
                     'css' => !!$css,
                     'js' => !!$js

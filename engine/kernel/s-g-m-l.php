@@ -2,7 +2,7 @@
 
 class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable {
 
-    const config = [
+    const state = [
         0 => ['<', '>', '/'],
         1 => ['"', '"', '=']
     ];
@@ -16,10 +16,10 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
     public $c;
     public $strict = true;
 
-    public static $config = self::config;
+    public static $state = self::state;
 
     public function __construct($in = []) {
-        $this->c = $c = array_replace_recursive(self::config, static::$config);
+        $this->c = $c = array_replace_recursive(self::state, static::$state);
         if (is_array($in)) {
             $this->lot = array_replace_recursive($this->lot, $in);
         } else if (is_object($in) && $in instanceof self) {

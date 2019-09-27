@@ -8,12 +8,14 @@ class Folder extends Genome {
 
     public function __construct($path = null) {
         $this->value[0] = null;
-        if ($this->exist = $path && is_string($path) && strpos($path, ROOT) === 0) {
+        if ($path && is_string($path) && strpos($path, ROOT) === 0) {
+            $path = strtr($path, '/', DS);
             if (!stream_resolve_include_path($path)) {
                 mkdir($path, 0775, true); // Create an empty folder
             }
-            $this->path = realpath($path) ?: null;
+            $this->path = $path;
         }
+        $this->exist = !!$this->path;
     }
 
     public function __toString() {

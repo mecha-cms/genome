@@ -16,49 +16,46 @@ namespace _\lot\x\content {
         return $content;
     }
     function are() {
-        foreach ((array) \Config::get('are', true) as $k => $v) {
-            \Config::set('[content].are:' . $k, $v);
+        foreach ((array) \State::get('are', true) as $k => $v) {
+            \State::set('[content].are:' . $k, $v);
         }
     }
     function has() {
-        foreach ((array) \Config::get('has', true) as $k => $v) {
-            \Config::set('[content].has:' . $k, $v);
+        foreach ((array) \State::get('has', true) as $k => $v) {
+            \State::set('[content].has:' . $k, $v);
         }
     }
     function is() {
-        foreach ((array) \Config::get('is', true) as $k => $v) {
-            \Config::set('[content].is:' . $k, $v);
+        foreach ((array) \State::get('is', true) as $k => $v) {
+            \State::set('[content].is:' . $k, $v);
         }
-        if ($x = \Config::get('is.error')) {
-            \Config::set('[content].error:' . $x, true);
+        if ($x = \State::get('is.error')) {
+            \State::set('[content].error:' . $x, true);
         }
     }
     function not() {
-        foreach ((array) \Config::get('not', true) as $k => $v) {
-            \Config::set('[content].not:' . $k, $v);
+        foreach ((array) \State::get('not', true) as $k => $v) {
+            \State::set('[content].not:' . $k, $v);
         }
     }
     function start() {
-        // Prepare current content state
-        $GLOBALS['state'] = $state = new \Anemon;
-        // Load current content state if any
-        $folder = \Content::$config['root'] . \DS;
-        if (\is_file($f = $folder . 'state' . \DS . 'config.php')) {
-            $GLOBALS['state'] = $state = new \Anemon(require $f);
-        }
+        $folder = \Content::$state['root'] . \DS;
         // Run content task if any
         if (\is_file($task = $folder . 'task.php')) {
-            include $task;
+            (function($task) {
+                extract($GLOBALS, \EXTR_SKIP);
+                require $task;
+            })($task);
         }
         // Load user function(s) from the current content folder if any
         if (\is_file($fn = $folder . 'index.php')) {
-            (function() use($fn) {
+            (function($fn) {
                 extract($GLOBALS, \EXTR_SKIP);
                 require $fn;
-            })();
+            })($fn);
         }
         // Detect relative asset path to the `.\lot\content\*` folder
-        if (\state('asset') !== null && $assets = \Asset::get()) {
+        if (\State::get('x.asset') !== null && $assets = \Asset::get()) {
             foreach ($assets as $k => $v) {
                 foreach ($v as $kk => $vv) {
                     // Full path, no change!
@@ -100,7 +97,7 @@ namespace _\lot\x {
                 ) {
                     $root = new \HTML($m[0]);
                     $c = $root['class'] === true ? [] : \preg_split('/\s+/', $root['class'] ?? "");
-                    $c = \array_unique(\array_merge($c, \array_keys(\array_filter((array) \Config::get('[content]', true)))));
+                    $c = \array_unique(\array_merge($c, \array_keys(\array_filter((array) \State::get('[content]', true)))));
                     \sort($c);
                     $root['class'] = \trim(\implode(' ', $c));
                     return $root;

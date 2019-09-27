@@ -40,15 +40,15 @@ class Page extends File {
 
     public function __construct(string $path = null, array $lot = []) {
         parent::__construct($path);
-        $c = c2f(static::class, '_', "\\"); // Any class name inherits to this class
-        $cc = c2f(self::class, '_', "\\"); // This very class name
+        $c = strtr(c2f(static::class), ['.' => "\\."]); // Current class name
+        $cc = strtr(c2f(self::class), ['.' => "\\."]); // This very class name
         $prefix = array_unique([$cc, $c]);
         $id = json_encode([$path, $lot, $prefix]);
         $this->id = $id;
         $this->prefix = $prefix;
         // Set pre-defined page property
         if (!isset(self::$page[$id])) {
-            self::$page[$id] = array_replace_recursive((array) Config::get($cc, true), (array) Config::get($c, true), $lot);
+            self::$page[$id] = array_replace_recursive((array) State::get('x.' . $cc, true), (array) State::get('x.' . $c, true), $lot);
         }
         $this->lot = self::$page[$id] ?? [];
     }

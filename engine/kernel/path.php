@@ -9,18 +9,18 @@ final class Path extends Genome {
             }
         }
         $path = str_replace([DS, '/'], $s, $path);
-        $path = implode($s, array_slice(explode($s, $path), $step * -1));
+        $path = rtrim(implode($s, array_slice(explode($s, $path), $step * -1)), $s);
         return $path !== "" ? $path : null;
     }
 
     public static function D(string $path, int $step = 1, string $s = DS) {
         if ($s === DS || $s === '/') {
-            $dir = dirname($path, $step);
+            $dir = rtrim(dirname($path, $step), $s);
             return $dir !== '.' ? $dir : null;
         }
         $path = str_replace([DS, '/'], $s, $path);
         $a = explode($s, $path);
-        $path = implode($s, array_slice($a, 0, count($a) - $step));
+        $path = rtrim(implode($s, array_slice($a, 0, count($a) - $step)), $s);
         return $path !== "" ? $path : null;
     }
 

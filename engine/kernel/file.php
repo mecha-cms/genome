@@ -2,7 +2,7 @@
 
 class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
-    const config = [
+    const state = [
         // List of allowed file extension(s)
         'x' => [
             'css' => 1,
@@ -42,15 +42,17 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function __construct($path = null) {
         $this->value[0] = "";
-        if ($this->exist = $path && is_string($path) && strpos($path, ROOT) === 0) {
+        if ($path && is_string($path) && strpos($path, ROOT) === 0) {
+            $path = strtr($path, '/', DS);
             if (!stream_resolve_include_path($path)) {
                 if (!is_dir($d = dirname($path))) {
                     mkdir($d, 0775, true);
                 }
                 touch($path); // Create an empty file
             }
-            $this->path = realpath($path) ?: null;
+            $this->path = $path;
         }
+        $this->exist = !!$this->path;
     }
 
     public function __get(string $key) {
@@ -252,7 +254,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return false; // Return `false` if file does not exist
     }
 
-    public static $config = self::config;
+    public static $state = self::state;
 
     public static function exist($path) {
         if (is_array($path)) {

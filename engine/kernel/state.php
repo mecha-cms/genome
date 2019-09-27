@@ -1,6 +1,6 @@
 <?php
 
-class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
+class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
     protected static $a = [];
     protected static $lot = [];
@@ -28,7 +28,7 @@ class Config extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return count($v) < 2 ? self::get(...$v) : self::set(...$v);
     }
 
-    // Fix case for `isset($config->key)` or `!empty($config->key)`
+    // Fix case for `isset($state->key)` or `!empty($state->key)`
     public function __isset(string $key) {
         return !!$this->__get($key);
     }

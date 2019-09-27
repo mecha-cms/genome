@@ -297,6 +297,9 @@ h3,
 h4 {
   line-height: 1;
 }
+h2 + p > time {
+  font-size: 120%;
+}
 * + blockquote,
 * + dl,
 * + fieldset,
