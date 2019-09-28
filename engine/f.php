@@ -320,7 +320,7 @@ namespace {
 // d: declare class(es) with callback
 // e: evaluate string to their appropriate data type
 // f: filter/sanitize string
-// g: advance PHP `glob` function
+// g: advance PHP `glob` function that returns generator
 // h: convert text to snake case with `-` (hyphen) as the default separator
 // i:
 // j:
@@ -338,7 +338,7 @@ namespace {
 // v: un-escape
 // w: convert any data to plain word(s)
 // x: escape
-// y: output/yield an echo-based function as normal return value
+// y: convert iterator to plain array
 // z: export array/object into a compact PHP file
 
 namespace {

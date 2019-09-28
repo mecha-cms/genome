@@ -29,11 +29,11 @@ Language::set([
     'alert-info-is' => 'Your %1$s is %2$s.',
     'alert-info-search' => 'Search results for %s.',
     'alert-info-void' => 'No %s yet.',
-    'alert-success-blob-set' => 'File %s uploaded.',
-    'alert-success-file-let' => 'File %s deleted.',
-    'alert-success-file-set' => 'File %s created.',
-    'alert-success-file-update' => 'File %s updated.',
-    'alert-success-folder-let' => 'Folder %s deleted.',
-    'alert-success-folder-set' => 'Folder %s created.',
-    'alert-success-folder-update' => 'Folder %s updated.'
+    'alert-success-blob-set' => 'File %s successfully uploaded.',
+    'alert-success-file-let' => 'File %s successfully deleted.',
+    'alert-success-file-set' => 'File %s successfully created.',
+    'alert-success-file-update' => 'File %s successfully updated.',
+    'alert-success-folder-let' => 'Folder %s successfully deleted.',
+    'alert-success-folder-set' => 'Folder %s successfully created.',
+    'alert-success-folder-update' => 'Folder %s successfully updated.'
 ]);

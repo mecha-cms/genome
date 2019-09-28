@@ -50,7 +50,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 }
                 touch($path); // Create an empty file
             }
-            $this->path = $path;
+            $this->path = realpath($path) ?: $path;
         }
         $this->exist = !!$this->path;
     }

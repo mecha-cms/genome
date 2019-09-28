@@ -13,7 +13,7 @@ class Folder extends Genome {
             if (!stream_resolve_include_path($path)) {
                 mkdir($path, 0775, true); // Create an empty folder
             }
-            $this->path = $path;
+            $this->path = realpath($path) ?: $path;
         }
         $this->exist = !!$this->path;
     }
