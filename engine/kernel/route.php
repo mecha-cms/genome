@@ -12,6 +12,7 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
             } else {
                 $v = preg_quote($v);
             }
+            $v = strtr($v, ["\\\\:" => ':']);
         }
         $r = '#^' . implode('/', $r) . '$#';
         $this->match = false;

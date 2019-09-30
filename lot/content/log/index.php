@@ -12,8 +12,8 @@ Hook::set('page.description', function($description) {
 Asset::set('css/log.min.css', 20);
 
 // Create site navigation data to be used in content
-$GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) {
-    $folder = PAGE . DS . state('x.page./');
+$GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) use($state) {
+    $folder = PAGE . strtr($state->path, '/', DS);
     return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
 })->get(), function($v) use($url) {
     $v = new Page($v);
