@@ -1,4 +1,4 @@
-<?php static::before(); ?>
+<?= self::before(); ?>
 <main>
   <article id="page-0">
     <div>
@@ -6,4 +6,4 @@
     </div>
   </article>
 </main>
-<?php static::after(); ?>
+<?= self::after(); ?>

@@ -1,6 +1,6 @@
       <footer>
-        <p><?php static::trace([' / ']); ?></p>
-        <p>&#x00A9; <?php echo $date->year; ?> &#x00B7; <a href="<?php echo $url; ?>"><?php echo $site->title; ?></a></p>
+        <p><?= self::trace([' / ']); ?></p>
+        <p>&#x00A9; <?= $date->year; ?> &#x00B7; <a href="<?= $url; ?>"><?= $site->title; ?></a></p>
       </footer>
     </div>
   </body>

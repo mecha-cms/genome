@@ -7,7 +7,7 @@ Route::_('_content', function(string $v) {
 
 Route::_('content', function(string $path, array $lot = []) {
     Hook::fire('set', [], $this); // Run just before response body
-    if (null !== ($content = Content::get($path, $lot, false))) {
+    if (null !== ($content = Content::get($path, $lot))) {
         $this->_content($content);
         Hook::fire('get', [$content], $this); // Run just after response body
         Hook::fire('let', [$content], $this); // Run after response body (to clear session, cookie, etc.)

@@ -3,12 +3,12 @@ title: Content
 description: Common automation package used to speed up skin development.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.7.2
+version: 1.8.0
 ...
 
 ### Usage
 
-Skin files are stored in the `.\lot\content` folder. You can add new skin files there and activate it by updating the `name` value:
+Skin files are stored in the `.\lot\content` folder. You can add new skin files there and activate it by updating the `name` value of `.\state.php` file:
 
 ~~~ .txt
 .\

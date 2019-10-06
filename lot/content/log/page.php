@@ -1,17 +1,17 @@
-<?php static::before(); ?>
+<?= self::before(); ?>
 <main>
-  <article id="page-<?php echo $page->id; ?>">
-    <h2><span><?php echo $page->title; ?></span></h2>
+  <article id="page-<?= $page->id; ?>">
+    <h2><span><?= $page->title; ?></span></h2>
     <?php if ($site->has('parent')): ?>
-    <p><time datetime="<?php echo $page->time->ISO8601; ?>"><?php echo $page->time->{r('-', '_', $site->language)}; ?></time></p>
+    <p><time datetime="<?= $page->time->ISO8601; ?>"><?= $page->time->{r('-', '_', $site->language)}; ?></time></p>
     <?php endif; ?>
-    <?php echo $page->content; ?>
+    <?= $page->content; ?>
     <?php if ($page->link): ?>
-    <p><a href="<?php echo $page->link; ?>" rel="nofollow" target="_blank"><?php echo $language->link; ?> &#x21E2;</a></p>
+    <p><a href="<?= $page->link; ?>" rel="nofollow" target="_blank"><?= $language->link; ?> &#x21E2;</a></p>
     <?php endif; ?>
-  </article><?php static::comments(); ?>
+  </article>
 </main>
 <?php if ($site->has('page') && $site->has('parent')): ?>
-<nav><?php echo $pager; ?></nav>
+<nav><?= $pager; ?></nav>
 <?php endif; ?>
-<?php static::after(); ?>
+<?= self::after(); ?>

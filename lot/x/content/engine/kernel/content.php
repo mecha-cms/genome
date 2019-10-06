@@ -15,7 +15,7 @@ class Content extends Genome {
         if (parent::_($kin)) {
             return parent::__callStatic($kin, $lot);
         }
-        $kin = strtr($kin, '_', '-');
+        $kin = p2f($kin);
         // `self::fake('foo/bar', ['key' => 'value'])`
         if ($lot) {
             // `self::fake(['key' => 'value'])`
@@ -24,21 +24,16 @@ class Content extends Genome {
                 array_unshift($lot, "");
             }
             $kin = trim($kin . '/' . array_shift($lot), '/');
-            $lot = array_replace([[], true], $lot);
         }
         return self::get($kin, ...$lot);
     }
 
-    public static function get($in, array $lot = [], $print = true) {
+    public static function get($in, array $lot = []) {
         if ($path = self::path($in)) {
             extract(array_replace($GLOBALS, $lot), EXTR_SKIP);
-            if ($print) {
-                require $path;
-            } else {
-                ob_start();
-                require $path;
-                return ob_get_clean();
-            }
+            ob_start();
+            require $path;
+            return ob_get_clean();
         }
         return null;
     }
