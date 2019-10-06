@@ -3,7 +3,6 @@
 return [
     // Pre-defined page data
     'chunk' => 5,
-    'deep' => 1,
-    'path' => '/index',
+    'deep' => 0,
     'sort' => [1, 'path']
 ];

@@ -191,7 +191,7 @@ namespace {
         $kk = \explode($s, \str_replace("\\" . $s, \P, $k));
         while (\count($kk) > 1) {
             $k = \str_replace(\P, $s, \array_shift($kk));
-            if (\array_key_exists($k, $a)) {
+            if (\is_array($a) && \array_key_exists($k, $a)) {
                 $a =& $a[$k];
             }
         }
@@ -978,12 +978,12 @@ namespace {
                         $r = $f . \DS . $b;
                         // Find by query in file name…
                         if (\stripos($n, $v) !== false) {
-                            yield $r;
+                            yield $r => \is_dir($r) ? 0 : 1;
                         // Find by query in file content…
                         } else if ($c && \is_file($r)) {
                             foreach (stream($r) as $vv) {
                                 if (stripos($vv, $v) !== false) {
-                                    yield $r;
+                                    yield $r => 1;
                                 }
                             }
                         }
