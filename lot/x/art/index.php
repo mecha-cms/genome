@@ -18,7 +18,7 @@ namespace _\lot\x\art {
     function start() {
         global $state, $url;
         $folder = \PAGE . ($url->path ?? \State::get('x.page.path'));
-        $i = $url->i ?: 1;
+        $i = $url['i'] ?? 1;
         if ($path = \File::exist([
             $folder . \DS . $i . '.page',
             $folder . \DS . $i . '.archive',

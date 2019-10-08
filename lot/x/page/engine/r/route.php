@@ -7,7 +7,7 @@ $GLOBALS['parent'] = new \Page;
 
 function route() {
     global $language, $state, $url;
-    $i = ($url->i ?? 1) - 1;
+    $i = ($url['i'] ?? 1) - 1;
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = '/' . \str_replace('../', "", $this[0]);
     if ($i < 1 && $path === $state->path && !$url->query) {
@@ -33,7 +33,9 @@ function route() {
             $parent_folder . \DS . '.archive' // `.\lot\page\parent-name\.archive`
         ])) {
             $parent_page = new \Page($parent_file);
-            $parent_pages = \map(\Pages::from($parent_folder, 'page', $deep)->sort($sort), function($v) use($parent_folder) {
+            $parent_deep = $parent_page['deep'] ?? 0;
+            $parent_sort = $parent_page['sort'] ?? [1, 'path'];
+            $parent_pages = \map(\Pages::from($parent_folder, 'page', $parent_deep)->sort($parent_sort), function($v) use($parent_folder) {
                 return \substr(\str_replace($parent_folder . \DS, "", $v->path), 0, -5);
             });
         }

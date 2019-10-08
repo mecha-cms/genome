@@ -168,7 +168,7 @@ foreach([
                 $out[] = $v;
             }
         }
-        return $out ? '?' . implode('&', $out) : "";
+        return $out ? '?' . implode('&', $out) : null;
     },
     'sentence' => function(string $in, $tail = '.') {
         $in = trim($in);

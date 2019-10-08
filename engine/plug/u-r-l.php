@@ -4,7 +4,7 @@ URL::_('long', function(string $path, $root = true) {
     global $url;
     // `URL::long('//example.com')`
     if (strpos($path, '//') === 0) {
-        return rtrim($url->scheme . ':' . $path, '/');
+        return rtrim($url['protocol'] . ':' . $path, '/');
     // `URL::long('/foo/bar/baz/qux')`
     } else if (strpos($path, '/') === 0) {
         return rtrim($url->ground . $path, '/');
@@ -43,6 +43,6 @@ URL::_('short', function(string $path, $root = true) {
         // `http://127.0.0.1/foo`
         P . $url->root,
         // `//127.0.0.1/foo`
-        P . '//' . $url->host . $url->directory
+        P . '//' . $url->host . $url->d
     ], "", P . $path), '/');
 });

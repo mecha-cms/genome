@@ -19,28 +19,28 @@ $path = strtr(trim($path, '/'), [
 
 $a = explode('/', $path);
 if (is_numeric(end($a))) {
-    $i = (int) array_pop($a);
+    $i = '/' . array_pop($a);
     $path = implode('/', $a);
 } else {
     $i = null;
 }
 
 // Detect if user put this CMS in a sub-folder by checking the `directory` value
-$directory = trim(($_SERVER['CONTEXT_PREFIX'] ?? "") . strtr(ROOT, [
+$d = trim(($_SERVER['CONTEXT_PREFIX'] ?? "") . strtr(ROOT, [
     GROUND => "",
     DS => '/'
 ]), '/');
 
-$directory = $directory !== "" ? '/' . $directory : null;
+$d = $d !== "" ? '/' . $d : null;
 $path = $path !== "" ? '/' . $path : null;
 $query = $query !== "" ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
-$u = $protocol . $host . $directory;
+$root = $protocol . $host . $d;
 
 $GLOBALS['url'] = $url = new URL([
-    'clean' => $u . $path,
-    'current' => trim($u . $path . '/' . $i, '/') . $query . $hash,
-    'directory' => $directory,
+    'clean' => $root . $path,
+    'current' => $root . $path . $i . $query . $hash,
+    'd' => $d,
     'ground' => $protocol . $host,
     'hash' => $hash,
     'host' => $host,
@@ -49,6 +49,5 @@ $GLOBALS['url'] = $url = new URL([
     'port' => $port,
     'protocol' => $protocol,
     'query' => $query,
-    'root' => $u,
-    'scheme' => $scheme
+    'root' => $root
 ]);

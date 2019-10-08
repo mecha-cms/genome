@@ -2,8 +2,8 @@
 
 State::over(require __DIR__ . DS . '..' . DS . '..' . DS . 'state.php');
 
-$path = trim($url->path ?? "", '/');
-$i = $url->i ?? "";
+$path = $url['path'] ?? "";
+$i = $url['i'] ?? "";
 $p = trim($state->path ?? "", '/');
 $folder = PAGE . DS . $path;
 
