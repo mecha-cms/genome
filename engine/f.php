@@ -247,7 +247,7 @@ namespace {
             }
             $a =& $a[$k];
         }
-        $a[\array_shift($kk)] = $v;
+        $a[\str_replace(\P, $s, \array_shift($kk))] = $v;
         return $a;
     }
     // Shake array
@@ -314,32 +314,32 @@ namespace {
     }
 }
 
-// a: convert object to array
-// b: keep value between `a` and `b`
-// c: convert text to camel case
-// d: declare class(es) with callback
-// e: evaluate string to their appropriate data type
-// f: filter/sanitize string
-// g: advance PHP `glob` function that returns generator
-// h: convert text to snake case with `-` (hyphen) as the default separator
-// i:
+// a: Convert object to array
+// b: Keep value between `a` and `b`
+// c: Convert text to camel case
+// d: Declare class(es) with callback
+// e: Evaluate string to their appropriate data type
+// f: Filter/sanitize string
+// g: Advance PHP `glob` function that returns generator
+// h: Convert text to snake case with `-` (hyphen) as the default separator
+// i: Limit iterator from `a` to `b`
 // j:
-// k: search file in a folder by query
-// l: convert text to lower case
-// m: normalize range margin
-// n: normalize white-space in string
-// o: convert array to object
-// p: convert text to pascal case
-// q: quantity (length of string, number or anemon)
-// r: replace string
-// s: convert data type to their string format
-// t: trim string from specific prefix and suffix
-// u: convert text to upper case
-// v: un-escape
-// w: convert any data to plain word(s)
-// x: escape
-// y: convert iterator to plain array
-// z: export array/object into a compact PHP file
+// k: Search file in a folder by query
+// l: Convert text to lower case
+// m: Normalize range margin
+// n: Normalize white-space in string
+// o: Convert array to object
+// p: Convert text to pascal case
+// q: Quantity (length of a string, number, array and object)
+// r: Replace string
+// s: Convert data type to their string format
+// t: Trim string from prefix and suffix once
+// u: Convert text to upper case
+// v: Un-escape
+// w: Convert any data to plain word(s)
+// x: Escape
+// y: Convert iterator to plain array
+// z: Export array/object into a compact PHP file
 
 namespace {
     function a($o, $safe = true) {
@@ -964,7 +964,12 @@ namespace {
             return $h . l($m[0]);
         }, f($x, $a, x($h) . $i)));
     }
-    function i() {}
+    function i(...$a) {
+        if (\is_array($a[0])) {
+            return \array_slice(...$a);
+        }
+        return new \LimitIterator(...$a);
+    }
     function j() {}
     function k(string $f, array $q = [], $c = false) {
         if (\is_dir($f) && $h = \opendir($f)) {
@@ -1024,6 +1029,12 @@ namespace {
         return \ltrim(c(' ' . $x, $a, $i), ' ');
     }
     function q($x) {
+        if ($x === true) {
+            return 1;
+        }
+        if ($x === false || $x === null) {
+            return 0;
+        }
         if (\is_int($x) || \is_float($x)) {
             return $x;
         }
