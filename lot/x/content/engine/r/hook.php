@@ -39,7 +39,7 @@ namespace _\lot\x\content {
         }
     }
     function start() {
-        $folder = \Content::$state['root'] . \DS;
+        $folder = \Content::$state['path'] . \DS;
         // Run content task if any
         if (\is_file($task = $folder . 'task.php')) {
             (function($task) {

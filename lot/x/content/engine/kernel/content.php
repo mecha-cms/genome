@@ -5,7 +5,7 @@ class Content extends Genome {
     protected static $lot;
 
     const state = [
-        'root' => ROOT,
+        'path' => ROOT,
         'x' => ['html', 'php']
     ];
 
@@ -41,7 +41,7 @@ class Content extends Genome {
     public static function path($in) {
         $out = [];
         $c = static::class;
-        $folder = static::$state['root'];
+        $folder = static::$state['path'];
         $extension = static::$state['x'];
         if (is_string($in)) {
             // Full path, be quick!

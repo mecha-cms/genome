@@ -48,7 +48,7 @@ class Page extends File {
         $this->prefix = $prefix;
         // Set pre-defined page property
         if (!isset(self::$page[$id])) {
-            self::$page[$id] = array_replace_recursive((array) State::get('x.' . $cc, true), (array) State::get('x.' . $c, true), $lot);
+            self::$page[$id] = array_replace_recursive((array) State::get('x.' . $cc . '.page', true), (array) State::get('x.' . $c . '.page', true), $lot);
         }
         $this->lot = self::$page[$id] ?? [];
     }
