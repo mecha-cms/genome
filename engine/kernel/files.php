@@ -4,14 +4,17 @@ class Files extends Anemon {
 
     public function getIterator() {
         $files = [];
-        foreach ($this->value as $v) {
-            $files[] = $this->file($v);
+        foreach ($this->value as $k => $v) {
+            yield $k => $this->file($v);
         }
-        return new \ArrayIterator($files);
     }
 
     public function file(string $path): \ArrayAccess {
         return new File($path);
+    }
+
+    public function offsetGet($i) {
+        return $this->file($this->value[$i] ?? null);
     }
 
     public function sort($sort = 1, $preserve_key = false) {
