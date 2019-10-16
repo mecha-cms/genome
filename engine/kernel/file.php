@@ -225,21 +225,13 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public function time(string $format = null) {
         if ($this->exist) {
             $t = filectime($this->path);
-            return $format ? (new Date($t))($format) : $t;
+            return $format ? (new Time($t))($format) : $t;
         }
         return null;
     }
 
     public function type() {
         return $this->exist ? mime_content_type($this->path) : null;
-    }
-
-    public function update(string $format = null) {
-        if ($this->exist) {
-            $t = filemtime($this->path);
-            return $format ? (new Date($t))($format) : $t;
-        }
-        return null;
     }
 
     public function x() {

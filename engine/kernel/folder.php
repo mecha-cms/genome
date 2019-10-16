@@ -135,14 +135,6 @@ class Folder extends Genome {
         return null;
     }
 
-    public function update(string $format = null) {
-        if ($this->exist) {
-            $t = filemtime($this->path);
-            return $format ? strftime($format, $t) : $t;
-        }
-        return null;
-    }
-
     public function x() {
         return null;
     }

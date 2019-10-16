@@ -43,12 +43,6 @@ abbr[title]:hover {
 }
 b,
 dt,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
 strong,
 th {
   font-weight: bolder;
@@ -353,6 +347,7 @@ fieldset {
 }
 legend {
   padding: 0 calc(var(--font-size) / 2);
+  margin: 0 0 calc(var(--margin) / 3);
 }
 legend + blockquote,
 legend + dl,
@@ -379,7 +374,7 @@ legend + .p {
 blockquote {
   font-size: 120%;
   padding-left: var(--margin);
-  border-left: 1px solid;
+  border-left: 2px solid;
 }
 blockquote blockquote {
   font-size: 100%;

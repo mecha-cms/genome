@@ -7,7 +7,7 @@
     <?php endif; ?>
     <?= $page->content; ?>
     <?php if ($page->link): ?>
-    <p><a href="<?= $page->link; ?>" rel="nofollow" target="_blank"><?= $language->link; ?> &#x21E2;</a></p>
+    <p><a href="<?= $page->link; ?>" rel="nofollow" target="_blank"><?= i('Link'); ?> &#x21E2;</a></p>
     <?php endif; ?>
   </article>
 </main>

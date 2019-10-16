@@ -209,23 +209,17 @@ class Page extends File {
             is_numeric(str_replace('-', "", $n)) &&
             preg_match('/^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$/', $n)
         ) {
-            $date = new Date($n);
+            $time = new Time($n);
         // Else…
         } else {
-            $date = new Date($this->offsetGet('time') ?? parent::time());
+            $time = new Time($this->offsetGet('time') ?? parent::time());
         }
-        return $format ? $date($format) : $date;
+        return $format ? $time($format) : $time;
     }
 
     // Inherit to `File::type()`
     public function type(...$lot) {
         return $this->any('type', $lot) ?? 'text/html';
-    }
-
-    // Inherit to `File::update()`
-    public function update(string $format = null) {
-        $date = new Date($this->offsetGet('update') ?? parent::update());
-        return $format ? $date($format) : $date;
     }
 
 }

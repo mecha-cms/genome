@@ -322,7 +322,7 @@ namespace {
 // f: Filter/sanitize string
 // g: Advance PHP `glob` function that returns generator
 // h: Convert text to snake case with `-` (hyphen) as the default separator
-// i: Limit iterator from `a` to `b`
+// i: Internationalization
 // j:
 // k: Search file in a folder by query
 // l: Convert text to lower case
@@ -964,11 +964,19 @@ namespace {
             return $h . l($m[0]);
         }, f($x, $a, x($h) . $i)));
     }
-    function i(...$a) {
-        if (\is_array($a[0])) {
-            return \array_slice(...$a);
+    function i($x = null, $a = [], $f = null) {
+        if ($x === null) {
+            return;
         }
-        return new \LimitIterator(...$a);
+        $a = (array) $a;
+        if ($a) {
+            // Also translate the argument(s)
+            foreach ($a as &$v) {
+                $v = i($v);
+            }
+        }
+        $x = $GLOBALS['I'][$x] ?? $f ?? $x;
+        return is_string($x) && $a ? vsprintf($x, $a) : $x;
     }
     function j() {}
     function k(string $f, array $q = [], $c = false) {

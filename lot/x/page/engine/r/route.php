@@ -6,7 +6,7 @@ $GLOBALS['pages'] = new \Pages;
 $GLOBALS['parent'] = new \Page;
 
 function route() {
-    global $language, $state, $url;
+    global $state, $url;
     $i = ($url['i'] ?? 1) - 1;
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = '/' . \str_replace('../', "", $this[0]);
@@ -83,7 +83,7 @@ function route() {
         ],
         'is' => ['error' => 404]
     ]);
-    $GLOBALS['t'][] = $language->isError;
+    $GLOBALS['t'][] = i('Error');
     $this->status(404);
     $this->content('404' . $p . '/' . ($i + 1));
 }

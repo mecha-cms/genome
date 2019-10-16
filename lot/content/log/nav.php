@@ -1,9 +1,9 @@
 <ul>
   <li>
     <?php if ($site->is('home')): ?>
-    <span><?= $language->home; ?></span>
+    <span><?= i('Home'); ?></span>
     <?php else: ?>
-    <a href="<?= $url; ?>"><?= $language->home; ?></a>
+    <a href="<?= $url; ?>"><?= i('Home'); ?></a>
     <?php endif; ?>
   </li>
   <?php foreach ($links as $link): ?>

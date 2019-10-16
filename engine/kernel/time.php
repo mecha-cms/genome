@@ -1,8 +1,7 @@
 <?php
 
-final class Date extends Genome {
+final class Time extends Genome {
 
-    private static $locale;
     private static $zone;
 
     public $o;
@@ -16,7 +15,7 @@ final class Date extends Genome {
     public function __call(string $kin, array $lot = []) {
         if ($v = parent::_($kin)) {
             if (is_string($v = $v[0]) && strpos($v, '%') !== false) {
-                return $this->f($v);
+                return $this->i($v);
             }
         }
         return parent::__call($kin, $lot);
@@ -33,7 +32,7 @@ final class Date extends Genome {
     }
 
     public function __invoke(string $pattern = '%Y-%m-%d %T') {
-        return $this->f($pattern);
+        return $this->i($pattern);
     }
 
     public function __toString() {
@@ -45,11 +44,31 @@ final class Date extends Genome {
     }
 
     public function day($type = null) {
-        return $this->f(is_string($type) ? '%A' : '%u');
+        return $this->i(is_string($type) ? '%A' : '%u');
     }
 
-    public function f(string $pattern = '%Y-%m-%d %T') {
-        return strftime($pattern, strtotime($this->source));
+    public function i(string $pattern = '%Y-%m-%d %T') {
+        $out = strftime($pattern, strtotime($this->source));
+        // Slightly improve the performance by detecting some pattern that produces word(s)
+        if (
+            // ‘Sun’ through ‘Sat’ or ‘Sunday’ through ‘Saturday’
+            stripos($pattern, '%a') !== false ||
+            // ‘Jan’ through ‘Dec’ or ‘January’ through ‘December’
+            stripos($pattern, '%b') !== false ||
+            // Preferred date and time stamp based on locale
+            stripos($pattern, '%c') !== false ||
+            // An alias of `%b`
+            stripos($pattern, '%h') !== false ||
+            // ‘AM’ or ‘PM’ based on the given time
+            stripos($pattern, '%p') !== false
+        ) {
+            // Make the date translation system to work without PHP `intl` extension
+            // Assume every word(s) in the formatted date as a translate-able string
+            $out = preg_replace_callback('/[a-z]\w+/i', function($m) {
+                return i($m[0]);
+            }, $out);
+        }
+        return $out;
     }
 
     public function format(string $format = 'Y-m-d H:i:s') {
@@ -65,7 +84,7 @@ final class Date extends Genome {
     }
 
     public function month($type = null) {
-        return $this->f(is_string($type) ? '%B' : '%m');
+        return $this->i(is_string($type) ? '%B' : '%m');
     }
 
     // Convert date to file name
@@ -93,14 +112,6 @@ final class Date extends Genome {
 
     public static function from($in) {
         return new static($in);
-    }
-
-    public static function locale($locale = null) {
-        $fail = extension_loaded('intl') ? locale_get_default() : null;
-        if (!isset($locale)) {
-            return self::$locale ?? $fail;
-        }
-        setlocale(LC_TIME, self::$locale = (array) ($locale ?? $fail));
     }
 
     public static function zone(string $zone = null) {

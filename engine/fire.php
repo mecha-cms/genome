@@ -56,15 +56,14 @@ $GLOBALS['state'] = $state = new State($state);
 require __DIR__ . DS . 'r' . DS . 'anemon.php';
 require __DIR__ . DS . 'r' . DS . 'cache.php';
 require __DIR__ . DS . 'r' . DS . 'cookie.php';
-require __DIR__ . DS . 'r' . DS . 'date.php';
 require __DIR__ . DS . 'r' . DS . 'file.php';
 require __DIR__ . DS . 'r' . DS . 'guard.php';
 require __DIR__ . DS . 'r' . DS . 'header.php';
 require __DIR__ . DS . 'r' . DS . 'hook.php';
-require __DIR__ . DS . 'r' . DS . 'language.php';
 require __DIR__ . DS . 'r' . DS . 'route.php';
 require __DIR__ . DS . 'r' . DS . 'session.php';
 require __DIR__ . DS . 'r' . DS . 'state.php';
+require __DIR__ . DS . 'r' . DS . 'time.php';
 require __DIR__ . DS . 'r' . DS . 'u-r-l.php';
 
 $uses = [];
