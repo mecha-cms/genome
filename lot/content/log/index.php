@@ -31,7 +31,7 @@ while ($chop = array_shift($chops)) {
         PAGE . $k . '.page',
         PAGE . $k . '.archive'
     ])) {
-        $traces[] = new Page($v);
+        $traces[] = $v;
     }
 }
-$GLOBALS['traces'] = new Anemon($traces);
+$GLOBALS['traces'] = new Pages($traces);
