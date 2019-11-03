@@ -18,7 +18,7 @@ final class URL extends Genome implements \ArrayAccess {
     ];
 
     private function e($in) {
-        return $in !== "" ? $in : null;
+        return "" !== $in ? $in : null;
     }
 
     private function setClean($in) {
@@ -127,7 +127,7 @@ final class URL extends Genome implements \ArrayAccess {
             return $this->{$get}(...$lot);
         }
         if (array_key_exists($kin, $this->lot)) {
-            return $this->lot[$kin] !== "" ? $this->lot[$kin] : null;
+            return "" !== $this->lot[$kin] ? $this->lot[$kin] : null;
         }
         return null;
     }
@@ -182,9 +182,9 @@ final class URL extends Genome implements \ArrayAccess {
     }
 
     // `$url->d('.')`
-    public function d(string $separator = '/') {
+    public function d(string $join = '/') {
         $d = $this->lot['d'];
-        return $d !== null ? $separator . $d : null;
+        return null !== $d ? $join . $d : null;
     }
 
     // `$url->hash('#!')`
@@ -194,9 +194,9 @@ final class URL extends Genome implements \ArrayAccess {
     }
 
     // `$url->i('.', 4)`
-    public function i(string $separator = '/', int $j = 0) {
+    public function i(string $join = '/', int $j = 0) {
         $i = $this->lot['i'];
-        return $i !== null ? $separator . ($i + $j) : null;
+        return null !== $i ? $join . ($i + $j) : null;
     }
 
     public function offsetExists($i) {
@@ -216,26 +216,26 @@ final class URL extends Genome implements \ArrayAccess {
     }
 
     // `$url->path('.')`
-    public function path(string $separator = '/', array $p = []) {
+    public function path(string $join = '/', array $p = []) {
         $path = $this->lot['path'];
         if (!empty($p)) {
             $path = array_replace(explode('/', $path), $p);
-            $path = implode($separator, $path);
+            $path = implode($join, $path);
         } else {
-            $path = strtr($path, ['/' => $separator]);
+            $path = strtr($path, ['/' => $join]);
         }
-        return $path !== "" ? $separator . $path : null;
+        return "" !== $path ? $join . $path : null;
     }
 
     // `$url->query('&amp;')`
-    public function query(string $separator = '&', array $q = []) {
+    public function query(string $join = '&', array $q = []) {
         $query = $this->lot['query'] . "";
         if (!empty($q)) {
             $query = From::query($query);
             $query = array_replace_recursive($query, $q);
-            return strtr(To::query($query), ['&' => $separator]);
+            return strtr(To::query($query), ['&' => $join]);
         }
-        return $query !== "" ? '?' . $query : null;
+        return "" !== $query ? '?' . $query : null;
     }
 
 }

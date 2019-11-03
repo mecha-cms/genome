@@ -1,8 +1,8 @@
 <?php
 
-namespace _\lot\x\content {
+namespace _\lot\x\layout {
     function alert($content) {
-        if (\strpos($content, '</alert>') !== false) {
+        if (false !== \strpos($content, '</alert>')) {
             return \preg_replace_callback('#(?:\s*<alert(?:\s[^>]+)?>[\s\S]*?<\/alert>\s*)+#', function($m) {
                 return '<div class="alert p">' . \str_replace([
                     '<alert type="',
@@ -17,29 +17,29 @@ namespace _\lot\x\content {
     }
     function are() {
         foreach ((array) \State::get('are', true) as $k => $v) {
-            \State::set('[content].are:' . $k, $v);
+            \State::set('[layout].are:' . $k, $v);
         }
     }
     function has() {
         foreach ((array) \State::get('has', true) as $k => $v) {
-            \State::set('[content].has:' . $k, $v);
+            \State::set('[layout].has:' . $k, $v);
         }
     }
     function is() {
         foreach ((array) \State::get('is', true) as $k => $v) {
-            \State::set('[content].is:' . $k, $v);
+            \State::set('[layout].is:' . $k, $v);
         }
         if ($x = \State::get('is.error')) {
-            \State::set('[content].error:' . $x, true);
+            \State::set('[layout].error:' . $x, true);
         }
     }
     function not() {
         foreach ((array) \State::get('not', true) as $k => $v) {
-            \State::set('[content].not:' . $k, $v);
+            \State::set('[layout].not:' . $k, $v);
         }
     }
     function start() {
-        $folder = \Content::$state['path'] . \DS;
+        $folder = \Layout::$state['path'] . \DS;
         // Run content task if any
         if (\is_file($task = $folder . 'task.php')) {
             (function($task) {
@@ -47,26 +47,25 @@ namespace _\lot\x\content {
                 require $task;
             })($task);
         }
-        // Load user function(s) from the current content folder if any
+        // Load user function(s) from the `.\lot\layout` folder if any
         if (\is_file($fn = $folder . 'index.php')) {
             (function($fn) {
                 extract($GLOBALS, \EXTR_SKIP);
                 require $fn;
             })($fn);
         }
-        // Detect relative asset path to the `.\lot\content\*` folder
-        if (\State::get('x.asset') !== null && $assets = \Asset::get()) {
+        // Detect relative asset path to the `.\lot\layout\asset` folder
+        if (null !== \State::get('x.asset') && $assets = \Asset::get()) {
             foreach ($assets as $k => $v) {
                 foreach ($v as $kk => $vv) {
                     // Full path, no change!
                     if (
-                        strpos($kk, \ROOT) === 0 ||
-                        strpos($kk, '//') === 0 ||
-                        strpos($kk, '://') !== false
+                        0 === strpos($kk, \ROOT) ||
+                        0 === strpos($kk, '//') ||
+                        false !== strpos($kk, '://')
                     ) {
                         continue;
                     }
-                    // Relative to the `asset` folder of active content
                     if ($path = \Asset::path($folder . 'asset' . \DS . $kk)) {
                         \Asset::let($kk);
                         \Asset::set($path, $vv['stack']);
@@ -86,21 +85,21 @@ namespace _\lot\x\content {
 
 namespace _\lot\x {
     // Generate HTML class(es)
-    function content($content) {
+    function layout($content) {
         $root = 'html';
-        if (\strpos($content, '<' . $root . ' ') !== false) {
+        if (false !== \strpos($content, '<' . $root . ' ')) {
             return \preg_replace_callback('#<' . \x($root) . '(?:\s[^>]*)?>#', function($m) {
                 if (
-                    \strpos($m[0], ' class="') !== false ||
-                    \strpos($m[0], ' class ') !== false ||
-                    \substr($m[0], -7) === ' class>'
+                    false !== \strpos($m[0], ' class="') ||
+                    false !== \strpos($m[0], ' class ') ||
+                    ' class>' === \substr($m[0], -7)
                 ) {
-                    $root = new \HTML($m[0]);
-                    $c = $root['class'] === true ? [] : \preg_split('/\s+/', $root['class'] ?? "");
-                    $c = \array_unique(\array_merge($c, \array_keys(\array_filter((array) \State::get('[content]', true)))));
+                    $r = new \HTML($m[0]);
+                    $c = true === $r['class'] ? [] : \preg_split('/\s+/', $r['class'] ?? "");
+                    $c = \array_unique(\array_merge($c, \array_keys(\array_filter((array) \State::get('[layout]', true)))));
                     \sort($c);
-                    $root['class'] = \trim(\implode(' ', $c));
-                    return $root;
+                    $r['class'] = \trim(\implode(' ', $c));
+                    return $r;
                 }
                 return $m[0];
             }, $content);

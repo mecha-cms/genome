@@ -5,13 +5,13 @@ if (defined('DEBUG')) {
     ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
     if (DEBUG) {
         ini_set('max_execution_time', 300); // 5 minute(s)
-        if (DEBUG === true) {
+        if (true === DEBUG) {
             error_reporting(E_ALL | E_STRICT);
             ini_set('display_errors', true);
             ini_set('display_startup_errors', true);
             ini_set('html_errors', 1);
         }
-    } else if (DEBUG === false) {
+    } else if (false === DEBUG) {
         error_reporting(0);
         ini_set('display_errors', false);
         ini_set('display_startup_errors', false);
@@ -25,7 +25,7 @@ array_walk_recursive($vars, function(&$v) {
 });
 
 // Normalize `$_FILES` value to `$_POST`
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ('POST' === $_SERVER['REQUEST_METHOD']) {
     foreach ($_FILES as $k => $v) {
         foreach ($v as $kk => $vv) {
             if (is_array($vv)) {

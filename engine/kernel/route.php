@@ -1,89 +1,17 @@
 <?php
 
-final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate {
-
-    private function __construct(string $path) {
-        $r = explode('/', $path = trim($path, '/'));
-        foreach ($r as &$v) {
-            if (strpos($v, ':') === 0 && strlen($v) > 1) {
-                $v = '(?P<' . preg_quote(substr($v, 1)) . '>[^/]+)';
-            } else if ($v === '*') {
-                $v = '(.+)';
-            } else {
-                $v = preg_quote($v);
-            }
-            $v = strtr($v, ["\\\\:" => ':']);
-        }
-        $r = '#^' . implode('/', $r) . '$#';
-        $this->match = false;
-        if (preg_match($r, trim($GLOBALS['url']->path, '/'), $m)) {
-            array_shift($m); // Remove the first match
-            $this->lot = e($m);
-            $this->match = $path;
-        }
-    }
+final class Route extends Genome {
 
     private static $r;
 
-    public $lot;
-    public $match;
-
-    public function __get(string $key) {
-        return $this->lot[p2f($key)] ?? null;
-    }
-
-    public function __isset(string $key) {
-        return !!$this->__get($key);
-    }
-
-    public function __set(string $key, $value) {
-        $this->lot[p2f($key)] = $value;
-    }
-
-    public function __unset(string $key) {
-        unset($this->lot[p2f($key)]);
-    }
-
-    public function count() {
-        return count($this->lot);
-    }
-
-    public function fire(string $id, array $value = [], array $lot = []) {
+    public function fire(string $id, array $lot = []) {
         if ($v = self::get($id)) {
-            $route = new static($id);
-            foreach ($value as $k => $v) {
-                $route->lot[p2f($k)] = $v;
-            }
-            fire($v['fn'], [$lot, ucfirst(strtolower($_SERVER['REQUEST_METHOD']))], $route);
+            fire($v['fn'], self::is($id)[2] ?? [], new static);
         }
-    }
-
-    public function getIterator() {
-        return new \ArrayIterator($this->lot);
     }
 
     public function header(...$v) {
         return count($v) > 1 || is_array($v[0]) ? Header::set(...$v) : Header::get(...$v);
-    }
-
-    public function offsetExists($i) {
-        return isset($this->lot[$i]);
-    }
-
-    public function offsetGet($i) {
-        return $this->lot[$i] ?? null;
-    }
-
-    public function offsetSet($i, $value) {
-        if (isset($i)) {
-            $this->lot[$i] = $value;
-        } else {
-            $this->lot[] = $value;
-        }
-    }
-
-    public function offsetUnset($i) {
-        unset($this->lot[$i]);
     }
 
     public function status(...$v) {
@@ -101,16 +29,49 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         return self::$r[1] ?? [];
     }
 
-    public static function is($id) {
+    public static function is($id, string $path = null) {
         if (is_array($id)) {
             $out = [];
             foreach ($id as $v) {
-                $out[$v] = self::is($v);
+                $out[$v] = self::is($v, $path);
             }
             return $out;
         }
-        $out = new static($id);
-        return $out->match !== false ? $out : false;
+        $id = trim($id, '/');
+        $path = trim($path ?? $GLOBALS['url']['path'], '/');
+        // Plain pattern, be quick!
+        if (false === strpos('/' . $id, '/:') && false === strpos('/' . $id, '/*')) {
+            $id = strtr($id, ["\\:" => ':']);
+            return $id === $path ? [
+                '0' => null,
+                '1' => "",
+                '2' => [],
+                'id' => $id,
+                'path' => '/' . $path
+            ] : false;
+        }
+        $chops = explode('/', $id);
+        foreach ($chops as &$v) {
+            if (0 === strpos($v, ':') && strlen($v) > 1) {
+                $v = '([^/]+)';
+            } else if ('*' === $v) {
+                $v = '(.+)';
+            } else {
+                $v = preg_quote($v);
+            }
+            $v = strtr($v, ["\\\\:" => ':']);
+        }
+        if (preg_match('#^' . implode('/', $chops) . '$#', $path, $m)) {
+            array_shift($m); // Remove the first match
+            return [
+                '0' => null,
+                '1' => "",
+                '2' => e($m),
+                'id' => $id,
+                'path' => '/' . $path
+            ];
+        }
+        return false;
     }
 
     public static function let($id = null) {
@@ -146,6 +107,9 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
             }
             if (empty(self::$r[0][$id])) {
                 self::$r[2][$id][] = [
+                    '0' => null,
+                    '1' => "",
+                    '2' => [],
                     'fn' => $fn,
                     'stack' => (float) $stack
                 ];
@@ -174,6 +138,9 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
         } else {
             if (empty(self::$r[0][$id])) {
                 self::$r[1][$id] = [
+                    '0' => null,
+                    '1' => "",
+                    '2' => [],
                     'fn' => $fn,
                     'stack' => (float) $stack,
                     'status' => $status
@@ -184,21 +151,20 @@ final class Route extends Genome implements \ArrayAccess, \Countable, \IteratorA
 
     public static function start() {
         $routes = (new Anemon(self::$r[1] ?? []))->sort([1, 'stack'], true);
-        $data = e($GLOBALS['_' . ($t = $_SERVER['REQUEST_METHOD'])] ?? []);
-        $t = ucfirst(strtolower($t)); // Request type
         foreach ($routes as $k => $v) {
             // If matched with the URL path, then …
-            if (false !== ($route = self::is($k))) {
+            if ($lot = self::is($k)) {
+                $route = new static;
                 // Loading hook(s)…
                 if (isset(self::$r[2][$k])) {
                     $fn = (new Anemon(self::$r[2][$k]))->sort([1, 'stack']);
                     foreach ($fn as $f) {
-                        fire($f['fn'], [$data, $t], $route);
+                        fire($f['fn'], $lot[2] ?? [], $route);
                     }
                 }
                 // Passed!
                 http_response_code($v['status']);
-                fire($v['fn'], [$data, $t], $route);
+                fire($v['fn'], $lot[2] ?? [], $route);
                 break;
             }
         }

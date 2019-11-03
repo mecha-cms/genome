@@ -8,7 +8,7 @@ class Pages extends \Pager {
         $parent = \rtrim($parent, '/');
         $i = $chunk[1];
         $this->next = isset($data[$i + 1]) ? $parent . '/' . ($i + 2) : null;
-        $this->parent = $parent !== "" && $parent !== $url . "" ? ($i > 0 ? $parent : \dirname($parent)) : null;
+        $this->parent = "" !== $parent && $parent !== $url . "" ? ($i > 0 ? $parent : \dirname($parent)) : null;
         $this->prev = isset($data[$i - 1]) ? $parent . '/' . $i : null;
     }
 

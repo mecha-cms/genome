@@ -6,19 +6,19 @@ final class Asset extends Genome {
 
     public static function URL(string $url) {
         $path = self::path($url);
-        return isset($path) ? To::URL($path) : (strpos($url, '://') !== false || strpos($url, '//') === 0 ? $url : null);
+        return isset($path) ? To::URL($path) : (false !== strpos($url, '://') || 0 === strpos($url, '//') ? $url : null);
     }
 
     public static function get(string $path = null, int $i = 1) {
         if (isset($path)) {
-            $x = Path::X($path);
-            return self::$lot[$i][$x][$path] ?? null;
+            $path = realpath($path) ?: $path;
+            return self::$lot[$i]['.' . pathinfo($path, PATHINFO_EXTENSION)][$path] ?? null;
         }
         return self::$lot[$i] ?? [];
     }
 
-    public static function join(string $x, string $separator = "") {
-        if ($v = self::_('.' . $x)) {
+    public static function join(string $x, string $join = "") {
+        if ($v = self::_($x)) {
             $fn = $v[0];
             if (isset(self::$lot[1][$x])) {
                 $assets = (new Anemon(self::$lot[1][$x]))->sort([1, 'stack'], true);
@@ -29,34 +29,34 @@ final class Asset extends Genome {
                     }
                 } else {
                     foreach ($assets as $k => $v) {
-                        if (isset($v['path']) && is_file($v['path'])) {
-                            $out[] = file_get_contents($v['path']);
+                        if (isset($v[2]['path']) && is_file($v[2]['path'])) {
+                            $out[] = file_get_contents($v[2]['path']);
                         }
                     }
                 }
-                return implode($separator, $out);
+                return implode($join, $out);
             }
         }
         return "";
     }
 
     public static function path(string $path) {
-        if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
+        if (false !== strpos($path, '://') || 0 === strpos($path, '//')) {
             // External URL, nothing to check!
             $host = $GLOBALS['url']->host ?? "";
-            if (strpos($path, '://' . $host) === false && strpos($path, '//' . $host) !== 0) {
+            if (false === strpos($path, '://' . $host) && 0 !== strpos($path, '//' . $host)) {
                 return null;
             }
         }
         // Full path, be quick!
-        if (strpos($path = strtr($path, '/', DS), ROOT) === 0) {
+        if (0 === strpos($path = strtr($path, '/', DS), ROOT)) {
             return File::exist($path) ?: null;
         }
         // Return the path relative to the `.\lot\asset` or `.` folder if exist!
-        $s = ltrim($path, DS);
+        $path = ltrim($path, DS);
         return File::exist([
-            constant(u(static::class)) . DS . $s,
-            ROOT . DS . $s
+            constant(u(static::class)) . DS . $path,
+            ROOT . DS . $path
         ]) ?: null;
     }
 
@@ -66,7 +66,8 @@ final class Asset extends Genome {
                 self::let($v);
             }
         } else if (isset($path)) {
-            $x = Path::X($path);
+            $path = realpath($path) ?: $path;
+            $x = '.' . pathinfo($path, PATHINFO_EXTENSION);
             self::$lot[0][$x][$path] = 1;
             unset(self::$lot[1][$x][$path]);
         } else {
@@ -82,12 +83,15 @@ final class Asset extends Genome {
                 $i += .1;
             }
         } else {
-            $x = Path::X($path);
+            $path = realpath($path) ?: $path;
+            $x = '.' . pathinfo($path, PATHINFO_EXTENSION);
             if (!isset(self::$lot[0][$x][$path])) {
                 self::$lot[1][$x][$path] = [
+                    '0' => null,
+                    '1' => "",
+                    '2' => $data,
                     'path' => self::path($path),
                     'url' => self::URL($path),
-                    'data' => $data,
                     'stack' => (float) $stack
                 ];
             }

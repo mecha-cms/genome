@@ -11,11 +11,11 @@ final class Session extends Genome {
             foreach ($key as $v) {
                 self::let($v);
             }
-        } else if (isset($key) && $key !== true) {
+        } else if (isset($key) && true !== $key) {
             let($_SESSION, $key);
         } else {
             $_SESSION = [];
-            if ($key === true) {
+            if (true === $key) {
                 session_destroy();
             }
         }

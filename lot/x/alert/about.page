@@ -13,7 +13,7 @@ Alert::error('This is an error message.');
 Alert::info('This is an info message.');
 Alert::success('This is a success message.');
 
-echo Alert::get();
+echo $alert;
 ~~~
 
 **Result:**

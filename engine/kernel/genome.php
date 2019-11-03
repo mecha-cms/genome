@@ -38,14 +38,14 @@ abstract class Genome {
         return $this->__call($kin);
     }
 
-    // Set, get, reset…
+    // Set, get, let…
     public static function _(...$lot) {
         $c = static::class;
-        if (count($lot) === 0) {
+        if (0 === count($lot)) {
             return self::$_[$c] ?? [];
-        } else if (count($lot) === 1) {
+        } else if (1 === count($lot)) {
             return self::$_[$c][$lot[0]] ?? null;
-        } else if ($lot[1] === null) {
+        } else if (null === $lot[1]) {
             unset(self::$_[$c][$lot[0]]);
         } else {
             self::$_[$c][$lot[0]] = (array) $lot[1];

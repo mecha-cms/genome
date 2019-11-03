@@ -3,20 +3,20 @@
 namespace _ {
     // Check for valid JSON string format
     function json($x, $r = false) {
-        if (!\is_string($x) || \trim($x) === "") {
+        if (!\is_string($x) || "" === \trim($x)) {
             return false;
         }
         return (
             // Maybe an empty string, array or object
-            $x === '""' ||
-            $x === '[]' ||
-            $x === '{}' ||
+            '""' === $x ||
+            '[]' === $x ||
+            '{}' === $x ||
             // Maybe an encoded JSON string
-            $x[0] === '"' && \substr($x, -1) === '"' ||
+            '"' === $x[0] && '"' === \substr($x, -1) ||
             // Maybe a numeric array
-            $x[0] === '[' && \substr($x, -1) === ']' ||
+            '[' === $x[0] && ']' === \substr($x, -1) ||
             // Maybe an associative array
-            $x[0] === '{' && \substr($x, -1) === '}'
+            '{' === $x[0] && '}' === \substr($x, -1)
         ) && (null !== ($x = \json_decode($x))) ? ($r ? $x : true) : false;
     }
 }
@@ -24,7 +24,7 @@ namespace _ {
 namespace {
     // Check if array contains …
     function any(iterable $a, $fn = null) {
-        if (!\is_callable($fn) && $fn !== null) {
+        if (!\is_callable($fn) && null !== $fn) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
             };
@@ -47,7 +47,7 @@ namespace {
     // Merge array value(s)
     function concat(array $a, ...$b) {
         // `concat([…], […], […], false)`
-        if (\count($b) > 1 && \end($b) === false) {
+        if (\count($b) > 1 && false === \end($b)) {
             \array_pop($b);
             return \array_merge($a, ...$b);
         }
@@ -56,7 +56,7 @@ namespace {
     }
     // A equal to B
     function eq($a, $b) {
-        return q($a) === $b;
+        return $b === q($a);
     }
     // Check if file/folder does exist
     function exist($f) {
@@ -73,7 +73,7 @@ namespace {
     // Extend array value(s)
     function extend(array $a, ...$b) {
         // `extend([…], […], […], false)`
-        if (\count($b) > 1 && \end($b) === false) {
+        if (\count($b) > 1 && false === \end($b)) {
             \array_pop($b);
             return \array_replace($a, ...$b);
         }
@@ -92,7 +92,8 @@ namespace {
     function fetch(string $u, $a = null) {
         $o = [];
         // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
-        $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $port === 443 ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
+        $port = (int) $_SERVER['SERVER_PORT'];
+        $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
         // `fetch('/', ['Content-Type' => 'text/html'])`
         if (\is_array($a)) {
             foreach ($a as $k => $v) {
@@ -116,7 +117,7 @@ namespace {
                 \CURLOPT_TIMEOUT => 15
             ]);
             $out = \curl_exec($curl);
-            if (\defined("\\DEBUG") && \DEBUG && $out === false) {
+            if (\defined("\\DEBUG") && \DEBUG && false ===  $out) {
                 throw new \UnexpectedValueException(\curl_error($curl));
             }
             \curl_close($curl);
@@ -128,7 +129,7 @@ namespace {
                 ]
             ]));
         }
-        return $out !== false ? $out : null;
+        return false !== $out ? $out : null;
     }
     // Return the first element found in array that passed the function test
     function find(iterable $a, callable $fn) {
@@ -171,11 +172,11 @@ namespace {
     }
     // Check if an element exists in array
     function has(array $a, string $s = "", string $x = \P) {
-        return \strpos($x . \implode($x, $a) . $x, $x . $s . $x) !== false;
+        return false !== \strpos($x . \implode($x, $a) . $x, $x . $s . $x);
     }
     // Filter out element(s) that pass the function test
     function is(iterable $a, $fn = null) {
-        if (!\is_callable($fn) && $fn !== null) {
+        if (!\is_callable($fn) && null !== $fn) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
             };
@@ -218,7 +219,7 @@ namespace {
     }
     // Filter out element(s) that does not pass the function test
     function not(iterable $a, $fn = null) {
-        if (!\is_callable($fn) && $fn !== null) {
+        if (!\is_callable($fn) && null !== $fn) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
             };
@@ -273,11 +274,11 @@ namespace {
         return $a;
     }
     function step($a, string $s = '.', int $dir = 1) {
-        if (\is_string($a) && \strpos($a, $s) !== false) {
+        if (\is_string($a) && false !== \strpos($a, $s)) {
             $a = \explode($s, \trim($a, $s));
-            $v = $dir === -1 ? \array_pop($a) : \array_shift($a);
+            $v = -1 === $dir ? \array_pop($a) : \array_shift($a);
             $c = [$v];
-            if ($dir === -1) {
+            if (-1 === $dir) {
                 while ($b = \array_pop($a)) {
                     $v = $b . $s . $v;
                     \array_unshift($c, $v);
@@ -345,7 +346,7 @@ namespace {
     function a($o, $safe = true) {
         if (\is_object($o)) {
             if ($safe) {
-                return ($v = \get_class($o)) && $v !== 'stdClass' ? $o : (array) $o;
+                return ($v = \get_class($o)) && 'stdClass' !== $v ? $o : (array) $o;
             } else {
                 $o = (array) $o;
             }
@@ -385,7 +386,7 @@ namespace {
     }
     function e($x, array $a = []) {
         if (\is_string($x)) {
-            if ($x === "") {
+            if ("" === $x) {
                 return $x;
             }
             if (\array_key_exists($x, $a = \array_replace([
@@ -399,20 +400,20 @@ namespace {
                 return $a[$x];
             }
             if (\is_numeric($x)) {
-                return \strpos($x, '.') !== false ? (float) $x : (int) $x;
+                return false !== \strpos($x, '.') ? (float) $x : (int) $x;
             }
             if (false !== ($v = \_\json($x, true))) {
                 return $v;
             }
             // `"abcdef"` or `'abcdef'`
-            if ($x[0] === '"' && \substr($x, -1) === '"' || $x[0] === "'" && \substr($x, -1) === "'") {
+            if ('"' === $x[0] && '"' === \substr($x, -1) || "'" === $x[0] && "'" === \substr($x, -1)) {
                 $v = \substr(\substr($x, 1), 0, -1);
                 $a = \strpos($v, $x[0]);
                 $b = \strpos($v, "\\");
                 // `'ab\'cd\'ef'`
                 if (
-                    $a !== false &&
-                    $a === $b + 1 &&
+                    false !== $a &&
+                    $b + 1 === $a &&
                     \preg_match('/^' . $x[0] . '(?:[^' . $x[0] . '\\\]|\\\.)*' . $x[0] . '$/', $x)
                 ) {
                     return \str_replace("\\" . $x[0], $x[0], $v);
@@ -936,13 +937,13 @@ namespace {
                     return true;
                 }
                 // Filter by type (`0` for folder and `1` for file)
-                if ($x === 0 || $x === 1) {
-                    return $v->{'is' . ($x === 0 ? 'Dir' : 'File')}();
+                if (0 === $x || 1 === $x) {
+                    return $v->{'is' . (0 === $x ? 'Dir' : 'File')}();
                 }
                 // Filter file(s) by extension
                 if (\is_string($x)) {
                     $x = ',' . $x . ',';
-                    return $v->isFile() && strpos($x, ',' . $v->getExtension() . ',') !== false;
+                    return $v->isFile() && false !== strpos($x, ',' . $v->getExtension() . ',');
                 }
                 // Filter by function
                 if (\is_callable($x)) {
@@ -951,8 +952,8 @@ namespace {
                 // No filter
                 return true;
             });
-            $g = new \RecursiveIteratorIterator($g, !isset($x) || $x === 0 ? \RecursiveIteratorIterator::CHILD_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
-            $g->setMaxDepth($r === true ? -1 : (\is_int($r) ? $r : 0));
+            $g = new \RecursiveIteratorIterator($g, !isset($x) || 0 === $x ? \RecursiveIteratorIterator::CHILD_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
+            $g->setMaxDepth(true === $r ? -1 : (\is_int($r) ? $r : 0));
             foreach ($g as $k => $v) {
                 yield $k => $v->isDir() ? 0 : 1;
             }
@@ -965,7 +966,7 @@ namespace {
         }, f($x, $a, x($h) . $i)));
     }
     function i($x = null, $a = [], $f = null) {
-        if ($x === null) {
+        if (null === $x) {
             return;
         }
         $a = (array) $a;
@@ -979,31 +980,24 @@ namespace {
         return is_string($x) && $a ? vsprintf($x, $a) : $x;
     }
     function j() {}
-    function k(string $f, array $q = [], $c = false) {
-        if (\is_dir($f) && $h = \opendir($f)) {
-            while (false !== ($b = \readdir($h))) {
-                if ($b !== '.' && $b !== '..') {
-                    $n = \pathinfo($b, \PATHINFO_FILENAME);
-                    foreach ($q as $v) {
-                        if (empty($v) && $v !== '0') {
-                            continue;
-                        }
-                        $r = $f . \DS . $b;
-                        // Find by query in file name…
-                        if (\stripos($n, $v) !== false) {
-                            yield $r => \is_dir($r) ? 0 : 1;
-                        // Find by query in file content…
-                        } else if ($c && \is_file($r)) {
-                            foreach (stream($r) as $vv) {
-                                if (stripos($vv, $v) !== false) {
-                                    yield $r => 1;
-                                }
-                            }
+    function k(string $f, $x = null, $r = 0, $q = [], $c = false) {
+        foreach (g($f, $x, $r) as $k => $v) {
+            foreach ($q as $n) {
+                if ("" === $n) {
+                    continue;
+                }
+                // Find by query in file name…
+                if (false !== \stripos($k, $n)) {
+                    yield $k => $v;
+                // Find by query in file content…
+                } else if ($c && 1 === $v) {
+                    foreach (stream($k) as $vv) {
+                        if (false !== \stripos($vv, $n)) {
+                            yield $k => 1;
                         }
                     }
                 }
             }
-            \closedir($h);
         }
     }
     function l(string $x = null) {
@@ -1037,10 +1031,10 @@ namespace {
         return \ltrim(c(' ' . $x, $a, $i), ' ');
     }
     function q($x) {
-        if ($x === true) {
+        if (true === $x) {
             return 1;
         }
-        if ($x === false || $x === null) {
+        if (false === $x || null === $x) {
             return 0;
         }
         if (\is_int($x) || \is_float($x)) {
@@ -1059,7 +1053,7 @@ namespace {
     }
     function r($a, $b, string $c) {
         if (\is_string($a) && \is_string($b)) {
-            return \strlen($a) === 1 && \strlen($b) === 1 ? \strtr($c, $a, $b) : \strtr($c, [$a => $b]);
+            return 1 === \strlen($a) && 1 === \strlen($b) ? \strtr($c, $a, $b) : \strtr($c, [$a => $b]);
         }
         return \strtr($c, \array_combine($a, $b));
     }
@@ -1071,13 +1065,13 @@ namespace {
             unset($v);
             return $x;
         }
-        if ($x === true) {
+        if (true === $x) {
             return $a['true'] ?? 'true';
         }
-        if ($x === true) {
+        if (false === $x) {
             return $a['false'] ?? 'false';
         }
-        if ($x === null) {
+        if (null === $x) {
             return $a['null'] ?? 'null';
         }
         if (\is_object($x)) {
@@ -1090,11 +1084,11 @@ namespace {
     }
     function t(string $x = null, string $o = '"', string $c = null) {
         if ($x) {
-            if ($o !== "" && \strpos($x, $o) === 0) {
+            if ("" !== $o && 0 === \strpos($x, $o)) {
                 $x = \substr($x, \strlen($o));
             }
             $c = $c ?? $o;
-            if ($c !== "" && \substr($x, $e = -\strlen($c)) === $c) {
+            if ("" !== $c && $c === \substr($x, $e = -\strlen($c))) {
                 $x = \substr($x, 0, $e);
             }
         }
@@ -1110,7 +1104,7 @@ namespace {
     // $n: @keep line-break in the output or replace them with a space? (default is !@keep)
     function w(string $x = null, $c = [], $n = false) {
         // Should be a HTML input
-        if (\strpos($x, '<') !== false || \strpos($x, ' ') !== false || \strpos($x, "\n") !== false) {
+        if (false !== \strpos($x, '<') || false !== \strpos($x, ' ') || false !== \strpos($x, "\n")) {
             $c = '<' . \implode('><', \is_string($c) ? \explode(',', $c) : (array) $c) . '>';
             return \preg_replace($n ? '# +#' : '#\s+#', ' ', \trim(\strip_tags($x, $c)));
         }

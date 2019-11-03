@@ -1,7 +1,7 @@
 <?php
 
 From::_('page', function(string $in, $key = null, $eval = false) {
-    if (strpos($in = n($in), "---\n") !== 0) {
+    if (0 !== strpos($in = n($in), "---\n")) {
         // Add empty header
         $in = "---\n...\n\n" . $in;
     }

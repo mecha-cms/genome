@@ -5,7 +5,7 @@ function set($content) {
     $keys = function(string $in) {
         return 'form.' . \str_replace(['.', '[', ']', \P], [\P, '.', "", "\\."], $in);
     };
-    if (\strpos($content, '<input ') !== false) {
+    if (false !== \strpos($content, '<input ')) {
         $content = \preg_replace_callback('#<input(?:\s[^>]*)?>#', function($m) use($keys) {
             $input = new \HTML($m[0]);
             if (!$name = $input['name']) {
@@ -16,7 +16,7 @@ function set($content) {
             }
             $name = $keys($name);
             $value = \Session::get($name);
-            if ($type === 'checkbox' || $type === 'radio') {
+            if ('checkbox' === $type || 'radio' === $type) {
                 if (isset($value)) {
                     $input['checked'] = \s($value) === \s($input['value']);
                 }
@@ -27,7 +27,7 @@ function set($content) {
             return $input;
         }, $content);
     }
-    if (\strpos($content, '<select ') !== false) {
+    if (false !== \strpos($content, '<select ')) {
         $content = \preg_replace_callback('#<select(?:\s[^>]*)?>[\s\S]*?</select>#', function($m) use($keys) {
             $select = new \HTML($m[0]);
             if (!$name = $select['name']) {
@@ -45,7 +45,7 @@ function set($content) {
             return $select;
         }, $content);
     }
-    if (\strpos($content, '<textarea ') !== false) {
+    if (false !== \strpos($content, '<textarea ')) {
         $content = \preg_replace_callback('#<textarea(?:\s[^>]*)?>[\s\S]*?</textarea>#', function($m) use($keys) {
             $textarea = new \HTML($m[0]);
             if (!$name = $textarea['name']) {

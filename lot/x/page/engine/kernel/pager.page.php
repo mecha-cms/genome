@@ -11,7 +11,7 @@ class Page extends \Pager {
             $this->next = $i + 1 < $count ? $parent . '/' . $data[$i + 1] : null;
             $this->prev = $i - 1 > -1 ? $parent . '/' . $data[$i - 1] : null;
         }
-        $this->parent = $parent !== "" && $parent !== $url . "" ? $parent : null;
+        $this->parent = "" !== $parent && $parent !== $url . "" ? $parent : null;
     }
 
 }

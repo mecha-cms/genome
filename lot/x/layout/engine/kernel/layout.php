@@ -1,11 +1,11 @@
 <?php
 
-class Content extends Genome {
+class Layout extends Genome {
 
     protected static $lot;
 
     const state = [
-        'path' => ROOT,
+        'path' => LAYOUT,
         'x' => ['html', 'php']
     ];
 
@@ -41,15 +41,15 @@ class Content extends Genome {
     public static function path($in) {
         $out = [];
         $c = static::class;
-        $folder = static::$state['path'];
-        $extension = static::$state['x'];
+        $path = static::$state['path'];
+        $x = static::$state['x'];
         if (is_string($in)) {
             // Full path, be quick!
-            if (strpos($in, ROOT) === 0 && is_file($in)) {
+            if (0 === strpos($in, ROOT) && is_file($in)) {
                 return $in;
             }
             $id = strtr($in, DS, '/');
-            // Added by the `Content::get()`
+            // Added by the `Layout::get()`
             if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
                 return File::exist(self::$lot[$c][1][$id]) ?: null;
             }
@@ -63,16 +63,10 @@ class Content extends Genome {
         $any = [];
         foreach ((array) $out as $v) {
             $v = strtr($v, '/', DS);
-            if (strpos($v, $folder) !== 0) {
-                foreach ($extension as $x) {
-                    $vv = "";
-                    $xx = pathinfo($v, PATHINFO_EXTENSION);
-                    if (!$xx) {
-                        $vv = '.' . $x;
-                    } else if ($xx !== $x) {
-                        continue;
-                    }
-                    $any[] = $folder . DS . $v . $vv;
+            if (0 !== strpos($v, $path)) {
+                $vv = pathinfo($v, PATHINFO_EXTENSION);
+                foreach ($x as $xx) {
+                    $any[] = $path . DS . $v . (!$vv || $xx !== $vv ? '.' . $xx : "");
                 }
             } else {
                 $any[] = $v;

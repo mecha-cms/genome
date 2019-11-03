@@ -41,7 +41,7 @@ final class Is extends Genome {
         if (!is_string($x)) {
             return false;
         }
-        return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$exist || stream_resolve_include_path($x));
+        return 0 === strpos($x, ROOT) && false === strpos($x, "\n") && (!$exist || stream_resolve_include_path($x));
     }
 
     // Check for valid boolean value
@@ -52,11 +52,11 @@ final class Is extends Genome {
     // Check for empty string, array or object
     public static function void($x) {
         if ($x instanceof \Traversable) {
-            return \iterator_count($x) === 0;
+            return 0 === \iterator_count($x);
         }
         return (
-            $x === "" ||
-            is_string($x) && trim($x) === "" ||
+            "" === $x ||
+            is_string($x) && "" === trim($x) ||
             is_array($x) && empty($x) ||
             is_object($x) && empty((array) $x)
         );

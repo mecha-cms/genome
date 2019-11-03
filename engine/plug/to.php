@@ -38,7 +38,7 @@ foreach([
         }
         $utf8 = extension_loaded('mbstring');
         // <https://stackoverflow.com/a/1193598/1163000>
-        if ($html && (strpos($s, '<') !== false || strpos($s, '&') !== false)) {
+        if ($html && (false !== strpos($s, '<') || false !== strpos($s, '&'))) {
             $out = "";
             $done = $i = 0;
             $tags = [];
@@ -56,19 +56,19 @@ foreach([
                 if ($done >= $x[0]) {
                     break;
                 }
-                if ($tag[0] === '&' || ord($tag) >= 0x80) {
+                if ('&' === $tag[0] || ord($tag) >= 0x80) {
                     $out .= $tag;
                     ++$done;
                 } else {
                     // `tag`
                     $n = $m[1][0];
                     // `</tag>`
-                    if ($tag[1] === '/') {
+                    if ('/' === $tag[1]) {
                         $open = array_pop($tags);
                         assert($open === $n); // Check that tag(s) are properly nested!
                         $out .= $tag;
                     // `<tag/>`
-                    } else if (substr($tag, -2) === '/>' || preg_match('/<(?:area|base|br|col|command|embed|hr|img|input|link|meta|param|source)(?:\s[^>]*)?>/i', $tag)) {
+                    } else if ('/>' === substr($tag, -2) || preg_match('/<(?:area|base|br|col|command|embed|hr|img|input|link|meta|param|source)(?:\s[^>]*)?>/i', $tag)) {
                         $out .= $tag;
                     // `<tag>`
                     } else {
@@ -105,7 +105,7 @@ foreach([
             $out .= h($v, '-', true, '_') . DS;
         }
         $out .= h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
-        return $out === '.' ? null : $out;
+        return '.' === $out ? null : $out;
     },
     'folder' => function(string $in) {
         $in = preg_split('/\s*[\\/]\s*/', $in, null, PREG_SPLIT_NO_EMPTY);
@@ -159,11 +159,11 @@ foreach([
         };
         foreach ($q($in, "") as $k => $v) {
             // `['a' => false, 'b' => 'false', 'c' => null, 'd' => 'null']` → `b=false&d=null`
-            if (!isset($v) || $v === false) {
+            if (!isset($v) || false === $v) {
                 continue;
             }
             // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
-            $v = $v !== true ? '=' . urlencode(s($v)) : "";
+            $v = true !== $v ? '=' . urlencode(s($v)) : "";
             if ("" !== ($v = $k . $v)) {
                 $out[] = $v;
             }

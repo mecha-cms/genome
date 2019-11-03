@@ -3,6 +3,23 @@
 class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
     const state = [
+        // Range of allowed file size(s)
+        'size' => [0, 2097152],
+        // List of allowed file type(s)
+        'type' => [
+            'application/javascript' => 1,
+            'application/json' => 1,
+            'application/xml' => 1,
+            'image/gif' => 1,
+            'image/jpeg' => 1,
+            'image/png' => 1,
+            'inode/x-empty' => 1, // Empty file
+            'text/css' => 1,
+            'text/html' => 1,
+            'text/javascript' => 1,
+            'text/plain' => 1,
+            'text/xml' => 1
+        ],
         // List of allowed file extension(s)
         'x' => [
             'css' => 1,
@@ -18,21 +35,6 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             'png' => 1,
             'txt' => 1,
             'xml' => 1
-        ],
-        'size' => [0, 2097152], // Range of allowed file size(s)
-        'type' => [
-            'application/javascript' => 1,
-            'application/json' => 1,
-            'application/xml' => 1,
-            'image/gif' => 1,
-            'image/jpeg' => 1,
-            'image/png' => 1,
-            'inode/x-empty' => 1, // Empty file
-            'text/css' => 1,
-            'text/html' => 1,
-            'text/javascript' => 1,
-            'text/plain' => 1,
-            'text/xml' => 1
         ]
     ];
 
@@ -42,7 +44,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function __construct($path = null) {
         $this->value[0] = "";
-        if ($path && is_string($path) && strpos($path, ROOT) === 0) {
+        if ($path && is_string($path) && 0 === strpos($path, ROOT)) {
             $path = strtr($path, '/', DS);
             if (!stream_resolve_include_path($path)) {
                 if (!is_dir($d = dirname($path))) {
@@ -101,10 +103,6 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? 1 : 0;
     }
 
-    public function directory(int $i = 1) {
-        return $this->exist ? dirname($this->path, $i) : null;
-    }
-
     public function get($i = null) {
         if ($this->exist) {
             if (isset($i)) {
@@ -159,7 +157,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function name($x = false) {
         if ($this->exist && $path = $this->path) {
-            if ($x === true) {
+            if (true === $x) {
                 return basename($path);
             }
             return pathinfo($path, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
@@ -177,6 +175,10 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function offsetSet($i, $value) {}
     public function offsetUnset($i) {}
+
+    public function parent(int $i = 1) {
+        return $this->exist ? dirname($this->path, $i) : null;
+    }
 
     public function save($seal = null) {
         if ($path = $this->path) {
@@ -211,9 +213,9 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this;
     }
 
-    public function size(string $unit = null, $prec = 2) {
+    public function size(string $unit = null, int $r = 2) {
         if ($this->exist && is_file($path = $this->path)) {
-            return self::sizer(filesize($path), $unit, $prec);
+            return self::sizer(filesize($path), $unit, $r);
         }
         return null;
     }
@@ -237,7 +239,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public function x() {
         if ($this->exist) {
             $path = $this->path;
-            if (strpos($path, '.') === false) {
+            if (false === strpos($path, '.')) {
                 return null;
             }
             $x = pathinfo($path, PATHINFO_EXTENSION);
@@ -260,7 +262,22 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return is_file($path) ? realpath($path) : false;
     }
 
-    public static function pull() {}
+    public static function pull($path, string $name = null) {
+        if (is_string($path) && is_file($path)) {
+            http_response_code(200);
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . ($name ?? basename($path)) . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($path));
+            readfile($path);
+            exit;
+        }
+        http_response_code(404);
+        exit;
+    }
 
     public static function push(array $blob, string $folder = ROOT) {
         if (!empty($blob['error'])) {
@@ -279,11 +296,11 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null; // Return `null` on error
     }
 
-    public static function sizer(float $size, string $unit = null, int $prec = 2) {
+    public static function sizer(float $size, string $unit = null, int $r = 2) {
         $i = log($size, 1024);
         $x = ['B', 'KB', 'MB', 'GB', 'TB'];
         $u = $unit ? array_search($unit, $x) : ($size > 0 ? floor($i) : 0);
-        $out = round($size / pow(1024, $u), $prec);
+        $out = round($size / pow(1024, $u), $r);
         return $out < 0 ? null : trim($out . ' ' . $x[$u]);
     }
 

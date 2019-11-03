@@ -1,6 +1,9 @@
 <?php
 
 To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
+    /*
+    if (extension_loaded('yaml')) {}
+    */
     $yaml = function(array $data, string $dent = '  ') use(&$yaml) {
         $out = [];
         $yaml_list = function(array $data) use(&$yaml) {
@@ -16,7 +19,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
         };
         $yaml_set = function(string $k, string $m, $v) {
             // Check for safe key pattern, otherwise, wrap it with quote
-            if ($k !== "" && (is_numeric($k) || (ctype_alnum($k) && !is_numeric($k[0])) || preg_match('/^[a-z][a-z\d]*(?:[_-]+[a-z\d]+)*$/i', $k))) {
+            if ("" !== $k && (is_numeric($k) || (ctype_alnum($k) && !is_numeric($k[0])) || preg_match('/^[a-z][a-z\d]*(?:[_-]+[a-z\d]+)*$/i', $k))) {
             } else {
                 $k = "'" . str_replace("'", "\\\'", $k) . "'";
             }
@@ -32,7 +35,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
                 }
             } else {
                 if (is_string($v)) {
-                    if (strpos($v, "\n") !== false) {
+                    if (false !== strpos($v, "\n")) {
                         $v = "|\n" . $dent . str_replace(["\n", "\n" . $dent . "\n"], ["\n" . $dent, "\n\n"], $v);
                     } else if (strlen($v) > 80) {
                         $v = ">\n" . $dent . wordwrap($v, 80, "\n" . $dent);
@@ -55,11 +58,11 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
         }
         for ($i = 0, $count = count($data); $i < $count; ++$i) {
             $v = $yaml($data[$i], $dent);
-            $out .= "---\n" . ($v !== "" ? $v . "\n" : "");
+            $out .= "---\n" . ("" !== $v ? $v . "\n" : "");
         }
         return $out . "...\n\n" . trim($c, "\n");
     };
-    return $docs ? $yaml_docs($in, $dent, $docs === true ? "\t" : $docs) : $yaml($in, $dent);
+    return $docs ? $yaml_docs($in, $dent, true === $docs ? "\t" : $docs) : $yaml($in, $dent);
 });
 
 // Alias

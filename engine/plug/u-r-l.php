@@ -3,25 +3,25 @@
 URL::_('long', function(string $path, $root = true) {
     global $url;
     // `URL::long('//example.com')`
-    if (strpos($path, '//') === 0) {
+    if (0 === strpos($path, '//')) {
         return rtrim($url['protocol'] . ':' . $path, '/');
     // `URL::long('/foo/bar/baz/qux')`
-    } else if (strpos($path, '/') === 0) {
+    } else if (0 === strpos($path, '/')) {
         return rtrim($url->ground . $path, '/');
     }
     // `URL::long('&foo=bar&baz=qux')`
     $a = explode('?', $path, 2);
-    if (count($a) === 1 && strpos($a[0], '&') !== false) {
+    if (1 === count($a) && false !== strpos($a[0], '&')) {
         $a = explode('&', strtr($a[0], ['&amp;' => '&']), 2);
         $path = implode('?', $a);
     }
     if (
-        strpos($path, '://') === false &&
-        strpos($path, 'data:') !== 0 &&
-        strpos($path, 'javascript:') !== 0 &&
-        strpos($path, '?') !== 0 &&
-        strpos($path, '&') !== 0 &&
-        strpos($path, '#') !== 0
+        false === strpos($path, '://') &&
+        0 !== strpos($path, 'data:') &&
+        0 !== strpos($path, 'javascript:') &&
+        0 !== strpos($path, '?') &&
+        0 !== strpos($path, '&') &&
+        0 !== strpos($path, '#')
     ) {
         return rtrim($url->{$root ? 'ground' : 'root'} . '/' . ltrim($path, '/'), '/');
     }
@@ -30,7 +30,7 @@ URL::_('long', function(string $path, $root = true) {
 
 URL::_('short', function(string $path, $root = true) {
     global $url;
-    if (strpos($path, '//') === 0 && strpos($path, '//' . $url->host) !== 0) {
+    if (0 === strpos($path, '//') && 0 !== strpos($path, '//' . $url->host)) {
         return $path; // Ignore external URL
     }
     return $root ? str_replace([

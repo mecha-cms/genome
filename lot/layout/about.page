@@ -1,9 +1,9 @@
 ---
 title: Log
-description: A minimal skin with almost zero dependencies.
+description: A minimal layout with almost zero dependencies.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.5.16
+version: 1.5.18
 ...
 
 Some elements have their own classes to match with the content appearance:

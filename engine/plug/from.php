@@ -24,7 +24,7 @@ foreach ([
             }
             $out[array_shift($k)] = $v;
         };
-        if (isset($in[0]) && $in[0] === '?') {
+        if (isset($in[0]) && '?' === $in[0]) {
             $in = substr($in, 1);
         }
         foreach (explode('&', $in) as $v) {

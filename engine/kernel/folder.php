@@ -8,7 +8,7 @@ class Folder extends Genome {
 
     public function __construct($path = null) {
         $this->value[0] = null;
-        if ($path && is_string($path) && strpos($path, ROOT) === 0) {
+        if ($path && is_string($path) && 0 === strpos($path, ROOT)) {
             $path = strtr($path, '/', DS);
             if (!stream_resolve_include_path($path)) {
                 mkdir($path, 0775, true); // Create an empty folder
@@ -33,7 +33,7 @@ class Folder extends Genome {
     public function _size() {
         if ($this->exist) {
             // Empty folder
-            if (!glob($this->path . DS . '*', GLOB_NOSORT)) {
+            if (0 === q(g($this->path))) {
                 return 0;
             }
             // Scan all file(s) and count the file size
@@ -82,12 +82,8 @@ class Folder extends Genome {
         return $this;
     }
 
-    public function directory(int $i = 1) {
-        return $this->exist ? dirname($this->path, $i) : null;
-    }
-
-    public function get($x = null, $deep = false): \Generator {
-        return g($this->path, $x, $deep);
+    public function get($x = null, $deep = 0) {
+        return y($this->stream($x, $deep));
     }
 
     public function move(string $to) {
@@ -116,11 +112,19 @@ class Folder extends Genome {
         return $this->exist ? basename($this->path) : null;
     }
 
-    public function size(string $unit = null, int $prec = 2) {
+    public function parent(int $i = 1) {
+        return $this->exist ? dirname($this->path, $i) : null;
+    }
+
+    public function size(string $unit = null, int $r = 2) {
         if (null !== ($size = $this->_size())) {
-            return File::sizer($size, $unit, $prec);
+            return File::sizer($size, $unit, $r);
         }
-        return File::sizer(0, $unit, $prec);
+        return File::sizer(0, $unit, $r);
+    }
+
+    public function stream($x = null, $deep = 0): \Generator {
+        return $this->exist ? g($this->path, $x, $deep) : yield from [];
     }
 
     public function time(string $format = null) {
@@ -155,7 +159,7 @@ class Folder extends Genome {
         $out = [];
         if ($this->exist) {
             $path = $this->path;
-            if ($any === true) {
+            if (true === $any) {
                 foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST) as $k) {
                     $v = $k->getPathname();
                     if ($k->isDir()) {

@@ -3,12 +3,12 @@
 namespace _\lot\x\markdown {
     function title($content) {
         $type = $this->type;
-        if ($type !== 'Markdown' && $type !== 'text/markdown') {
+        if ('Markdown' !== $type && 'text/markdown' !== $type) {
             return $content;
         }
         $parser = new \ParsedownExtraPlugin;
         foreach ((array) \State::get('x.markdown') as $k => $v) {
-            if (\strpos($k, 'block') === 0) {
+            if (0 === \strpos($k, 'block')) {
                 continue;
             }
             $parser->{$k} = $v;
@@ -16,14 +16,14 @@ namespace _\lot\x\markdown {
         return $parser->line($content ?? "");
     }
     \Hook::set([
-        'page.title'
+        'page.title' // Inline tag(s) only
     ], __NAMESPACE__ . "\\title", 2);
 }
 
 namespace _\lot\x {
     function markdown($content) {
         $type = $this->type;
-        if ($type !== 'Markdown' && $type !== 'text/markdown') {
+        if ('Markdown' !== $type && 'text/markdown' !== $type) {
             return $content;
         }
         $parser = new \ParsedownExtraPlugin;

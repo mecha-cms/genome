@@ -5,21 +5,21 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     public $i = 0;
     public $lot = [];
     public $parent = null;
-    public $separator = "";
+    public $join = "";
     public $value = [];
 
-    public function __construct(iterable $array = [], string $separator = ', ') {
+    public function __construct(iterable $array = [], string $join = ', ') {
         if ($array instanceof \Traversable) {
             $array = iterator_to_array($array);
         }
         $this->lot = $this->value = $array;
-        $this->separator = $separator;
+        $this->join = $join;
     }
 
-    public function __invoke(string $separator = ', ', $filter = true) {
+    public function __invoke(string $join = ', ', $filter = true) {
         $value = $filter ? $this->is(function($v, $k) {
             // Ignore `null` and `false` value and all item(s) with key prefixed by a `_`
-            return isset($v) && $v !== false && strpos($k, '_') !== 0;
+            return isset($v) && false !== $v && 0 !== strpos($k, '_');
         })->value : $this->value;
         foreach ($value as $k => $v) {
             // Ignore value(s) that cannot be converted to string
@@ -27,11 +27,11 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
                 unset($value[$k]);
             }
         }
-        return implode($separator, $value);
+        return implode($join, $value);
     }
 
     public function __toString() {
-        return (string) $this->__invoke($this->separator);
+        return (string) $this->__invoke($this->join);
     }
 
     // Insert `$value` after current element
@@ -69,7 +69,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     public function chunk(int $chunk = 5, int $i = -1, $preserve_key = false) {
         $clone = $this->mitose();
         $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
-        if ($i !== -1) {
+        if (-1 !== $i) {
             $clone->value = $clone->value[$clone->i = $i] ?? [];
         }
         return $clone;
@@ -104,14 +104,14 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // @see `.\engine\ignite.php#fn:has`
-    public function has(string $value = "", string $separator = P) {
-        return has($this->value, $value, $separator);
+    public function has(string $value = "", string $join = P) {
+        return has($this->value, $value, $join);
     }
 
     // Get position by array key
     public function index(string $key) {
         $i = array_search($key, array_keys($this->value));
-        return $i !== false ? $search : null;
+        return false !== $i ? $search : null;
     }
 
     // @see `.\engine\ignite.php#fn:is`
@@ -121,8 +121,8 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $clone;
     }
 
-    public function join(string $separator = ', ') {
-        return implode($separator, $this->value);
+    public function join(string $join = ', ') {
+        return implode($join, $this->value);
     }
 
     public function jsonSerialize() {
@@ -162,7 +162,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Clone the current instance
     public function mitose() {
-        $clone = new static($this->value, $this->separator);
+        $clone = new static($this->value, $this->join);
         $clone->lot = $this->lot;
         $clone->parent = $this;
         return $clone;
@@ -252,7 +252,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
             $i = $sort[0];
             if (isset($sort[1])) {
                 $key = $sort[1];
-                $fn = $i === -1 ? function($a, $b) use($key) {
+                $fn = -1 === $i ? function($a, $b) use($key) {
                     if (!is_array($a) || !is_array($b)) {
                         return 0;
                     }
@@ -292,16 +292,16 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
                 $preserve_key ? uasort($value, $fn) : usort($value, $fn);
             } else {
                 if ($preserve_key) {
-                    $i === -1 ? arsort($value) : asort($value);
+                    -1 === $i ? arsort($value) : asort($value);
                 } else {
-                    $i === -1 ? rsort($value) : sort($value);
+                    -1 === $i ? rsort($value) : sort($value);
                 }
             }
         } else {
             if ($preserve_key) {
-                $sort === -1 ? arsort($value) : asort($value);
+                -1 === $sort ? arsort($value) : asort($value);
             } else {
-                $sort === -1 ? rsort($value) : sort($value);
+                -1 === $sort ? rsort($value) : sort($value);
             }
         }
         $this->value = $value;

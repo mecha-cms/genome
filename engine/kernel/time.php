@@ -14,7 +14,7 @@ final class Time extends Genome {
 
     public function __call(string $kin, array $lot = []) {
         if ($v = parent::_($kin)) {
-            if (is_string($v = $v[0]) && strpos($v, '%') !== false) {
+            if (is_string($v = $v[0]) && false !== strpos($v, '%')) {
                 return $this->i($v);
             }
         }
@@ -24,7 +24,7 @@ final class Time extends Genome {
     public function __construct($date) {
         if (is_numeric($date)) {
             $this->source = date('Y-m-d H:i:s', $date);
-        } else if (strlen($date) >= 19 && substr_count($date, '-') === 5) {
+        } else if (strlen($date) >= 19 && 5 === substr_count($date, '-')) {
             $this->source = \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format('Y-m-d H:i:s');
         } else {
             $this->source = date('Y-m-d H:i:s', strtotime($date));
@@ -52,15 +52,15 @@ final class Time extends Genome {
         // Slightly improve the performance by detecting some pattern that produces word(s)
         if (
             // ‘Sun’ through ‘Sat’ or ‘Sunday’ through ‘Saturday’
-            stripos($pattern, '%a') !== false ||
+            false !== stripos($pattern, '%a') ||
             // ‘Jan’ through ‘Dec’ or ‘January’ through ‘December’
-            stripos($pattern, '%b') !== false ||
+            false !== stripos($pattern, '%b') ||
             // Preferred date and time stamp based on locale
-            stripos($pattern, '%c') !== false ||
+            false !== stripos($pattern, '%c') ||
             // An alias of `%b`
-            stripos($pattern, '%h') !== false ||
+            false !== stripos($pattern, '%h') ||
             // ‘AM’ or ‘PM’ based on the given time
-            stripos($pattern, '%p') !== false
+            false !== stripos($pattern, '%p')
         ) {
             // Make the date translation system to work without PHP `intl` extension
             // Assume every word(s) in the formatted date as a translate-able string
@@ -76,7 +76,7 @@ final class Time extends Genome {
     }
 
     public function hour($type = null) {
-        return $this->format($type === 12 ? 'h' : 'H');
+        return $this->format(12 === $type ? 'h' : 'H');
     }
 
     public function minute() {
@@ -88,8 +88,8 @@ final class Time extends Genome {
     }
 
     // Convert date to file name
-    public function name($separator = '-') {
-        return strtr($this->source, '- :', str_repeat($separator, 3));
+    public function name(string $join = '-') {
+        return strtr($this->source, '- :', str_repeat($join, 3));
     }
 
     public function second() {

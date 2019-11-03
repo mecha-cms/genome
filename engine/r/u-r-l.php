@@ -1,7 +1,7 @@
 <?php
 
 $port = (int) $_SERVER['SERVER_PORT'];
-$scheme = 'http' . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $port === 443 ? 's' : "");
+$scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
 $protocol = $scheme . '://';
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
 $path = ltrim($_GET['path'] ?? "", '/');
@@ -31,9 +31,9 @@ $d = trim(($_SERVER['CONTEXT_PREFIX'] ?? "") . strtr(ROOT, [
     DS => '/'
 ]), '/');
 
-$d = $d !== "" ? '/' . $d : null;
-$path = $path !== "" ? '/' . $path : null;
-$query = $query !== "" ? '?' . $query : null;
+$d = "" !== $d ? '/' . $d : null;
+$path = "" !== $path ? '/' . $path : null;
+$query = "" !== $query ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 $root = $protocol . $host . $d;
 

@@ -8,7 +8,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
     ];
 
     protected $lot = [
-        0 => "",
+        0 => null,
         1 => "",
         2 => []
     ];
@@ -28,7 +28,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
             $this->lot[2] = $in[2];
         } else if (is_string($in)) {
             // Must starts with `<` and ends with `>`
-            if (strpos($in, $c[0][0]) === 0 && substr($in, -strlen($c[0][1])) === $c[0][1]) {
+            if (0 === strpos($in, $c[0][0]) && $c[0][1] === substr($in, -strlen($c[0][1]))) {
                 $tag = x(implode("", $c[0]));
                 $tag_open = x($c[0][0]); // `<`
                 $tag_close = x($c[0][1]); // `>`
@@ -46,7 +46,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                     if (isset($m[2]) && preg_match_all('/\s+([^' . $attr . '\s]+)(' . $attr_open . '((?:[^' . x($c[1][0] . $c[1][1]) . '\\\]|\\\.)*)' . $attr_close . ')?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $k => $v) {
-                                $this->lot[2][$v] = $mm[2][$k] === "" ? true : strtr($mm[3][$k], [
+                                $this->lot[2][$v] = "" === $mm[2][$k] ? true : strtr($mm[3][$k], [
                                     "\\" . $c[1][0] => $c[1][0],
                                     "\\" . $c[1][1] => $c[1][1]
                                 ]);
@@ -65,18 +65,18 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
     public function __toString() {
         $c = $this->c;
         $o = $this->lot;
-        if (!isset($o[0]) || $o[0] === false) {
+        if (!isset($o[0]) || false === $o[0]) {
             return $o[1] ?? "";
         }
         $out = $c[0][0] . $o[0];
         if (!empty($o[2])) {
             ksort($o[2]);
             foreach ($o[2] as $k => $v) {
-                if ($v === true) {
+                if (true === $v) {
                     $out .=  ' ' . $k;
                     continue;
                 }
-                if (!isset($v) || $v === false) {
+                if (!isset($v) || false === $v) {
                     continue;
                 }
                 $v = strtr($v, [
@@ -86,7 +86,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                 $out .= ' ' . $k . $c[1][2] . $c[1][0] . $v . $c[1][1];
             }
         }
-        $out .= ($o[1] === false ? ($this->strict ? $c[0][2] : "") : $c[0][1] . $o[1] . $c[0][0] . $c[0][2] . $o[0]) . $c[0][1];
+        $out .= (false === $o[1] ? ($this->strict ? $c[0][2] : "") : $c[0][1] . $o[1] . $c[0][0] . $c[0][2] . $o[0]) . $c[0][1];
         return $out;
     }
 

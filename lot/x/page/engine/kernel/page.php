@@ -85,7 +85,7 @@ class Page extends File {
             $out = [];
             foreach ($key as $k => $v) {
                 // `$page->get(['foo.bar' => 0])`
-                if (strpos($k, '.') !== false) {
+                if (false !== strpos($k, '.')) {
                     $kk = explode('.', $k, 2);
                     if (is_array($vv = $this->any($kk[0]))) {
                         $out[$k] = get($vv, $kk[1]) ?? $v;
@@ -97,7 +97,7 @@ class Page extends File {
             return $out;
         }
         // `$page->get('foo.bar')`
-        if (strpos($key, '.') !== false) {
+        if (false !== strpos($key, '.')) {
             $k = explode('.', $key, 2);
             if (is_array($v = $this->any($k[0]))) {
                 return get($v, $k[1]);
@@ -179,7 +179,7 @@ class Page extends File {
         }
         if (is_array($key)) {
             foreach ($key as $k => $v) {
-                if ($v === false) {
+                if (false === $v) {
                     unset($this->lot[$k], self::$page[$id][$k]);
                     continue;
                 }
@@ -201,9 +201,9 @@ class Page extends File {
         if (
             is_string($n) && (
                 // `2017-04-21.page`
-                substr_count($n, '-') === 2 ||
+                2 === substr_count($n, '-') ||
                 // `2017-04-21-14-25-00.page`
-                substr_count($n, '-') === 5
+                5 === substr_count($n, '-')
             ) &&
             is_numeric(str_replace('-', "", $n)) &&
             preg_match('/^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$/', $n)

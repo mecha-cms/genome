@@ -26,14 +26,14 @@ class Files extends Anemon {
                     $value[$v] = $f[$sort[1]] ?? $f->{$sort[1]} ?? $sort[2] ?? null;
                 }
             }
-            $sort[0] === -1 ? arsort($value) : asort($value);
+            -1 === $sort[0] ? arsort($value) : asort($value);
             $this->value = array_keys($value);
         } else {
             $value = $this->value;
             if ($preserve_key) {
-                $sort === -1 ? arsort($value) : asort($value);
+                -1 === $sort ? arsort($value) : asort($value);
             } else {
-                $sort === -1 ? rsort($value) : sort($value);
+                -1 === $sort ? rsort($value) : sort($value);
             }
             $this->value = $value;
         }

@@ -2,14 +2,14 @@
 
 // Wrap description data with paragraph tag(s) if needed
 Hook::set('page.description', function($description) {
-    if ($description && strpos($description, '</p>') === false) {
+    if ($description && false === strpos($description, '</p>')) {
         return '<p>' . str_replace(["\n\n", "\n"], ['</p><p>', '<br>'], trim(n($description))) . '</p>';
     }
     return $description;
 });
 
 // Add CSS file to the `<head>` section…
-Asset::set('css/log.min.css', 20);
+Asset::set('css/layout.min.css', 20);
 
 // Create site navigation data to be used in content
 $GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) use($state) {
@@ -17,7 +17,7 @@ $GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) use($state) {
     return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
 })->get(), function($v) use($url) {
     $v = new Page($v);
-    $v->active = strpos($url->path . '/', '/' . $v->name . '/') === 0; // Active state
+    $v->active = 0 === strpos($url->path . '/', '/' . $v->name . '/'); // Active state
     return $v;
 });
 

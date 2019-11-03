@@ -7,17 +7,14 @@ function asset($content) {
 }
 
 \Hook::set('asset:head', function($content) {
-    $css = \Hook::fire('asset.css', [\Asset::join('css')], null, \Asset::class);
+    $css = \Hook::fire('asset.css', [\Asset::join('.css')], null, \Asset::class);
     $style = "";
     $lot = \Asset::get();
-    if (!empty($lot[':style'])) {
-        foreach ((new \Anemon($lot[':style']))->sort([1, 'stack'], true) as $k => $v) {
-            if (!empty($v['content'])) {
-                $style .= new \HTML([
-                    0 => 'style',
-                    1 => (string) $v['content'],
-                    2 => (array) $v['data']
-                ]);
+    if (!empty($lot['style'])) {
+        foreach ((new \Anemon($lot['style']))->sort([1, 'stack'], true) as $k => $v) {
+            if (!empty($v[1])) {
+                unset($v['path'], $v['stack'], $v['url']);
+                $style .= new \HTML($v);
             }
         }
     }
@@ -26,28 +23,22 @@ function asset($content) {
 });
 
 \Hook::set('asset:body', function($content) {
-    $js = \Hook::fire('asset.js', [\Asset::join('js')], null, \Asset::class);
+    $js = \Hook::fire('asset.js', [\Asset::join('.js')], null, \Asset::class);
     $script = $template = "";
     $lot = \Asset::get();
-    if (!empty($lot[':script'])) {
-        foreach ((new \Anemon($lot[':script']))->sort([1, 'stack'], true) as $k => $v) {
-            if (!empty($v['content'])) {
-                $script .= new \HTML([
-                    0 => 'script',
-                    1 => (string) $v['content'],
-                    2 => (array) $v['data']
-                ]);
+    if (!empty($lot['script'])) {
+        foreach ((new \Anemon($lot['script']))->sort([1, 'stack'], true) as $k => $v) {
+            if (!empty($v[1])) {
+                unset($v['path'], $v['stack'], $v['url']);
+                $script .= new \HTML($v);
             }
         }
     }
-    if (!empty($lot[':template'])) {
-        foreach ((new \Anemon($lot[':template']))->sort([1, 'stack'], true) as $k => $v) {
-            if (!empty($v['content'])) {
-                $template .= new \HTML([
-                    0 => 'template',
-                    1 => (string) $v['content'],
-                    2 => (array) $v['data']
-                ]);
+    if (!empty($lot['template'])) {
+        foreach ((new \Anemon($lot['template']))->sort([1, 'stack'], true) as $k => $v) {
+            if (!empty($v[1])) {
+                unset($v['path'], $v['stack'], $v['url']);
+                $template .= new \HTML($v);
             }
         }
     }

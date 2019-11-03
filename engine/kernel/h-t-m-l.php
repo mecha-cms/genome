@@ -19,10 +19,10 @@ class HTML extends SGML {
         if (!empty($this->lot[2])) {
             $c = $this->c;
             foreach ($this->lot[2] as $k => &$v) {
-                if ($v === true) {
+                if (true === $v) {
                     continue;
                 }
-                if (!isset($v) || $v === false) {
+                if (!isset($v) || false === $v) {
                     unset($this->lot[2][$k]);
                     continue;
                 }

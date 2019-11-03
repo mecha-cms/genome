@@ -3,14 +3,14 @@
 namespace _\lot\x\art {
     function css($content) {
         $content = \trim($content);
-        if ($content && \strpos($content, '</style>') === false && \strpos($content, '<link ') === false) {
+        if ($content && false === \strpos($content, '</style>') && false === \strpos($content, '<link ')) {
             return '<style media="screen">' . $content . '</style>';
         }
         return $content;
     }
     function js($content) {
         $content = \trim($content);
-        if ($content && \strpos($content, '</script>') === false && \strpos($content, '<script ') === false) {
+        if ($content && false === \strpos($content, '</script>') && false === \strpos($content, '<script ')) {
             return '<script>' . $content . '</script>';
         }
         return $content;

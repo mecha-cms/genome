@@ -30,7 +30,7 @@ final class Cookie extends Genome {
         }
         $out = [];
         foreach ($_COOKIE as $k => $v) {
-            $out[$k] = e(strpos($k, '_') === 0 ? self::v($v) : $v);
+            $out[$k] = e(0 === strpos($k, '_') ? self::v($v) : $v);
         }
         return $out;
     }

@@ -6,7 +6,7 @@
     <?php if ($w = w($page->description ?? $site->description ?? "")): ?>
     <meta content="<?= $w; ?>" name="description">
     <?php endif; ?>
-    <?php if ($page->x === 'archive'): ?>
+    <?php if ('archive' === $page->x): ?>
     <!-- Prevent search engines from indexing pages with `archive` state -->
     <meta content="noindex" name="robots">
     <?php endif; ?>
@@ -18,14 +18,4 @@
   <body>
     <?= $alert; ?>
     <div>
-      <header>
-        <h1>
-          <?php if ($site->is('home')): ?>
-          <span><?= $site->title; ?></span>
-          <?php else: ?>
-          <a href="<?= $url; ?>"><?= $site->title; ?></a>
-          <?php endif; ?>
-        </h1>
-        <p><?= $site->description; ?></p>
-        <nav><?= self::nav(); ?></nav>
-      </header>
+      <?= self::header(); ?>

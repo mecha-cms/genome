@@ -12,11 +12,11 @@ class Request extends Genome {
         if (isset($name)) {
             $name = strtoupper($name);
             if (isset($key)) {
-                return get($GLOBALS['_' . $name], $key) !== null;
+                return null !== get($GLOBALS['_' . $name], $key);
             }
             return $name === $r;
         }
-        return strtolower($r);
+        return ucfirst(strtolower($r));
     }
 
     public static function let($key = null) {
