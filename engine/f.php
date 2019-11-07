@@ -89,8 +89,9 @@ namespace {
         return c(\str_replace([$n, '_'], [$h . '__', $h . '_'], $s), false, $n . '_');
     }
     // Fetch remote URL
-    function fetch(string $u, $a = null) {
+    function fetch(string $u, $a = null, $type = 'GET') {
         $o = [];
+        $type = \strtoupper($type);
         // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
         $port = (int) $_SERVER['SERVER_PORT'];
         $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
@@ -103,31 +104,37 @@ namespace {
         if (!isset($o['User-Agent'])) {
             $o['User-Agent'] = 'User-Agent: ' . $v;
         }
-        $o = \array_values($o);
         if (\extension_loaded('curl')) {
             $curl = \curl_init($u);
             \curl_setopt_array($curl, [
                 \CURLOPT_FAILONERROR => true,
                 \CURLOPT_FOLLOWLOCATION => true,
-                \CURLOPT_HTTPGET => true,
-                \CURLOPT_HTTPHEADER => $o,
+                \constant("\\CURLOPT_" . ('GET' === $type ? 'HTTP' . $type : $type)) => true,
+                \CURLOPT_HTTPHEADER => \array_values($o),
                 \CURLOPT_MAXREDIRS => 2,
                 \CURLOPT_RETURNTRANSFER => true,
                 \CURLOPT_SSL_VERIFYPEER => false,
                 \CURLOPT_TIMEOUT => 15
             ]);
+            if ('POST' === $type) {
+                \parse_str(\explode('?', $u)[1] ?? "", $data);
+                \curl_setopt(\CURLOPT_POSTFIELDS, $data);
+            }
             $out = \curl_exec($curl);
             if (\defined("\\DEBUG") && \DEBUG && false ===  $out) {
                 throw new \UnexpectedValueException(\curl_error($curl));
             }
             \curl_close($curl);
         } else {
-            $out = \file_get_contents($u, false, \stream_context_create([
-                'http' => [
-                    'method' => 'GET',
-                    'header' => \implode("\r\n", $data)
-                ]
-            ]));
+            $opts = [
+                'http' => ['method' => $type]
+            ];
+            if ('POST' === $type) {
+                $o['Content-Type'] = 'Content-Type: application/x-www-form-urlencoded';
+                $opts['content'] = \explode('?', $u)[1] ?? "";
+            }
+            $opts['http']['header'] = \implode("\r\n", \array_values($o));
+            $out = \file_get_contents($u, false, \stream_context_create($opts));
         }
         return false !== $out ? $out : null;
     }

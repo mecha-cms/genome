@@ -1,6 +1,6 @@
 <?php
 
-class Server extends Request {
+class Server extends Genome {
 
     public static function __callStatic(string $kin, array $lot = []) {
         if (parent::_($kin)) {
@@ -10,7 +10,7 @@ class Server extends Request {
     }
 
     public static function get($key = null) {
-        $a = $GLOBALS['_' . strtoupper(static::class)];
+        $a = $GLOBALS['_' . strtoupper(static::class)] ?? [];
         return e(isset($key) ? get($a, strtr(strtoupper($key), '-', '_')) : ($a ?? []));
     }
 

@@ -27,11 +27,11 @@ Page is a plain text file stored in the `.\lot\page` folder. The correct file na
         └── no-no-no.page
 ~~~
 
-A `page` extension is the default file extension for page files to state that the page is active and publicly available. There are several other page file extensions that can also be used:
+A `.page` extension is the default file extension for page files to state that the page is active and publicly available. There are several other page file extensions that can also be used:
 
- - `page` → Available publicly and will appears together in the public page list.
- - `archive` → Available publicly but will not appears together in the public page list.
- - `draft` → Not available publicly and will not appears together in the public page list.
+ - `.page` → Available publicly and will appears together in the public page list.
+ - `.archive` → Available publicly but will not appears together in the public page list.
+ - `.draft` → Not available publicly and will not appears together in the public page list.
 
 To read `.\lot\page\lorem-ipsum.page` from the site, visit ` http://127.0.0.1/lorem-ipsum `.
 
@@ -80,7 +80,7 @@ A page file can also have connections to other files through a folder that has t
         └── no-no-no.page
 ~~~
 
-Users can store other data that has relationship with the page file in that folder. If the file name ends with extension `data`, then this file will act as an external page property. This is called **Data**.
+Users can store other data that has relationship with the page file in that folder. If the file name ends with extension `.data`, then this file will act as an external page property. This is called **Data**.
 
 ### Data
 

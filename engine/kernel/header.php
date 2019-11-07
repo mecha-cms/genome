@@ -62,21 +62,4 @@ final class Header extends Genome {
         }
     }
 
-    public static function status(int $i = null) {
-        if (isset($i)) {
-            http_response_code($i);
-        }
-        return http_response_code();
-    }
-
-    public static function type(string $type = null, array $lot = []) {
-        if (!isset($type)) {
-            return self::get('Content-Type');
-        }
-        foreach ($lot as $k => $v) {
-            $type .= '; ' . $k . '=' . $v;
-        }
-        header('Content-Type: ' . $type);
-    }
-
 }

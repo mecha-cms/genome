@@ -46,7 +46,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         $this->value[0] = "";
         if ($path && is_string($path) && 0 === strpos($path, ROOT)) {
             $path = strtr($path, '/', DS);
-            if (!stream_resolve_include_path($path)) {
+            if (!is_file($path)) {
                 if (!is_dir($d = dirname($path))) {
                     mkdir($d, 0775, true);
                 }
@@ -113,7 +113,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 }
                 return null;
             }
-            return content($this->path);
+            return file_get_contents($this->path);
         }
         return null;
     }
@@ -123,17 +123,19 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function jsonSerialize() {
-        return $this->path;
+        return [$this->path => 1];
     }
 
     public function let() {
         if ($this->exist) {
-            if (unlink($path = $this->path)) {
-                return $path; // Return `$path` on success
-            }
-            return null; // Return `null` on error
+            // Return `$path` on success, `null` on error
+            $out = unlink($path = $this->path) ? $path : null;
+        } else {
+            // Return `false` if file does not exist
+            $out = false;
         }
-        return false; // Return `false` if file does not exist
+        $this->value[1] = $out;
+        return $this;
     }
 
     public function move(string $to, string $as = null) {
@@ -176,36 +178,43 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public function offsetSet($i, $value) {}
     public function offsetUnset($i) {}
 
-    public function parent(int $i = 1) {
-        return $this->exist ? dirname($this->path, $i) : null;
+    public function parent() {
+        if ($this->exist) {
+            $parent = dirname($this->path);
+            return '.' !== $parent ? $parent : null;
+        }
+        return null;
     }
 
     public function save($seal = null) {
+        $out = false; // Return `false` if `$this` is just a placeholder
         if ($path = $this->path) {
             if (isset($seal)) {
                 $this->seal($seal);
             }
             // Return `$path` on success, `null` on error
-            return file_put_contents($path, $this->value[0]) ? $path : null; 
-        }
-        if (defined('DEBUG') && DEBUG) {
+            $out = file_put_contents($path, $this->value[0]) ? $path : null; 
+        } else if (defined('DEBUG') && DEBUG) {
             $c = static::class;
             throw new \Exception('Please provide a file path even if it does not exist. Example: `new ' . $c . '(\'' . ROOT . DS . c2f($c) . '.txt\')`');
         }
-        return false; // Return `false` if `$this` is just a placeholder
+        $this->value[1] = $out;
+        return $this;
     }
 
     public function seal($i = null) {
-        if (isset($i) && $this->exist) {
-            $i = is_string($i) ? octdec($i) : $i;
-            // Return `$i` on success, `null` on error
-            return chmod($this->path, $i) ? $i : null;
+        if (isset($i)) {
+            if ($this->exist) {
+                $i = is_string($i) ? octdec($i) : $i;
+                // Return `$i` on success, `null` on error
+                $this->value[1] = chmod($this->path, $i) ? $i : null;
+            } else {
+                // Return `false` if file does not exist
+                $this->value[1] = false;
+            }
+            return $this;
         }
-        if (null !== ($i = $this->_seal())) {
-            return substr(sprintf('%o', $i), -4);
-        }
-        // Return `false` if file does not exist
-        return false;
+        return null !== ($i = $this->_seal()) ? substr(sprintf('%o', $i), -4) : null;
     }
 
     public function set($content) {

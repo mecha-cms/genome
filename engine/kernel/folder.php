@@ -1,6 +1,6 @@
 <?php
 
-class Folder extends Genome {
+class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
     public $exist;
     public $path;
@@ -10,12 +10,19 @@ class Folder extends Genome {
         $this->value[0] = null;
         if ($path && is_string($path) && 0 === strpos($path, ROOT)) {
             $path = strtr($path, '/', DS);
-            if (!stream_resolve_include_path($path)) {
+            if (!is_dir($path)) {
                 mkdir($path, 0775, true); // Create an empty folder
             }
             $this->path = is_dir($path) ? (realpath($path) ?: $path) : null;
         }
         $this->exist = !!$this->path;
+    }
+
+    public function __get(string $key) {
+        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+            return $this->{$key}();
+        }
+        return null;
     }
 
     public function __toString() {
@@ -32,11 +39,11 @@ class Folder extends Genome {
 
     public function _size() {
         if ($this->exist) {
-            // Empty folder
-            if (0 === q(g($this->path))) {
+            // Empty folder(s)
+            if (0 === q(g($this->path, 1))) {
                 return 0;
             }
-            // Scan all file(s) and count the file size
+            // Scan all file(s) to get the total size
             $size = 0;
             foreach ($this->get(1, true) as $k => $v) {
                 $size += filesize($k);
@@ -46,18 +53,39 @@ class Folder extends Genome {
         return null;
     }
 
-    // Set folder permission
+    public function count() {
+        // Count file(s) only
+        return iterator_count($this->stream(1, true));
+    }
+
+    public function getIterator() {
+        return $this->stream(null, true, true);
+    }
+
+    public function offsetExists($i) {
+        return !!$this->offsetGet($i);
+    }
+
+    public function offsetGet($i) {
+        return $this->__get($i);
+    }
+
+    public function offsetSet($i, $value) {}
+    public function offsetUnset($i) {}
+
     public function seal($i = null) {
-        if (isset($i) && $this->exist) {
-            $i = is_string($i) ? octdec($i) : $i;
-            // Return `$i` on success, `null` on error
-            return chmod($this->path, $i) ? $i : null;
+        if (isset($i)) {
+            if ($this->exist) {
+                $i = is_string($i) ? octdec($i) : $i;
+                // Return `$i` on success, `null` on error
+                $this->value[1] = chmod($this->path, $i) ? $i : null;
+            } else {
+                // Return `false` if file does not exist
+                $this->value[1] = false;
+            }
+            return $this;
         }
-        if (null !== ($i = $this->_seal())) {
-            return substr(sprintf('%o', $i), -4);
-        }
-        // Return `false` if file does not exist
-        return false;
+        return null !== ($i = $this->_seal()) ? substr(sprintf('%o', $i), -4) : null;
     }
 
     public function copy(string $to) {
@@ -86,6 +114,14 @@ class Folder extends Genome {
         return y($this->stream($x, $deep));
     }
 
+    public function jsonSerialize() {
+        $out = [$this->path => 0];
+        foreach ($this->stream(null, true) as $k => $v) {
+            $out[$k] = $v;
+        }
+        return $out;
+    }
+
     public function move(string $to) {
         $out = [[]];
         if ($this->exist && $path = $this->path) {
@@ -104,7 +140,7 @@ class Folder extends Genome {
                 }
             }
         }
-        $this->value = $out;
+        $this->value[1] = $out;
         return $this;
     }
 
@@ -112,19 +148,25 @@ class Folder extends Genome {
         return $this->exist ? basename($this->path) : null;
     }
 
-    public function parent(int $i = 1) {
-        return $this->exist ? dirname($this->path, $i) : null;
+    public function parent() {
+        return $this->exist ? dirname($this->path) : null;
     }
 
     public function size(string $unit = null, int $r = 2) {
         if (null !== ($size = $this->_size())) {
             return File::sizer($size, $unit, $r);
         }
-        return File::sizer(0, $unit, $r);
+        return null;
     }
 
-    public function stream($x = null, $deep = 0): \Generator {
-        return $this->exist ? g($this->path, $x, $deep) : yield from [];
+    public function stream($x = null, $deep = 0, $content = false): \Generator {
+        if ($content) {
+            foreach (g($this->path, $x, $deep) as $k => $v) {
+                yield $k => 0 === $v ? [] : file_get_contents($k);
+            }
+        } else {
+            yield from g($this->path, $x, $deep);
+        }
     }
 
     public function time(string $format = null) {
@@ -180,7 +222,8 @@ class Folder extends Genome {
                 }
             }
         }
-        return $out;
+        $this->value[1] = $out;
+        return $this;
     }
 
 }

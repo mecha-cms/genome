@@ -15,11 +15,11 @@ final class Route extends Genome {
     }
 
     public function status(...$v) {
-        return Header::status(...$v);
+        return Response::status(...$v);
     }
 
     public function type(...$v) {
-        return Header::type(...$v);
+        return Response::type(...$v);
     }
 
     public static function get(string $id = null) {
@@ -53,7 +53,11 @@ final class Route extends Genome {
         $chops = explode('/', $id);
         foreach ($chops as &$v) {
             if (0 === strpos($v, ':') && strlen($v) > 1) {
-                $v = '([^/]+)';
+                if ('{' === $v[1] && '}' === substr($v, -1)) {
+                    $v = '(' . substr(substr($v, 2), 0, -1) . ')';
+                } else {
+                    $v = '([^/]+)';
+                }
             } else if ('*' === $v) {
                 $v = '(.+)';
             } else {

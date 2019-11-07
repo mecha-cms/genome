@@ -60,6 +60,7 @@ require __DIR__ . DS . 'r' . DS . 'file.php';
 require __DIR__ . DS . 'r' . DS . 'guard.php';
 require __DIR__ . DS . 'r' . DS . 'header.php';
 require __DIR__ . DS . 'r' . DS . 'hook.php';
+require __DIR__ . DS . 'r' . DS . 'response.php';
 require __DIR__ . DS . 'r' . DS . 'route.php';
 require __DIR__ . DS . 'r' . DS . 'session.php';
 require __DIR__ . DS . 'r' . DS . 'state.php';
