@@ -1,6 +1,6 @@
 <?php
 
-final class Header extends Genome {
+final class Lot extends Genome {
 
     public static function get($key = null) {
         if (isset($key)) {
@@ -60,6 +60,23 @@ final class Header extends Genome {
         } else {
             header($key . ': ' . $value);
         }
+    }
+
+    public static function status(int $i = null) {
+        if (isset($i)) {
+            http_response_code($i);
+        }
+        return http_response_code();
+    }
+
+    public static function type(string $type = null, array $lot = []) {
+        if (!isset($type)) {
+            return self::get('Content-Type');
+        }
+        foreach ($lot as $k => $v) {
+            $type .= '; ' . $k . '=' . $v;
+        }
+        self::set('Content-Type', $type);
     }
 
 }

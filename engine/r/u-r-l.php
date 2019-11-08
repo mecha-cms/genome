@@ -4,10 +4,10 @@ $port = (int) $_SERVER['SERVER_PORT'];
 $scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
 $protocol = $scheme . '://';
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
-$path = ltrim($_GET['path'] ?? "", '/');
+$path = ltrim($_GET['_'] ?? "", '/');
 $query = explode('&', $_SERVER['QUERY_STRING'], 2)[1] ?? "";
 
-unset($_GET['path']);
+unset($_GET['_']);
 
 // Prevent XSS attack where possible
 $path = strtr(trim($path, '/'), [

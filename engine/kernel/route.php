@@ -4,22 +4,10 @@ final class Route extends Genome {
 
     private static $r;
 
-    public function fire(string $id, array $lot = []) {
+    public static function fire(string $id, array $lot = []) {
         if ($v = self::get($id)) {
             fire($v['fn'], self::is($id)[2] ?? [], new static);
         }
-    }
-
-    public function header(...$v) {
-        return count($v) > 1 || is_array($v[0]) ? Header::set(...$v) : Header::get(...$v);
-    }
-
-    public function status(...$v) {
-        return Response::status(...$v);
-    }
-
-    public function type(...$v) {
-        return Response::type(...$v);
     }
 
     public static function get(string $id = null) {

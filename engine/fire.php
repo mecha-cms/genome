@@ -20,8 +20,10 @@ if (defined('DEBUG')) {
 
 $vars = [&$_GET, &$_POST, &$_REQUEST];
 array_walk_recursive($vars, function(&$v) {
-    // Normalize line-break
-    $v = strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
+    // Trim white-space and normalize line-break
+    $v = trim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
+    // Convert all empty value to `null`
+    $v = "" === $v ? null : $v;
 });
 
 // Normalize `$_FILES` value to `$_POST`
@@ -58,9 +60,8 @@ require __DIR__ . DS . 'r' . DS . 'cache.php';
 require __DIR__ . DS . 'r' . DS . 'cookie.php';
 require __DIR__ . DS . 'r' . DS . 'file.php';
 require __DIR__ . DS . 'r' . DS . 'guard.php';
-require __DIR__ . DS . 'r' . DS . 'header.php';
 require __DIR__ . DS . 'r' . DS . 'hook.php';
-require __DIR__ . DS . 'r' . DS . 'response.php';
+require __DIR__ . DS . 'r' . DS . 'lot.php';
 require __DIR__ . DS . 'r' . DS . 'route.php';
 require __DIR__ . DS . 'r' . DS . 'session.php';
 require __DIR__ . DS . 'r' . DS . 'state.php';

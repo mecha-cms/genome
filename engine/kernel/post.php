@@ -1,10 +1,25 @@
 <?php
 
-final class Post extends Request {
+final class Post extends Genome {
 
-    public function __construct(...$lot) {
-        $this->type = static::class;
-        $this->url = array_shift($lot);
+    public static function get($key = null) {
+        return e(isset($key) ? get($_POST, $key) : ($_POST ?? []));
+    }
+
+    public static function let($key = null) {
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::let($v);
+            }
+        } else if (isset($key)) {
+            let($_POST, $key);
+        } else {
+            $_POST = [];
+        }
+    }
+
+    public static function set(string $key, $value) {
+        set($_POST, $key, $value);
     }
 
 }
