@@ -15,7 +15,7 @@ namespace _\lot\x\art {
         }
         return $content;
     }
-    function start() {
+    function get() {
         global $state, $url;
         $folder = \PAGE . ($url->path ?? \State::get('x.page.path'));
         $i = $url['i'] ?? 1;
@@ -38,11 +38,11 @@ namespace _\lot\x\art {
             ]);
         }
     }
-    if (!\Request::is('get', 'art') || \Get::get('art')) {
+    if (!\Request::is('Get', 'art') || \Get::get('art')) {
         \Hook::set('content', __NAMESPACE__, 1);
+        \Hook::set('get', __NAMESPACE__ . "\\get", 0);
         \Hook::set('page.css', __NAMESPACE__ . "\\css", 2);
         \Hook::set('page.js', __NAMESPACE__ . "\\js", 2);
-        \Hook::set('start', __NAMESPACE__ . "\\start", 0);
     }
 }
 

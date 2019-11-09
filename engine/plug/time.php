@@ -2,7 +2,7 @@
 
 Time::_('en', '%A, %B %d, %Y');
 
-Hook::set('start', function() {
+Hook::set('set', function() {
     $key = strtr(State::get('language') ?? "", '-', '_');
     // Fix for missing language key → default to `en`
     if (!Time::_($key)) {

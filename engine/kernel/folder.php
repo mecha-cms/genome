@@ -29,10 +29,6 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this->exist ? $this->path : "";
     }
 
-    public function URL() {
-        return $this->exist ? To::URL($this->path) : null;
-    }
-
     public function _seal() {
         return $this->exist ? fileperms($this->path) : null;
     }
@@ -49,6 +45,18 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
                 $size += filesize($k);
             }
             return $size;
+        }
+        return null;
+    }
+
+    public function URL() {
+        return $this->exist ? To::URL($this->path) : null;
+    }
+
+    public function content(string $path) {
+        if (is_file($file = $this->path . DS . ltrim(strtr($path, '/', DS), DS))) {
+            $content = file_get_contents($file);
+            return false !== $content ? $content : null;
         }
         return null;
     }
@@ -112,6 +120,10 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     public function get($x = null, $deep = 0) {
         return y($this->stream($x, $deep));
+    }
+
+    public function has(string $path) {
+        return $this->exist && false !== stream_resolve_include_path($this->path . DS . ltrim(strtr($path, '/', DS), DS));
     }
 
     public function jsonSerialize() {

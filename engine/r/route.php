@@ -5,4 +5,4 @@ function route(...$v) {
 }
 
 // Load all route(s)…
-Hook::set('start', 'Route::start', 1000);
+Hook::set('get', 'Route::start', 1000);

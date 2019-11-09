@@ -80,17 +80,25 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? To::URL($this->path) : null;
     }
 
+    public function content() {
+        if ($this->exist) {
+            $content = file_get_contents($this->path);
+            return false !== $content ? $content : null;
+        }
+        return null;
+    }
+
     public function copy(string $to) {
         $out = [null];
         if ($this->exist && $path = $this->path) {
             $out[0] = $path;
-            if (!is_dir($to)) {
-                mkdir($to, 0775, true);
-            }
             if (is_file($v = $to . DS . basename($path))) {
                 // Return `false` if file already exists
                 $out[1] = false;
             } else {
+                if (!is_dir($to)) {
+                    mkdir($to, 0775, true);
+                }
                 // Return `$v` on success, `null` on error
                 $out[1] = copy($path, $v) ? $v : null;
             }
@@ -103,17 +111,13 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? 1 : 0;
     }
 
-    public function get($i = null) {
+    public function get($i = 0) {
         if ($this->exist) {
-            if (isset($i)) {
-                foreach ($this->stream() as $k => $v) {
-                    if ($k === $i) {
-                        return $v;
-                    }
+            foreach ($this->stream() as $k => $v) {
+                if ($k === $i) {
+                    return $v;
                 }
-                return null;
             }
-            return file_get_contents($this->path);
         }
         return null;
     }
@@ -142,13 +146,13 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         $out = [null];
         if ($this->exist && $path = $this->path) {
             $out[0] = $path;
-            if (!is_dir($to)) {
-                mkdir($to, 0775, true);
-            }
             if (is_file($v = $to . DS . ($as ?? basename($path)))) {
                 // Return `false` if file already exists
                 $out[1] = false;
             } else {
+                if (!is_dir($to)) {
+                    mkdir($to, 0775, true);
+                }
                 // Return `$v` on success, `null` on error
                 $out[1] = rename($path, $v) ? $v : null;
             }

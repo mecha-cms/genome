@@ -38,7 +38,7 @@ namespace _\lot\x\layout {
             \State::set('[layout].not:' . $k, $v);
         }
     }
-    function start() {
+    function get() {
         $folder = \Layout::$state['path'] . \DS;
         // Run content task if any
         if (\is_file($task = $folder . 'task.php')) {
@@ -80,7 +80,7 @@ namespace _\lot\x\layout {
     \Hook::set('content', __NAMESPACE__ . "\\has", 0);
     \Hook::set('content', __NAMESPACE__ . "\\is", 0);
     \Hook::set('content', __NAMESPACE__ . "\\not", 0);
-    \Hook::set('start', __NAMESPACE__ . "\\start", 0);
+    \Hook::set('get', __NAMESPACE__ . "\\get", 0);
 }
 
 namespace _\lot\x {

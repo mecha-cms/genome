@@ -79,6 +79,10 @@ class Page extends File {
         return null;
     }
 
+    public function content(...$lot) {
+        return $this->any('content', $lot);
+    }
+
     // Inherit to `File::get()`
     public function get($key = null) {
         if (is_array($key)) {
