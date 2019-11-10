@@ -36,7 +36,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Insert `$value` after current element
     public function after($value, $key = null) {
-        $i = b($this->i + 1, 0, $this->count());
+        $i = b($this->i + 1, [0, $this->count()]);
         $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
         return $this;
     }
@@ -60,7 +60,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Insert `$value` before current element
     public function before($value, $key = null) {
-        $i = b($this->i, 0, $this->count());
+        $i = b($this->i, [0, $this->count()]);
         $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
         return $this;
     }
@@ -170,7 +170,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Move to next array index
     public function next(int $skip = 0) {
-        $this->i = b($this->i + 1 + $skip, 0, $this->count() - 1);
+        $this->i = b($this->i + 1 + $skip, [0, $this->count() - 1]);
         return $this;
     }
 
@@ -223,7 +223,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Move to previous array index
     public function prev(int $skip = 0) {
-        $this->i = b($this->i - 1 - $skip, 0, $this->count() - 1);
+        $this->i = b($this->i - 1 - $skip, [0, $this->count() - 1]);
         return $this;
     }
 

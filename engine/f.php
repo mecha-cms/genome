@@ -364,12 +364,12 @@ namespace {
         }
         return $o;
     }
-    function b($x, $a = 0, $b = null) {
-        if (isset($a) && $x < $a) {
-            return $a;
+    function b($x, array $a = [0]) {
+        if (isset($a[0]) && $x < $a[0]) {
+            return $a[0];
         }
-        if (isset($b) && $x > $b) {
-            return $b;
+        if (isset($a[1]) && $x > $a[1]) {
+            return $a[1];
         }
         return $x;
     }
