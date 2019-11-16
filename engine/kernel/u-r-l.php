@@ -134,8 +134,8 @@ final class URL extends Genome implements \ArrayAccess {
 
     public function __construct($in = null) {
         if (is_string($in)) {
-            $out = parse_url($in);
-            $out['protocol'] = $this->e($out['scheme']);
+            $out = array_replace($this->lot, parse_url($in));
+            $out['protocol'] = $this->e($out['scheme'] ?? "");
             $out['path'] = $this->e($out['path'] ?? "");
             $out['port'] = isset($out['port']) ? (int) $out['port'] : null;
             $out['query'] = $this->e($out['query'] ?? "");
@@ -144,7 +144,7 @@ final class URL extends Genome implements \ArrayAccess {
             $out['ground'] = $out['root'] = $out['protocol'] . '://' . $out['host'];
             $out['clean'] = preg_split('/[?&#]/', $in)[0];
             $out['current'] = $in;
-            $this->lot = array_replace($this->lot, $out);
+            $this->lot = $out;
         } else if (is_array($in)) {
             foreach ($in as $k => $v) {
                 if (method_exists($this, $set = 'set' . ucfirst($k))) {
@@ -188,9 +188,9 @@ final class URL extends Genome implements \ArrayAccess {
     }
 
     // `$url->hash('#!')`
-    public function hash(string $prefix = '#') {
+    public function hash(string $join = '#') {
         $hash = $this->lot['hash'];
-        return $hash ? $prefix . $hash : null;
+        return $hash ? $join . $hash : null;
     }
 
     // `$url->i('.', 4)`
@@ -235,7 +235,7 @@ final class URL extends Genome implements \ArrayAccess {
             $query = array_replace_recursive($query, $q);
             return strtr(To::query($query), ['&' => $join]);
         }
-        return "" !== $query ? '?' . $query : null;
+        return "" !== $query ? '?' . strtr($query, ['&' => $join]) : null;
     }
 
 }

@@ -94,10 +94,6 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         return 1; // Single node is always `1`
     }
 
-    public function getIterator() {
-        return new \ArrayIterator($this->lot);
-    }
-
     public function jsonSerialize() {
         return $this->lot;
     }

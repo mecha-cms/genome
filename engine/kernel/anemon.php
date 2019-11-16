@@ -126,7 +126,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function jsonSerialize() {
-        return $this->lot;
+        return $this->value;
     }
 
     // Get array key by position

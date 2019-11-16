@@ -7,6 +7,11 @@ URL::_('long', function(string $path, $root = true) {
         return rtrim($url['protocol'] . ':' . $path, '/');
     // `URL::long('/foo/bar/baz/qux')`
     } else if (0 === strpos($path, '/')) {
+        if (false !== strpos('?#', $path[1] ?? P)) {
+            $path = substr($path, 1);
+        } else if (1 === strpos($path, '&')) {
+            $path = '?' . substr($path, 2);
+        }
         return rtrim($url->ground . $path, '/');
     }
     // `URL::long('&foo=bar&baz=qux')`

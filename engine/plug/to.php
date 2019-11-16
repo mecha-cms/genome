@@ -19,9 +19,9 @@ foreach([
     },
     'base64' => "\\base64_encode",
     'camel' => "\\c",
-    'dec' => function(string $in, $z = false, $f = ['&#', ';']) {
+    'dec' => function(string $in, $z = false, array $f = ['&#', ';']) {
         $out = "";
-        for($i = 0, $count = strlen($in); $i < $count; ++$i) {
+        for ($i = 0, $count = strlen($in); $i < $count; ++$i) {
             $s = ord($in[$i]);
             if (!$z) {
                 $s = str_pad($s, 4, '0', STR_PAD_LEFT);
@@ -116,9 +116,9 @@ foreach([
         }
         return $out . h($n, '-', true, '_');
     },
-    'hex' => function(string $in, $z = false, $f = ['&#x', ';']) {
+    'hex' => function(string $in, $z = false, array $f = ['&#x', ';']) {
         $out = "";
-        for($i = 0, $count = strlen($in); $i < $count; ++$i) {
+        for ($i = 0, $count = strlen($in); $i < $count; ++$i) {
             $s = dechex(ord($in[$i]));
             if (!$z) {
                 $s = str_pad($s, 4, '0', STR_PAD_LEFT);
@@ -127,11 +127,11 @@ foreach([
         }
         return $out;
     },
-    'kebab' => function(string $in, $s = '-', $a = true) {
-        return trim(h($in, $s, $a), $s);
+    'kebab' => function(string $in, string $join = '-', $accent = true) {
+        return trim(h($in, $join, $accent), $join);
     },
-    'key' => function(string $in, $a = true) {
-        $out = trim(h($in, '_', $a), '_');
+    'key' => function(string $in, $accent = true) {
+        $out = trim(h($in, '_', $accent), '_');
         return $out && is_numeric($out[0]) ? '_' . $out : $out;
     },
     'lower' => "\\l",
@@ -170,7 +170,7 @@ foreach([
         }
         return $out ? '?' . implode('&', $out) : null;
     },
-    'sentence' => function(string $in, $tail = '.') {
+    'sentence' => function(string $in, string $tail = '.') {
         $in = trim($in);
         if (extension_loaded('mbstring')) {
             return mb_strtoupper(mb_substr($in, 0, 1)) . mb_strtolower(mb_substr($in, 1)) . $tail;

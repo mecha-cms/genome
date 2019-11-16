@@ -7,6 +7,5 @@ return [
     'direction' => 'ltr',
     'title' => 'Site Title',
     'description' => 'Site description.',
-    'language' => 'en',
-    'name' => 'log'
+    'language' => 'en'
 ];
