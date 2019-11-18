@@ -82,11 +82,20 @@ namespace {
     }
     // Convert file name to class name
     function f2c(string $s, string $h = '-', string $n = '.') {
-        return \str_replace($n, '\\', p(\str_replace([$n, '_'], [$n . $h, '_' . $h], $s), false, $n . '_'));
+        return \strtr(p(\strtr($s, [
+            $n => $n . $h,
+            '_' => '_' . $h
+        ]), false, $n . '_'), [$n => "\\"]);
     }
     // Convert file name to class property name
     function f2p(string $s, string $h = '-', string $n = '.') {
-        return c(\str_replace([$n, '_'], [$h . '__', $h . '_'], $s), false, $n . '_');
+        if (0 === \strpos($s, $n)) {
+            $s = '__' . \substr($s, 1);
+        }
+        return \strtr(c(\strtr($s, [
+            $n => $h . $n,
+            '_' => $h . '_'
+        ]), false, $n . '_'), [$n => "\\"]);
     }
     // Fetch remote URL
     function fetch(string $url, $lot = null, $type = 'GET') {
@@ -121,7 +130,7 @@ namespace {
                 \curl_setopt($curl, \CURLOPT_POSTFIELDS, $chops[1] ?? "");
             }
             $out = \curl_exec($curl);
-            if (\defined("\\DEBUG") && \DEBUG && false ===  $out) {
+            if (\defined("\\DEBUG") && 'curl' === \DEBUG && false ===  $out) {
                 throw new \UnexpectedValueException(\curl_error($curl));
             }
             \curl_close($curl);
@@ -243,7 +252,42 @@ namespace {
     }
     // Convert class property name to file name
     function p2f(string $s, string $h = '-', string $n = '.') {
-        return \str_replace('__', $n, h($s, $h, false, '_'));
+        if (0 === \strpos($s, '__')) {
+            $s = $n . \substr($s, 2);
+        }
+        return \strtr(h($s, $h, false, $n . "\\\\_"), ["\\" => $n]);
+    }
+    // Send HTML email
+    function send($from, $to, string $title, string $content, array $lot = []) {
+        // This function was intended to be used as a quick way to send HTML email
+        // There are no such email validation proccess here
+        // We assume that you have set the correct email address(es)
+        if (\is_array($to)) {
+            if (\array_keys($to) !== \range(0, \count($to) - 1)) {
+                // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
+                $s = "";
+                foreach ($to as $k => $v) {
+                    $s .= ', ' . $v . ' <' . $k . '>';
+                }
+                $to = \substr($s, 2);
+                // ['foo@bar', 'baz@qux']
+            } else {
+                $to = \implode(', ', $to);
+            }
+        }
+        foreach (\array_filter(\array_replace([
+            'Content-Type' => 'text/html; charset=ISO-8859-1',
+            'From' => $from,
+            'MIME-Version' => '1.0',
+            'Reply-To' => $from,
+            'Return-Path' => $from,
+            'X-Mailer' => 'PHP/' . \phpversion()
+        ], $lot)) as $k => &$v) {
+            $v = $k . ': ' . $v;
+        }
+        // Line(s) shouldn’t be larger than 70 character(s)
+        $content = \wordwrap($content, 70, "\r\n");
+        return \mail($to, $title, $content, \implode("\r\n", $lot));
     }
     // Set array value
     function set(array &$a, string $k, $v = null, string $s = '.') {
@@ -1014,6 +1058,8 @@ namespace {
         // <https://stackoverflow.com/a/14224813/1163000>
         return ($x - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
     }
+    // Reserved
+    function mecha() {}
     function n(string $x = null, string $t = '    ') {
         // <https://stackoverflow.com/a/18870840/1163000>
         $x = \str_replace("\xEF\xBB\xBF", "", $x);
@@ -1087,7 +1133,7 @@ namespace {
         if (\is_string($x)) {
             return $a[$x = (string) $x] ?? $x;
         }
-        return $x;
+        return (string) $x;
     }
     function t(string $x = null, string $o = '"', string $c = null) {
         if ($x) {

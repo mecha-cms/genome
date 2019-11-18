@@ -26,7 +26,7 @@ if ($blob = Post::get('blob')) {
 The following is an example of generic HTML form markup:
 
 ~~~ .html
-<form method="post" enctype="multipart/form-data">
+<form enctype="multipart/form-data" method="post">
   <p>
     <input name="blob" type="file">
   </p>
