@@ -70,4 +70,8 @@ State::set('has', [
     'i' => State::is('pages') && "" !== $i
 ]);
 
-State::set(['are' => [], 'not' => []]);
+State::set([
+    'are' => [],
+    'can' => [],
+    'not' => []
+]);

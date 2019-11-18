@@ -20,6 +20,11 @@ namespace _\lot\x\layout {
             \State::set('[layout].are:' . $k, $v);
         }
     }
+    function can() {
+        foreach ((array) \State::get('can', true) as $k => $v) {
+            \State::set('[layout].can:' . $k, $v);
+        }
+    }
     function has() {
         foreach ((array) \State::get('has', true) as $k => $v) {
             \State::set('[layout].has:' . $k, $v);
@@ -77,6 +82,7 @@ namespace _\lot\x\layout {
     \Hook::set('content', __NAMESPACE__, 20);
     \Hook::set('content', __NAMESPACE__ . "\\alert", 0);
     \Hook::set('content', __NAMESPACE__ . "\\are", 0);
+    \Hook::set('content', __NAMESPACE__ . "\\can", 0);
     \Hook::set('content', __NAMESPACE__ . "\\has", 0);
     \Hook::set('content', __NAMESPACE__ . "\\is", 0);
     \Hook::set('content', __NAMESPACE__ . "\\not", 0);
