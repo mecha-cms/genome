@@ -10,7 +10,7 @@ class Page extends File {
     protected $lot;
     protected $prefix;
 
-    protected function any(string $kin, array $lot = []) {
+    protected function _get(string $kin, array $lot = []) {
         if (isset(self::$page[$id = $this->id][$kin]) && !empty($this->read[$kin])) {
             $v = self::$page[$id][$kin]; // Load from cache…
         } else {
@@ -35,7 +35,7 @@ class Page extends File {
         if (parent::_($kin = p2f($kin))) {
             return parent::__call($kin, $lot);
         }
-        return $this->any($kin, $lot);
+        return $this->_get($kin, $lot);
     }
 
     public function __construct(string $path = null, array $lot = []) {
@@ -68,19 +68,19 @@ class Page extends File {
     }
 
     public function ID(...$lot) {
-        return $this->any('id', $lot) ?? (($t = $this->time()->format('U')) ? sprintf('%u', $t) : null);
+        return $this->_get('id', $lot) ?? (($t = $this->time()->format('U')) ? sprintf('%u', $t) : null);
     }
 
     // Inherit to `File::URL()`
     public function URL(...$lot) {
         if ($this->exist) {
-            return $this->any('url', $lot) ?? trim($GLOBALS['url'] . '/' . Path::R(Path::F($this->path), LOT . DS . 'page', '/'), '/');
+            return $this->_get('url', $lot) ?? trim($GLOBALS['url'] . '/' . Path::R(Path::F($this->path), LOT . DS . 'page', '/'), '/');
         }
         return null;
     }
 
     public function content(...$lot) {
-        return $this->any('content', $lot);
+        return $this->_get('content', $lot);
     }
 
     // Inherit to `File::get()`
@@ -91,23 +91,23 @@ class Page extends File {
                 // `$page->get(['foo.bar' => 0])`
                 if (false !== strpos($k, '.')) {
                     $kk = explode('.', $k, 2);
-                    if (is_array($vv = $this->any($kk[0]))) {
+                    if (is_array($vv = $this->_get($kk[0]))) {
                         $out[$k] = get($vv, $kk[1]) ?? $v;
                         continue;
                     }
                 }
-                $out[$k] = $this->any($k) ?? $v;
+                $out[$k] = $this->_get($k) ?? $v;
             }
             return $out;
         }
         // `$page->get('foo.bar')`
         if (false !== strpos($key, '.')) {
             $k = explode('.', $key, 2);
-            if (is_array($v = $this->any($k[0]))) {
+            if (is_array($v = $this->_get($k[0]))) {
                 return get($v, $k[1]);
             }
         }
-        return $this->any($key);
+        return $this->_get($key);
     }
 
     // Inherit to `File::getIterator()`
@@ -183,14 +183,18 @@ class Page extends File {
         }
         if (is_array($key)) {
             foreach ($key as $k => $v) {
-                if (false === $v) {
+                if (!isset($v) || false === $v) {
                     unset($this->lot[$k], self::$page[$id][$k]);
                     continue;
                 }
                 $this->lot[$k] = $v;
             }
         } else if (isset($value)) {
-            $this->lot[$key] = $value;
+            if (false === $value) {
+                unset($this->lot[$key]);
+            } else {
+                $this->lot[$key] = $value;
+            }
         } else {
             // `$page->set('<p>abcdef</p>')`
             $this->lot['content'] = $key;
@@ -222,7 +226,7 @@ class Page extends File {
 
     // Inherit to `File::type()`
     public function type(...$lot) {
-        return $this->any('type', $lot) ?? 'text/html';
+        return $this->_get('type', $lot) ?? 'text/html';
     }
 
 }

@@ -54,8 +54,11 @@ final class Is extends Genome {
         if ($x instanceof \Traversable) {
             return 0 === \iterator_count($x);
         }
+        // `0` integer and `0` string is not considered void
         return (
             "" === $x ||
+            false === $x ||
+            null === $x ||
             is_string($x) && "" === trim($x) ||
             is_array($x) && empty($x) ||
             is_object($x) && empty((array) $x)

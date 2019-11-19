@@ -281,7 +281,7 @@ namespace {
             'MIME-Version' => '1.0',
             'Reply-To' => $from,
             'Return-Path' => $from,
-            'X-Mailer' => 'PHP/' . \phpversion()
+            'X-Mailer' => 'PHP/' . \PHP_VERSION
         ], $lot)) as $k => &$v) {
             $v = $k . ': ' . $v;
         }
