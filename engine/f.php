@@ -172,9 +172,9 @@ namespace {
     }
     // Get array value recursively
     function get(array &$a, string $k, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, \P, $k));
+        $kk = \explode($s, \strtr($k, ["\\" . $s => \P]));
         foreach ($kk as $v) {
-            $v = \str_replace(\P, $s, $v);
+            $v = \strtr($v, [\P => $s]);
             if (!\is_array($a) || !\array_key_exists($v, $a)) {
                 return null;
             }
@@ -205,9 +205,9 @@ namespace {
     }
     // Remove array value
     function let(array &$a, string $k, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, \P, $k));
+        $kk = \explode($s, \strtr($k, ["\\" . $s => \P]));
         while (\count($kk) > 1) {
-            $k = \str_replace(\P, $s, \array_shift($kk));
+            $k = \strtr(\array_shift($kk), [\P => $s]);
             if (\is_array($a) && \array_key_exists($k, $a)) {
                 $a =& $a[$k];
             }
@@ -291,15 +291,15 @@ namespace {
     }
     // Set array value
     function set(array &$a, string $k, $v = null, string $s = '.') {
-        $kk = \explode($s, \str_replace("\\" . $s, \P, $k));
+        $kk = \explode($s, \strtr($k, ["\\" . $s => \P]));
         while (\count($kk) > 1) {
-            $k = \str_replace(\P, $s, \array_shift($kk));
+            $k = \strtr(\array_shift($kk), [\P => $s]);
             if (!\array_key_exists($k, $a)) {
                 $a[$k] = [];
             }
             $a =& $a[$k];
         }
-        $a[\str_replace(\P, $s, \array_shift($kk))] = $v;
+        $a[\strtr(\array_shift($kk), [\P => $s])] = $v;
         return $a;
     }
     // Shake array
@@ -324,20 +324,24 @@ namespace {
         }
         return $a;
     }
-    function step($a, string $s = '.', int $dir = 1) {
-        if (\is_string($a) && false !== \strpos($a, $s)) {
+    function step(string $a, string $s = '.', int $dir = 1) {
+        $a = \strtr($a, ["\\" . $s => \P]);
+        if (false !== \strpos($a, $s)) {
             $a = \explode($s, \trim($a, $s));
             $v = -1 === $dir ? \array_pop($a) : \array_shift($a);
-            $c = [$v];
+            $k = \strtr(\implode($s, $a), [\P => $s]);
+            $c = [$k => \strtr($v, [\P => $s])];
             if (-1 === $dir) {
                 while ($b = \array_pop($a)) {
-                    $v = $b . $s . $v;
-                    \array_unshift($c, $v);
+                    $v = \strtr($b . $s . $v, [\P => $s]);
+                    $k = \strtr(\implode($s, $a), [\P => $s]);
+                    $c += [$k => $v];
                 }
             } else {
                 while ($b = \array_shift($a)) {
-                    $v .= $s . $b;
-                    \array_unshift($c, $v);
+                    $v .= \strtr($s . $b, [\P => $s]);
+                    $k = \strtr(\implode($s, $a), [\P => $s]);
+                    $c = [$k => $v] + $c;
                 }
             }
             return $c;
@@ -375,7 +379,7 @@ namespace {
 // g: Advance PHP `glob` function that returns generator
 // h: Convert text to snake case with `-` (hyphen) as the default separator
 // i: Internationalization
-// j:
+// j: Compare array(s) and return all item(s) that exists just once in any
 // k: Search file in a folder by query
 // l: Convert text to lower case
 // m: Normalize range margin
@@ -1028,9 +1032,26 @@ namespace {
             }
         }
         $x = $GLOBALS['I'][$x] ?? $f ?? $x;
-        return is_string($x) && $a ? vsprintf($x, $a) : $x;
+        return \is_string($x) && $a ? \vsprintf($x, $a) : $x;
     }
-    function j() {}
+    function j(array $a, array $b) {
+        $f = [];
+        foreach ($a as $k => $v) {
+            if (\is_array($v)) {
+                if (!\array_key_exists($k, $b) || !\is_array($b[$k])) {
+                    $f[$k] = $v;
+                } else {
+                    $ff = j($v, $b[$k]);
+                    if (!empty($ff)) {
+                        $f[$k] = $ff;
+                    }
+                }
+            } else if (!\array_key_exists($k, $b) || $v !== $b[$k]) {
+                $f[$k] = $v;
+            }
+        }
+        return $f;
+    }
     function k(string $f, $x = null, $r = 0, $q = [], $c = false) {
         foreach (g($f, $x, $r) as $k => $v) {
             foreach ($q as $n) {

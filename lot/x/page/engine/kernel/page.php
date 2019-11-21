@@ -2,31 +2,25 @@
 
 class Page extends File {
 
-    private $read;
-
-    protected static $page;
-
-    protected $id;
+    protected $a;
+    protected $h;
     protected $lot;
-    protected $prefix;
+    protected $read;
 
     protected function _get(string $kin, array $lot = []) {
-        if (isset(self::$page[$id = $this->id][$kin]) && !empty($this->read[$kin])) {
-            $v = self::$page[$id][$kin]; // Load from cache…
-        } else {
-            $v = $this->offsetGet($kin);
-            // Set first, to be used in the hook scope…
-            $this->lot[$kin] = self::$page[$id][$kin] = $v;
+        $v = $this->offsetGet($kin) ?? $this->a[$kin] ?? null;
+        if (empty($this->read[$kin]) || 2 !== $this->read[$kin]) {
             // Do the hook once!
-            $v = Hook::fire(map($this->prefix, function($v) use($kin) {
+            $v = Hook::fire(map($this->h, function($v) use($kin) {
                 return $v .= '.' . $kin;
             }), [$v, $lot], $this);
-            $this->read[$kin] = 2; // Done hook
             if ($lot && is_callable($v) && !is_string($v)) {
                 $v = call_user_func($v, ...$lot);
             }
+            // Done hook
+            $this->read[$kin] = 2;
             // Set again to be used later…
-            $this->lot[$kin] = self::$page[$id][$kin] = $v;
+            $this->lot[$kin] = $v;
         }
         return $v;
     }
@@ -39,18 +33,10 @@ class Page extends File {
     }
 
     public function __construct(string $path = null, array $lot = []) {
-        parent::__construct($path);
-        $c = strtr(c2f(static::class), ['.' => "\\."]); // Current class name
-        $cc = strtr(c2f(self::class), ['.' => "\\."]); // This very class name
-        $prefix = array_unique([$cc, $c]);
-        $id = json_encode([$path, $lot, $prefix]);
-        $this->id = $id;
-        $this->prefix = $prefix;
+        $this->h = [$c = c2f(self::class)];
         // Set pre-defined page property
-        if (!isset(self::$page[$id])) {
-            self::$page[$id] = array_replace_recursive((array) State::get('x.' . $cc . '.page', true), (array) State::get('x.' . $c . '.page', true), $lot);
-        }
-        $this->lot = self::$page[$id] ?? [];
+        $this->a = array_replace_recursive((array) State::get('x.' . $c . '.page', true), $lot);
+        parent::__construct($path);
     }
 
     // Inherit to `File::__get()`
@@ -64,7 +50,7 @@ class Page extends File {
 
     // Inherit to `File::__toString()`
     public function __toString() {
-        return To::page($this->lot);
+        return To::page($this->lot ?? []);
     }
 
     public function ID(...$lot) {
@@ -84,10 +70,10 @@ class Page extends File {
     }
 
     // Inherit to `File::get()`
-    public function get($key = null) {
-        if (is_array($key)) {
+    public function get(...$lot) {
+        if (isset($lot[0]) && is_array($lot[0])) {
             $out = [];
-            foreach ($key as $k => $v) {
+            foreach ($lot[0] as $k => $v) {
                 // `$page->get(['foo.bar' => 0])`
                 if (false !== strpos($k, '.')) {
                     $kk = explode('.', $k, 2);
@@ -101,20 +87,23 @@ class Page extends File {
             return $out;
         }
         // `$page->get('foo.bar')`
-        if (false !== strpos($key, '.')) {
-            $k = explode('.', $key, 2);
-            if (is_array($v = $this->_get($k[0]))) {
-                return get($v, $k[1]);
+        if (isset($lot[0]) && is_string($lot[0])) {
+            if (false !== strpos($lot[0], '.')) {
+                $k = explode('.', $lot[0], 2);
+                if (is_array($v = $this->_get($k[0]))) {
+                    return get($v, $k[1]);
+                }
             }
+            return $this->_get($lot[0]);
         }
-        return $this->_get($key);
+        return null;
     }
 
     // Inherit to `File::getIterator()`
     public function getIterator() {
         $out = [];
         if ($this->exist) {
-            $out = From::page(file_get_contents($path = $this->path), null, true);
+            $out = From::page(file_get_contents($path = $this->path), true);
             foreach (g(Path::F($path), 'data') as $k => $v) {
                 $out[basename($k, '.data')] = e(file_get_contents($k));
             }
@@ -124,80 +113,76 @@ class Page extends File {
 
     // Inherit to `File::jsonSerialize()`
     public function jsonSerialize() {
-        return $this->exist ? From::page(file_get_contents($this->path), null, true) : [];
+        return $this->exist ? From::page(file_get_contents($this->path), true) : [];
     }
 
     // Inherit to `File::offsetGet()`
     public function offsetGet($i) {
         // Read once!
         if ($this->exist && empty($this->read[$i])) {
-            $id = $this->id;
             // Prioritize data from a file…
             if (is_file($f = Path::F($this->path) . DS . $i . '.data')) {
                 $this->read[$i] = 1; // Done read
-                unset(self::$page[$id][$i]); // Remove cached value if any
                 return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
-            $any = From::page(file_get_contents($this->path), null, true);
+            $any = From::page(file_get_contents($this->path), true);
             foreach ($any as $k => $v) {
                 $this->read[$k] = 1; // Done read
-                unset(self::$page[$id][$k]); // Remove cached value if any
             }
-            $this->lot = array_replace_recursive($this->lot, $any);
+            $this->lot = array_replace_recursive($this->lot ?? [], $any);
         }
         return $this->lot[$i] ?? null;
     }
 
     // Inherit to `File::offsetSet()`
     public function offsetSet($i, $value) {
-        $id = $this->id;
         if (isset($i)) {
-            self::$page[$id][$i] = $this->lot[$i] = $value;
+            $this->lot[$i] = $value;
         } else {
-            self::$page[$id][] = $this->lot[] = $value;
+            $this->lot[] = $value;
         }
     }
 
     // Inherit to `File::offsetUnset()`
     public function offsetUnset($i) {
-        unset(self::$page[$this->id][$i], $this->lot[$i]);
+        unset($this->lot[$i]);
     }
 
     public function save($seal = null) {
-        $data = $this->lot;
-        $id = $this->id;
-        foreach ($data as $k => $v) {
-            if (isset(self::$page[$id][$k])) {
-                unset($data[$k]);
-            }
-        }
+        $data = $this->lot ?? [];
+        $data = j($data, $this->a);
         $this->value[0] = To::page($data);
         return parent::save($seal);
     }
 
     // Inherit to `File::set()`
-    public function set($key, $value = null) {
-        $id = $this->id ?? "";
+    public function set(...$lot) {
         if (!$this->exist) {
-            $this->lot = self::$page[$id] = [];
+            $this->lot = [];
         }
-        if (is_array($key)) {
-            foreach ($key as $k => $v) {
-                if (!isset($v) || false === $v) {
-                    unset($this->lot[$k], self::$page[$id][$k]);
-                    continue;
+        if (isset($lot[0])) {
+            if (is_array($lot[0])) {
+                if (array_key_exists(1, $lot)) {
+                    if (!isset($lot[1]) || false === $lot[1]) {
+                        unset($this->lot[$lot[0]]);
+                    } else {
+                        $this->lot[$lot[0]] = $lot[1];
+                    }
+                } else {
+                    foreach ($lot[0] as $k => $v) {
+                        if (!isset($v) || false === $v) {
+                            unset($this->lot[$k]);
+                            continue;
+                        }
+                        $this->lot[$k] = $v;
+                    }
                 }
-                $this->lot[$k] = $v;
-            }
-        } else if (isset($value)) {
-            if (false === $value) {
-                unset($this->lot[$key]);
             } else {
-                $this->lot[$key] = $value;
+                // `$page->set('<p>abcdef</p>')`
+                $this->lot['content'] = $lot[0];
             }
-        } else {
-            // `$page->set('<p>abcdef</p>')`
-            $this->lot['content'] = $key;
+        } else if (!isset($lot[0]) || false === $lot[0]) {
+            unset($this->lot['content']);
         }
         return $this;
     }

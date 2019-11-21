@@ -111,7 +111,8 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->exist ? 1 : 0;
     }
 
-    public function get($i = 0) {
+    public function get(...$lot) {
+        $i = $lot[0] ?? 0;
         if ($this->exist) {
             foreach ($this->stream() as $k => $v) {
                 if ($k === $i) {
@@ -221,8 +222,8 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null !== ($i = $this->_seal()) ? substr(sprintf('%o', $i), -4) : null;
     }
 
-    public function set($content) {
-        $this->value[0] = $content;
+    public function set(...$lot) {
+        $this->value[0] = $lot[0] ?? "";
         return $this;
     }
 

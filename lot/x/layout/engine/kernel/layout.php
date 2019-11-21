@@ -54,7 +54,7 @@ class Layout extends Genome {
                 return File::exist(self::$lot[$c][1][$id]) ?: null;
             }
             // Guessing…
-            $out = step($id, '/');
+            $out = array_values(step($id, '/'));
             array_unshift($out, strtr($out[0], '/', '.'));
             $out = array_unique($out);
         } else {
