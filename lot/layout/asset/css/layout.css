@@ -432,10 +432,7 @@ nav ul {
 nav ul {
   display: flex;
   flex-wrap: wrap;
-  margin: 0 calc(var(--margin) / -2);
-}
-nav li {
-  margin: 0 calc(var(--margin) / 2);
+  gap: var(--margin);
 }
 main + nav {
   text-align: center;

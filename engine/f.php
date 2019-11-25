@@ -352,10 +352,11 @@ namespace {
     function stream(string $f, int $c = 1024) {
         if (\is_file($f) && $h = \fopen($f, 'r')) {
             while (false !== ($v = \fgets($h, $c))) {
-                yield rtrim($v, "\n\r");
+                yield \strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
             }
             \fclose($h);
         }
+        yield from [];
     }
     // Dump PHP code
     function test(...$a) {

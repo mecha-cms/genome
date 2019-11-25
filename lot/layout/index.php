@@ -11,7 +11,7 @@ Hook::set('page.description', function($description) {
 // Add CSS file to the `<head>` section…
 Asset::set('css/layout.min.css', 20);
 
-// Create site navigation data to be used in content
+// Create site navigation data to be used in layout
 $GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) use($state) {
     $folder = PAGE . strtr($state->path, '/', DS);
     return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
@@ -21,7 +21,7 @@ $GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) use($state) {
     return $v;
 });
 
-// Create site trace data to be used in content
+// Create site trace data to be used in layout
 $traces = [];
 $chops = explode('/', trim($url->path, '/'));
 $k = "";
