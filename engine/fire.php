@@ -70,7 +70,7 @@ require __DIR__ . DS . 'r' . DS . 'u-r-l.php';
 
 $uses = [];
 $uses_x = $GLOBALS['X'][0] ?? [];
-foreach (glob(X . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
+foreach (glob(LOT . DS . 'x' . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
     if (empty($uses_x[$v])) {
         $n = basename($r = dirname($v));
         $uses[$v] = content($r . DS . $n) ?? $n;

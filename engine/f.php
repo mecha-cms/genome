@@ -351,6 +351,7 @@ namespace {
     // Get file content line by line
     function stream(string $f, int $c = 1024) {
         if (\is_file($f) && $h = \fopen($f, 'r')) {
+            $c += 1;
             while (false !== ($v = \fgets($h, $c))) {
                 yield \strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
             }
@@ -1172,8 +1173,12 @@ namespace {
     function u(string $x = null) {
         return \extension_loaded('mbstring') ? \mb_strtoupper($x) : \strtoupper($x);
     }
-    function v(string $x = null) {
-        return \stripslashes($x);
+    function v(string $x = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
+        $r = [];
+        foreach (\array_merge((array) $c, \str_split($d, 1)) as $v) {
+            $r["\\" . $v] = $v;
+        }
+        return \strtr($x, $r);
     }
     // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
     // $n: @keep line-break in the output or replace them with a space? (default is !@keep)

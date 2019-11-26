@@ -5,7 +5,7 @@ State::over(require __DIR__ . DS . '..' . DS . '..' . DS . 'state.php');
 $path = $url['path'] ?? "";
 $i = $url['i'] ?? "";
 $p = trim($state->path ?? "", '/');
-$folder = PAGE . DS . $path;
+$folder = LOT . DS . 'page' . DS . $path;
 
 // Set proper `i` value in `$url` if we have some page with numeric file/folder name
 if ("" !== $i && File::exist([
@@ -24,8 +24,8 @@ $if_0 = "" === $i && ("" === $path || $path === $p);
 
 $if_1 = File::exist([
     // `.\lot\page\home-name.{page,archive}`
-    PAGE . DS . $p . '.page',
-    PAGE . DS . $p . '.archive'
+    LOT . DS . 'page' . DS . $p . '.page',
+    LOT . DS . 'page' . DS . $p . '.archive'
 ]);
 
 $if_2 = File::exist([
@@ -40,7 +40,7 @@ $if_3 = File::exist([
     $folder . '.archive'
 ]);
 
-$if_4 = glob(PAGE . DS . $p . DS . '*.page', GLOB_NOSORT);
+$if_4 = glob(LOT . DS . 'page' . DS . $p . DS . '*.page', GLOB_NOSORT);
 $if_5 = glob($folder . DS . '*.page', GLOB_NOSORT);
 
 $folder = dirname($folder);

@@ -55,7 +55,7 @@ final class Asset extends Genome {
         // Return the path relative to the `.\lot\asset` or `.` folder if exist!
         $path = ltrim($path, DS);
         return File::exist([
-            constant(u(static::class)) . DS . $path,
+            LOT . DS . 'asset' . DS . $path,
             ROOT . DS . $path
         ]) ?: null;
     }

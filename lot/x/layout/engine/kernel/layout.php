@@ -5,7 +5,7 @@ class Layout extends Genome {
     protected static $lot;
 
     const state = [
-        'path' => LAYOUT,
+        'path' => LOT . DS . 'layout',
         'x' => ['html', 'php']
     ];
 

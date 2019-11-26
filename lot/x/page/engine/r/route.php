@@ -15,7 +15,7 @@ function route($any = "") {
     }
     // Default home page path
     $p = '/' === $path ? $state->path : $path;
-    $folder = \rtrim(\PAGE . \strtr($p, '/', \DS), \DS);
+    $folder = \rtrim(\LOT . \DS . 'page' . \strtr($p, '/', \DS), \DS);
     if ($file = \File::exist([
         $folder . '.page',
         $folder . '.archive'

@@ -9,13 +9,12 @@
  */
 
 define('VERSION', '2.2.x'); // Current version
-
 define('DS', DIRECTORY_SEPARATOR); // Default directory separator
 define('PS', PATH_SEPARATOR); // Default path separator
 
 define('N', PHP_EOL); // Line break
-define('P', "\u{001A}"); // Placeholder text
-define('S', "\u{200C}"); // Invisible space
+define('P', "\u{001A}"); // Placeholder character
+define('S', "\u{200C}"); // Invisible character
 
 define('GROUND', rtrim(strtr($_SERVER['CONTEXT_DOCUMENT_ROOT'] ?? $_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
 define('ROOT', __DIR__);
@@ -24,13 +23,6 @@ define('LOT', ROOT . DS . 'lot');
 
 define('SESSION', null); // Change to a folder path to define `session_save_path`
 define('DEBUG', true); // Change to `true` to enable debug mode
-
-foreach (glob(LOT . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
-    $k = strtoupper(strtr(basename($v), '-.', "_\\"));
-    !defined($k) && define($k, $v);
-    $k = "LOT\\" . $k; // Alias
-    !defined($k) && define($k, $v);
-}
 
 require ENGINE . DS . 'f.php';
 require ENGINE . DS . 'fire.php';

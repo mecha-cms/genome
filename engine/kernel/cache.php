@@ -3,12 +3,7 @@
 final class Cache extends Genome {
 
     private static function f($id) {
-        $root = constant(u(static::class)) . DS;
-        if (is_file($id)) {
-            return $root . Path::R($id, LOT, DS) . '.php';
-        }
-        $id = dechex(crc32($id)); // Convert string to a safe file name
-        return $root . $id . '.php';
+        return LOT . DS . 'cache' . DS . rtrim(chunk_split(md5($id), 2, DS), DS) . '.php';
     }
 
     public static function live(string $id, callable $fn, $for = '1 day') {
@@ -29,7 +24,7 @@ final class Cache extends Genome {
     }
 
     public static function get(string $id) {
-        return require exist(self::f($id));
+        return is_file($f = self::f($id)) ? require $f : null;
     }
 
     public static function hit($file, callable $fn) {
@@ -55,21 +50,26 @@ final class Cache extends Genome {
         $out = [];
         if (is_array($id)) {
             foreach ($id as $v) {
-                $out[] = (new File(self::f($v)))->let();
+                if (is_file($f = self::f($v))) {
+                    $out[] = unlink($f) ? $f : null;
+                }
             }
             return $out;
         } else if (isset($id)) {
-            return (new File(self::f($id)))->let();
+            return is_file($f = self::f($id)) ? (unlink($f) ? $f : null) : false;
         }
-        foreach (g(constant(u(static::class)), null, true) as $k => $v) {
-            $out = concat($out, unlink($k) ? $k : null);
+        foreach (g(LOT . DS . 'cache', 1, true) as $k => $v) {
+            $out[] = unlink($k) ? $k : null;
         }
         return $out;
     }
 
     public static function set(string $id, callable $fn, array $lot = []): array {
-        $file = new File($f = self::f($id));
-        $file->set('<?php return ' . z($r = call_user_func($fn, ...$lot)) . ';')->save(0600);
+        if (!is_dir($d = dirname($f = self::f($id)))) {
+            mkdir($d, 0775, true);
+        }
+        file_put_contents($f, '<?php return ' . z($r = call_user_func($fn, ...$lot)) . ';');
+        chmod($f, 0600);
         return [$r, $f, filemtime($f)];
     }
 

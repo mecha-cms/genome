@@ -17,7 +17,7 @@ namespace _\lot\x\art {
     }
     function get() {
         global $state, $url;
-        $folder = \PAGE . ($url->path ?? \State::get('x.page.path'));
+        $folder = \LOT . \DS . 'page' . ($url->path ?? \State::get('x.page.path'));
         $i = $url['i'] ?? 1;
         if ($path = \File::exist([
             $folder . \DS . $i . '.page',

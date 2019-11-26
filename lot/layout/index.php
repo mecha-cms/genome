@@ -12,8 +12,8 @@ Hook::set('page.description', function($description) {
 Asset::set('css/layout.min.css', 20);
 
 // Create site navigation data to be used in layout
-$GLOBALS['links'] = map(Pages::from(PAGE)->is(function($v) use($state) {
-    $folder = PAGE . strtr($state->path, '/', DS);
+$GLOBALS['links'] = map(Pages::from(LOT . DS . 'page')->is(function($v) use($state) {
+    $folder = LOT . DS . 'page' . strtr($state->path, '/', DS);
     return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
 })->get(), function($v) use($url) {
     $v = new Page($v);
@@ -28,8 +28,8 @@ $k = "";
 while ($chop = array_shift($chops)) {
     $k .= '/' . $chop;
     if ($v = File::exist([
-        PAGE . $k . '.page',
-        PAGE . $k . '.archive'
+        LOT . DS . 'page' . $k . '.page',
+        LOT . DS . 'page' . $k . '.archive'
     ])) {
         $traces[] = $v;
     }
