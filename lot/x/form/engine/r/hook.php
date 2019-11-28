@@ -11,7 +11,9 @@ function set($content) {
             if (!$name = $input['name']) {
                 return $m[0];
             }
-            if ('hidden' === ($type = $input['type'])) {
+            $type = $input['type'];
+            if ('hidden' === $type || 'password' === $type) {
+                // Disable form session on `password` and `hidden` input
                 return $m[0];
             }
             $name = $keys($name);
