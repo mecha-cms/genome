@@ -425,14 +425,16 @@ article + article {
 }
 nav li,
 nav ul {
-  margin: 0;
   padding: 0;
   list-style: none;
 }
 nav ul {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--margin);
+  margin: calc(var(--margin) * -.5);
+}
+nav li {
+  margin: calc(var(--margin) * .5);
 }
 main + nav {
   text-align: center;
