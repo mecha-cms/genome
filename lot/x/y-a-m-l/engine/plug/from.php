@@ -87,7 +87,8 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
                     $m[1] = ':' . ($m[1][0] ?? "");
                     return $m;
                 }
-                return [false, false, trim(explode('#', $in, 2)[0])];
+                $out = strstr($in, '#', true);
+                return [false, false, trim(false !== $out ? $out : $in)];
             };
             $yaml_list = function(string $in, string $dent, $e) use(
                 &$yaml,
@@ -142,7 +143,8 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
                         return $m[1];
                     }
                 }
-                return trim(explode('#', $in, 2)[0]);
+                $out = strstr($in, '#', true);
+                return trim(false !== $out ? $out : $in);
             };
             list($k, $m, $v) = $yaml_brk($in);
             if (false === $k && false === $m && "" !== $v) {

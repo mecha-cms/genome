@@ -6,5 +6,5 @@ From::_('page', function(string $in, $eval = false) {
         $in = "---\n...\n\n" . $in;
     }
     $v = static::YAML($in, '  ', true, $eval);
-    return $v[0] + ['content' => $v["\t"] ?? ""];
+    return $v[0] + ['content' => $v["\t"] ?? null];
 });

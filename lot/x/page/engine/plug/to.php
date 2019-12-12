@@ -1,7 +1,7 @@
 <?php
 
 To::_('page', function(array $in) {
-    $content = $in['content'] ?? "";
+    $content = $in['content'] ?? null;
     unset($in['content']);
     $in = [
         0 => $in,

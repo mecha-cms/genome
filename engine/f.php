@@ -102,20 +102,22 @@ namespace {
         $o = [];
         $chops = \explode('?', $url, 2);
         $type = \strtoupper($type);
-        // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
-        $port = (int) $_SERVER['SERVER_PORT'];
-        $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
         // `fetch('/', ['Content-Type' => 'text/html'])`
         if (\is_array($lot)) {
             foreach ($lot as $k => $v) {
                 $o[$k] = $k . ': ' . $v;
             }
+        } else if (\is_string($lot)) {
+            $o['User-Agent'] = 'User-Agent: ' . $lot;
         }
         if (!isset($o['User-Agent'])) {
+            // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
+            $port = (int) $_SERVER['SERVER_PORT'];
+            $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
             $o['User-Agent'] = 'User-Agent: ' . $v;
         }
         if (\extension_loaded('curl')) {
-            $curl = \curl_init($chops[0]);
+            $curl = \curl_init('GET' === $type ? $url : $chops[0]);
             \curl_setopt_array($curl, [
                 \CURLOPT_FAILONERROR => true,
                 \CURLOPT_FOLLOWLOCATION => true,
@@ -126,24 +128,22 @@ namespace {
                 \CURLOPT_SSL_VERIFYPEER => false,
                 \CURLOPT_TIMEOUT => 15
             ]);
-            if ('GET' !== $type) {
+            if ('POST' === $type) {
                 \curl_setopt($curl, \CURLOPT_POSTFIELDS, $chops[1] ?? "");
             }
             $out = \curl_exec($curl);
-            if (\defined("\\DEBUG") && 'curl' === \DEBUG && false ===  $out) {
+            if (\defined("\\DEBUG") && 'curl' === \DEBUG && false === $out) {
                 throw new \UnexpectedValueException(\curl_error($curl));
             }
             \curl_close($curl);
         } else {
-            $opts = [
-                'http' => ['method' => $type]
-            ];
-            if ('GET' !== $type) {
+            $context = ['http' => ['method' => $type]];
+            if ('POST' === $type) {
                 $o['Content-Type'] = 'Content-Type: application/x-www-form-urlencoded';
-                $opts['http']['content'] = $chops[1] ?? "";
+                $context['http']['content'] = $chops[1] ?? "";
             }
-            $opts['http']['header'] = \implode("\r\n", \array_values($o));
-            $out = \file_get_contents($u, false, \stream_context_create($opts));
+            $context['http']['header'] = \implode("\r\n", \array_values($o));
+            $out = \file_get_contents($u, false, \stream_context_create($context));
         }
         return false !== $out ? $out : null;
     }

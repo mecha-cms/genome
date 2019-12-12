@@ -49,8 +49,14 @@ function route($any = "") {
             'deep' => $deep, // Inherit current page’s `deep` property
             'has' => [
                 'next' => !!$pager->next,
+                'page' => true,
+                'pages' => false,
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
+            ],
+            'is' => [
+                'page' => true,
+                'pages' => false
             ],
             'sort' => $sort // Inherit current page’s `sort` property
         ]);
@@ -63,10 +69,18 @@ function route($any = "") {
         $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $p);
         $pages = $pages->chunk($chunk, $i);
         if ($pages->count() > 0) {
-            \State::set('has', [
-                'next' => !!$pager->next,
-                'parent' => !!$pager->parent,
-                'prev' => !!$pager->prev,
+            \State::set([
+                'has' => [
+                    'next' => !!$pager->next,
+                    // 'page' => true,
+                    'pages' => true,
+                    'parent' => !!$pager->parent,
+                    'prev' => !!$pager->prev
+                ],
+                'is' => [
+                    'page' => false,
+                    'pages' => true
+                ]
             ]);
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
@@ -78,6 +92,8 @@ function route($any = "") {
         'has' => [
             'i' => false,
             'next' => false,
+            'page' => false,
+            'pages' => false,
             'parent' => false,
             'prev' => false
         ],
