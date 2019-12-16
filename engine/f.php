@@ -116,8 +116,9 @@ namespace {
             $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
             $o['User-Agent'] = 'User-Agent: ' . $v;
         }
+        $u = 'GET' === $type ? $url : $chops[0];
         if (\extension_loaded('curl')) {
-            $curl = \curl_init('GET' === $type ? $url : $chops[0]);
+            $curl = \curl_init($u);
             \curl_setopt_array($curl, [
                 \CURLOPT_FAILONERROR => true,
                 \CURLOPT_FOLLOWLOCATION => true,
