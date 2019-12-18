@@ -45,7 +45,7 @@ namespace _\lot\x\layout {
     }
     function get() {
         $folder = \Layout::$state['path'] . \DS;
-        // Run content task if any
+        // Run layout task if any
         if (\is_file($task = $folder . 'task.php')) {
             (function($task) {
                 extract($GLOBALS, \EXTR_SKIP);

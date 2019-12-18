@@ -7,7 +7,7 @@ namespace _\lot\x\markdown {
             return $content;
         }
         $parser = new \ParsedownExtraPlugin;
-        foreach ((array) \State::get('x.markdown') as $k => $v) {
+        foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
             if (0 === \strpos($k, 'block')) {
                 continue;
             }
@@ -27,7 +27,7 @@ namespace _\lot\x {
             return $content;
         }
         $parser = new \ParsedownExtraPlugin;
-        foreach ((array) \State::get('x.markdown') as $k => $v) {
+        foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
             $parser->{$k} = $v;
         }
         return $parser->text($content ?? "");

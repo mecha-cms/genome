@@ -17,11 +17,12 @@ Route::_('type', function(...$v) {
     return Lot::type(...$v);
 });
 
-Route::_('view', function(string $path, array $lot = []) {
-    if (null !== ($content = Layout::get($path, $lot))) {
+Route::_('view', function(string $layout, array $lot = []) {
+    $layout = Hook::fire('layout', [$layout, $lot]);
+    if (null !== ($content = Layout::get($layout, $lot))) {
         $this->content($content, false);
         exit;
     } else if (defined('DEBUG') && DEBUG) {
-        Guard::abort('Layout <code>' . $path . '</code> does not exist.');
+        Guard::abort('Layout <code>' . $layout . '</code> does not exist.');
     }
 });
