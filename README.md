@@ -7,7 +7,8 @@ Mecha CMS
 
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/mecha-cms?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 
-### Objective
+Objective
+---------
 
 Mecha is a file-based CMS that survives on principle that a database-less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary. Mecha’s market shares are people with high creativity and individuals who want to dedicate themselves to the freedom of speech, that probably don’t have much time to learn web programming languages. By introducing Mecha as files and folders that used to be seen by people everyday in their working desktop, we hope you will soon be familiar with the way Mecha CMS works.
 
@@ -15,7 +16,8 @@ Mecha is as simple as files and folders. Yet, that doesn’t mean that Mecha is 
 
 If you want to make something that is super huge with Mecha, that would be possible, but remember that Mecha wasn’t created to replace databases. Mecha was previously created simply to help people getting rid of various resources that are not needed from the start (such as databases). There will be a time when you need a database, and when that time comes, just use a database. Mecha is fairly open to be extended with other database-based applications.
 
-### Features
+Features
+--------
 
  - Writing pages with ease using Markdown.
  - Unlimited page children.
@@ -28,17 +30,57 @@ If you want to make something that is super huge with Mecha, that would be possi
  - Easy to use and well documented API.
  - Control panel extension.
 
-### Dependencies
+Environments
+------------
 
- - PHP 7.1.0 and above, with enabled [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") extension.
+ - PHP 7.1.0 and above, with enabled [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") and [`dom`](http://php.net/manual/en/book.dom.php "PHP Extension `dom`") extension.
  - Apache 2.4 and above, with enabled [`mod_rewrite`](http://httpd.apache.org/docs/current/mod/mod_rewrite.html "Apache Module `mod_rewrite`") module.
 
-### Preparations
+Preparations
+------------
 
  1. Make sure that you already have the required components.
- 2. Download the available package from the [home page](http://mecha-cms.com).
+ 2. Download the available package from the [home page](https://mecha-cms.com).
  3. Upload Mecha through your FTP/SFTP to the public folder/directory on your site, then extract it!
- 4. Take a look on the available extensions and plugins that you might be interested.
- 5. Upload your extension folders to `.\lot\x`. They’re auto-loaded.
+ 4. Take a look on the available extensions and layouts that you might be interested.
+ 5. Upload your extension files to `.\lot\x` and your layout files to `.\lot\layout`. They’re auto-loaded.
  6. Read on how to add pages and tags. Learn on how to create pages from the author by looking at the [source code](https://github.com/mecha-cms/lot "GitHub").
  7. Install the panel extension if you are stuck by doing everything manually. You always have the full control to remove this extension without having to worry that your site will stop running after doing so.
+
+---
+
+Release Notes
+-------------
+
+### 2.2.0
+
+Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method (which is only available in PHP version 7.1.0 and above) to convert named function into closures, so that we can pass `$this` reference from another class instance to the function body even if it’s a named function. The `??` operator also becomes mandatory feature on this version as we no longer use extra `$fail` parameter on certain class methods to set default values.
+
+ - Added more static functions: `abort`, `alert`, `anemon`, `any`, `c2f`, `cache`, `check`, `concat`, `content`, `cookie`, `eq`, `exist`, `extend`, `f2c`, `f2p`, `fetch`, `find`, `fire`, `ge`, `get`, `gt`, `has`, `hook`, `is`, `kick`, `le`, `let`, `lt`, `map`, `mecha`, `ne`, `not`, `open`, `p2f`, `page`, `pages`, `pluck`, `route`, `send`, `session`, `set`, `shake`, `state`, `step`, `stream`, `test`, `token`.
+ - Added page conditional statement features.
+ - Removed classes: `Extend` `Elevator`, `Form`, `Guardian`, `Mecha`, `Plugin`, `Shield`, `Union`.
+ - Added classes: `Client`, `Files`, `Folders`, `Layout`, `Pager`, `Pager\Page`, `Pager\Pages`, `Pages`, `Post`, `Server`, `SGML`.
+ - Renamed class `Config` to `State`.
+ - Renamed class `Date` to `Time`.
+ - Renamed class `Guardian` to `Guard`.
+ - Renamed class `Message` to `Alert`.
+ - Renamed `.\lot\extend` directory address to `.\lot\x`.
+ - Renamed the `X` constant to `P`. “P” stands for “Placeholder”.
+ - Moved configuration file from `.\lot\state\config.php` to `.\state.php`.
+ - Moved class `Page` to the _Page_ extension folder.
+ - Moved YAML parser feature to a separate _YAML_ extension.
+ - Moved search functionality to a separate _Search_ extension.
+ - The “Set, Get and Reset” method naming standard has now been changed to “Set, Get and Let”.
+ - Now you can call page properties via `$this` property inside the hook function, either as a named function or as an anonymous function.
+ - Use `null` value everywhere as the default value for all inaccessible data. From now on, use the `??` operator to determine alternative value.
+ - `$pages` variable is now a generator. Every page data in it will be loaded only if you iterate over the generator.
+ - Removed plugin feature. There are no such thing called “plugin” in this version. They are now simply called “extension”.
+ - Removed language and layout switcher features. Now we no longer have the ability to change themes through configuration files, and therefore there will only be one theme on every website built with Mecha.
+ - Added ability to read special file named `task.php` file.
+ - Removed ability to read special file named `__index.php` and `index__.php`. Only `index.php` file that will be read automatically.
+
+### 2.0.0
+
+Compatible with PHP 5.3.6 and above.
+
+ - Refactor.
