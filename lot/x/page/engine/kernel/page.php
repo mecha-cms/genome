@@ -125,11 +125,31 @@ class Page extends File {
                 $this->read[$i] = 1; // Done read
                 return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
-            $any = From::page(file_get_contents($this->path), true);
-            foreach ($any as $k => $v) {
-                $this->read[$k] = 1; // Done read
+            // Stream page file content and make sure that property is exists before parsing
+            $has = 'content' === $i;
+            foreach (stream($this->path) as $k => $v) {
+                if (0 === $k && "---\n" !== $v) {
+                    break;
+                }
+                if ("...\n" === $v) {
+                    break;
+                }
+                if (
+                    0 === strpos($v, $i . ':') ||
+                    0 === strpos($v, '"' . strtr($i, ['"' => "\\\""]) . '":') ||
+                    0 === strpos($v, "'" . strtr($i, ["'" => "\\'"]) . "':")
+                ) {
+                    $has = true;
+                    break;
+                }
             }
-            $this->lot = array_replace_recursive($this->lot ?? [], $any);
+            if ($has) {
+                $any = From::page(file_get_contents($this->path), true);
+                foreach ($any as $k => $v) {
+                    $this->read[$k] = 1; // Done read
+                }
+                $this->lot = array_replace_recursive($this->lot ?? [], $any);
+            }
         }
         return $this->lot[$i] ?? null;
     }
