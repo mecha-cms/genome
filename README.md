@@ -58,6 +58,7 @@ Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method
 
  - Added more static functions: `abort`, `alert`, `anemon`, `any`, `c2f`, `cache`, `check`, `concat`, `content`, `cookie`, `eq`, `exist`, `extend`, `f2c`, `f2p`, `fetch`, `find`, `fire`, `ge`, `get`, `gt`, `has`, `hook`, `is`, `kick`, `le`, `let`, `lt`, `map`, `mecha`, `ne`, `not`, `open`, `p2f`, `page`, `pages`, `pluck`, `route`, `send`, `session`, `set`, `shake`, `state`, `step`, `stream`, `test`, `token`.
  - Added page conditional statement features.
+ - Removed automatic constant creation for every folder name in the `.\lot` directory.
  - Removed classes: `Extend` `Elevator`, `Form`, `Guardian`, `Mecha`, `Plugin`, `Shield`, `Union`.
  - Added classes: `Client`, `Files`, `Folders`, `Layout`, `Pager`, `Pager\Page`, `Pager\Pages`, `Pages`, `Post`, `Server`, `SGML`.
  - Renamed class `Config` to `State`.
@@ -67,6 +68,8 @@ Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method
  - Renamed `.\lot\extend` directory address to `.\lot\x`.
  - Renamed the `X` constant to `P`. “P” stands for “Placeholder”.
  - Moved configuration file from `.\lot\state\config.php` to `.\state.php`.
+ - Moved configuration file from `.\lot\extend\:extension\state\config.php` to `.\lot\x\:extension\state.php`.
+ - Moved configuration file from `.\lot\shield\:layout\state\config.php` to `.\lot\layout\state.php`.
  - Moved class `Page` to the _Page_ extension folder.
  - Moved YAML parser feature to a separate _YAML_ extension.
  - Moved search functionality to a separate _Search_ extension.
@@ -76,7 +79,7 @@ Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method
  - `$pages` variable is now a generator. Every page data in it will be loaded only if you iterate over the generator.
  - Removed plugin feature. There are no such thing called “plugin” in this version. They are now simply called “extension”.
  - Removed language and layout switcher features. Now we no longer have the ability to change themes through configuration files, and therefore there will only be one theme on every website built with Mecha.
- - Added ability to read special file named `task.php` file.
+ - Added ability to read special file named `task.php`.
  - Removed ability to read special file named `__index.php` and `index__.php`. Only `index.php` file that will be read automatically.
 
 ### 2.0.0
