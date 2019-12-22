@@ -6,7 +6,11 @@ type: Markdown
 version: 1.5.18
 ...
 
-Some elements have their own classes to match with the content appearance:
+### At a Glance
+
+![Log](https://user-images.githubusercontent.com/1669261/71316847-d764c580-24a9-11ea-896c-b967cac7b2e0.png)
+
+Some elements have their own classes to match with the layout appearance:
 
 ~~~ .html
 <button class="button"></button>
