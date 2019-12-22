@@ -50,7 +50,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
     };
     $yaml_docs = function(array $data, string $dent = '  ', $content = "\t") use(&$yaml) {
         $out = $c = "";
-        if (isset($data[$content])) {
+        if (array_key_exists($content, $data)) {
             $c = $data[$content];
             unset($data[$content]);
         }
@@ -58,7 +58,8 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
             $v = $yaml($data[$i], $dent);
             $out .= "---\n" . ("" !== $v ? $v . "\n" : "");
         }
-        return $out . "...\n\n" . trim($c, "\n");
+        $c = trim($c, "\n");
+        return $out . '...' . ($c ? "\n\n" . $c : "");
     };
     return $docs ? $yaml_docs($in, $dent, true === $docs ? "\t" : $docs) : $yaml($in, $dent);
 });

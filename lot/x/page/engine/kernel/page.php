@@ -126,8 +126,8 @@ class Page extends File {
                 return ($this->lot[$i] = a(e(file_get_contents($f))));
             }
             // Stream page file content and make sure that property is exists before parsing
-            $has = 'content' === $i;
-            foreach (stream($this->path) as $k => $v) {
+            $exist = 'content' === $i;
+            foreach (stream($path = $this->path) as $k => $v) {
                 if (0 === $k && "---\n" !== $v) {
                     break;
                 }
@@ -139,17 +139,18 @@ class Page extends File {
                     0 === strpos($v, '"' . strtr($i, ['"' => "\\\""]) . '":') ||
                     0 === strpos($v, "'" . strtr($i, ["'" => "\\'"]) . "':")
                 ) {
-                    $has = true;
+                    $exist = true;
                     break;
                 }
             }
-            if ($has) {
-                $any = From::page(file_get_contents($this->path), true);
+            if ($exist) {
+                $any = From::page(file_get_contents($path), true);
                 foreach ($any as $k => $v) {
                     $this->read[$k] = 1; // Done read
                 }
                 $this->lot = array_replace_recursive($this->lot ?? [], $any);
             }
+            $this->lot = array_replace_recursive($this->a ?? [], $this->lot ?? []);
         }
         return $this->lot[$i] ?? null;
     }

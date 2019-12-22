@@ -54,13 +54,13 @@ Release Notes
 
 ### 2.2.0
 
-Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method (which is only available in PHP version 7.1.0 and above) to convert named function into closures, so that we can pass `$this` reference from another class instance to the function body even if it’s a named function. The `??` operator also becomes mandatory feature on this version as we no longer use extra `$fail` parameter on certain class methods to set default values.
+Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method (which is only available in PHP version 7.1.0 and above) to convert named function into closures, so that we can pass `$this` reference from another class instance to the function body even if it’s a named function. The `??` operator becomes a must-have feature on this version as we no longer use extra `$fail` parameter on certain class methods to set default values.
 
  - Added more static functions: `abort`, `alert`, `anemon`, `any`, `c2f`, `cache`, `check`, `concat`, `content`, `cookie`, `eq`, `exist`, `extend`, `f2c`, `f2p`, `fetch`, `find`, `fire`, `ge`, `get`, `gt`, `has`, `hook`, `is`, `kick`, `le`, `let`, `lt`, `map`, `mecha`, `ne`, `not`, `open`, `p2f`, `page`, `pages`, `pluck`, `route`, `send`, `session`, `set`, `shake`, `state`, `step`, `stream`, `test`, `token`.
  - Added page conditional statement features.
  - Removed automatic constant creation for every folder name in the `.\lot` directory.
  - Removed classes: `Extend` `Elevator`, `Form`, `Guardian`, `Mecha`, `Plugin`, `Shield`, `Union`.
- - Added classes: `Client`, `Files`, `Folders`, `Layout`, `Pager`, `Pager\Page`, `Pager\Pages`, `Pages`, `Post`, `Server`, `SGML`.
+ - Added classes: `Client`, `Files`, `Folders`, `Layout`, `Pager\Page`, `Pager\Pages`, `Pages`, `Post`, `Server`, `SGML`.
  - Renamed class `Config` to `State`.
  - Renamed class `Date` to `Time`.
  - Renamed class `Guardian` to `Guard`.
@@ -70,7 +70,7 @@ Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method
  - Moved configuration file from `.\lot\state\config.php` to `.\state.php`.
  - Moved configuration file from `.\lot\extend\:extension\state\config.php` to `.\lot\x\:extension\state.php`.
  - Moved configuration file from `.\lot\shield\:layout\state\config.php` to `.\lot\layout\state.php`.
- - Moved class `Page` to the _Page_ extension folder.
+ - Moved class `Page` and `Pager` to a separate _Page_ extension.
  - Moved YAML parser feature to a separate _YAML_ extension.
  - Moved search functionality to a separate _Search_ extension.
  - The “Set, Get and Reset” method naming standard has now been changed to “Set, Get and Let”.
