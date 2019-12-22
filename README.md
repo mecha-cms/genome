@@ -14,7 +14,7 @@ At a Glance
 
 ![Front-End](https://user-images.githubusercontent.com/1669261/71316847-d764c580-24a9-11ea-896c-b967cac7b2e0.png)
 
-### Back-End (Optional)
+### Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/71316848-d9c71f80-24a9-11ea-98a1-5d4fe5ef51c0.png)
 
