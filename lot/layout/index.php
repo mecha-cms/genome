@@ -3,35 +3,47 @@
 // Wrap description data with paragraph tag(s) if needed
 Hook::set('page.description', function($description) {
     if ($description && false === strpos($description, '</p>')) {
-        return '<p>' . str_replace(["\n\n", "\n"], ['</p><p>', '<br>'], trim(n($description))) . '</p>';
+        return '<p>' . strtr(trim(n($description)), [
+            "\n\n" => '</p><p>',
+            "\n" => '<br>'
+        ]) . '</p>';
     }
     return $description;
 });
 
 // Add CSS file to the `<head>` section…
-Asset::set('css/layout.min.css', 20);
+Asset::set('css/log.min.css', 20);
 
-// Create site navigation data to be used in layout
-$GLOBALS['links'] = map(Pages::from(LOT . DS . 'page')->is(function($v) use($state) {
-    $folder = LOT . DS . 'page' . strtr($state->path, '/', DS);
-    return $v !== $folder . '.page' && $v !== $folder . '.archive'; // Remove home page
-})->get(), function($v) use($url) {
-    $v = new Page($v);
-    $v->active = 0 === strpos($url->path . '/', '/' . $v->name . '/'); // Active state
-    return $v;
-});
-
-// Create site trace data to be used in layout
-$traces = [];
-$chops = explode('/', trim($url->path, '/'));
-$k = "";
-while ($chop = array_shift($chops)) {
-    $k .= '/' . $chop;
-    if ($v = File::exist([
-        LOT . DS . 'page' . $k . '.page',
-        LOT . DS . 'page' . $k . '.archive'
-    ])) {
-        $traces[] = $v;
+// Create site link data to be used in navigation
+$GLOBALS['links'] = new Anemon((function($out, $state, $url) {
+    $index = LOT . DS . 'page' . $state->path . '.page';
+    foreach (g(LOT . DS . 'page', 'page') as $k => $v) {
+        // Exclude home page
+        if ($k === $index) {
+            continue;
+        }
+        $v = new Page($k);
+        // Add active state
+        $v->set('active', 0 === strpos($url->path . '/', '/' . $v->name . '/'));
+        $out[] = $v;
     }
-}
-$GLOBALS['traces'] = new Pages($traces);
+    return $out;
+})([], $state, $url));
+
+// Create site trace data to be used in navigation
+$GLOBALS['traces'] = new Pages((function($out, $state, $url) {
+    $chops = explode('/', trim($url->path, '/'));
+    $v = LOT . DS . 'page';
+    while ($chop = array_shift($chops)) {
+        $v .= '/' . $chop;
+        if ($file = File::exist([
+            $v . '.page',
+            $v . '.archive'
+        ])) {
+            $out[] = $file;
+        }
+    }
+    return $out;
+})([], $state, $url));
+
+

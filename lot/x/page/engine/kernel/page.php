@@ -183,20 +183,18 @@ class Page extends File {
         }
         if (isset($lot[0])) {
             if (is_array($lot[0])) {
-                if (array_key_exists(1, $lot)) {
-                    if (!isset($lot[1]) || false === $lot[1]) {
-                        unset($this->lot[$lot[0]]);
-                    } else {
-                        $this->lot[$lot[0]] = $lot[1];
+                foreach ($lot[0] as $k => $v) {
+                    if (!isset($v) || false === $v) {
+                        unset($this->lot[$k]);
+                        continue;
                     }
+                    $this->lot[$k] = $v;
+                }
+            } else if (array_key_exists(1, $lot)) {
+                if (!isset($lot[1]) || false === $lot[1]) {
+                    unset($this->lot[$lot[0]]);
                 } else {
-                    foreach ($lot[0] as $k => $v) {
-                        if (!isset($v) || false === $v) {
-                            unset($this->lot[$k]);
-                            continue;
-                        }
-                        $this->lot[$k] = $v;
-                    }
+                    $this->lot[$lot[0]] = $lot[1];
                 }
             } else {
                 // `$page->set('<p>abcdef</p>')`
