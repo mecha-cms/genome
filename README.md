@@ -7,16 +7,21 @@ Mecha CMS
 
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/mecha-cms?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 
-At a Glance
------------
+Front-End
+---------
 
-### Front-End
+This layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview above should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
 
-![Front-End](https://user-images.githubusercontent.com/1669261/71316847-d764c580-24a9-11ea-896c-b967cac7b2e0.png)
+![Front-End](https://user-images.githubusercontent.com/1669261/71335843-2f1d3280-2577-11ea-940e-7777eda2a5d1.png)
 
-### Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
+Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
+-----------------------------------------------------------------------------
 
-![Back-End](https://user-images.githubusercontent.com/1669261/71316848-d9c71f80-24a9-11ea-98a1-5d4fe5ef51c0.png)
+![Back-End](https://user-images.githubusercontent.com/1669261/71335844-2fb5c900-2577-11ea-9b39-4703813566cd.png)
+
+Colors and font types in the control panel preview above are generated from the default layout files. Without them, the display will look like the preview below:
+
+![Back-End](https://user-images.githubusercontent.com/1669261/71335845-2fb5c900-2577-11ea-85e8-f9b93f388202.png)
 
 Objective
 ---------
