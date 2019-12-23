@@ -1,7 +1,7 @@
 Mecha CMS
 =========
 
-> Mecha is a flat-file content management system with no dependencies.
+> Mecha is a flat-file content management system for minimalists.
 
 [![Download](https://cloud.githubusercontent.com/assets/1669261/25494257/3d373b0c-2ba3-11e7-8f88-13e36d1b5bd9.png)](http://mecha-cms.com) [![Learn](https://cloud.githubusercontent.com/assets/1669261/25494261/410de820-2ba3-11e7-86e4-bc7901ed403b.png)](http://mecha-cms.com/reference)
 
@@ -10,7 +10,7 @@ Mecha CMS
 Front-End
 ---------
 
-This layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview above should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
+This layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview below should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
 
 ![Front-End](https://user-images.githubusercontent.com/1669261/71335843-2f1d3280-2577-11ea-940e-7777eda2a5d1.png)
 
