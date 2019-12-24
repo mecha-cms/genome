@@ -1,6 +1,6 @@
 <?= self::before(); ?>
 <main>
-  <article id="page-<?= $page->id; ?>">
+  <article id="page:<?= $page->id; ?>">
     <h2>
       <span>
         <?= $page->title; ?>

@@ -329,7 +329,7 @@ ul ul {
   margin-left: var(--margin);
 }
 ul {
-  list-style: square;
+  list-style: disc;
 }
 hr {
   color: inherit;

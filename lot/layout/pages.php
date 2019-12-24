@@ -1,7 +1,7 @@
 <?= self::before(); ?>
 <main>
   <?php foreach ($pages as $page): ?>
-  <article id="page-<?= $page->id; ?>">
+  <article id="page:<?= $page->id; ?>">
     <h3>
       <?php if ($page->link): ?>
       <a href="<?= $page->link; ?>" rel="nofollow" target="_blank">
