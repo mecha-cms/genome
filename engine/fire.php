@@ -2,7 +2,10 @@
 
 // Enable/disable debug mode (default is `null`)
 if (defined('DEBUG')) {
-    ini_set('error_log', ROOT . DS . 'error.log');
+    if (!is_dir($d = ENGINE . DS . 'log')) {
+        mkdir($d, 0775, true);
+    }
+    ini_set('error_log', $d . DS . 'error');
     if (DEBUG) {
         ini_set('max_execution_time', 300); // 5 minute(s)
         if (true === DEBUG) {
