@@ -2,7 +2,7 @@
 
 // Enable/disable debug mode (default is `null`)
 if (defined('DEBUG')) {
-    ini_set('error_log', ENGINE . DS . 'log' . DS . 'error.log');
+    ini_set('error_log', ROOT . DS . 'error.log');
     if (DEBUG) {
         ini_set('max_execution_time', 300); // 5 minute(s)
         if (true === DEBUG) {

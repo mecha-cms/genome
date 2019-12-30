@@ -1,7 +1,5 @@
 <?php
 
-State::over(require __DIR__ . DS . '..' . DS . '..' . DS . 'state.php');
-
 $path = $url['path'] ?? "";
 $i = $url['i'] ?? "";
 $p = trim($state->path ?? "", '/');
