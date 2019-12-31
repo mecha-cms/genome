@@ -1,6 +1,6 @@
 {
     "name": "mecha-cms/genome",
-    "description": "Mecha is a flat-file content management system with no dependencies.",
+    "description": "Mecha is a flat-file content management system for minimalists.",
     "type": "cms",
     "keywords": ["cms", "mecha", "php"],
     "license": "GPL-3.0",
@@ -8,7 +8,7 @@
         {
             "name": "Taufik Nurrohman",
             "email": "support@mecha-cms.com",
-            "homepage": "http://mecha-cms.com",
+            "homepage": "https://mecha-cms.com",
             "role": "Developer"
         }
     ],
